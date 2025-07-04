@@ -7,7 +7,8 @@ import { ThemeProvider, useThemeColors } from '@/hooks/useTheme';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
-import { Spacing, Typography } from '@/constants/Colors';
+import { Spacing, Typography } from '@/constants/Colors'
+import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 
 // Keep the splash screen visible until we're ready to render
 SplashScreen.preventAutoHideAsync();
@@ -127,6 +128,7 @@ function AppContent() {
 }
 
 export default function RootLayout() {
+  useFrameworkReady();
   return (
     <AuthProvider>
       <ThemeProvider>
