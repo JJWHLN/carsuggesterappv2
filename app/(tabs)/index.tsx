@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -13,7 +14,12 @@ import {
   Gem as LuxuryIcon, // for "Luxury"
   ShieldCheck as FamilySUVIcon, // for "Family SUV"
   Rocket as SportsCarIcon, // for "Sports Car"
-  Briefcase as BrandIcon // For "Popular Brands"
+  Briefcase as BrandIcon, // For "Popular Brands"
+  TrendingUp,
+  Car,
+  Star,
+  ChevronRight,
+  Search,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient'; // For Hero gradient
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -23,18 +29,34 @@ import { StatCard } from '@/components/ui/StatCard';
 import { SearchBar } from '@/components/ui/SearchBar'; // Import SearchBar
 import { Card } from '@/components/ui/Card'; // Import Card for featured cars/brands
 import { OptimizedImage } from '@/components/ui/OptimizedImage'; // For images
+import { CarCard } from '@/components/ui/CarCard'; // Import the new CarCard
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors'; // Removed currentColors
 import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
 // import { checkDatabaseHealth } from '@/services/api'; // No longer used here
 import { useApi } from '@/hooks/useApi'; // Changed from useAsyncOperation
 import { fetchCarModels, fetchPopularBrands } from '@/services/api'; // Import fetchCarModels and fetchPopularBrands
-// Mock data for popular brands - replace with API calls later
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
+
+const { width, height } = Dimensions.get('window');
 
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const { colors } = useThemeColors(); // Use themed colors
+  const { user } = useAuth(); // Get authentication state
   const styles = useMemo(() => getStyles(colors), [colors]); // Memoize styles
+
+  // Handle authentication-required features
+  const handleAuthRequired = (action: () => void, fallbackAction?: () => void) => {
+    if (user) {
+      action();
+    } else if (fallbackAction) {
+      fallbackAction();
+    } else {
+      // Redirect to sign in
+      router.push('/auth/sign-in');
+    }
+  };
 
   // Fetch Featured Cars
   const {
@@ -42,7 +64,7 @@ export default function HomeScreen() {
     loading: featuredCarsLoading,
     error: featuredCarsError,
     refetch: refetchFeaturedCars
-  } = useApi(() => fetchCarModels({ limit: 5 }), []); // Fetch 5 featured cars
+  } = useApi(() => fetchCarModels({ limit: 8 }), []); // Fetch 8 featured cars for grid
 
   // Fetch Popular Brands
   const {
@@ -52,8 +74,6 @@ export default function HomeScreen() {
     refetch: refetchPopularBrands
   } = useApi(() => fetchPopularBrands(6), []); // Fetch 6 popular brands
 
-  // const loadHomeData = async () => { ... }; // Kept for reference, but not used
-
   const quickCategories = [
     { name: 'Electric', icon: ElectricIcon, onPress: () => router.push({ pathname: '/models', params: { category: 'Electric' }}) },
     { name: 'Luxury', icon: LuxuryIcon, onPress: () => router.push({ pathname: '/models', params: { category: 'Luxury' }}) },
@@ -61,18 +81,11 @@ export default function HomeScreen() {
     { name: 'Sports Car', icon: SportsCarIcon, onPress: () => router.push({ pathname: '/models', params: { category: 'Sports' }}) },
   ];
 
-  // Example: If you still want a loading state for initial app setup (e.g. font loading, not DB health)
-  // const { ready, error: frameworkError } = useFrameworkReady(); // Assuming useFrameworkReady hook exists
-  // if (!ready) {
-  //   return <LoadingSpinner />;
-  // }
-  // if (frameworkError) {
-  //   return <ErrorState title="Initialization Error" message={frameworkError.message} />;
-  // }
-
-
-  // Removed the old loading/error states tied to DB health for now to focus on UI.
-  // These can be re-added if `loadHomeData` is used.
+  const stats = [
+    { title: '10K+', subtitle: 'Cars Available', icon: <Car color={colors.primary} size={24} /> },
+    { title: '500+', subtitle: 'Verified Dealers', icon: <Star color={colors.accentGreen} size={24} /> },
+    { title: '50+', subtitle: 'Car Brands', icon: <TrendingUp color={colors.success} size={24} /> },
+  ];
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -81,33 +94,84 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContentContainer}
       >
-        {/* New Hero Section */}
+        {/* Modern Hero Section */}
         <LinearGradient
-          colors={[colors.white, colors.secondaryGreen]} // Use themed colors
-          style={styles.heroSectionNew}
+          colors={[colors.primary, colors.primaryHover]}
+          style={styles.heroSection}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
         >
-          <Text style={[styles.heroGreetingText, { color: colors.text }]}>Find Your Perfect Car</Text>
-          <SearchBar
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search cars, makes, models..."
-            onSubmit={() => router.push({ pathname: '/search', params: { query: searchQuery }})}
-            containerStyle={styles.heroSearchBarContainer} // Use a container style for SearchBar
-          />
+          <View style={styles.heroContent}>
+            <Text style={[styles.heroTitle, { color: colors.white }]}>
+              Find Your Dream Car
+            </Text>
+            <Text style={[styles.heroSubtitle, { color: colors.white }]}>
+              Discover thousands of cars with AI-powered recommendations
+            </Text>
+            
+            <View style={styles.heroSearchContainer}>
+              <SearchBar
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search for cars, brands, models..."
+                onSubmit={() => router.push({ pathname: '/search', params: { query: searchQuery }})}
+                containerStyle={styles.heroSearchBar}
+              />
+            </View>
+
+            <View style={styles.heroButtons}>
+              <Button
+                title={user ? "Find My Car" : "Get AI Recommendations"}
+                onPress={() => handleAuthRequired(
+                  () => router.push('/recommendations'),
+                  () => router.push('/auth/sign-in') // Direct to sign-in for AI features
+                )}
+                variant="secondary"
+                style={styles.findMyCarButton}
+                icon={<Car color={colors.primary} size={20} />}
+              />
+              <Button
+                title="Browse All"
+                onPress={() => router.push('/search')}
+                variant="outline"
+                style={styles.browseButton}
+                icon={<Search color={colors.white} size={20} />}
+              />
+            </View>
+          </View>
         </LinearGradient>
 
-        {/* Quick Category Buttons */}
+        {/* Quick Stats */}
+        <View style={styles.statsSection}>
+          <View style={styles.statsGrid}>
+            {stats.map((stat, index) => (
+              <StatCard
+                key={index}
+                value={stat.title}
+                label={stat.subtitle}
+                icon={stat.icon}
+                style={StyleSheet.flatten([styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }])}
+              />
+            ))}
+          </View>
+        </View>
+
+        {/* Quick Categories */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Categories</Text>
-          <View style={styles.quickCategoriesGrid}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Browse by Category</Text>
+          <View style={styles.categoriesGrid}>
             {quickCategories.map((category, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.categoryButton, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}
+                style={[styles.categoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 onPress={category.onPress}
+                activeOpacity={0.8}
               >
-                <category.icon color={colors.primary} size={28} />
-                <Text style={[styles.categoryButtonText, { color: colors.text }]}>{category.name}</Text>
+                <View style={[styles.categoryIcon, { backgroundColor: colors.primaryLight }]}>
+                  <category.icon color={colors.primary} size={28} />
+                </View>
+                <Text style={[styles.categoryText, { color: colors.text }]}>{category.name}</Text>
+                <ChevronRight color={colors.textSecondary} size={16} />
               </TouchableOpacity>
             ))}
           </View>
@@ -115,81 +179,94 @@ export default function HomeScreen() {
 
         {/* Featured Cars Section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Featured Cars</Text>
-          {featuredCarsLoading && !featuredCars && ( // Show spinner only on initial load
-            <View style={styles.horizontalLoadingContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Featured Cars</Text>
+            <TouchableOpacity onPress={() => router.push('/models')}>
+              <Text style={[styles.sectionAction, { color: colors.primary }]}>View All</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {featuredCarsLoading && !featuredCars && (
+            <View style={styles.loadingContainer}>
               <LoadingSpinner color={colors.primary} />
             </View>
           )}
+          
           {featuredCarsError && (
-            <ErrorState title="Could Not Load Cars" message={featuredCarsError} onRetry={refetchFeaturedCars} />
+            <ErrorState 
+              title="Could Not Load Cars" 
+              message={featuredCarsError} 
+              onRetry={refetchFeaturedCars} 
+            />
           )}
-          {featuredCars && featuredCars.length === 0 && !featuredCarsLoading && (
-            <Text style={styles.emptySectionText}>No featured cars available right now.</Text>
-          )}
+          
           {featuredCars && featuredCars.length > 0 && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
-              {featuredCars.map(car => (
-                <Card
+            <View style={styles.carsGrid}>
+              {featuredCars.slice(0, 4).map(car => (
+                <CarCard
                   key={car.id}
-                  style={styles.featuredCarCard}
+                  image={car.image_url || ''}
+                  name={`${car.brands?.name} ${car.name}`}
+                  year={car.year}
+                  priceRange="Price on request"
+                  tags={car.category || []}
+                  rating={4.5}
+                  location="Multiple locations"
                   onPress={() => router.push(`/model/${car.id}`)}
-                  padding={0} // Card handles its own padding, images should fill
-                  accessibilityLabel={`View details for ${car.brands?.name} ${car.name}`}
-                  accessibilityRole="button"
-                >
-                  <OptimizedImage
-                    source={{uri: car.image_url || ''}}
-                    style={{...styles.featuredCarImage, backgroundColor: colors.surfaceDark}}
-                    fallbackSource={require('@/assets/images/icon.png')}
-                  />
-                  <View style={styles.featuredCarTextContainer}>
-                    <Text style={[styles.featuredCarTitle, { color: colors.text }]} numberOfLines={1}>{car.brands?.name} {car.name}</Text>
-                    {car.year && <Text style={[styles.featuredCarYear, { color: colors.textSecondary }]}>{car.year}</Text>}
-                  </View>
-                </Card>
+                  style={styles.carCard}
+                />
               ))}
-            </ScrollView>
+            </View>
           )}
         </View>
 
         {/* Popular Brands Section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Popular Brands</Text>
-          {popularBrandsLoading && !popularBrands && ( // Show spinner only on initial load
-             <View style={styles.horizontalLoadingContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Popular Brands</Text>
+            <TouchableOpacity onPress={() => router.push('/models')}>
+              <Text style={[styles.sectionAction, { color: colors.primary }]}>View All</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {popularBrandsLoading && !popularBrands && (
+            <View style={styles.loadingContainer}>
               <LoadingSpinner color={colors.primary} />
             </View>
           )}
+          
           {popularBrandsError && (
-            <ErrorState title="Could Not Load Brands" message={popularBrandsError} onRetry={refetchPopularBrands} />
+            <ErrorState 
+              title="Could Not Load Brands" 
+              message={popularBrandsError} 
+              onRetry={refetchPopularBrands} 
+            />
           )}
-          {popularBrands && popularBrands.length === 0 && !popularBrandsLoading && (
-             <Text style={styles.emptySectionText}>No popular brands available right now.</Text>
-          )}
+          
           {popularBrands && popularBrands.length > 0 && (
-            <View style={styles.popularBrandsGrid}>
+            <View style={styles.brandsGrid}>
               {popularBrands.map(brand => (
                 <TouchableOpacity
                   key={brand.id}
-                  style={styles.brandButton}
+                  style={[styles.brandCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                   onPress={() => router.push(`/brand/${brand.id}`)}
-                  accessibilityLabel={`View cars from ${brand.name}`}
-                  accessibilityRole="button"
+                  activeOpacity={0.8}
                 >
                   {brand.logo_url ? (
                     <OptimizedImage
                       source={{uri: brand.logo_url}}
-                      style={{...styles.brandLogo, backgroundColor: colors.surfaceDark}}
+                      style={styles.brandLogo}
                       resizeMode="contain"
                       fallbackSource={require('@/assets/images/icon.png')}
                     />
                   ) : (
-                    <View style={[styles.brandLogoPlaceholder, { backgroundColor: colors.secondaryGreen }]}>
+                    <View style={[styles.brandLogoPlaceholder, { backgroundColor: colors.primaryLight }]}>
                       <BrandIcon color={colors.primary} size={32} />
                     </View>
                   )}
-                  <Text style={[styles.brandNameText, { color: colors.textSecondary }]}>{brand.name}</Text>
+                  <Text style={[styles.brandName, { color: colors.text }]} numberOfLines={1}>
+                    {brand.name}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -204,7 +281,6 @@ export default function HomeScreen() {
 const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: colors.background, // Applied directly in SafeAreaView
   },
   scrollView: {
     flex: 1,
@@ -212,132 +288,152 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
   scrollContentContainer: {
     paddingBottom: Spacing.xxl,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.md,
-  },
-  loadingText: {
-    ...Typography.bodyText,
-    color: colors.textSecondary,
-  },
-  heroSectionNew: {
+  heroSection: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.xl,
+    paddingVertical: Spacing.xl * 2,
     alignItems: 'center',
+    minHeight: height * 0.4,
+    justifyContent: 'center',
   },
-  heroGreetingText: { // color set inline
+  heroContent: {
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 400,
+  },
+  heroTitle: {
     ...Typography.heroTitle,
     textAlign: 'center',
+    marginBottom: Spacing.md,
+    fontWeight: '800',
+  },
+  heroSubtitle: {
+    ...Typography.body,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+    opacity: 0.9,
+    lineHeight: 24,
+  },
+  heroSearchContainer: {
+    width: '100%',
     marginBottom: Spacing.lg,
   },
-  heroSearchBarContainer: {
-    width: '100%',
-    paddingHorizontal: 0,
-    paddingVertical: 0,
+  heroSearchBar: {
+    backgroundColor: colors.white,
+    borderRadius: BorderRadius.lg,
+    ...Shadows.large,
   },
-  section: {
-    marginTop: Spacing.xl,
+  heroButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    width: '100%',
+    marginTop: Spacing.md,
+  },
+  findMyCarButton: {
+    flex: 1,
     paddingHorizontal: Spacing.lg,
   },
-  sectionTitle: { // color set inline
-    ...Typography.sectionTitle,
-    marginBottom: Spacing.md,
+  browseButton: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
   },
-  quickCategoriesGrid: {
+  statsSection: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xl,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: Spacing.md,
+  },
+  statCard: {
+    flex: 1,
+  },
+  section: {
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.xl,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+  },
+  sectionTitle: {
+    ...Typography.h3,
+    fontWeight: '700',
+  },
+  sectionAction: {
+    ...Typography.body,
+    fontWeight: '600',
+  },
+  categoriesGrid: {
+    gap: Spacing.md,
+  },
+  categoryCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    ...Shadows.small,
+  },
+  categoryIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  categoryText: {
+    ...Typography.body,
+    fontWeight: '600',
+    flex: 1,
+  },
+  loadingContainer: {
+    paddingVertical: Spacing.xl,
+    alignItems: 'center',
+  },
+  carsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    gap: Spacing.md,
   },
-  categoryButton: { // backgroundColor, borderColor set inline
-    width: '48%',
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.md,
-    ...Shadows.card, // Shadows might need theme adjustment if they use colors directly
+  carCard: {
+    width: (width - Spacing.lg * 3) / 2,
   },
-  categoryButtonText: { // color set inline
-    ...Typography.bodySmall,
-    marginTop: Spacing.sm,
-    textAlign: 'center',
-    fontWeight: '500' as '500',
-  },
-  horizontalScroll: {
-    paddingLeft: Spacing.lg,
-    paddingRight: Spacing.sm,
-    marginTop: Spacing.xs,
-  },
-  featuredCarCard: {
-    width: 180,
-    marginRight: Spacing.md,
-  },
-  featuredCarImage: { // backgroundColor set inline
-    width: '100%',
-    height: 100,
-    borderTopLeftRadius: BorderRadius.lg,
-    borderTopRightRadius: BorderRadius.lg,
-  },
-  featuredCarTextContainer: {
-    padding: Spacing.sm,
-  },
-  featuredCarTitle: { // color set inline
-    ...Typography.bodySmall,
-    fontWeight: Typography.cardTitle.fontWeight,
-    marginBottom: Spacing.xs / 2,
-  },
-  featuredCarYear: { // color set inline
-    ...Typography.caption,
-  },
-  popularBrandsGrid: {
+  brandsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    marginTop: Spacing.xs,
+    justifyContent: 'space-between',
+    gap: Spacing.md,
   },
-  brandButton: {
-    width: '30%',
+  brandCard: {
+    width: (width - Spacing.lg * 4) / 3,
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    marginBottom: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    ...Shadows.small,
   },
-  brandLogo: { // backgroundColor set inline
-    width: 60,
-    height: 60,
-    borderRadius: BorderRadius.full,
+  brandLogo: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     marginBottom: Spacing.xs,
   },
-  brandLogoPlaceholder: { // backgroundColor set inline
-    width: 60,
-    height: 60,
-    borderRadius: BorderRadius.full,
-    marginBottom: Spacing.xs,
+  brandLogoPlaceholder: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: Spacing.xs,
   },
-  brandNameText: { // color set inline
+  brandName: {
     ...Typography.caption,
     textAlign: 'center',
-    marginTop: Spacing.xs,
-  },
-  horizontalLoadingContainer: {
-    height: 150,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptySubtitle: {
-    ...Typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  emptySectionText: { // Add missing style
-    ...Typography.bodyText,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    paddingVertical: Spacing.lg,
+    fontWeight: '600',
   },
 });
-// Inside HomeScreen component: const styles = getStyles(colors);

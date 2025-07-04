@@ -10,11 +10,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Car } from 'lucide-react-native'; // Search, Filter might not be needed directly if using SearchBar component
+import { Car, Filter, SlidersHorizontal } from 'lucide-react-native'; // Search, Filter might not be needed directly if using SearchBar component
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ModelCard } from '@/components/ModelCard';
+import { CarCard } from '@/components/ui/CarCard'; // Import the new CarCard
 import { SearchBar } from '@/components/ui/SearchBar'; // Import the new SearchBar
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors'; // Removed currentColors
 import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
@@ -24,11 +25,13 @@ import { sanitizeSearchQuery } from '@/utils/dataTransformers'; // Will still us
 import { useDebounce } from '@/hooks/useDebounce'; // Import useDebounce
 import { useOptimizedFlatList } from '@/hooks/useOptimizedFlatList'; // Import useOptimizedFlatList
 import { CarModel } from '@/types/database';
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 
-const ITEM_ESTIMATED_HEIGHT = 370; // Estimated height for ModelCard + wrapper margin
+const ITEM_ESTIMATED_HEIGHT = 320; // Estimated height for CarCard + wrapper margin
 
 export default function ModelsScreen() {
   const { colors } = useThemeColors(); // Use themed colors
+  const { user } = useAuth(); // Get authentication state
   const styles = useMemo(() => getThemedStyles(colors), [colors]); // Memoize styles
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -86,15 +89,34 @@ export default function ModelsScreen() {
     router.push(`/model/${modelId}`);
   }, []); // router is stable, so this callback is stable
 
+  const handleFavoriteToggle = useCallback((modelId: number) => {
+    if (!user) {
+      // Redirect to sign in if not authenticated
+      router.push('/auth/sign-in');
+      return;
+    }
+    
+    // TODO: Implement favorite toggle for authenticated users
+    console.log('Toggle favorite for model:', modelId);
+  }, [user, router]);
+
   const renderModel: ListRenderItem<CarModel> = useCallback(({ item }) => (
     // Add a wrapper View for styling if using numColumns > 1 for spacing
     <View style={styles.modelCardWrapper}>
-      <ModelCard
-        model={item}
-        onPress={() => handleModelPress(item.id)} // Pass item.id
+      <CarCard
+        image={item.image_url || ''}
+        name={`${item.brands?.name} ${item.name}`}
+        year={item.year}
+        priceRange="Price on request"
+        tags={item.category || []}
+        rating={4.5}
+        location="Multiple locations"
+        onPress={() => handleModelPress(item.id)}
+        onFavorite={user ? () => handleFavoriteToggle(item.id) : undefined}
+        isFavorite={false} // TODO: Check if model is favorited by user
       />
     </View>
-  ), [handleModelPress, styles.modelCardWrapper]); // styles.modelCardWrapper will be stable if styles is from useMemo
+  ), [handleModelPress, handleFavoriteToggle, user, styles.modelCardWrapper]); // styles.modelCardWrapper will be stable if styles is from useMemo
 
   const renderCategoryFilter = () => (
     <View style={styles.categoriesFilter}>

@@ -85,14 +85,92 @@ export default function ProfileScreen() {
   }
 
   if (!user) {
-    // This case should ideally be handled by the root navigator redirecting to auth screens.
-    // If somehow reached, provide a fallback.
+    // Anonymous user experience - show limited profile options
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={styles.loadingContainer}>
-          <Text style={{color: colors.text}}>Please sign in.</Text>
-          <Button title="Sign In" onPress={() => router.replace('/auth/sign-in')} />
-        </View>
+        <ScrollView style={styles.content}>
+          {/* Anonymous User Header */}
+          <Card style={styles.profileCard}>
+            <View style={styles.profileHeader}>
+              <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
+                <User color={colors.primary} size={30} />
+              </View>
+              <View style={styles.profileInfo}>
+                <Text style={[styles.profileName, { color: colors.text }]}>
+                  Browse Anonymously
+                </Text>
+                <Text style={[styles.profileDetails, { color: colors.textSecondary }]}>
+                  Sign in for personalized features
+                </Text>
+              </View>
+            </View>
+          </Card>
+
+          {/* Sign In/Up Buttons */}
+          <View style={styles.profileCard}>
+            <Button
+              title="Sign In"
+              onPress={() => router.push('/auth/sign-in')}
+              style={styles.signOutButton}
+            />
+            <Button
+              title="Create Account"
+              variant="outline"
+              onPress={() => router.push('/auth/sign-up')}
+              style={styles.signOutButton}
+            />
+          </View>
+
+          {/* Limited Menu for Anonymous Users */}
+          <Card style={{...styles.menuCard, backgroundColor: colors.surface, borderColor: colors.border}}>
+            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Available Features</Text>
+            
+            {renderMenuItem(
+              <Settings color={colors.textSecondary} size={20} />,
+              'App Settings',
+              'Theme, notifications, and preferences',
+              handleNavigateToSettings
+            )}
+          </Card>
+
+          {/* Learn More */}
+          <Card style={{...styles.menuCard, backgroundColor: colors.surface, borderColor: colors.border}}>
+            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Learn More</Text>
+            
+            {renderMenuItem(
+              <FileText color={colors.primary} size={20} />,
+              'About CarSuggester',
+              'Learn about our features and benefits',
+              () => router.push('/welcome')
+            )}
+          </Card>
+
+          {/* Benefits of Signing In */}
+          <Card style={{...styles.menuCard, backgroundColor: colors.surface, borderColor: colors.border}}>
+            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Sign In to Unlock</Text>
+            
+            {renderMenuItem(
+              <Heart color={colors.error} size={20} />,
+              'Save Favorites',
+              'Bookmark cars and get notifications',
+              () => router.push('/auth/sign-in')
+            )}
+            
+            {renderMenuItem(
+              <FileText color={colors.textSecondary} size={20} />,
+              'Write Reviews',
+              'Share your experience with cars',
+              () => router.push('/auth/sign-in')
+            )}
+            
+            {renderMenuItem(
+              <User color={colors.textSecondary} size={20} />,
+              'Personalized Recommendations',
+              'AI-powered car suggestions just for you',
+              () => router.push('/auth/sign-in')
+            )}
+          </Card>
+        </ScrollView>
       </SafeAreaView>
     );
   }
