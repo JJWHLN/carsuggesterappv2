@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'; // Added useMemo
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,12 @@ import {
   ScrollView,
   Alert,
   TouchableOpacity,
-  ActivityIndicator, // Added ActivityIndicator
+  ActivityIndicator,
+  Switch,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { 
   User, 
   Mail,
@@ -16,24 +19,38 @@ import {
   LogOut,
   Heart,
   FileText,
-  // Car, // Assuming 'My Listings' for dealer is future
-  // Shield, // For Privacy & Security, future
-  // Phone, MapPin for future detailed profile
+  Car,
+  Shield,
+  Bell,
+  Moon,
+  ChevronRight,
+  Edit,
+  Phone,
+  MapPin,
+  Crown,
+  Calendar,
+  Award,
+  Sparkles,
+  TrendingUp,
+  MessageCircle,
 } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
-import { Spacing, Typography } from '@/constants/Colors';
-import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
-import { useRouter } // For navigation if needed for settings etc.
-from 'expo-router';
+import { StatCard } from '@/components/ui/StatCard';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { useAuth } from '@/contexts/AuthContext';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { useThemeColors } from '@/hooks/useTheme';
+
+const { width } = Dimensions.get('window');
 
 
 export default function ProfileScreen() {
   const { user, signOut, loading: authLoading } = useAuth();
   const { colors } = useThemeColors();
-  const styles = useMemo(() => getThemedStyles(colors), [colors]); // Memoize styles
-  const router = useRouter(); // If needed for navigation
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const styles = useMemo(() => getThemedStyles(colors), [colors]);
 
   const handleSignOut = async () => {
     Alert.alert(
@@ -71,6 +88,7 @@ export default function ProfileScreen() {
         <Text style={[styles.menuTitle, { color: colors.text }]}>{title}</Text>
         <Text style={[styles.menuSubtitle, { color: colors.textSecondary }]}>{subtitle}</Text>
       </View>
+      <ChevronRight color={colors.textSecondary} size={20} />
     </TouchableOpacity>
   );
 
@@ -85,91 +103,115 @@ export default function ProfileScreen() {
   }
 
   if (!user) {
-    // Anonymous user experience - show limited profile options
+    // Enhanced Anonymous user experience
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <ScrollView style={styles.content}>
-          {/* Anonymous User Header */}
-          <Card style={styles.profileCard}>
-            <View style={styles.profileHeader}>
-              <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
-                <User color={colors.primary} size={30} />
-              </View>
-              <View style={styles.profileInfo}>
-                <Text style={[styles.profileName, { color: colors.text }]}>
-                  Browse Anonymously
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Hero Section for Anonymous Users */}
+          <View style={styles.heroSection}>
+            <LinearGradient
+              colors={[colors.primary, colors.primaryHover]}
+              style={styles.heroGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <View style={styles.heroContent}>
+                <View style={styles.heroIcon}>
+                  <Sparkles color={colors.white} size={32} />
+                </View>
+                <Text style={styles.heroTitle}>
+                  Unlock Premium Features
                 </Text>
-                <Text style={[styles.profileDetails, { color: colors.textSecondary }]}>
-                  Sign in for personalized features
+                <Text style={styles.heroSubtitle}>
+                  Sign in to save favorites, write reviews, and get AI-powered recommendations
+                </Text>
+                <View style={styles.heroButtons}>
+                  <Button
+                    title="Sign In"
+                    onPress={() => router.push('/auth/sign-in')}
+                    variant="secondary"
+                    style={styles.heroButton}
+                  />
+                  <Button
+                    title="Create Account"
+                    onPress={() => router.push('/auth/sign-up')}
+                    variant="outline"
+                    style={styles.heroButton}
+                    textStyle={{ color: colors.white }}
+                  />
+                </View>
+              </View>
+            </LinearGradient>
+          </View>
+
+          {/* Benefits Preview */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              What You'll Get
+            </Text>
+            <View style={styles.benefitsGrid}>
+              <View style={[styles.benefitCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Heart color={colors.error} size={24} />
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>Save Favorites</Text>
+                <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>
+                  Bookmark cars and get notifications
+                </Text>
+              </View>
+              <View style={[styles.benefitCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <MessageCircle color={colors.primary} size={24} />
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>Write Reviews</Text>
+                <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>
+                  Share your car experiences
+                </Text>
+              </View>
+              <View style={[styles.benefitCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Sparkles color={colors.success} size={24} />
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>AI Recommendations</Text>
+                <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>
+                  Get personalized car suggestions
+                </Text>
+              </View>
+              <View style={[styles.benefitCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <TrendingUp color={colors.warning} size={24} />
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>Market Insights</Text>
+                <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>
+                  Access to price trends and analytics
                 </Text>
               </View>
             </View>
-          </Card>
-
-          {/* Sign In/Up Buttons */}
-          <View style={styles.profileCard}>
-            <Button
-              title="Sign In"
-              onPress={() => router.push('/auth/sign-in')}
-              style={styles.signOutButton}
-            />
-            <Button
-              title="Create Account"
-              variant="outline"
-              onPress={() => router.push('/auth/sign-up')}
-              style={styles.signOutButton}
-            />
           </View>
 
-          {/* Limited Menu for Anonymous Users */}
-          <Card style={{...styles.menuCard, backgroundColor: colors.surface, borderColor: colors.border}}>
-            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Available Features</Text>
-            
-            {renderMenuItem(
-              <Settings color={colors.textSecondary} size={20} />,
-              'App Settings',
-              'Theme, notifications, and preferences',
-              handleNavigateToSettings
-            )}
-          </Card>
-
-          {/* Learn More */}
-          <Card style={{...styles.menuCard, backgroundColor: colors.surface, borderColor: colors.border}}>
-            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Learn More</Text>
-            
-            {renderMenuItem(
-              <FileText color={colors.primary} size={20} />,
-              'About CarSuggester',
-              'Learn about our features and benefits',
-              () => router.push('/welcome')
-            )}
-          </Card>
-
-          {/* Benefits of Signing In */}
-          <Card style={{...styles.menuCard, backgroundColor: colors.surface, borderColor: colors.border}}>
-            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Sign In to Unlock</Text>
-            
-            {renderMenuItem(
-              <Heart color={colors.error} size={20} />,
-              'Save Favorites',
-              'Bookmark cars and get notifications',
-              () => router.push('/auth/sign-in')
-            )}
-            
-            {renderMenuItem(
-              <FileText color={colors.textSecondary} size={20} />,
-              'Write Reviews',
-              'Share your experience with cars',
-              () => router.push('/auth/sign-in')
-            )}
-            
-            {renderMenuItem(
-              <User color={colors.textSecondary} size={20} />,
-              'Personalized Recommendations',
-              'AI-powered car suggestions just for you',
-              () => router.push('/auth/sign-in')
-            )}
-          </Card>
+          {/* Basic Settings */}
+          <View style={styles.section}>
+            <Card style={styles.menuCard}>
+              <Text style={[styles.menuSectionTitle, { color: colors.text }]}>App Settings</Text>
+              
+              <View style={styles.settingItem}>
+                <View style={styles.settingLeft}>
+                  <Moon color={colors.textSecondary} size={20} />
+                  <View style={styles.settingContent}>
+                    <Text style={[styles.settingTitle, { color: colors.text }]}>Dark Mode</Text>
+                    <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>
+                      Toggle app theme
+                    </Text>
+                  </View>
+                </View>
+                <Switch
+                  value={isDarkMode}
+                  onValueChange={setIsDarkMode}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.white}
+                />
+              </View>
+              
+              {renderMenuItem(
+                <Bell color={colors.textSecondary} size={20} />,
+                'Notifications',
+                'Manage your alerts and updates',
+                () => Alert.alert('Notifications', 'Notification settings coming soon!')
+              )}
+            </Card>
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
@@ -177,65 +219,145 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={[styles.content, {backgroundColor: colors.background}]}>
-        <Card style={{...styles.profileCard, backgroundColor: colors.surface, borderColor: colors.border}}>
-          <View style={styles.profileHeader}>
-            <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
-              <User color={colors.primary} size={32} />
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Enhanced Profile Header */}
+        <View style={styles.section}>
+          <Card style={styles.profileCard}>
+            <View style={styles.profileHeader}>
+              <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
+                <User color={colors.primary} size={32} />
+              </View>
+              <View style={styles.profileInfo}>
+                <Text style={[styles.profileName, { color: colors.text }]}>
+                  {user.email?.split('@')[0] || 'User'}
+                </Text>
+                <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
+                  {user.email}
+                </Text>
+                <View style={styles.profileStats}>
+                  <View style={styles.profileStat}>
+                    <Text style={[styles.profileStatValue, { color: colors.text }]}>12</Text>
+                    <Text style={[styles.profileStatLabel, { color: colors.textSecondary }]}>Saved</Text>
+                  </View>
+                  <View style={styles.profileStat}>
+                    <Text style={[styles.profileStatValue, { color: colors.text }]}>5</Text>
+                    <Text style={[styles.profileStatLabel, { color: colors.textSecondary }]}>Reviews</Text>
+                  </View>
+                  <View style={styles.profileStat}>
+                    <Text style={[styles.profileStatValue, { color: colors.text }]}>2</Text>
+                    <Text style={[styles.profileStatLabel, { color: colors.textSecondary }]}>Searches</Text>
+                  </View>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.editButton}>
+                <Edit color={colors.textSecondary} size={20} />
+              </TouchableOpacity>
             </View>
-            <View style={styles.profileInfo}>
-              {/* Name will come from user_profiles table later */}
-              <Text style={[styles.profileName, { color: colors.text }]}>User Profile</Text>
-            </View>
-          </View>
-          
-          <View style={styles.profileDetails}>
+          </Card>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.section}>
+          <Card style={styles.menuCard}>
+            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Quick Actions</Text>
+            
             {renderMenuItem(
-              <Mail color={colors.textSecondary} size={20} />,
-              'Email',
-              user.email || 'Not available',
-              () => {} // No action on email press for now
+              <Sparkles color={colors.primary} size={20} />,
+              'Get AI Recommendations',
+              'Discover cars tailored for you',
+              () => router.push('/recommendations')
             )}
-            {/* More profile details (name, phone, location) will be added once user_profiles integration is done */}
-          </View>
-        </Card>
+            
+            {renderMenuItem(
+              <Heart color={colors.error} size={20} />,
+              'Saved Cars',
+              'View your favorite listings',
+              handleNavigateToSavedCars
+            )}
+            
+            {renderMenuItem(
+              <MessageCircle color={colors.textSecondary} size={20} />,
+              'My Reviews',
+              'Reviews you\'ve written',
+              handleNavigateToMyReviews
+            )}
+          </Card>
+        </View>
 
-        <Card style={{...styles.menuCard, backgroundColor: colors.surface, borderColor: colors.border}}>
-          <Text style={[styles.menuSectionTitle, { color: colors.text }]}>My Activity</Text>
-          {renderMenuItem(
-            <Heart color={colors.textSecondary} size={20} />,
-            'Saved Cars',
-            'View your favorite listings',
-            handleNavigateToSavedCars
-          )}
-          {renderMenuItem(
-            <FileText color={colors.textSecondary} size={20} />,
-            'My Reviews',
-            'Reviews you\'ve written',
-            handleNavigateToMyReviews
-          )}
-          {/* My Listings for dealers will be added later based on role */}
-        </Card>
+        {/* Account Settings */}
+        <View style={styles.section}>
+          <Card style={styles.menuCard}>
+            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Account & Settings</Text>
+            
+            {renderMenuItem(
+              <User color={colors.textSecondary} size={20} />,
+              'Edit Profile',
+              'Update your personal information',
+              () => Alert.alert('Edit Profile', 'Profile editing coming soon!')
+            )}
+            
+            <View style={styles.settingItem}>
+              <View style={styles.settingLeft}>
+                <Moon color={colors.textSecondary} size={20} />
+                <View style={styles.settingContent}>
+                  <Text style={[styles.settingTitle, { color: colors.text }]}>Dark Mode</Text>
+                  <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>
+                    Toggle app theme
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={isDarkMode}
+                onValueChange={setIsDarkMode}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={colors.white}
+              />
+            </View>
+            
+            {renderMenuItem(
+              <Bell color={colors.textSecondary} size={20} />,
+              'Notifications',
+              'Manage alerts and updates',
+              () => Alert.alert('Notifications', 'Notification settings coming soon!')
+            )}
+            
+            {renderMenuItem(
+              <Shield color={colors.textSecondary} size={20} />,
+              'Privacy & Security',
+              'Data and account security',
+              () => Alert.alert('Privacy', 'Privacy settings coming soon!')
+            )}
+          </Card>
+        </View>
 
-        <Card style={{...styles.menuCard, backgroundColor: colors.surface, borderColor: colors.border}}>
-          <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Account</Text>
-          {renderMenuItem(
-            <Settings color={colors.textSecondary} size={20} />,
-            'Settings',
-            'App preferences and notifications',
-            handleNavigateToSettings
-          )}
-          {/* Privacy & Security menu item can be added later */}
-        </Card>
+        {/* Support & About */}
+        <View style={styles.section}>
+          <Card style={styles.menuCard}>
+            <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Support & About</Text>
+            
+            {renderMenuItem(
+              <MessageCircle color={colors.textSecondary} size={20} />,
+              'Help & Support',
+              'Get help and contact us',
+              () => Alert.alert('Support', 'Support center coming soon!')
+            )}
+            
+            {renderMenuItem(
+              <FileText color={colors.textSecondary} size={20} />,
+              'About CarSuggester',
+              'Learn more about our app',
+              () => Alert.alert('About', 'About page coming soon!')
+            )}
+          </Card>
+        </View>
 
-        {/* "Become a Dealer" button can be added later based on profile data/role */}
-
+        {/* Sign Out Button */}
         <Button
           title="Sign Out"
           onPress={handleSignOut}
-          variant="secondary" // Or 'outline' depending on desired look with themes
+          variant="outline"
           style={styles.signOutButton}
-          icon={<LogOut color={colors.primary} size={16} />} // Added icon
+          icon={<LogOut color={colors.primary} size={16} />}
         />
       </ScrollView>
     </SafeAreaView>
@@ -245,39 +367,141 @@ export default function ProfileScreen() {
 const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor is applied to SafeAreaView directly using themed `colors.background`
+  },
+  scrollView: {
+    flex: 1,
   },
   content: {
-    padding: Spacing.md,
+    padding: Spacing.lg,
     paddingBottom: Spacing.xl,
-    // backgroundColor is applied to ScrollView directly using themed `colors.background`
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor is applied to SafeAreaView directly
   },
-  loadingText: { // This style might not be used if ActivityIndicator is primary loading display
+  loadingText: {
     ...Typography.body,
     color: colors.textSecondary,
   },
-  // Styles for the '!user' fallback state (sign-in prompt)
-  signInFallbackContainer: { // Renamed from signInContainer to avoid confusion if a real sign-in screen style exists
-    flex: 1, // Ensure it takes full height if it's the only content
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: Spacing.xxl,
+  
+  // Hero Section (Anonymous Users)
+  heroSection: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.xl,
+    borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
+    ...ColorsShadows.large,
   },
-  signInFallbackText: { // For the "Please sign in." text
-    ...Typography.bodyLarge,
-    color: colors.text,
+  heroGradient: {
+    padding: Spacing.xl,
+  },
+  heroContent: {
+    alignItems: 'center',
+  },
+  heroIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: Spacing.lg,
   },
-  // Profile card and menu items
+  heroTitle: {
+    ...Typography.h1,
+    color: colors.white,
+    textAlign: 'center',
+    marginBottom: Spacing.md,
+    fontWeight: '700',
+  },
+  heroSubtitle: {
+    ...Typography.body,
+    color: colors.white,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+    opacity: 0.9,
+    lineHeight: 24,
+  },
+  heroButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    width: '100%',
+  },
+  heroButton: {
+    flex: 1,
+  },
+  
+  // Sections and Benefits
+  section: {
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.xl,
+  },
+  sectionTitle: {
+    ...Typography.h2,
+    marginBottom: Spacing.lg,
+    fontWeight: '700',
+  },
+  benefitsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.md,
+    justifyContent: 'space-between',
+  },
+  benefitCard: {
+    width: (width - Spacing.lg * 3) / 2,
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    alignItems: 'center',
+    ...ColorsShadows.small,
+  },
+  benefitTitle: {
+    ...Typography.h3,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.xs,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  benefitDescription: {
+    ...Typography.bodySmall,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  
+  // Settings
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  settingLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  settingContent: {
+    marginLeft: Spacing.md,
+    flex: 1,
+  },
+  settingTitle: {
+    ...Typography.body,
+    fontWeight: '500',
+    marginBottom: Spacing.xs,
+  },
+  settingSubtitle: {
+    ...Typography.bodySmall,
+  },
+  
+  // Profile Card (Authenticated Users)
   profileCard: {
     marginBottom: Spacing.lg,
-    // backgroundColor and borderColor are applied inline using themed `colors.surface` and `colors.border`
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
   },
   profileHeader: {
     flexDirection: 'row',
@@ -285,48 +509,64 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginBottom: Spacing.lg,
   },
   avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    // backgroundColor is applied inline using themed `colors.primaryLight`
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Spacing.md,
+    marginRight: Spacing.lg,
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
     ...Typography.h2,
-    // color is applied inline using themed `colors.text`
+    marginBottom: Spacing.xs,
+    fontWeight: '700',
+  },
+  profileEmail: {
+    ...Typography.body,
+    color: colors.textSecondary,
+    marginBottom: Spacing.sm,
+  },
+  profileStats: {
+    flexDirection: 'row',
+    gap: Spacing.lg,
+  },
+  profileStat: {
+    alignItems: 'center',
+  },
+  profileStatValue: {
+    ...Typography.h3,
+    fontWeight: '700',
     marginBottom: Spacing.xs,
   },
-  profileType: { // This style is currently not used in the refactored JSX
-    ...Typography.bodySmall,
-    color: colors.primary,
-    fontWeight: '500',
+  profileStatLabel: {
+    ...Typography.caption,
+    color: colors.textSecondary,
   },
-  profileDetails: {
-    borderTopWidth: 1,
-    // borderTopColor is applied inline using themed `colors.border` (though Card itself has border)
-    // Consider removing if Card's border is sufficient
-    paddingTop: Spacing.md,
+  editButton: {
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    backgroundColor: colors.background,
   },
+  
+  // Menu items
   menuCard: {
     marginBottom: Spacing.lg,
-    // backgroundColor and borderColor are applied inline
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
   },
   menuSectionTitle: {
     ...Typography.h3,
-    // color is applied inline
     marginBottom: Spacing.md,
+    fontWeight: '600',
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    // borderBottomColor is applied inline
   },
   menuIcon: {
     marginRight: Spacing.md,
@@ -336,19 +576,22 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   },
   menuTitle: {
     ...Typography.body,
-    // color is applied inline
     fontWeight: '500',
     marginBottom: Spacing.xs,
   },
   menuSubtitle: {
     ...Typography.bodySmall,
-    // color is applied inline
   },
-  dealerButton: { // This style is currently not used
-    marginBottom: Spacing.md,
+  menuChevron: {
+    marginLeft: Spacing.sm,
   },
+  
+  // Buttons
   signOutButton: {
     marginTop: Spacing.md,
+    marginHorizontal: Spacing.lg,
+  },
+  upgradeButton: {
+    marginBottom: Spacing.lg,
   },
 });
-// Inside ProfileScreen: const styles = getThemedStyles(colors);

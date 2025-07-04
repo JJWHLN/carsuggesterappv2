@@ -57,7 +57,9 @@ const { width, height } = Dimensions.get('window');
 export default function CarDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [isSaved, setIsSaved] = useState(false);
-  const navigation = useNavigation(); // Get navigation object
+  const navigation = useNavigation();
+  const { colors } = useThemeColors();
+  const styles = useMemo(() => getStyles(colors), [colors]);
 
   // Fetch car data using useApi and the new service function
   const {
@@ -112,7 +114,7 @@ export default function CarDetailScreen() {
             accessibilityRole="button"
             accessibilityLabel="Share this car"
           >
-            <Share color={currentColors.primary} size={24} />
+            <Share color={colors.primary} size={24} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleSave}
@@ -122,15 +124,15 @@ export default function CarDetailScreen() {
             accessibilityState={{ selected: isSaved }}
           >
             <Heart
-              color={isSaved ? currentColors.error : currentColors.primary}
-              fill={isSaved ? currentColors.error : 'transparent'}
+              color={isSaved ? colors.error : colors.primary}
+              fill={isSaved ? colors.error : 'transparent'}
               size={24}
             />
           </TouchableOpacity>
         </View>
       ),
     });
-  }, [navigation, car, isSaved, handleSave, handleShare]);
+  }, [navigation, car, isSaved, handleSave, handleShare, colors]);
 
 
   const handleContact = () => {
@@ -173,63 +175,115 @@ export default function CarDetailScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Custom header View removed, native header is used */}
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Image Gallery */}
-        <ScrollView 
-          horizontal 
-          pagingEnabled 
-          showsHorizontalScrollIndicator={false}
-          style={styles.imageGallery}
-        >
-          {car.images && car.images.length > 0 ? car.images.map((image: string, index: number) => (
-            <Image
-              key={index}
-              source={{ uri: image }}
-              style={styles.carImage}
-              resizeMode="cover"
-            />
-          )) : (
-            <Image // Fallback if no images
-              source={{ uri: 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=800' }}
-              style={styles.carImage}
-              resizeMode="cover"
-            />
+        {/* Enhanced Image Gallery */}
+        <View style={styles.imageGalleryContainer}>
+          <ScrollView 
+            horizontal 
+            pagingEnabled 
+            showsHorizontalScrollIndicator={false}
+            style={styles.imageGallery}
+          >
+            {car.images && car.images.length > 0 ? car.images.map((image: string, index: number) => (
+              <View key={index} style={styles.imageContainer}>
+                <OptimizedImage
+                  source={{ uri: image }}
+                  style={styles.carImage}
+                  resizeMode="cover"
+                  fallbackSource={require('@/assets/images/icon.png')}
+                />
+                <LinearGradient
+                  colors={['transparent', 'rgba(0,0,0,0.4)']}
+                  style={styles.imageOverlay}
+                />
+              </View>
+            )) : (
+              <View style={styles.imageContainer}>
+                <OptimizedImage
+                  source={{ uri: 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=800' }}
+                  style={styles.carImage}
+                  resizeMode="cover"
+                  fallbackSource={require('@/assets/images/icon.png')}
+                />
+                <LinearGradient
+                  colors={['transparent', 'rgba(0,0,0,0.4)']}
+                  style={styles.imageOverlay}
+                />
+              </View>
+            )}
+          </ScrollView>
+          
+          {/* Image Counter */}
+          {car.images && car.images.length > 1 && (
+            <View style={styles.imageCounter}>
+              <Camera color={colors.white} size={16} />
+              <Text style={styles.imageCounterText}>{car.images.length}</Text>
+            </View>
           )}
-        </ScrollView>
+        </View>
 
-        {/* Car Details */}
+        {/* Enhanced Car Details */}
         <View style={styles.content}>
+          {/* Title and Price Section */}
           <View style={styles.titleSection}>
-            <Text style={styles.carTitle}>
-              {car.year} {car.make} {car.model}
-            </Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.carTitle}>
+                {car.year} {car.make} {car.model}
+              </Text>
+              {car.condition && (
+                <View style={[styles.conditionBadge, { 
+                  backgroundColor: car.condition === 'new' ? colors.success : colors.warning 
+                }]}>
+                  <Text style={styles.conditionText}>
+                    {formatCondition(car.condition)}
+                  </Text>
+                </View>
+              )}
+            </View>
             <Text style={styles.carPrice}>{formatPrice(car.price)}</Text>
+            
+            {/* Quick Stats Row */}
+            <View style={styles.quickStatsRow}>
+              <View style={styles.quickStat}>
+                <Gauge color={colors.textSecondary} size={16} />
+                <Text style={styles.quickStatText}>{formatMileage(car.mileage)} mi</Text>
+              </View>
+              {car.fuel_type && (
+                <View style={styles.quickStat}>
+                  <Fuel color={colors.textSecondary} size={16} />
+                  <Text style={styles.quickStatText}>{formatFuelType(car.fuel_type)}</Text>
+                </View>
+              )}
+              <View style={styles.quickStat}>
+                <MapPin color={colors.textSecondary} size={16} />
+                <Text style={styles.quickStatText}>{car.location}</Text>
+              </View>
+            </View>
           </View>
 
           {/* Key Details */}
           <View style={styles.detailsGrid}>
             <View style={styles.detailItem}>
-              <Settings color={currentColors.textSecondary} size={20} />
+              <Settings color={colors.textSecondary} size={20} />
               <Text style={styles.detailLabel}>Mileage</Text>
               <Text style={styles.detailValue}>{formatMileage(car.mileage)} mi</Text>
             </View>
             {car.fuel_type && (
               <View style={styles.detailItem}>
-                <Fuel color={currentColors.textSecondary} size={20} />
+                <Fuel color={colors.textSecondary} size={20} />
                 <Text style={styles.detailLabel}>Fuel Type</Text>
                 <Text style={styles.detailValue}>{formatFuelType(car.fuel_type)}</Text>
               </View>
             )}
             {car.condition && (
               <View style={styles.detailItem}>
-                <Calendar color={currentColors.textSecondary} size={20} />
+                <Calendar color={colors.textSecondary} size={20} />
                 <Text style={styles.detailLabel}>Condition</Text>
                 <Text style={styles.detailValue}>{formatCondition(car.condition)}</Text>
               </View>
             )}
             <View style={styles.detailItem}>
-              <MapPin color={currentColors.textSecondary} size={20} />
+              <MapPin color={colors.textSecondary} size={20} />
               <Text style={styles.detailLabel}>Location</Text>
               <Text style={styles.detailValue}>{car.location}</Text>
             </View>
@@ -266,7 +320,7 @@ export default function CarDetailScreen() {
                   <Text style={styles.dealerName}>{car.dealer.name}</Text>
                   {car.dealer.verified && (
                     <View style={styles.verifiedBadge}>
-                      <Star color={currentColors.white} size={12} fill={currentColors.white} />
+                      <Star color={colors.white} size={12} fill={colors.white} />
                       <Text style={styles.verifiedText}>Verified</Text>
                     </View>
                   )}
@@ -274,11 +328,11 @@ export default function CarDetailScreen() {
                 {/* Mocked phone and email for now, as they are not in the CarType.dealer */}
                 <View style={styles.dealerActions}>
                   <TouchableOpacity style={styles.dealerAction}>
-                    <Phone color={currentColors.primary} size={20} />
+                    <Phone color={colors.primary} size={20} />
                     <Text style={styles.dealerActionText}>+1 (555) XXX-XXXX</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.dealerAction}>
-                    <Mail color={currentColors.primary} size={20} />
+                    <Mail color={colors.primary} size={20} />
                     <Text style={styles.dealerActionText}>dealer@example.com</Text>
                   </TouchableOpacity>
                 </View>
@@ -288,23 +342,50 @@ export default function CarDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* Bottom Action */}
+      {/* Enhanced Bottom Action */}
       <View style={styles.bottomAction}>
-        <Button
-          title="Contact Dealer"
-          onPress={handleContact}
-          style={styles.contactButton}
-          icon={<Phone color={currentColors.white} size={20} />}
-        />
+        <View style={styles.bottomButtons}>
+          <Button
+            title="Contact Dealer"
+            onPress={handleContact}
+            style={styles.primaryButton}
+            icon={<Phone color={colors.white} size={20} />}
+          />
+          <TouchableOpacity 
+            style={styles.secondaryButton}
+            onPress={() => {
+              // Handle schedule visit
+              console.log('Schedule visit for car:', id);
+            }}
+          >
+            <Calendar color={colors.primary} size={20} />
+            <Text style={styles.secondaryButtonText}>Schedule Visit</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.additionalActions}>
+          <TouchableOpacity style={styles.actionButton}>
+            <MessageCircle color={colors.textSecondary} size={20} />
+            <Text style={styles.actionButtonText}>Message</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <Navigation color={colors.textSecondary} size={20} />
+            <Text style={styles.actionButtonText}>Directions</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <ExternalLink color={colors.textSecondary} size={20} />
+            <Text style={styles.actionButtonText}>Website</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: currentColors.background,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
@@ -318,28 +399,94 @@ const styles = StyleSheet.create({
   headerActionButton: {
     paddingHorizontal: Spacing.sm,
   },
+  imageGalleryContainer: {
+    position: 'relative',
+  },
   imageGallery: {
-    height: 300,
+    height: 320,
+  },
+  imageContainer: {
+    width,
+    height: 320,
+    position: 'relative',
   },
   carImage: {
     width,
-    height: 300,
+    height: 320,
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 80,
+  },
+  imageCounter: {
+    position: 'absolute',
+    bottom: Spacing.lg,
+    right: Spacing.lg,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  imageCounterText: {
+    ...Typography.caption,
+    color: colors.white,
+    fontWeight: '600',
   },
   content: {
     padding: Spacing.lg,
   },
   titleSection: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.sm,
   },
   carTitle: {
     ...Typography.h1,
-    color: currentColors.text,
-    marginBottom: Spacing.sm,
+    color: colors.text,
+    flex: 1,
+    marginRight: Spacing.md,
+  },
+  conditionBadge: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
+  },
+  conditionText: {
+    ...Typography.caption,
+    color: colors.white,
+    fontWeight: '600',
+    textTransform: 'uppercase',
   },
   carPrice: {
     ...Typography.h2,
-    color: currentColors.primary,
+    color: colors.primary,
     fontWeight: '700',
+    marginBottom: Spacing.md,
+  },
+  quickStatsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.lg,
+  },
+  quickStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  quickStatText: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+    fontWeight: '500',
   },
   detailsGrid: {
     flexDirection: 'row',
@@ -350,20 +497,20 @@ const styles = StyleSheet.create({
   detailItem: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: currentColors.surface,
+    backgroundColor: colors.surface,
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
   },
   detailLabel: {
     ...Typography.caption,
-    color: currentColors.textSecondary,
+    color: colors.textSecondary,
     marginTop: Spacing.sm,
     marginBottom: Spacing.xs,
   },
   detailValue: {
     ...Typography.bodySmall,
-    color: currentColors.text,
+    color: colors.text,
     fontWeight: '600',
   },
   section: {
@@ -371,12 +518,12 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...Typography.h3,
-    color: currentColors.text,
+    color: colors.text,
     marginBottom: Spacing.md,
   },
   description: {
     ...Typography.body,
-    color: currentColors.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 24,
   },
   featuresGrid: {
@@ -385,18 +532,18 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   featureTag: {
-    backgroundColor: currentColors.primaryLight,
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
   },
   featureText: {
     ...Typography.bodySmall,
-    color: currentColors.primary,
+    color: colors.primary,
     fontWeight: '500',
   },
   dealerCard: {
-    backgroundColor: currentColors.surface,
+    backgroundColor: colors.surface,
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
   },
@@ -408,19 +555,19 @@ const styles = StyleSheet.create({
   },
   dealerName: {
     ...Typography.h3,
-    color: currentColors.text,
+    color: colors.text,
   },
   verifiedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: currentColors.success,
+    backgroundColor: colors.success,
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
   },
   verifiedText: {
     ...Typography.caption,
-    color: currentColors.white,
+    color: colors.white,
     fontWeight: '600',
     marginLeft: Spacing.xs,
   },
@@ -433,15 +580,58 @@ const styles = StyleSheet.create({
   },
   dealerActionText: {
     ...Typography.body,
-    color: currentColors.primary,
+    color: colors.primary,
     marginLeft: Spacing.sm,
     fontWeight: '500',
   },
   bottomAction: {
     padding: Spacing.lg,
-    backgroundColor: currentColors.surface,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: currentColors.border,
+    borderTopColor: colors.border,
+    ...ColorsShadows.large,
+  },
+  bottomButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    marginBottom: Spacing.md,
+  },
+  primaryButton: {
+    flex: 2,
+  },
+  secondaryButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+    gap: Spacing.sm,
+  },
+  secondaryButtonText: {
+    ...Typography.bodySmall,
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  additionalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  actionButton: {
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  actionButtonText: {
+    ...Typography.caption,
+    color: colors.textSecondary,
+    fontWeight: '500',
   },
   contactButton: {
     width: '100%',
@@ -454,6 +644,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     ...Typography.body,
-    color: currentColors.textSecondary,
+    color: colors.textSecondary,
   },
 });
