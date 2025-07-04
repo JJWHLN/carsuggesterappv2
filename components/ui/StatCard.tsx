@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
-    ...Shadows.medium, // Default shadow, can be overridden by style prop
+    ...Shadows.medium,
   },
   iconWrapper: {
     width: 48,
@@ -51,14 +51,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.sm,
   },
-  iconWrapperSimple: { // For icons that don't need a colored background circle
+  iconWrapperSimple: {
     marginBottom: Spacing.sm,
   },
   statValue: {
-    ...Typography.h2, // Made this h2 consistent with HomeScreen's original StatCard
+    ...Typography.h2,
     color: currentColors.text,
     fontWeight: '700',
-    marginBottom: Spacing.xs, // Added for consistency
+    marginBottom: Spacing.xs,
   },
   statLabel: {
     ...Typography.caption,

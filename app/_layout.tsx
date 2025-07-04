@@ -1,38 +1,37 @@
 import { useEffect } from 'react';
-import { Stack, SplashScreen, router, useSegments, useRouter } from 'expo-router'; // Added useSegments, useRouter
+import { Stack, SplashScreen, router, useSegments, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useFonts } from 'expo-font'; // For font loading
+import { useFonts } from 'expo-font';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { ThemeProvider, useThemeColors } from '@/hooks/useTheme'; // Import ThemeProvider and useThemeColors
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary'; // Import ErrorBoundary
+import { ThemeProvider, useThemeColors } from '@/hooks/useTheme';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
-import { Spacing, Typography } from '@/constants/Colors'; // currentColors will come from useTheme
+import { Spacing, Typography } from '@/constants/Colors';
 
 // Keep the splash screen visible until we're ready to render
 SplashScreen.preventAutoHideAsync();
 
 function AppContent() {
   const { user, loading: authLoading, isNewUser } = useAuth();
-  const { colors, colorScheme } = useThemeColors(); // Get colors from theme
+  const { colors, colorScheme } = useThemeColors();
 
-  // Font loading example - replace with actual fonts if any are custom
+  // Font loading
   const [fontsLoaded, fontError] = useFonts({
-    // 'SpaceMono-Regular': require('../assets/fonts/SpaceMono-Regular.ttf'),
+    // Add custom fonts here if needed
   });
 
-  // Move all hooks to the top, before any conditional returns
-  const segments = useSegments(); // Get current route segments
-  const appRouter = useRouter(); // For navigation
+  const segments = useSegments();
+  const appRouter = useRouter();
 
   useEffect(() => {
-    if (fontsLoaded || !fontError) { // Or just !fontError if no custom fonts
+    if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
 
   useEffect(() => {
-    if (authLoading) return; // Don't redirect until auth state is known
+    if (authLoading) return;
 
     const inAuthGroup = segments[0] === 'auth';
     const inWelcomeFlow = segments[0] === 'welcome' || segments[0] === 'preferences';
@@ -40,39 +39,32 @@ function AppContent() {
 
     // For new app launches or unknown routes, go directly to main app (anonymous access)
     if (!user && !inAuthGroup && !inWelcomeFlow && !inMainApp) {
-      // Direct to main app for anonymous browsing
       appRouter.replace('/(tabs)');
       return;
     }
 
     // Anonymous users can access main app features freely
     if (!user && inMainApp) {
-      // Allow anonymous access to main app - no redirect needed
       return;
     }
     
     // Allow users to stay in auth flow if they're trying to sign in
     if (!user && inAuthGroup) {
-      // User is trying to sign in, let them stay in auth flow
       return;
     }
     
     if (user && inAuthGroup) {
-      // User is signed in but in auth group
       if (isNewUser) {
-        // New user needs onboarding
         appRouter.replace('/preferences/onboarding');
       } else {
-        // Existing user can go to main app
         appRouter.replace('/(tabs)');
       }
     } else if (user && isNewUser && !inWelcomeFlow && !inMainApp) {
-      // Existing signed-in user who hasn't completed onboarding
       appRouter.replace('/preferences/onboarding');
     }
   }, [user, authLoading, segments, appRouter, isNewUser]);
 
-  if (authLoading || (!fontsLoaded && !fontError)) { // Initial loading for auth and fonts
+  if (authLoading || (!fontsLoaded && !fontError)) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -80,7 +72,6 @@ function AppContent() {
     );
   }
 
-  // Common header styles - defined inside AppContent to access themed 'colors'
   const commonHeaderStyles = {
     headerShown: true,
     headerStyle: {
@@ -110,27 +101,23 @@ function AppContent() {
         screenOptions={{
           animation: 'slide_from_right',
           animationDuration: 300,
-          headerShown: false, // Default to no header, individual screens can override
+          headerShown: false,
         }}
       >
-        {/* Welcome and Onboarding Screens */}
         <Stack.Screen name="welcome" options={{ headerShown: false, animation: 'fade' }} />
         <Stack.Screen name="preferences/onboarding" options={{ headerShown: false, animation: 'slide_from_right' }} />
         <Stack.Screen name="recommendations" options={{ ...commonHeaderStyles, title: 'Recommendations' }} />
         
-        {/* Screens accessible when authenticated */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'none' }} />
         <Stack.Screen name="model/[id]" options={{ ...commonHeaderStyles, title: 'Model Details' }} />
         <Stack.Screen name="car/[id]" options={{ ...commonHeaderStyles, title: 'Car Details' }} />
         <Stack.Screen name="brand/[id]" options={{ ...commonHeaderStyles, title: 'Brand Details' }} />
         <Stack.Screen name="review/[id]" options={{ ...commonHeaderStyles, title: 'Review Details' }} />
-        <Stack.Screen name="search" options={{ ...commonHeaderStyles, title: 'Search Cars' }} />
+        <Stack.Screen name="search" options={{ ...commonHeaderStyles, title: 'AI Car Search' }} />
 
-        {/* Auth Screens - these should ideally be in a group if we want a different layout, but for now, this works with headerShown: false */}
         <Stack.Screen name="auth/sign-in" options={{ headerShown: false }} />
         <Stack.Screen name="auth/sign-up" options={{ headerShown: false }} />
         <Stack.Screen name="auth/forgot-password" options={{ ...commonHeaderStyles, title: 'Reset Password', headerShown: true }} />
-        {/* Forgot password might need a header for back navigation if not modal */}
 
         <Stack.Screen name="+not-found" options={{ ...commonHeaderStyles, title: 'Oops!', headerShown: true }} />
       </Stack>
@@ -140,8 +127,6 @@ function AppContent() {
 }
 
 export default function RootLayout() {
-  // useFrameworkReady(); // Replaced by explicit font loading and SplashScreen management
-
   return (
     <AuthProvider>
       <ThemeProvider>

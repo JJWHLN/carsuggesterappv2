@@ -33,19 +33,16 @@ export function useOptimizedFlatList({
     const itemsPerScreen = Math.ceil(screenHeight / estimatedItemSize);
     
     return {
-      // Performance optimizations
       removeClippedSubviews: true,
       maxToRenderPerBatch: itemsPerScreen * 2,
       initialNumToRender: itemsPerScreen,
       windowSize: 10,
       updateCellsBatchingPeriod: 50,
       
-      // Layout optimizations
       getItemLayout,
       keyExtractor,
       numColumns,
       
-      // Memory optimizations
       legacyImplementation: false,
     };
   }, [getItemLayout, keyExtractor, numColumns, estimatedItemSize]);

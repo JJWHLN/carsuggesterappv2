@@ -2,8 +2,8 @@ import React, { useState, memo } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useFadeAnimation } from '@/hooks/useAnimatedValue';
-import { BorderRadius } from '@/constants/Colors'; // Removed currentColors
-import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
+import { BorderRadius } from '@/constants/Colors';
+import { useThemeColors } from '@/hooks/useTheme';
 
 interface OptimizedImageProps {
   source: { uri: string } | number;
@@ -81,16 +81,15 @@ const getThemedOptimizedImageStyles = (colors: typeof import('@/constants/Colors
     width: '100%',
     height: '100%',
   },
-  placeholder: { // This view wraps the placeholder content, its background is the image's direct style
+  placeholder: {
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: colors.surfaceDark, // Background applied to image style directly if needed
   },
-  defaultPlaceholder: { // This is the actual default placeholder visual
+  defaultPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.surfaceDark, // Use a themed placeholder color
-    borderRadius: BorderRadius.md, // Consistent with other radius uses
+    backgroundColor: colors.surfaceDark,
+    borderRadius: BorderRadius.md,
   },
 });
 

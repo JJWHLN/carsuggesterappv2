@@ -4,23 +4,23 @@ export const Colors = {
   light: {
     // Primary Green Theme (Based on #22C55E)
     primary: '#22C55E',        // Vibrant Green
-    primaryHover: '#16A34A',   // Darker Green (previous primary)
+    primaryHover: '#16A34A',   // Darker Green
     primaryLight: '#A7F3D0',   // Lighter Green
-    secondaryGreen: '#F0FDF4', // Very Light Green (backgrounds/accents)
-    accentGreen: '#15803D',    // Darker for emphasis (previous primaryHover)
+    secondaryGreen: '#F0FDF4', // Very Light Green
+    accentGreen: '#15803D',    // Darker for emphasis
 
     // Neutral Palette
     background: '#F8F9FA',     // Soft off-white/light gray
-    cardBackground: '#FFFFFF', // White for cards (contrast)
-    text: '#111827',           // Dark Gray (Tailwind gray-900) for high contrast
-    textSecondary: '#6B7280',  // Medium Gray (Tailwind gray-500)
-    textMuted: '#9CA3AF',      // Lighter Gray (Tailwind gray-400)
-    border: '#E5E7EB',         // Light Gray Border (Tailwind gray-200)
+    cardBackground: '#FFFFFF', // White for cards
+    text: '#111827',           // Dark Gray for high contrast
+    textSecondary: '#6B7280',  // Medium Gray
+    textMuted: '#9CA3AF',      // Lighter Gray
+    border: '#E5E7EB',         // Light Gray Border
 
     // Standard Semantic Colors
-    success: '#10B981',        // Kept distinct success green for now, can align with primary if needed
-    error: '#EF4444',          // Default error
-    warning: '#F59E0B',        // Default warning
+    success: '#10B981',        // Success green
+    error: '#EF4444',          // Error red
+    warning: '#F59E0B',        // Warning amber
 
     // Utility
     white: '#FFFFFF',
@@ -32,25 +32,25 @@ export const Colors = {
     surfaceDark: '#E9ECEF',    // Slightly darker surface
   },
   dark: {
-    // Primary Green Theme (Based on #22C55E, adapted for dark mode)
-    primary: '#4ADE80',        // Brighter Green (e.g., Tailwind green-400)
-    primaryHover: '#22C55E',   // Less bright (original light primary)
-    primaryLight: '#166534',   // Darker green for subtle dark backgrounds (e.g., green-800)
-    secondaryGreen: '#064E3B', // Very dark green (e.g., green-950)
+    // Primary Green Theme (adapted for dark mode)
+    primary: '#4ADE80',        // Brighter Green
+    primaryHover: '#22C55E',   // Less bright
+    primaryLight: '#166534',   // Darker green for subtle backgrounds
+    secondaryGreen: '#064E3B', // Very dark green
     accentGreen: '#4ADE80',    // Same as primary
 
     // Neutral Palette
-    background: '#18181B',     // Soft Dark (e.g., Zinc-900)
-    cardBackground: '#27272A', // Darker Gray (e.g., Zinc-800)
-    text: '#F3F4F6',           // Off-White (Tailwind gray-100)
-    textSecondary: '#9CA3AF',  // Medium Gray (Tailwind gray-400)
-    textMuted: '#6B7280',      // Darker Gray (Tailwind gray-500)
-    border: '#3F3F46',         // Dark mode border (e.g., Zinc-700)
+    background: '#18181B',     // Soft Dark
+    cardBackground: '#27272A', // Darker Gray
+    text: '#F3F4F6',           // Off-White
+    textSecondary: '#9CA3AF',  // Medium Gray
+    textMuted: '#6B7280',      // Darker Gray
+    border: '#3F3F46',         // Dark mode border
 
-    // Standard Semantic Colors (Adjusted for dark mode contrast if needed)
-    success: '#34D399',        // Brighter success green for dark mode
+    // Standard Semantic Colors
+    success: '#34D399',        // Brighter success green
     error: '#F87171',          // Lighter error red
-    warning: '#FBBF24',        // Warning often stays similar
+    warning: '#FBBF24',        // Warning
 
     // Utility
     white: '#FFFFFF',
@@ -59,17 +59,17 @@ export const Colors = {
 
     // Aliases
     surface: '#27272A',         // Alias for cardBackground
-    surfaceDark: '#3F3F46',     // A distinct darker surface (e.g. Zinc-700, current border color)
+    surfaceDark: '#3F3F46',     // Darker surface
   },
 };
 
-// Default to light theme. This will be overridden by ThemeProvider from useTheme hook if implemented.
+// Default to light theme
 export const currentColors = Colors.light;
 
 export const Spacing = {
   xs: 4,    // Extra Small
   sm: 8,    // Small
-  md: 16,   // Medium (Base unit for many paddings/margins)
+  md: 16,   // Medium
   lg: 24,   // Large
   xl: 32,   // Extra Large
   xxl: 48,  // Extra Extra Large
@@ -79,119 +79,107 @@ export const Spacing = {
 export const BorderRadius = {
   xs: 4,    // Small elements, tags
   sm: 8,    // Standard elements
-  md: 12,   // Buttons, input fields (as per new design: 12px for buttons)
-  lg: 16,   // Cards (as per new design: 16px for cards)
-  xl: 24,   // Larger elements, modals (pill shape for search bar)
+  md: 12,   // Buttons, input fields
+  lg: 16,   // Cards
+  xl: 24,   // Larger elements, modals
   full: 9999,// For circular elements
 } as const;
 
-// Font weights map to design system
-// Note: Actual font family 'Inter' needs to be loaded via expo-font for these to apply correctly.
-// System fallbacks (SF, Roboto) will use their own available weights.
 type FontWeight = '300' | '400' | '500' | '600' | '700' | '800';
 
 export const Typography = {
-  heroTitle: { // 32-36px, Bold (700), Tight line height (0.9)
-    fontSize: 34, // Average
+  heroTitle: {
+    fontSize: 34,
     fontWeight: '700' as FontWeight,
-    lineHeight: 34 * 0.9, // Approx 30.6
+    lineHeight: 34 * 0.9,
   },
-  pageTitle: { // 28-32px, Bold (700), Tight line height
-    fontSize: 30, // Average
+  pageTitle: {
+    fontSize: 30,
     fontWeight: '700' as FontWeight,
-    lineHeight: 30 * 1.1, // Approx 33
+    lineHeight: 30 * 1.1,
   },
-  sectionTitle: { // 24px, SemiBold (600), Normal line height
+  sectionTitle: {
     fontSize: 24,
     fontWeight: '600' as FontWeight,
-    lineHeight: 24 * 1.2, // Approx 29
+    lineHeight: 24 * 1.2,
   },
-  cardTitle: { // 18-20px, SemiBold (600)
-    fontSize: 19, // Average
+  cardTitle: {
+    fontSize: 19,
     fontWeight: '600' as FontWeight,
-    lineHeight: 19 * 1.3, // Approx 25
+    lineHeight: 19 * 1.3,
   },
-  bodyLarge: { // 18px, Regular (400)
+  bodyLarge: {
     fontSize: 18,
     fontWeight: '400' as FontWeight,
-    lineHeight: 18 * 1.5, // Approx 27
+    lineHeight: 18 * 1.5,
   },
-  bodyText: { // 16px, Regular (400)
+  bodyText: {
     fontSize: 16,
     fontWeight: '400' as FontWeight,
-    lineHeight: 16 * 1.5, // Approx 24
+    lineHeight: 16 * 1.5,
   },
-  bodySmall: { // 14px, Regular (400)
+  bodySmall: {
     fontSize: 14,
     fontWeight: '400' as FontWeight,
-    lineHeight: 14 * 1.4, // Approx 20
+    lineHeight: 14 * 1.4,
   },
-  caption: { // 12px, Medium (500)
+  caption: {
     fontSize: 12,
     fontWeight: '500' as FontWeight,
-    lineHeight: 12 * 1.3, // Approx 16
+    lineHeight: 12 * 1.3,
   },
-  buttonText: { // 16px, SemiBold (600)
+  buttonText: {
     fontSize: 16,
     fontWeight: '600' as FontWeight,
-    lineHeight: 16 * 1.5, // Approx 24 (ensure it fits button height)
+    lineHeight: 16 * 1.5,
   },
-  // Adding common aliases from old system for smoother transition, can be deprecated later
-  h1: { fontSize: 30, fontWeight: '700' as FontWeight, lineHeight: 30 * 1.1 }, // Mapped to pageTitle
-  h2: { fontSize: 24, fontWeight: '600' as FontWeight, lineHeight: 24 * 1.2 }, // Mapped to sectionTitle
-  h3: { fontSize: 19, fontWeight: '600' as FontWeight, lineHeight: 19 * 1.3 }, // Mapped to cardTitle
-  h4: { fontSize: 18, fontWeight: '600' as FontWeight, lineHeight: 18 * 1.4 }, // Similar to bodyLarge but bolder
-  body: { fontSize: 16, fontWeight: '400' as FontWeight, lineHeight: 16 * 1.5 }, // Mapped to bodyText
-  // caption is already defined
-  button: { fontSize: 16, fontWeight: '600' as FontWeight, lineHeight: 16 * 1.5 }, // Mapped to buttonText
+  // Aliases for compatibility
+  h1: { fontSize: 30, fontWeight: '700' as FontWeight, lineHeight: 30 * 1.1 },
+  h2: { fontSize: 24, fontWeight: '600' as FontWeight, lineHeight: 24 * 1.2 },
+  h3: { fontSize: 19, fontWeight: '600' as FontWeight, lineHeight: 19 * 1.3 },
+  h4: { fontSize: 18, fontWeight: '600' as FontWeight, lineHeight: 18 * 1.4 },
+  body: { fontSize: 16, fontWeight: '400' as FontWeight, lineHeight: 16 * 1.5 },
+  button: { fontSize: 16, fontWeight: '600' as FontWeight, lineHeight: 16 * 1.5 },
 } as const;
 
-// Updated Shadows based on new design
-// Note: React Native shadow props behave differently on iOS and Android.
-// Elevation is Android-specific. For iOS, shadowOffset, shadowOpacity, shadowRadius are key.
 export const Shadows = {
   none: {},
-  // Subtle drop shadow for Buttons: 0 2px 8px rgba(34, 197, 94, 0.15)
-  button: { // New shadow style for primary buttons
-    shadowColor: 'rgba(34, 197, 94, 0.15)', // Based on new primary #22C55E
+  button: {
+    shadowColor: 'rgba(34, 197, 94, 0.15)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1, // Opacity is in the color itself
+    shadowOpacity: 1,
     shadowRadius: 8,
-    elevation: 4, // Android elevation
+    elevation: 4,
   },
-  // Standard Card Shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)
-  // This is a common pattern for subtle shadows, often achieved with multiple shadow layers on web.
-  // For React Native, we typically use one set of shadow props.
-  card: { // New shadow style for cards
-    shadowColor: currentColors.black, // Or a very dark gray
-    shadowOffset: { width: 0, height: 1 }, // A small offset
-    shadowOpacity: 0.1, // Keep opacity moderate
-    shadowRadius: 3,   // A bit of blur
-    elevation: 2,      // Android elevation
+  card: {
+    shadowColor: currentColors.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  // Old ones for reference, can be removed or updated if specific variations are needed
-  small: { // Can map to a lighter card shadow or remove
+  small: {
     shadowColor: currentColors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
-  medium: { // Can map to the new 'card' shadow
+  medium: {
     shadowColor: currentColors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
-  large: { // For elements that need more emphasis
+  large: {
     shadowColor: currentColors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
   },
-   xl: { // For modals or very distinct elements
+   xl: {
     shadowColor: currentColors.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,

@@ -66,16 +66,16 @@ export function useFadeAnimation(initialOpacity: number = 0) {
 
 export function useScaleAnimation(
   initialScale: number = 1,
-  pressedScaleValue: number = 0.95, // Default pressed scale
-  animationDuration: number = 150 // Default duration
+  pressedScaleValue: number = 0.95,
+  animationDuration: number = 150
 ) {
   const scale = useSharedValue(initialScale);
 
-  const scaleIn = useCallback(() => { // Renaming to "animateToInitial" or similar might be clearer
+  const scaleIn = useCallback(() => {
     scale.value = withTiming(initialScale, { duration: animationDuration, easing: Easing.out(Easing.ease) });
   }, [scale, initialScale, animationDuration]);
 
-  const scaleOut = useCallback(() => { // Renaming to "animateToPressed"
+  const scaleOut = useCallback(() => {
     scale.value = withTiming(pressedScaleValue, { duration: animationDuration, easing: Easing.out(Easing.ease) });
   }, [scale, pressedScaleValue, animationDuration]);
 
@@ -83,6 +83,5 @@ export function useScaleAnimation(
     transform: [{ scale: scale.value }],
   }));
 
-  // Returning scaleIn and scaleOut as before, but they now use withTiming and configurable parameters
   return { scaleIn, scaleOut, animatedStyle, scale };
 }

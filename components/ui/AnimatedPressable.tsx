@@ -5,8 +5,8 @@ import { useScaleAnimation } from '@/hooks/useAnimatedValue';
 
 interface AnimatedPressableProps extends PressableProps {
   children: React.ReactNode;
-  pressedScaleValue?: number; // Changed from scaleValue
-  animationDuration?: number; // New prop for duration
+  pressedScaleValue?: number;
+  animationDuration?: number;
   hapticFeedback?: boolean;
 }
 
@@ -14,15 +14,15 @@ const AnimatedPressable = memo<AnimatedPressableProps>(({
   children,
   onPressIn,
   onPressOut,
-  pressedScaleValue = 0.95, // Default pressed scale, can be overridden by Button/Card
-  animationDuration = 150, // Default duration
+  pressedScaleValue = 0.95,
+  animationDuration = 150,
   hapticFeedback = true,
   ...props
 }) => {
   const { scaleIn, scaleOut, animatedStyle } = useScaleAnimation(1, pressedScaleValue, animationDuration);
 
   const handlePressIn = (event: any) => {
-    scaleOut(); // This will animate to pressedScaleValue
+    scaleOut();
     onPressIn?.(event);
   };
 

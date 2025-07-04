@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'; // Added useMemo
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,69 +10,63 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { 
-  Zap as ElectricIcon, // for "Electric"
-  Gem as LuxuryIcon, // for "Luxury"
-  ShieldCheck as FamilySUVIcon, // for "Family SUV"
-  Rocket as SportsCarIcon, // for "Sports Car"
-  Briefcase as BrandIcon, // For "Popular Brands"
+  Zap as ElectricIcon,
+  Gem as LuxuryIcon,
+  ShieldCheck as FamilySUVIcon,
+  Rocket as SportsCarIcon,
+  Briefcase as BrandIcon,
   TrendingUp,
   Car,
   Star,
   ChevronRight,
   Search,
 } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // For Hero gradient
+import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
 import { StatCard } from '@/components/ui/StatCard';
-import { SearchBar } from '@/components/ui/SearchBar'; // Import SearchBar
-import { Card } from '@/components/ui/Card'; // Import Card for featured cars/brands
-import { OptimizedImage } from '@/components/ui/OptimizedImage'; // For images
-import { CarCard } from '@/components/ui/CarCard'; // Import the new CarCard
-import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors'; // Removed currentColors
-import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
-// import { checkDatabaseHealth } from '@/services/api'; // No longer used here
-import { useApi } from '@/hooks/useApi'; // Changed from useAsyncOperation
-import { fetchCarModels, fetchPopularBrands } from '@/services/api'; // Import fetchCarModels and fetchPopularBrands
-import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
+import { SearchBar } from '@/components/ui/SearchBar';
+import { Card } from '@/components/ui/Card';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { CarCard } from '@/components/ui/CarCard';
+import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { useThemeColors } from '@/hooks/useTheme';
+import { useApi } from '@/hooks/useApi';
+import { fetchCarModels, fetchPopularBrands } from '@/services/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 const { width, height } = Dimensions.get('window');
 
-
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  const { colors } = useThemeColors(); // Use themed colors
-  const { user } = useAuth(); // Get authentication state
-  const styles = useMemo(() => getStyles(colors), [colors]); // Memoize styles
+  const { colors } = useThemeColors();
+  const { user } = useAuth();
+  const styles = useMemo(() => getStyles(colors), [colors]);
 
-  // Handle authentication-required features
   const handleAuthRequired = (action: () => void, fallbackAction?: () => void) => {
     if (user) {
       action();
     } else if (fallbackAction) {
       fallbackAction();
     } else {
-      // Redirect to sign in
       router.push('/auth/sign-in');
     }
   };
 
-  // Fetch Featured Cars
   const {
     data: featuredCars,
     loading: featuredCarsLoading,
     error: featuredCarsError,
     refetch: refetchFeaturedCars
-  } = useApi(() => fetchCarModels({ limit: 8 }), []); // Fetch 8 featured cars for grid
+  } = useApi(() => fetchCarModels({ limit: 8 }), []);
 
-  // Fetch Popular Brands
   const {
     data: popularBrands,
     loading: popularBrandsLoading,
     error: popularBrandsError,
     refetch: refetchPopularBrands
-  } = useApi(() => fetchPopularBrands(6), []); // Fetch 6 popular brands
+  } = useApi(() => fetchPopularBrands(6), []);
 
   const quickCategories = [
     { name: 'Electric', icon: ElectricIcon, onPress: () => router.push({ pathname: '/models', params: { category: 'Electric' }}) },
@@ -124,7 +118,7 @@ export default function HomeScreen() {
                 title={user ? "Find My Car" : "Get AI Recommendations"}
                 onPress={() => handleAuthRequired(
                   () => router.push('/recommendations'),
-                  () => router.push('/auth/sign-in') // Direct to sign-in for AI features
+                  () => router.push('/auth/sign-in')
                 )}
                 variant="secondary"
                 style={styles.findMyCarButton}
@@ -277,7 +271,6 @@ export default function HomeScreen() {
   );
 }
 
-// Styles need to be a function of colors to use themed colors
 const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
   container: {
     flex: 1,

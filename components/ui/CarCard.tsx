@@ -26,7 +26,7 @@ interface CarCardProps {
 }
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - Spacing.lg * 3) / 2; // For 2-column grid
+const CARD_WIDTH = (width - Spacing.lg * 3) / 2;
 
 export const CarCard = memo<CarCardProps>(({
   image,

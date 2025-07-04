@@ -1,9 +1,9 @@
-import React, { memo, useRef } from 'react'; // Removed useEffect as it's not used
-import { View, TextInput, StyleSheet, TextInputProps, ViewStyle } from 'react-native'; // Added ViewStyle
+import React, { memo, useRef } from 'react';
+import { View, TextInput, StyleSheet, TextInputProps, ViewStyle } from 'react-native';
 import { Search, X, Sparkles } from 'lucide-react-native';
 import { AnimatedPressable } from './AnimatedPressable';
 import { createAccessibilityProps } from '@/hooks/useAccessibility';
-import { currentColors, BorderRadius, Spacing, Typography } from '@/constants/Colors'; // Removed Shadows as it's not directly used here per new design
+import { currentColors, BorderRadius, Spacing, Typography } from '@/constants/Colors';
 
 interface SearchBarProps extends Omit<TextInputProps, 'style'> {
   value: string;
@@ -32,22 +32,17 @@ const SearchBar = memo<SearchBarProps>(({
   const handleClear = () => {
     onChangeText('');
     onClear?.();
-    // inputRef.current?.focus(); // Focusing after clear might not always be desired, make it optional or remove
   };
 
   const handleSubmit = () => {
-    inputRef.current?.blur(); // Keep blur on submit
+    inputRef.current?.blur();
     onSubmit?.();
   };
-
-  // Design system specifies search icon color as gray, clear button icon size 16x16px
-  // Placeholder text color is muted text.
 
   return (
     <View style={[styles.outerContainer, containerStyle]}>
       <View style={styles.searchContainer}>
         <View style={styles.iconContainer}>
-          {/* AI Icon not in design spec, using standard search icon */}
           <Search color={currentColors.textSecondary} size={20} />
         </View>
         
@@ -57,12 +52,12 @@ const SearchBar = memo<SearchBarProps>(({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={currentColors.textMuted} // Updated to textMuted
+          placeholderTextColor={currentColors.textMuted}
           onSubmitEditing={handleSubmit}
           returnKeyType="search"
           multiline={false}
           numberOfLines={1}
-          editable={!loading} // Keep editable tied to loading
+          editable={!loading}
           {...createAccessibilityProps(
             `Search input field`,
             `Enter search terms and press search to find results`
@@ -73,13 +68,13 @@ const SearchBar = memo<SearchBarProps>(({
         {value.length > 0 && onClear && (
           <AnimatedPressable 
             onPress={handleClear} 
-            style={styles.clearButtonContainer} // Use a container for better touch area
+            style={styles.clearButtonContainer}
             {...createAccessibilityProps(
               'Clear search',
               'Double tap to clear the search field'
             )}
           >
-            <X color={currentColors.textSecondary} size={16} /> {/* Size 16px */}
+            <X color={currentColors.textSecondary} size={16} />
           </AnimatedPressable>
         )}
       </View>
@@ -90,35 +85,28 @@ const SearchBar = memo<SearchBarProps>(({
 SearchBar.displayName = 'SearchBar';
 
 const styles = StyleSheet.create({
-  outerContainer: { // Renamed from container to avoid conflict if used elsewhere
-    // Padding for the search bar component itself, if needed around the search box
-    // Per design, the search bar itself seems to be the main element, padding handled by parent.
-    // For now, let's assume this container doesn't need its own padding.
+  outerContainer: {
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc', // Light gray from design system
-    borderRadius: BorderRadius.xl, // Pill shape (24px)
+    backgroundColor: '#f8fafc',
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
-    borderColor: currentColors.border, // #e2e8f0
-    paddingHorizontal: Spacing.md, // 16px horizontal padding
-    // Vertical padding is implicitly handled by input and icon sizes to achieve overall height.
-    // Aim for a height that accommodates 12px vertical padding effectively.
-    // minHeight: 48, // A common touch target height, can be adjusted
+    borderColor: currentColors.border,
+    paddingHorizontal: Spacing.md,
   },
   iconContainer: {
-    marginRight: Spacing.sm, // 8px spacing from icon to text input
+    marginRight: Spacing.sm,
   },
   input: {
     flex: 1,
-    ...Typography.bodyText, // 16px, Regular
+    ...Typography.bodyText,
     color: currentColors.text,
-    paddingVertical: Spacing.sm + Spacing.xs, // 12px vertical padding for input text area
-    // This padding contributes to the overall height of the search bar
+    paddingVertical: Spacing.sm + Spacing.xs,
   },
   clearButtonContainer: {
-    padding: Spacing.sm, // Make touch area larger
+    padding: Spacing.sm,
     marginLeft: Spacing.sm,
   },
 });

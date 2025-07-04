@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Button } from './Button';
 import { Colors, Spacing, Typography } from '@/constants/Colors';
 
-const currentColors = Colors.light; // Use light theme colors
+const currentColors = Colors.light;
 
 interface Props {
   children: ReactNode;

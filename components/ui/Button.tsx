@@ -1,21 +1,21 @@
 import React from 'react';
 import { Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { LoadingSpinner } from './LoadingSpinner';
-import { AnimatedPressable } from './AnimatedPressable'; // Import AnimatedPressable
-import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors'; // Import Shadows
+import { AnimatedPressable } from './AnimatedPressable';
+import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'; // Added ghost variant
-  size?: 'small' | 'medium' | 'large'; // Sizes can be adjusted if new design specifies different ones
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   loading?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
   icon?: React.ReactNode;
   accessibilityLabel?: string;
-  accessibilityHint?: string; // Added accessibilityHint prop
+  accessibilityHint?: string;
 }
 
 export function Button({
@@ -29,20 +29,15 @@ export function Button({
   textStyle,
   icon,
   accessibilityLabel,
-  accessibilityHint, // Destructure accessibilityHint
+  accessibilityHint,
 }: ButtonProps) {
   const isDisabled = disabled || loading;
-
-  // Base style includes common properties like flex direction, alignment, etc.
-  // Variant styles handle background, border, and specific text colors.
-  // Size styles handle padding and minHeight.
-  // Shadow is applied based on variant.
 
   const getButtonStyles = () => {
     const baseStyle: ViewStyle = {
       ...styles.base,
-      ...(styles[size] || styles.medium), // Default to medium size
-      ...(styles[variant] || styles.primary), // Default to primary variant
+      ...(styles[size] || styles.medium),
+      ...(styles[variant] || styles.primary),
     };
     if (variant === 'primary') {
       return [baseStyle, Shadows.button, isDisabled && styles.disabled, style];
@@ -54,7 +49,6 @@ export function Button({
     return [
       styles.textBase,
       styles[`${variant}Text`],
-      // Size specific text styles can be added if needed, e.g. styles[`${size}Text`]
       isDisabled && styles.disabledText,
       textStyle,
     ];
@@ -68,17 +62,16 @@ export function Button({
       style={getButtonStyles()}
       onPress={onPress}
       disabled={isDisabled}
-      pressedScaleValue={0.95} // Design spec: Scale to 0.95
-      animationDuration={150}  // Design spec: 150ms ease-out
-      // Accessibility props for AnimatedPressable
+      pressedScaleValue={0.95}
+      animationDuration={150}
       accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel || title} // Use provided label or default to title
-      accessibilityHint={accessibilityHint} // Pass accessibilityHint
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: isDisabled }}
     >
       {loading ? (
         <LoadingSpinner 
-          size={20} // Standardized spinner size for buttons for now
+          size={20}
           color={loadingSpinnerColor}
         />
       ) : (
@@ -96,78 +89,71 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: BorderRadius.md, // New: 12px from design system
-    borderWidth: 2, // Secondary button has 2px border
+    borderRadius: BorderRadius.md,
+    borderWidth: 2,
     gap: Spacing.sm,
-    // Default padding, will be overridden by size specific styles
-    paddingHorizontal: Spacing.md, // Default padding 16px horizontal
-    paddingVertical: Spacing.sm + Spacing.xs, // Default padding 12px vertical
-    minHeight: 44, // Mobile optimized min height
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + Spacing.xs,
+    minHeight: 44,
   },
   primary: {
     backgroundColor: currentColors.primary,
-    borderColor: currentColors.primary, // Border color same as bg for primary
-    // Shadow is applied conditionally in getButtonStyles
+    borderColor: currentColors.primary,
   },
-  secondary: { // Outline style from design system
+  secondary: {
     backgroundColor: currentColors.transparent,
     borderColor: currentColors.primary,
     borderWidth: 2,
   },
-  outline: { // Keeping 'outline' similar to 'secondary' as per common patterns, can be removed if secondary is enough
+  outline: {
     backgroundColor: currentColors.transparent,
     borderColor: currentColors.primary,
-    borderWidth: 1, // Typically 1px for outline
+    borderWidth: 1,
   },
   ghost: {
     backgroundColor: currentColors.transparent,
-    borderColor: currentColors.transparent, // No border for ghost
+    borderColor: currentColors.transparent,
     borderWidth: 0,
   },
-  // Size styles (padding and minHeight can be fine-tuned based on visual requirements)
   small: {
-    paddingHorizontal: Spacing.md, // 16px
-    paddingVertical: Spacing.xs,   // 4px to achieve ~36-40px height with text
-    minHeight: 44, // Ensure minimum touch target height
-    borderRadius: BorderRadius.sm, // Slightly smaller radius for small buttons
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    minHeight: 44,
+    borderRadius: BorderRadius.sm,
   },
-  medium: { // This is the default applied in base, values here for clarity or if base defaults change
-    paddingHorizontal: Spacing.md, // 16px
-    paddingVertical: Spacing.sm + Spacing.xs, // 12px
+  medium: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + Spacing.xs,
     minHeight: 44,
   },
   large: {
-    paddingHorizontal: Spacing.lg, // 24px
-    paddingVertical: Spacing.md,   // 16px
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
     minHeight: 52,
-    borderRadius: BorderRadius.lg, // Slightly larger radius for large buttons
+    borderRadius: BorderRadius.lg,
   },
   disabled: {
-    backgroundColor: currentColors.surfaceDark, // Using a neutral disabled color
+    backgroundColor: currentColors.surfaceDark,
     borderColor: currentColors.border,
     opacity: 0.6,
   },
-  // Text styles
   textBase: {
-    ...Typography.buttonText, // Uses 16px, SemiBold (600) from new Typography
+    ...Typography.buttonText,
     textAlign: 'center',
   },
   primaryText: {
     color: currentColors.white,
   },
-  secondaryText: { // For outline button
+  secondaryText: {
     color: currentColors.primary,
   },
-  outlineText: { // Similar to secondary
+  outlineText: {
     color: currentColors.primary,
   },
   ghostText: {
     color: currentColors.primary,
   },
   disabledText: {
-    color: currentColors.textMuted, // Muted text for disabled state
+    color: currentColors.textMuted,
   },
-  // Size specific text styles could be added here if needed, e.g.:
-  // smallText: { fontSize: Typography.bodySmall.fontSize },
-  // largeText: { fontSize: Typography.bodyLarge.fontSize },
 });

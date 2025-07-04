@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo, useMemo } from 'react'; // Added useMemo
+import React, { useState, useCallback, memo, useMemo } from 'react';
 import {
   View,
   Text,
@@ -24,16 +24,16 @@ import { parseSearchQuery } from '@/lib/openai';
 import { fetchVehicleListings, searchVehiclesWithFilters, SupabaseError } from '@/services/supabaseService';
 import { transformDatabaseVehicleListingToCar, sanitizeSearchQuery } from '@/utils/dataTransformers';
 import { Car } from '@/types/database';
-import { Spacing, Typography, BorderRadius } from '@/constants/Colors'; // Removed currentColors
-import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
+import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import { useThemeColors } from '@/hooks/useTheme';
 import { Search, Sparkles, Filter, SlidersHorizontal } from 'lucide-react-native';
 import { router } from 'expo-router';
 
 const ITEM_HEIGHT = 380;
 
 const SearchScreen = memo(() => {
-  const { colors } = useThemeColors(); // Use themed colors
-  const styles = useMemo(() => getThemedStyles(colors), [colors]); // Memoize styles
+  const { colors } = useThemeColors();
+  const styles = useMemo(() => getThemedStyles(colors), [colors]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [aiSearchLoading, setAiSearchLoading] = useState(false);
@@ -48,7 +48,6 @@ const SearchScreen = memo(() => {
     estimatedItemSize: ITEM_HEIGHT 
   });
 
-  // Create a stable fetchData function that only changes when debouncedSearchQuery changes
   const fetchData = useCallback(async (page: number, limit: number) => {
     const sanitizedQuery = sanitizeSearchQuery(debouncedSearchQuery);
     const dbCars = await fetchVehicleListings(page, limit, sanitizedQuery || undefined);
@@ -66,16 +65,8 @@ const SearchScreen = memo(() => {
   } = useInfiniteScroll({
     fetchData,
     pageSize: 10,
-    enabled: !searchPerformed, // Only enable when not in AI search mode
+    enabled: !searchPerformed,
   });
-
-  // Handle search query changes for regular search
-  useEffect(() => {
-    if (!searchPerformed && debouncedSearchQuery !== searchQuery) {
-      // Only refresh when search query actually changes and we're not in AI mode
-      refresh();
-    }
-  }, [debouncedSearchQuery, searchPerformed, refresh, searchQuery]);
 
   const handleAISearch = useCallback(async () => {
     if (!searchQuery.trim()) return;
@@ -109,7 +100,6 @@ const SearchScreen = memo(() => {
     setSearchPerformed(false);
     setAiSearchError(null);
     setAiResults([]);
-    // The useInfiniteScroll hook will automatically reload when searchPerformed changes to false
   }, []);
 
   const handleRefresh = useCallback(async () => {
@@ -125,18 +115,18 @@ const SearchScreen = memo(() => {
     }
   }, [searchPerformed, handleAISearch, refresh]);
 
-  const handleCarPress = useCallback((carId: string | number) => { // Accept carId
+  const handleCarPress = useCallback((carId: string | number) => {
     router.push(`/car/${carId}`);
-  }, []); // router is stable
+  }, []);
 
   const displayCars = searchPerformed ? aiResults : cars;
 
   const renderCar: ListRenderItem<Car> = useCallback(({ item }) => (
     <CarCard
       car={item}
-      onPress={() => handleCarPress(item.id)} // Pass item.id
+      onPress={() => handleCarPress(item.id)}
     />
-  ), [handleCarPress]); // handleCarPress is stable
+  ), [handleCarPress]);
 
   const renderFooter = useCallback(() => {
     if (searchPerformed || !hasMore || !loading) return null;
@@ -164,26 +154,15 @@ const SearchScreen = memo(() => {
   ), []);
 
   const renderHeader = useCallback(() => (
-    // The main screen padding will be handled by listContentContainerStyle or individual section paddings
     <View style={styles.headerContent}>
-      {/* Title and Subtitle are part of the native header now via app/_layout.tsx */}
-      {/* <View style={styles.titleContainer}>
-        <Sparkles color={currentColors.primary} size={28} />
-        <Text style={styles.title}>AI Car Search</Text>
-      </View>
-      <Text style={styles.subtitle}>
-        Find your perfect car using natural language
-      </Text> */}
-      
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder="Describe your ideal car..." // Updated placeholder
+        placeholder="Describe your ideal car..."
         onClear={handleClearSearch}
         onSubmit={handleAISearch}
-        // showAIIcon={true} // SearchBar design updated, AI icon not default
         loading={aiSearchLoading}
-        containerStyle={styles.searchBarInHeader} // Specific style for searchbar in this header
+        containerStyle={styles.searchBarInHeader}
       />
       
       {aiSearchError && (
@@ -237,16 +216,13 @@ const SearchScreen = memo(() => {
     searchQuery, 
     handleClearSearch, 
     handleAISearch, 
-    searchQuery,
-    handleClearSearch,
-    handleAISearch,
     aiSearchLoading,
     aiSearchError,
     searchPerformed,
     aiResults.length,
     renderExampleChip,
-    colors, // Added colors to dependency array
-    styles // styles depend on colors, so if styles object is used directly in header, it should be a dep
+    colors,
+    styles
   ]);
 
   const renderEmpty = useCallback(() => (
@@ -259,7 +235,7 @@ const SearchScreen = memo(() => {
       }
         icon={<Search color={colors.textSecondary} size={48} />}
     />
-    ), [searchQuery, colors.textSecondary]); // Added colors.textSecondary to dependencies
+    ), [searchQuery, colors.textSecondary]);
 
   if (loading && displayCars.length === 0) {
     return (
@@ -295,7 +271,7 @@ const SearchScreen = memo(() => {
           contentContainerStyle={displayCars.length === 0 ? styles.emptyContent : styles.content}
           showsVerticalScrollIndicator={false}
           onEndReached={searchPerformed ? undefined : loadMore}
-          onEndReachedThreshold={0.5} // Increased threshold
+          onEndReachedThreshold={0.5}
           refreshControl={
             <PullToRefresh onRefresh={handleRefresh} isRefreshing={refreshing} />
           }
@@ -325,19 +301,18 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // gap: Spacing.md, // Removed unsupported property
     backgroundColor: colors.background,
   },
   loadingText: {
     ...Typography.bodyText,
     color: colors.textSecondary,
-    marginTop: Spacing.md, // Add margin instead of gap
+    marginTop: Spacing.md,
   },
   headerContent: {
     paddingTop: Spacing.md,
     marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.lg,
-     backgroundColor: colors.background, // Match screen background for header area
+     backgroundColor: colors.background,
   },
   searchBarInHeader: {
     paddingHorizontal: 0,
@@ -346,7 +321,6 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    // gap: Spacing.sm, // Removed unsupported property
     marginTop: Spacing.sm,
   },
   searchButton: {
@@ -388,7 +362,6 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   examplesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    // gap: Spacing.sm, // Removed unsupported property
   },
   exampleChip: {
     backgroundColor: colors.surface,
@@ -397,8 +370,8 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: colors.border,
-    marginRight: Spacing.sm, // Add spacing between chips
-    marginBottom: Spacing.sm, // Add spacing between rows
+    marginRight: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   exampleText: {
     ...Typography.bodySmall,
@@ -411,14 +384,12 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginTop: Spacing.xl,
     marginBottom: Spacing.md,
     textAlign: 'center',
-    // paddingHorizontal: Spacing.lg, // Already handled by headerContent or listContent
   },
   footerLoader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing.lg,
-    // gap: Spacing.sm, // Removed unsupported property
   },
 });
 
