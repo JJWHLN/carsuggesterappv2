@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Filter, SlidersHorizontal, Grid, List, Star } from 'lucide-react-native';
+import { Filter, SlidersHorizontal, Grid2x2 as Grid, List, Star } from 'lucide-react-native';
 import { CarCard } from './CarCard';
 import { Button } from './Button';
 import { LoadingSpinner } from './LoadingSpinner';
