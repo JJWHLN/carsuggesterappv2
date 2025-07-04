@@ -6,20 +6,26 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { 
   Zap as ElectricIcon,
-  Gem as LuxuryIcon,
-  ShieldCheck as FamilySUVIcon,
+  Crown as LuxuryIcon,
+  Shield as FamilySUVIcon,
   Rocket as SportsCarIcon,
-  Briefcase as BrandIcon,
+  Building2 as BrandIcon,
   TrendingUp,
   Car,
   Star,
   ChevronRight,
   Search,
+  Sparkles,
+  MapPin,
+  Users,
+  Award,
+  ArrowRight,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -59,26 +65,69 @@ export default function HomeScreen() {
     loading: featuredCarsLoading,
     error: featuredCarsError,
     refetch: refetchFeaturedCars
-  } = useApi(() => fetchCarModels({ limit: 8 }), []);
+  } = useApi(() => fetchCarModels({ limit: 6 }), []);
 
   const {
     data: popularBrands,
     loading: popularBrandsLoading,
     error: popularBrandsError,
     refetch: refetchPopularBrands
-  } = useApi(() => fetchPopularBrands(6), []);
+  } = useApi(() => fetchPopularBrands(8), []);
 
   const quickCategories = [
-    { name: 'Electric', icon: ElectricIcon, onPress: () => router.push({ pathname: '/models', params: { category: 'Electric' }}) },
-    { name: 'Luxury', icon: LuxuryIcon, onPress: () => router.push({ pathname: '/models', params: { category: 'Luxury' }}) },
-    { name: 'Family SUV', icon: FamilySUVIcon, onPress: () => router.push({ pathname: '/models', params: { category: 'SUV' }}) },
-    { name: 'Sports Car', icon: SportsCarIcon, onPress: () => router.push({ pathname: '/models', params: { category: 'Sports' }}) },
+    { 
+      name: 'Electric', 
+      icon: ElectricIcon, 
+      color: '#10B981',
+      bgColor: '#ECFDF5',
+      description: 'Zero emissions',
+      onPress: () => router.push({ pathname: '/models', params: { category: 'Electric' }})
+    },
+    { 
+      name: 'Luxury', 
+      icon: LuxuryIcon, 
+      color: '#8B5CF6',
+      bgColor: '#F3E8FF',
+      description: 'Premium comfort',
+      onPress: () => router.push({ pathname: '/models', params: { category: 'Luxury' }})
+    },
+    { 
+      name: 'Family SUV', 
+      icon: FamilySUVIcon, 
+      color: '#3B82F6',
+      bgColor: '#EFF6FF',
+      description: 'Safe & spacious',
+      onPress: () => router.push({ pathname: '/models', params: { category: 'SUV' }})
+    },
+    { 
+      name: 'Sports Car', 
+      icon: SportsCarIcon, 
+      color: '#EF4444',
+      bgColor: '#FEF2F2',
+      description: 'Pure performance',
+      onPress: () => router.push({ pathname: '/models', params: { category: 'Sports' }})
+    },
   ];
 
   const stats = [
-    { title: '10K+', subtitle: 'Cars Available', icon: <Car color={colors.primary} size={24} /> },
-    { title: '500+', subtitle: 'Verified Dealers', icon: <Star color={colors.accentGreen} size={24} /> },
-    { title: '50+', subtitle: 'Car Brands', icon: <TrendingUp color={colors.success} size={24} /> },
+    { 
+      title: '10K+', 
+      subtitle: 'Cars Available', 
+      icon: <Car color={colors.primary} size={28} />,
+      bgColor: colors.primaryLight
+    },
+    { 
+      title: '500+', 
+      subtitle: 'Verified Dealers', 
+      icon: <Users color={colors.accentGreen} size={28} />,
+      bgColor: '#ECFDF5'
+    },
+    { 
+      title: '50+', 
+      subtitle: 'Car Brands', 
+      icon: <Award color={colors.success} size={28} />,
+      bgColor: '#F0FDF4'
+    },
   ];
 
   return (
@@ -88,71 +137,100 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContentContainer}
       >
-        {/* Modern Hero Section */}
-        <LinearGradient
-          colors={[colors.primary, colors.primaryHover]}
-          style={styles.heroSection}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <View style={styles.heroContent}>
-            <Text style={[styles.heroTitle, { color: colors.white }]}>
-              Find Your Dream Car
-            </Text>
-            <Text style={[styles.heroSubtitle, { color: colors.white }]}>
-              Discover thousands of cars with AI-powered recommendations
-            </Text>
-            
-            <View style={styles.heroSearchContainer}>
-              <SearchBar
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder="Search for cars, brands, models..."
-                onSubmit={() => router.push({ pathname: '/search', params: { query: searchQuery }})}
-                containerStyle={styles.heroSearchBar}
-              />
-            </View>
+        {/* Enhanced Hero Section */}
+        <View style={styles.heroSection}>
+          <ImageBackground
+            source={{ uri: 'https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=1200' }}
+            style={styles.heroBackground}
+            imageStyle={styles.heroBackgroundImage}
+          >
+            <LinearGradient
+              colors={['rgba(34, 197, 94, 0.9)', 'rgba(22, 163, 74, 0.95)']}
+              style={styles.heroOverlay}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <View style={styles.heroContent}>
+                {/* Hero Badge */}
+                <View style={styles.heroBadge}>
+                  <Sparkles color={colors.primary} size={16} />
+                  <Text style={[styles.heroBadgeText, { color: colors.primary }]}>
+                    AI-Powered Car Discovery
+                  </Text>
+                </View>
 
-            <View style={styles.heroButtons}>
-              <Button
-                title={user ? "Find My Car" : "Get AI Recommendations"}
-                onPress={() => handleAuthRequired(
-                  () => router.push('/recommendations'),
-                  () => router.push('/auth/sign-in')
-                )}
-                variant="secondary"
-                style={styles.findMyCarButton}
-                icon={<Car color={colors.primary} size={20} />}
-              />
-              <Button
-                title="Browse All"
-                onPress={() => router.push('/search')}
-                variant="outline"
-                style={styles.browseButton}
-                icon={<Search color={colors.white} size={20} />}
-              />
-            </View>
-          </View>
-        </LinearGradient>
+                <Text style={[styles.heroTitle, { color: colors.white }]}>
+                  Find Your Perfect Car
+                </Text>
+                <Text style={[styles.heroSubtitle, { color: colors.white }]}>
+                  AI-powered recommendations, expert reviews, and thousands of verified listings all in one place
+                </Text>
+                
+                <View style={styles.heroSearchContainer}>
+                  <SearchBar
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholder="Try 'BMW under $30k' or 'Family SUV'"
+                    onSubmit={() => router.push({ pathname: '/search', params: { query: searchQuery }})}
+                    containerStyle={styles.heroSearchBar}
+                  />
+                </View>
 
-        {/* Quick Stats */}
+                <View style={styles.heroButtons}>
+                  <Button
+                    title={user ? "Get AI Recommendations" : "Start Your Journey"}
+                    onPress={() => handleAuthRequired(
+                      () => router.push('/recommendations'),
+                      () => router.push('/auth/sign-in')
+                    )}
+                    variant="secondary"
+                    style={styles.primaryHeroButton}
+                    icon={<Sparkles color={colors.primary} size={20} />}
+                  />
+                  <Button
+                    title="Browse All Cars"
+                    onPress={() => router.push('/models')}
+                    variant="outline"
+                    style={styles.secondaryHeroButton}
+                    icon={<ArrowRight color={colors.white} size={20} />}
+                  />
+                </View>
+              </View>
+            </LinearGradient>
+          </ImageBackground>
+        </View>
+
+        {/* Enhanced Stats Section */}
         <View style={styles.statsSection}>
+          <View style={styles.statsHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Trusted by Car Enthusiasts
+            </Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+              Join thousands of satisfied customers
+            </Text>
+          </View>
           <View style={styles.statsGrid}>
             {stats.map((stat, index) => (
-              <StatCard
-                key={index}
-                value={stat.title}
-                label={stat.subtitle}
-                icon={stat.icon}
-                style={StyleSheet.flatten([styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }])}
-              />
+              <View key={index} style={styles.statCardWrapper}>
+                <View style={[styles.statIconContainer, { backgroundColor: stat.bgColor }]}>
+                  {stat.icon}
+                </View>
+                <Text style={[styles.statValue, { color: colors.text }]}>{stat.title}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stat.subtitle}</Text>
+              </View>
             ))}
           </View>
         </View>
 
-        {/* Quick Categories */}
+        {/* Enhanced Categories Section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Browse by Category</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Browse by Category</Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+              Find exactly what you're looking for
+            </Text>
+          </View>
           <View style={styles.categoriesGrid}>
             {quickCategories.map((category, index) => (
               <TouchableOpacity
@@ -161,22 +239,36 @@ export default function HomeScreen() {
                 onPress={category.onPress}
                 activeOpacity={0.8}
               >
-                <View style={[styles.categoryIcon, { backgroundColor: colors.primaryLight }]}>
-                  <category.icon color={colors.primary} size={28} />
+                <View style={[styles.categoryIconContainer, { backgroundColor: category.bgColor }]}>
+                  <category.icon color={category.color} size={32} />
                 </View>
-                <Text style={[styles.categoryText, { color: colors.text }]}>{category.name}</Text>
-                <ChevronRight color={colors.textSecondary} size={16} />
+                <View style={styles.categoryContent}>
+                  <Text style={[styles.categoryTitle, { color: colors.text }]}>{category.name}</Text>
+                  <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>
+                    {category.description}
+                  </Text>
+                </View>
+                <ChevronRight color={colors.textSecondary} size={20} />
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
-        {/* Featured Cars Section */}
+        {/* Enhanced Featured Cars Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Featured Cars</Text>
-            <TouchableOpacity onPress={() => router.push('/models')}>
-              <Text style={[styles.sectionAction, { color: colors.primary }]}>View All</Text>
+            <View>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Featured Cars</Text>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                Hand-picked recommendations
+              </Text>
+            </View>
+            <TouchableOpacity 
+              onPress={() => router.push('/models')}
+              style={styles.viewAllButton}
+            >
+              <Text style={[styles.viewAllText, { color: colors.primary }]}>View All</Text>
+              <ArrowRight color={colors.primary} size={16} />
             </TouchableOpacity>
           </View>
           
@@ -195,31 +287,45 @@ export default function HomeScreen() {
           )}
           
           {featuredCars && featuredCars.length > 0 && (
-            <View style={styles.carsGrid}>
-              {featuredCars.slice(0, 4).map(car => (
-                <CarCard
-                  key={car.id}
-                  image={car.image_url || ''}
-                  name={`${car.brands?.name} ${car.name}`}
-                  year={car.year}
-                  priceRange="Price on request"
-                  tags={car.category || []}
-                  rating={4.5}
-                  location="Multiple locations"
-                  onPress={() => router.push(`/model/${car.id}`)}
-                  style={styles.carCard}
-                />
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.featuredCarsScroll}
+            >
+              {featuredCars.map(car => (
+                <View key={car.id} style={styles.featuredCarCard}>
+                  <CarCard
+                    image={car.image_url || 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400'}
+                    name={`${car.brands?.name} ${car.name}`}
+                    year={car.year}
+                    priceRange="Price on request"
+                    tags={car.category || []}
+                    rating={4.5}
+                    location="Multiple locations"
+                    onPress={() => router.push(`/model/${car.id}`)}
+                    style={styles.horizontalCarCard}
+                  />
+                </View>
               ))}
-            </View>
+            </ScrollView>
           )}
         </View>
 
-        {/* Popular Brands Section */}
+        {/* Enhanced Popular Brands Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Popular Brands</Text>
-            <TouchableOpacity onPress={() => router.push('/models')}>
-              <Text style={[styles.sectionAction, { color: colors.primary }]}>View All</Text>
+            <View>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Popular Brands</Text>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                Explore top automotive brands
+              </Text>
+            </View>
+            <TouchableOpacity 
+              onPress={() => router.push('/models')}
+              style={styles.viewAllButton}
+            >
+              <Text style={[styles.viewAllText, { color: colors.primary }]}>View All</Text>
+              <ArrowRight color={colors.primary} size={16} />
             </TouchableOpacity>
           </View>
           
@@ -246,18 +352,20 @@ export default function HomeScreen() {
                   onPress={() => router.push(`/brand/${brand.id}`)}
                   activeOpacity={0.8}
                 >
-                  {brand.logo_url ? (
-                    <OptimizedImage
-                      source={{uri: brand.logo_url}}
-                      style={styles.brandLogo}
-                      resizeMode="contain"
-                      fallbackSource={require('@/assets/images/icon.png')}
-                    />
-                  ) : (
-                    <View style={[styles.brandLogoPlaceholder, { backgroundColor: colors.primaryLight }]}>
-                      <BrandIcon color={colors.primary} size={32} />
-                    </View>
-                  )}
+                  <View style={styles.brandLogoContainer}>
+                    {brand.logo_url ? (
+                      <OptimizedImage
+                        source={{uri: brand.logo_url}}
+                        style={styles.brandLogo}
+                        resizeMode="contain"
+                        fallbackSource={require('@/assets/images/icon.png')}
+                      />
+                    ) : (
+                      <View style={[styles.brandLogoPlaceholder, { backgroundColor: colors.primaryLight }]}>
+                        <BrandIcon color={colors.primary} size={24} />
+                      </View>
+                    )}
+                  </View>
                   <Text style={[styles.brandName, { color: colors.text }]} numberOfLines={1}>
                     {brand.name}
                   </Text>
@@ -265,6 +373,35 @@ export default function HomeScreen() {
               ))}
             </View>
           )}
+        </View>
+
+        {/* Call to Action Section */}
+        <View style={styles.ctaSection}>
+          <LinearGradient
+            colors={[colors.primary, colors.primaryHover]}
+            style={styles.ctaGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <View style={styles.ctaContent}>
+              <Text style={[styles.ctaTitle, { color: colors.white }]}>
+                Ready to Find Your Dream Car?
+              </Text>
+              <Text style={[styles.ctaSubtitle, { color: colors.white }]}>
+                Get personalized recommendations powered by AI
+              </Text>
+              <Button
+                title={user ? "Get My Recommendations" : "Get Started"}
+                onPress={() => handleAuthRequired(
+                  () => router.push('/recommendations'),
+                  () => router.push('/auth/sign-in')
+                )}
+                variant="secondary"
+                style={styles.ctaButton}
+                icon={<Sparkles color={colors.primary} size={20} />}
+              />
+            </View>
+          </LinearGradient>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -282,16 +419,40 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     paddingBottom: Spacing.xxl,
   },
   heroSection: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl * 2,
-    alignItems: 'center',
-    minHeight: height * 0.4,
+    height: height * 0.6,
+    marginBottom: Spacing.xl,
+  },
+  heroBackground: {
+    flex: 1,
     justifyContent: 'center',
+  },
+  heroBackgroundImage: {
+    opacity: 0.3,
+  },
+  heroOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
   },
   heroContent: {
     alignItems: 'center',
     width: '100%',
     maxWidth: 400,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    marginBottom: Spacing.lg,
+    gap: Spacing.xs,
+  },
+  heroBadgeText: {
+    ...Typography.caption,
+    fontWeight: '600',
   },
   heroTitle: {
     ...Typography.heroTitle,
@@ -300,11 +461,11 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     fontWeight: '800',
   },
   heroSubtitle: {
-    ...Typography.body,
+    ...Typography.bodyLarge,
     textAlign: 'center',
     marginBottom: Spacing.xl,
-    opacity: 0.9,
-    lineHeight: 24,
+    opacity: 0.95,
+    lineHeight: 26,
   },
   heroSearchContainer: {
     width: '100%',
@@ -312,7 +473,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
   },
   heroSearchBar: {
     backgroundColor: colors.white,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     ...Shadows.large,
   },
   heroButtons: {
@@ -321,25 +482,52 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     width: '100%',
     marginTop: Spacing.md,
   },
-  findMyCarButton: {
+  primaryHeroButton: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
   },
-  browseButton: {
+  secondaryHeroButton: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
   },
   statsSection: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.xl,
+    backgroundColor: colors.surface,
+    marginHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+    marginBottom: Spacing.xl,
+    ...Shadows.card,
+  },
+  statsHeader: {
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
   },
   statsGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: Spacing.md,
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
-  statCard: {
+  statCardWrapper: {
+    alignItems: 'center',
     flex: 1,
+  },
+  statIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+  },
+  statValue: {
+    ...Typography.h2,
+    fontWeight: '700',
+    marginBottom: Spacing.xs,
+  },
+  statLabel: {
+    ...Typography.caption,
+    textAlign: 'center',
   },
   section: {
     paddingHorizontal: Spacing.lg,
@@ -348,14 +536,23 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: Spacing.lg,
   },
   sectionTitle: {
-    ...Typography.h3,
+    ...Typography.h2,
     fontWeight: '700',
+    marginBottom: Spacing.xs,
   },
-  sectionAction: {
+  sectionSubtitle: {
+    ...Typography.body,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  viewAllText: {
     ...Typography.body,
     fontWeight: '600',
   },
@@ -366,35 +563,42 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
     ...Shadows.small,
   },
-  categoryIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  categoryIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: Spacing.md,
+    marginRight: Spacing.lg,
   },
-  categoryText: {
-    ...Typography.body,
-    fontWeight: '600',
+  categoryContent: {
     flex: 1,
+  },
+  categoryTitle: {
+    ...Typography.h3,
+    fontWeight: '600',
+    marginBottom: Spacing.xs,
+  },
+  categoryDescription: {
+    ...Typography.bodySmall,
   },
   loadingContainer: {
     paddingVertical: Spacing.xl,
     alignItems: 'center',
   },
-  carsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: Spacing.md,
+  featuredCarsScroll: {
+    paddingLeft: Spacing.lg,
+    paddingRight: Spacing.md,
   },
-  carCard: {
-    width: (width - Spacing.lg * 3) / 2,
+  featuredCarCard: {
+    marginRight: Spacing.md,
+  },
+  horizontalCarCard: {
+    width: width * 0.7,
   },
   brandsGrid: {
     flexDirection: 'row',
@@ -403,30 +607,59 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     gap: Spacing.md,
   },
   brandCard: {
-    width: (width - Spacing.lg * 4) / 3,
+    width: (width - Spacing.lg * 3) / 4,
     alignItems: 'center',
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     ...Shadows.small,
   },
+  brandLogoContainer: {
+    marginBottom: Spacing.sm,
+  },
   brandLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    marginBottom: Spacing.xs,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   brandLogoPlaceholder: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.xs,
   },
   brandName: {
     ...Typography.caption,
     textAlign: 'center',
     fontWeight: '600',
+  },
+  ctaSection: {
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.xl,
+    borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
+    ...Shadows.large,
+  },
+  ctaGradient: {
+    padding: Spacing.xl,
+  },
+  ctaContent: {
+    alignItems: 'center',
+  },
+  ctaTitle: {
+    ...Typography.h2,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+  },
+  ctaSubtitle: {
+    ...Typography.body,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
+    opacity: 0.9,
+  },
+  ctaButton: {
+    paddingHorizontal: Spacing.xl,
   },
 });

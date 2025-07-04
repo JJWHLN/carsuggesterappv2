@@ -90,11 +90,11 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: currentColors.white,
     borderRadius: BorderRadius.xl,
-    borderWidth: 1,
-    borderColor: currentColors.border,
+    borderWidth: 0,
     paddingHorizontal: Spacing.md,
+    ...Shadows.medium,
   },
   iconContainer: {
     marginRight: Spacing.sm,
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     flex: 1,
     ...Typography.bodyText,
     color: currentColors.text,
-    paddingVertical: Spacing.sm + Spacing.xs,
+    paddingVertical: Spacing.md,
   },
   clearButtonContainer: {
     padding: Spacing.sm,

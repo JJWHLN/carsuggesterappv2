@@ -45,7 +45,11 @@ export const CarCard = memo<CarCardProps>(({
 
   return (
     <TouchableOpacity
-      style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }, style]}
+      style={[
+        styles.container, 
+        { backgroundColor: colors.surface, borderColor: colors.border },
+        style
+      ]}
       onPress={onPress}
       activeOpacity={0.9}
       accessibilityRole="button"
@@ -135,7 +139,7 @@ CarCard.displayName = 'CarCard';
 
 const styles = StyleSheet.create({
   container: {
-    width: CARD_WIDTH,
+    minWidth: CARD_WIDTH,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     overflow: 'hidden',
@@ -143,7 +147,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'relative',
-    height: 120,
+    height: 140,
   },
   image: {
     width: '100%',
@@ -177,13 +181,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
-    padding: Spacing.md,
+    padding: Spacing.lg,
     gap: Spacing.xs,
   },
   title: {
     ...Typography.body,
     fontWeight: '600',
-    lineHeight: 18,
+    lineHeight: 20,
   },
   price: {
     ...Typography.body,
