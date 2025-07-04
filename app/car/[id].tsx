@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,13 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
-  Platform, // Import Platform
+  Platform,
+  ImageBackground,
+  Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, router, useNavigation } from 'expo-router'; // Import useNavigation
+import { useLocalSearchParams, router, useNavigation } from 'expo-router';
 import { 
   ArrowLeft, 
   Heart, 
@@ -21,25 +24,35 @@ import {
   Settings,
   Star,
   Phone,
-  Mail
+  Mail,
+  Navigation,
+  Shield,
+  Users,
+  Gauge,
+  Camera,
+  MessageCircle,
+  ExternalLink,
 } from 'lucide-react-native';
-// import { AnimatedPressable } from '@/components/ui/AnimatedPressable'; // Not directly used, Button handles press animations
+import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
-import { currentColors, Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import { Card } from '@/components/ui/Card';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { useThemeColors } from '@/hooks/useTheme';
 import {
   formatPrice,
   formatMileage,
   formatCondition,
   formatFuelType,
-  transformDatabaseVehicleListingToCar // Import the transformer
+  transformDatabaseVehicleListingToCar
 } from '@/utils/dataTransformers';
-import { fetchVehicleListingById, SupabaseError } from '@/services/supabaseService'; // Import fetch function
-import { useApi } from '@/hooks/useApi'; // Using useApi for consistency, though supabaseService has its own error handling
-import { Car as CarType, DatabaseVehicleListing } from '@/types/database'; // Import Car type
+import { fetchVehicleListingById, SupabaseError } from '@/services/supabaseService';
+import { useApi } from '@/hooks/useApi';
+import { Car as CarType, DatabaseVehicleListing } from '@/types/database';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default function CarDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

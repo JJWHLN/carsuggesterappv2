@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   ListRenderItem,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchBar } from '@/components/ui/SearchBar';
@@ -41,6 +42,16 @@ const SearchScreen = memo(() => {
   const [aiSearchError, setAiSearchError] = useState<string | null>(null);
   const [aiResults, setAiResults] = useState<Car[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<'relevance' | 'price_low' | 'price_high' | 'year_new' | 'year_old'>('relevance');
+  const [filters, setFilters] = useState({
+    bodyType: '',
+    yearMin: '',
+    yearMax: '',
+    fuelType: '',
+    priceMin: '',
+    priceMax: '',
+  });
   
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const optimizedProps = useOptimizedFlatList({ 
@@ -182,6 +193,7 @@ const SearchScreen = memo(() => {
         />
         <TouchableOpacity 
           style={[styles.filterButton, { marginLeft: Spacing.sm }]}
+          onPress={() => setShowFilters(true)}
           {...createAccessibilityProps(
             'Advanced filters',
             'Open advanced search filters'
@@ -237,6 +249,158 @@ const SearchScreen = memo(() => {
     />
     ), [searchQuery, colors.textSecondary]);
 
+  // Filter and sort options
+  const bodyTypes = ['Sedan', 'SUV', 'Hatchback', 'Coupe', 'Convertible', 'Truck', 'Van'];
+  const fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG'];
+  const sortOptions = [
+    { key: 'relevance', label: 'Relevance' },
+    { key: 'price_low', label: 'Price: Low to High' },
+    { key: 'price_high', label: 'Price: High to Low' },
+    { key: 'year_new', label: 'Year: Newest First' },
+    { key: 'year_old', label: 'Year: Oldest First' },
+  ];
+
+  const applyFilters = useCallback(() => {
+    // Apply filters to current results
+    setShowFilters(false);
+    // Trigger new search with filters
+    if (searchPerformed) {
+      handleAISearch();
+    } else {
+      refresh();
+    }
+  }, [searchPerformed, handleAISearch, refresh]);
+
+  const clearFilters = useCallback(() => {
+    setFilters({
+      bodyType: '',
+      yearMin: '',
+      yearMax: '',
+      fuelType: '',
+      priceMin: '',
+      priceMax: '',
+    });
+    setSortBy('relevance');
+  }, []);
+
+  const renderFilterModal = useCallback(() => {
+    if (!showFilters) return null;
+
+    return (
+      <View style={styles.filterOverlay}>
+        <View style={styles.filterModal}>
+          <View style={styles.filterHeader}>
+            <Text style={[styles.filterTitle, { color: colors.text }]}>Filters & Sort</Text>
+            <TouchableOpacity 
+              onPress={() => setShowFilters(false)}
+              style={styles.closeButton}
+            >
+              <Text style={[styles.closeButtonText, { color: colors.primary }]}>Done</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.filterContent}>
+            {/* Sort Options */}
+            <View style={styles.filterSection}>
+              <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Sort By</Text>
+              <View style={styles.optionGroup}>
+                {sortOptions.map((option) => (
+                  <TouchableOpacity
+                    key={option.key}
+                    style={[
+                      styles.optionButton,
+                      { 
+                        backgroundColor: sortBy === option.key ? colors.primaryLight : colors.surface,
+                        borderColor: sortBy === option.key ? colors.primary : colors.border 
+                      }
+                    ]}
+                    onPress={() => setSortBy(option.key as any)}
+                  >
+                    <Text style={[
+                      styles.optionText,
+                      { color: sortBy === option.key ? colors.primary : colors.text }
+                    ]}>
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Body Type Filter */}
+            <View style={styles.filterSection}>
+              <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Body Type</Text>
+              <View style={styles.optionGroup}>
+                {bodyTypes.map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.optionButton,
+                      { 
+                        backgroundColor: filters.bodyType === type ? colors.primaryLight : colors.surface,
+                        borderColor: filters.bodyType === type ? colors.primary : colors.border 
+                      }
+                    ]}
+                    onPress={() => setFilters(prev => ({ ...prev, bodyType: prev.bodyType === type ? '' : type }))}
+                  >
+                    <Text style={[
+                      styles.optionText,
+                      { color: filters.bodyType === type ? colors.primary : colors.text }
+                    ]}>
+                      {type}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Fuel Type Filter */}
+            <View style={styles.filterSection}>
+              <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Fuel Type</Text>
+              <View style={styles.optionGroup}>
+                {fuelTypes.map((fuel) => (
+                  <TouchableOpacity
+                    key={fuel}
+                    style={[
+                      styles.optionButton,
+                      { 
+                        backgroundColor: filters.fuelType === fuel ? colors.primaryLight : colors.surface,
+                        borderColor: filters.fuelType === fuel ? colors.primary : colors.border 
+                      }
+                    ]}
+                    onPress={() => setFilters(prev => ({ ...prev, fuelType: prev.fuelType === fuel ? '' : fuel }))}
+                  >
+                    <Text style={[
+                      styles.optionText,
+                      { color: filters.fuelType === fuel ? colors.primary : colors.text }
+                    ]}>
+                      {fuel}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Action Buttons */}
+            <View style={styles.filterActions}>
+              <Button
+                title="Clear All"
+                onPress={clearFilters}
+                variant="outline"
+                style={styles.filterActionButton}
+              />
+              <Button
+                title="Apply Filters"
+                onPress={applyFilters}
+                style={styles.filterActionButton}
+              />
+            </View>
+          </ScrollView>
+        </View>
+      </View>
+    );
+  }, [showFilters, colors, sortBy, filters, sortOptions, bodyTypes, fuelTypes, applyFilters, clearFilters]);
+
   if (loading && displayCars.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
@@ -277,6 +441,7 @@ const SearchScreen = memo(() => {
           }
           {...optimizedProps}
         />
+        {renderFilterModal()}
       </SafeAreaView>
     </ErrorBoundary>
   );
@@ -390,6 +555,82 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing.lg,
+  },
+  filterOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  filterModal: {
+    width: '90%',
+    backgroundColor: colors.background,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    elevation: 4,
+  },
+  filterHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  filterTitle: {
+    ...Typography.h3,
+    fontSize: 18,
+    margin: 0,
+  },
+  closeButton: {
+    padding: Spacing.sm,
+  },
+  closeButtonText: {
+    ...Typography.bodyText,
+    fontWeight: '600',
+  },
+  filterContent: {
+    maxHeight: '70%',
+  },
+  filterSection: {
+    marginBottom: Spacing.lg,
+  },
+  filterSectionTitle: {
+    ...Typography.bodyText,
+    fontWeight: '600',
+    marginBottom: Spacing.sm,
+  },
+  optionGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  optionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
+    flex: 1,
+  },
+  optionText: {
+    ...Typography.bodySmall,
+    textAlign: 'center',
+  },
+  filterActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: Spacing.md,
+  },
+  filterActionButton: {
+    flex: 1,
+    marginHorizontal: Spacing.sm,
   },
 });
 

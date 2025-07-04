@@ -1,33 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
+  FlatList,
+  TextInput,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   Star, 
   Award, 
-  TrendingUp, 
   FileText,
   Calendar,
-  User
+  User,
+  Plus,
+  ThumbsUp,
+  MessageCircle,
+  Heart,
 } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { StatCard } from '@/components/ui/StatCard'; // Import shared StatCard
-import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { StatCard } from '@/components/ui/StatCard';
+import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import { useThemeColors } from '@/hooks/useTheme';
 import { fetchCarReviews } from '@/services/supabaseService';
 import { transformDatabaseReviewToReview } from '@/utils/dataTransformers';
 import { Review } from '@/types/database';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ReviewsScreen() {
+  const { colors } = useThemeColors();
+  const { user } = useAuth();
+  const styles = useMemo(() => getStyles(colors), [colors]);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [activeTab, setActiveTab] = useState<'all' | 'my' | 'write'>('all');
+  const [sortBy, setSortBy] = useState<'recent' | 'rating' | 'helpful'>('recent');
+  
+  // Write Review State
+  const [newReview, setNewReview] = useState({
+    rating: 0,
+    title: '',
+    content: '',
+    carModel: '',
+  });
+
+  const tabs = [
+    { key: 'all', label: 'All Reviews', icon: FileText },
+    { key: 'my', label: 'My Reviews', icon: User },
+    { key: 'write', label: 'Write Review', icon: Plus },
+  ];
+
+  const sortOptions = [
+    { key: 'recent', label: 'Most Recent', icon: Calendar },
+    { key: 'rating', label: 'Highest Rated', icon: Star },
+    { key: 'helpful', label: 'Most Helpful', icon: ThumbsUp },
+  ];
 
   useEffect(() => {
     loadReviews();
@@ -50,49 +86,179 @@ export default function ReviewsScreen() {
     }
   };
 
-  const ReviewCard = ({ review }: { review: Review }) => (
-    <TouchableOpacity style={styles.reviewCard}>
-      <Image
-        source={{ uri: review.images?.[0] || 'https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=400' }}
-        style={styles.reviewImage}
-      />
-      <View style={styles.reviewContent}>
-        <View style={styles.reviewHeader}>
-          <Text style={styles.reviewTitle} numberOfLines={2}>
-            {review.title}
-          </Text>
-          <View style={styles.reviewRating}>
-            <Star color={currentColors.accentGreen} size={16} fill={currentColors.accentGreen} />
-            <Text style={styles.reviewScore}>{review.rating}/5</Text>
+  const ReviewCard = useCallback(({ review }: { review: Review }) => (
+    <Card style={styles.reviewCard}>
+      <View style={styles.reviewHeader}>
+        <View style={styles.reviewUserInfo}>
+          <View style={styles.reviewAvatar}>
+            <User color={colors.textSecondary} size={20} />
+          </View>
+          <View style={styles.reviewUserDetails}>
+            <Text style={[styles.reviewAuthor, { color: colors.text }]}>{review.author}</Text>
+            <Text style={[styles.reviewDate, { color: colors.textSecondary }]}>Recent</Text>
           </View>
         </View>
-        
-        <Text style={styles.reviewSummary} numberOfLines={3}>
-          {review.content}
-        </Text>
-        
-        <View style={styles.reviewFooter}>
-          <View style={styles.reviewAuthor}>
-            <User color={currentColors.textSecondary} size={14} />
-            <Text style={styles.reviewAuthorText}>{review.author}</Text>
-          </View>
-          <View style={styles.reviewDate}>
-            <Calendar color={currentColors.textSecondary} size={14} />
-            <Text style={styles.reviewDateText}>Recent</Text>
-          </View>
+        <View style={styles.reviewRating}>
+          {[...Array(5)].map((_, i) => (
+            <Star 
+              key={i}
+              color={i < review.rating ? colors.warning : colors.border} 
+              size={16} 
+              fill={i < review.rating ? colors.warning : 'transparent'}
+            />
+          ))}
+          <Text style={[styles.reviewScore, { color: colors.text }]}>{review.rating}/5</Text>
         </View>
       </View>
-    </TouchableOpacity>
-  );
+      
+      <Text style={[styles.reviewTitle, { color: colors.text }]} numberOfLines={2}>
+        {review.title}
+      </Text>
+      
+      <Text style={[styles.reviewContent, { color: colors.textSecondary }]} numberOfLines={4}>
+        {review.content}
+      </Text>
+      
+      <View style={styles.reviewActions}>
+        <TouchableOpacity style={styles.reviewAction}>
+          <ThumbsUp color={colors.textMuted} size={16} />
+          <Text style={[styles.reviewActionText, { color: colors.textMuted }]}>Helpful</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.reviewAction}>
+          <MessageCircle color={colors.textMuted} size={16} />
+          <Text style={[styles.reviewActionText, { color: colors.textMuted }]}>Reply</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.reviewAction}>
+          <Heart color={colors.textMuted} size={16} />
+          <Text style={[styles.reviewActionText, { color: colors.textMuted }]}>Save</Text>
+        </TouchableOpacity>
+      </View>
+    </Card>
+  ), [colors, styles]);
 
-  // Local StatCard removed, using shared component
+  const renderStarRating = useCallback((rating: number, onPress: (star: number) => void) => (
+    <View style={styles.starRating}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <TouchableOpacity
+          key={star}
+          onPress={() => onPress(star)}
+          style={styles.starButton}
+        >
+          <Star
+            color={star <= rating ? colors.warning : colors.border}
+            size={32}
+            fill={star <= rating ? colors.warning : 'transparent'}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  ), [colors]);
+
+  const renderWriteReview = useCallback(() => (
+    <ScrollView style={styles.writeReviewContainer} showsVerticalScrollIndicator={false}>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>Write a Review</Text>
+      
+      <View style={styles.writeReviewForm}>
+        <View style={styles.formGroup}>
+          <Text style={[styles.formLabel, { color: colors.text }]}>Car Model</Text>
+          <TextInput
+            style={[styles.formInput, { borderColor: colors.border, color: colors.text }]}
+            placeholder="e.g., Toyota Camry 2023"
+            placeholderTextColor={colors.textMuted}
+            value={newReview.carModel}
+            onChangeText={(text) => setNewReview(prev => ({ ...prev, carModel: text }))}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={[styles.formLabel, { color: colors.text }]}>Rating</Text>
+          {renderStarRating(newReview.rating, (rating) => 
+            setNewReview(prev => ({ ...prev, rating }))
+          )}
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={[styles.formLabel, { color: colors.text }]}>Review Title</Text>
+          <TextInput
+            style={[styles.formInput, { borderColor: colors.border, color: colors.text }]}
+            placeholder="Give your review a title"
+            placeholderTextColor={colors.textMuted}
+            value={newReview.title}
+            onChangeText={(text) => setNewReview(prev => ({ ...prev, title: text }))}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={[styles.formLabel, { color: colors.text }]}>Your Review</Text>
+          <TextInput
+            style={[styles.formTextArea, { borderColor: colors.border, color: colors.text }]}
+            placeholder="Share your experience with this car..."
+            placeholderTextColor={colors.textMuted}
+            value={newReview.content}
+            onChangeText={(text) => setNewReview(prev => ({ ...prev, content: text }))}
+            multiline
+            numberOfLines={6}
+            textAlignVertical="top"
+          />
+        </View>
+
+        <Button
+          title="Submit Review"
+          onPress={() => {
+            Alert.alert('Review Submitted', 'Thank you for your review!');
+            setNewReview({ rating: 0, title: '', content: '', carModel: '' });
+          }}
+          disabled={!newReview.rating || !newReview.title || !newReview.content || !newReview.carModel}
+          style={styles.submitButton}
+        />
+      </View>
+    </ScrollView>
+  ), [colors, newReview, renderStarRating, styles]);
+
+  const renderTabContent = useCallback(() => {
+    switch (activeTab) {
+      case 'all':
+        return (
+          <FlatList
+            data={reviews}
+            renderItem={({ item }) => <ReviewCard review={item} />}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.reviewsList}
+          />
+        );
+      case 'my':
+        const myReviews = reviews.filter(review => review.author === user?.email);
+        return (
+          <FlatList
+            data={myReviews}
+            renderItem={({ item }) => <ReviewCard review={item} />}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.reviewsList}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <FileText color={colors.textMuted} size={48} />
+                <Text style={[styles.emptyStateText, { color: colors.textMuted }]}>
+                  You haven't written any reviews yet
+                </Text>
+              </View>
+            }
+          />
+        );
+      case 'write':
+        return renderWriteReview();
+      default:
+        return null;
+    }
+  }, [activeTab, reviews, user, renderWriteReview, ReviewCard, colors, styles]);
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingContainer}>
-          <LoadingSpinner size={32} />
-          <Text style={styles.loadingText}>Loading reviews...</Text>
+          <LoadingSpinner size={32} color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading reviews...</Text>
         </View>
       </SafeAreaView>
     );
@@ -100,243 +266,251 @@ export default function ReviewsScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ErrorState
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <ErrorState 
           title="Failed to Load Reviews"
-          message={error}
-          onRetry={loadReviews}
+          message={error} 
+          onRetry={loadReviews} 
         />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Expert Reviews</Text>
-          <Text style={styles.subtitle}>Professional automotive insights and ratings</Text>
-        </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Hero Section */}
+      <LinearGradient
+        colors={[colors.primary, colors.primaryHover]}
+        style={styles.heroSection}
+      >
+        <Text style={[styles.heroTitle, { color: colors.white }]}>Car Reviews</Text>
+        <Text style={[styles.heroSubtitle, { color: colors.white }]}>
+          Real experiences from real drivers
+        </Text>
+      </LinearGradient>
 
-        {/* Stats Section */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Review Overview</Text>
-          <View style={styles.statsGrid}>
-            <StatCard
-              icon={<FileText color={currentColors.primary} size={24} />}
-              value={String(reviews.length || 25)}
-              label="Total Reviews"
-            />
-            <StatCard
-              icon={<Star color={currentColors.accentGreen} size={24} />}
-              value="4.2"
-              label="Avg Rating"
-            />
-            <StatCard
-              icon={<Award color={currentColors.success} size={24} />}
-              value="15"
-              label="Top Rated"
-            />
-          </View>
-        </View>
+      {/* Stats Section */}
+      <View style={styles.statsSection}>
+        <StatCard
+          value={reviews.length.toString()}
+          label="Total Reviews"
+          icon={<FileText color={colors.primary} size={24} />}
+          style={styles.statCard}
+        />
+        <StatCard
+          value="4.6"
+          label="Average Rating"
+          icon={<Star color={colors.warning} size={24} />}
+          style={styles.statCard}
+        />
+        <StatCard
+          value="98%"
+          label="Satisfied Users"
+          icon={<Award color={colors.success} size={24} />}
+          style={styles.statCard}
+        />
+      </View>
 
-        {/* Featured Review */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Featured Review</Text>
-          <View style={styles.featuredReview}>
-            <Image
-              source={{ uri: 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=800' }}
-              style={styles.featuredImage}
-            />
-            <View style={styles.featuredOverlay}>
-              <Text style={styles.featuredTitle}>2024 Toyota Camry</Text>
-              <Text style={styles.featuredSubtitle}>Comprehensive Expert Review</Text>
-              <View style={styles.featuredRating}>
-                {Array.from({ length: 5 }, (_, i) => (
-                  <Star
-                    key={i}
-                    size={20}
-                    color={i < 4 ? currentColors.accentGreen : currentColors.white}
-                    fill={i < 4 ? currentColors.accentGreen : 'transparent'}
-                  />
-                ))}
-              </View>
-            </View>
-          </View>
-        </View>
+      {/* Tabs */}
+      <View style={styles.tabsContainer}>
+        {tabs.map((tab) => {
+          const IconComponent = tab.icon;
+          const isActive = activeTab === tab.key;
+          return (
+            <TouchableOpacity
+              key={tab.key}
+              style={[
+                styles.tab,
+                { 
+                  backgroundColor: isActive ? colors.primary : colors.surface,
+                  borderColor: isActive ? colors.primary : colors.border 
+                }
+              ]}
+              onPress={() => setActiveTab(tab.key as any)}
+            >
+              <IconComponent 
+                color={isActive ? colors.white : colors.textSecondary} 
+                size={20} 
+              />
+              <Text style={[
+                styles.tabText,
+                { color: isActive ? colors.white : colors.textSecondary }
+              ]}>
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
-        {/* Reviews List */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Latest Reviews</Text>
-          {reviews.length > 0 ? (
-            reviews.slice(0, 5).map((review, index) => (
-              <ReviewCard key={index} review={review} />
-            ))
-          ) : (
-            <View style={styles.emptyState}>
-              <FileText color={currentColors.textSecondary} size={48} />
-              <Text style={styles.emptyTitle}>No Reviews Available</Text>
-              <Text style={styles.emptySubtitle}>
-                Expert reviews will appear here once they're published
-              </Text>
-            </View>
-          )}
+      {/* Sort/Filter Bar - Only show for reviews tabs */}
+      {(activeTab === 'all' || activeTab === 'my') && (
+        <View style={styles.sortBar}>
+          <Text style={[styles.sortLabel, { color: colors.text }]}>Sort by:</Text>
+          {sortOptions.map((option) => {
+            const IconComponent = option.icon;
+            const isActive = sortBy === option.key;
+            return (
+              <TouchableOpacity
+                key={option.key}
+                style={[
+                  styles.sortOption,
+                  { 
+                    backgroundColor: isActive ? colors.primaryLight : colors.surface,
+                    borderColor: isActive ? colors.primary : colors.border 
+                  }
+                ]}
+                onPress={() => setSortBy(option.key as any)}
+              >
+                <IconComponent 
+                  color={isActive ? colors.primary : colors.textSecondary} 
+                  size={16} 
+                />
+                <Text style={[
+                  styles.sortOptionText,
+                  { color: isActive ? colors.primary : colors.textSecondary }
+                ]}>
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
+      )}
 
-        {/* Review Categories */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Review Categories</Text>
-          
-          <TouchableOpacity style={styles.categoryCard}>
-            <TrendingUp color={currentColors.primary} size={24} />
-            <View style={styles.categoryContent}>
-              <Text style={styles.categoryTitle}>Performance Reviews</Text>
-              <Text style={styles.categoryDescription}>
-                Engine performance, handling, and driving dynamics
-              </Text>
-            </View>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.categoryCard}>
-            <Star color={currentColors.accentGreen} size={24} />
-            <View style={styles.categoryContent}>
-              <Text style={styles.categoryTitle}>Luxury & Comfort</Text>
-              <Text style={styles.categoryDescription}>
-                Interior quality, features, and comfort assessments
-              </Text>
-            </View>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.categoryCard}>
-            <Award color={currentColors.success} size={24} />
-            <View style={styles.categoryContent}>
-              <Text style={styles.categoryTitle}>Value & Reliability</Text>
-              <Text style={styles.categoryDescription}>
-                Cost of ownership, reliability ratings, and value analysis
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      {/* Tab Content */}
+      <View style={styles.contentContainer}>
+        {renderTabContent()}
+      </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: currentColors.background,
-  },
-  scrollView: {
     flex: 1,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: Spacing.md,
   },
   loadingText: {
     ...Typography.body,
-    color: currentColors.textSecondary,
+    marginTop: Spacing.md,
   },
-  header: {
-    padding: Spacing.lg,
-    backgroundColor: currentColors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: currentColors.border,
-  },
-  title: {
-    ...Typography.h1,
-    color: currentColors.text,
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    ...Typography.body,
-    color: currentColors.textSecondary,
-  },
-  statsSection: {
-    padding: Spacing.lg,
-  },
-  sectionTitle: {
-    ...Typography.h2,
-    color: currentColors.text,
-    marginBottom: Spacing.lg,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: Spacing.md,
-  },
-  // statCard, statIcon, statValue, statLabel styles removed as they are in the shared StatCard component
-  section: {
-    padding: Spacing.lg,
-  },
-  featuredReview: {
-    borderRadius: BorderRadius.xl,
-    overflow: 'hidden',
-    ...ColorsShadows.large,
-  },
-  featuredImage: {
-    width: '100%',
-    height: 200,
-  },
-  featuredOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
+  heroSection: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xl,
     alignItems: 'center',
-    padding: Spacing.lg,
   },
-  featuredTitle: {
-    ...Typography.h2,
-    color: currentColors.white,
+  heroTitle: {
+    ...Typography.pageTitle,
     textAlign: 'center',
     marginBottom: Spacing.sm,
   },
-  featuredSubtitle: {
+  heroSubtitle: {
     ...Typography.body,
-    color: currentColors.white,
     textAlign: 'center',
-    marginBottom: Spacing.md,
     opacity: 0.9,
   },
-  featuredRating: {
+  statsSection: {
     flexDirection: 'row',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
+    justifyContent: 'space-around',
+  },
+  statCard: {
+    flex: 1,
+    marginHorizontal: Spacing.xs,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    marginHorizontal: Spacing.xs,
     gap: Spacing.xs,
   },
+  tabText: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+  },
+  sortBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  sortLabel: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    marginRight: Spacing.sm,
+  },
+  sortOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    gap: Spacing.xs,
+  },
+  sortOptionText: {
+    ...Typography.caption,
+    fontWeight: '500',
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  reviewsList: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xl,
+  },
   reviewCard: {
-    backgroundColor: currentColors.surface,
-    borderRadius: BorderRadius.lg,
-    marginBottom: Spacing.md,
-    overflow: 'hidden',
-    ...ColorsShadows.medium,
-  },
-  reviewImage: {
-    width: '100%',
-    height: 120,
-    backgroundColor: currentColors.surfaceDark,
-  },
-  reviewContent: {
+    marginBottom: Spacing.lg,
     padding: Spacing.lg,
   },
   reviewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md,
   },
-  reviewTitle: {
-    ...Typography.body,
-    color: currentColors.text,
-    fontWeight: '600',
+  reviewUserInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
-    marginRight: Spacing.sm,
+  },
+  reviewAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  reviewUserDetails: {
+    flex: 1,
+  },
+  reviewAuthor: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+  },
+  reviewDate: {
+    ...Typography.caption,
   },
   reviewRating: {
     flexDirection: 'row',
@@ -344,76 +518,88 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   reviewScore: {
-    ...Typography.bodySmall,
-    color: currentColors.text,
-    fontWeight: '600',
-  },
-  reviewSummary: {
-    ...Typography.bodySmall,
-    color: currentColors.textSecondary,
-    lineHeight: 20,
-    marginBottom: Spacing.md,
-  },
-  reviewFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  reviewAuthor: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  reviewAuthorText: {
     ...Typography.caption,
-    color: currentColors.textSecondary,
-  },
-  reviewDate: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  reviewDateText: {
-    ...Typography.caption,
-    color: currentColors.textSecondary,
-  },
-  categoryCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: currentColors.surface,
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    marginBottom: Spacing.md,
-    ...ColorsShadows.small,
-  },
-  categoryContent: {
-    flex: 1,
-    marginLeft: Spacing.md,
-  },
-  categoryTitle: {
-    ...Typography.body,
-    color: currentColors.text,
     fontWeight: '600',
-    marginBottom: Spacing.xs,
+    marginLeft: Spacing.xs,
   },
-  categoryDescription: {
-    ...Typography.bodySmall,
-    color: currentColors.textSecondary,
-    lineHeight: 20,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: Spacing.xl,
-  },
-  emptyTitle: {
-    ...Typography.h3,
-    color: currentColors.text,
-    marginTop: Spacing.md,
+  reviewTitle: {
+    ...Typography.h4,
     marginBottom: Spacing.sm,
   },
-  emptySubtitle: {
+  reviewContent: {
     ...Typography.body,
-    color: currentColors.textSecondary,
+    lineHeight: 22,
+    marginBottom: Spacing.md,
+  },
+  reviewActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  reviewAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  reviewActionText: {
+    ...Typography.caption,
+  },
+  writeReviewContainer: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
+  },
+  sectionTitle: {
+    ...Typography.h2,
+    marginBottom: Spacing.lg,
+  },
+  writeReviewForm: {
+    paddingBottom: Spacing.xl,
+  },
+  formGroup: {
+    marginBottom: Spacing.lg,
+  },
+  formLabel: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    marginBottom: Spacing.sm,
+  },
+  formInput: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    ...Typography.body,
+  },
+  formTextArea: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    ...Typography.body,
+    minHeight: 120,
+  },
+  starRating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  starButton: {
+    padding: Spacing.xs,
+  },
+  submitButton: {
+    marginTop: Spacing.lg,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.xxl,
+  },
+  emptyStateText: {
+    ...Typography.body,
     textAlign: 'center',
+    marginTop: Spacing.md,
   },
 });
