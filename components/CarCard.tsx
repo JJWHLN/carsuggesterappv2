@@ -5,7 +5,7 @@ import { OptimizedImage } from './ui/OptimizedImage';
 import { AnimatedPressable } from './ui/AnimatedPressable';
 import { Card } from './ui/Card'; // Card is now memoized and themed
 import { createAccessibilityProps, useAccessibility } from '@/hooks/useAccessibility';
-import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors'; // Removed currentColors
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors
 import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
 import { Car } from '@/types/database';
 import { formatPrice, formatMileage, formatDate, formatCondition, formatFuelType } from '@/utils/dataTransformers';
@@ -166,7 +166,7 @@ const getThemedCarCardStyles = (colors: typeof import('@/constants/Colors').Colo
     marginBottom: Spacing.md,
     padding: 0,
     overflow: 'hidden',
-    ...Shadows.medium, // Shadows might need theme adjustment if they use hardcoded colors
+    ...ColorsShadows.medium, // Shadows might need theme adjustment if they use hardcoded colors
   },
   imageContainer: {
     position: 'relative',

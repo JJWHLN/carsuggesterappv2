@@ -9,7 +9,7 @@ import {
 import { Heart, Star, MapPin } from 'lucide-react-native';
 import { OptimizedImage } from './OptimizedImage';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 interface CarCardProps {
   image: string;
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     overflow: 'hidden',
-    ...Shadows.card,
+    ...ColorsShadows.card,
   },
   imageContainer: {
     position: 'relative',
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   ratingBadge: {
     position: 'absolute',

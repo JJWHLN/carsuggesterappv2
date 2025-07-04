@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { Card } from './ui/Card'; // Card is now memoized and themed
 import { OptimizedImage } from './ui/OptimizedImage';
-import { Spacing, Typography, BorderRadius } from '@/constants/Colors'; // Removed currentColors
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors
 import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
 import { CarModel } from '@/types/database';
 

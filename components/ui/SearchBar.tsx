@@ -3,7 +3,7 @@ import { View, TextInput, StyleSheet, TextInputProps, ViewStyle } from 'react-na
 import { Search, X, Sparkles } from 'lucide-react-native';
 import { AnimatedPressable } from './AnimatedPressable';
 import { createAccessibilityProps } from '@/hooks/useAccessibility';
-import { currentColors, BorderRadius, Spacing, Typography } from '@/constants/Colors';
+import { currentColors, BorderRadius, Spacing, Typography, Shadows as ColorsShadows } from '@/constants/Colors';
 
 interface SearchBarProps extends Omit<TextInputProps, 'style'> {
   value: string;
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.xl,
     borderWidth: 0,
     paddingHorizontal: Spacing.md,
-    ...Shadows.medium,
+    ...ColorsShadows.medium,
   },
   iconContainer: {
     marginRight: Spacing.sm,

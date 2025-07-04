@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { ChevronRight, Check, Minus, Plus } from 'lucide-react-native';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 export interface PreferenceOption {
   id: string;
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   valueDisplay: {
     paddingHorizontal: Spacing.lg,
@@ -347,6 +347,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
 });

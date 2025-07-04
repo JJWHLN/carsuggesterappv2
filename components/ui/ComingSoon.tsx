@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { TrendingUp } from 'lucide-react-native';
-import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 interface ComingSoonProps {
   title: string;
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     backgroundColor: currentColors.primaryLight,
     borderRadius: BorderRadius.xl,
     alignItems: 'center',
-    ...Shadows.medium,
+    ...ColorsShadows.medium,
   },
   comingSoonTitle: {
     ...Typography.h2,

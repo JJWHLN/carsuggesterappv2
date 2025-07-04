@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { LoadingSpinner } from './LoadingSpinner';
 import { AnimatedPressable } from './AnimatedPressable';
-import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 interface ButtonProps {
   title: string;
@@ -40,7 +40,7 @@ export function Button({
       ...(styles[variant] || styles.primary),
     };
     if (variant === 'primary') {
-      return [baseStyle, Shadows.button, isDisabled && styles.disabled, style];
+      return [baseStyle, ColorsShadows.button, isDisabled && styles.disabled, style];
     }
     return [baseStyle, isDisabled && styles.disabled, style];
   };

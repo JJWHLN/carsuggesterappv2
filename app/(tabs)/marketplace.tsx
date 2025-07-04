@@ -25,7 +25,7 @@ import { StatCard } from '@/components/ui/StatCard';
 import { SearchBar } from '@/components/ui/SearchBar'; // Import SearchBar
 import { Card } from '@/components/ui/Card'; // Import Card
 import { OptimizedImage } from '@/components/ui/OptimizedImage'; // Import OptimizedImage
-import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 export default function MarketplaceScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
-    ...Shadows.card, // Use new card shadow
+    ...ColorsShadows.card, // Use new card shadow
   },
   suggestionText: {
     ...Typography.bodyText, // Use standard body text
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   featureCardContent: { // Renamed from featureContent for clarity
     flexDirection: 'row', // Icon and text side-by-side

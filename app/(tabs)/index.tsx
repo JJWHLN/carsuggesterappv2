@@ -36,7 +36,7 @@ import { SearchBar } from '@/components/ui/SearchBar';
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { CarCard } from '@/components/ui/CarCard';
-import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useApi } from '@/hooks/useApi';
 import { fetchCarModels, fetchPopularBrands } from '@/services/api';
@@ -474,7 +474,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
   heroSearchBar: {
     backgroundColor: colors.white,
     borderRadius: BorderRadius.xl,
-    ...Shadows.large,
+    ...ColorsShadows.large,
   },
   heroButtons: {
     flexDirection: 'row',
@@ -497,7 +497,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     marginHorizontal: Spacing.lg,
     borderRadius: BorderRadius.xl,
     marginBottom: Spacing.xl,
-    ...Shadows.card,
+    ...ColorsShadows.card,
   },
   statsHeader: {
     alignItems: 'center',
@@ -565,7 +565,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     padding: Spacing.lg,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   categoryIconContainer: {
     width: 64,
@@ -612,7 +612,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   brandLogoContainer: {
     marginBottom: Spacing.sm,
@@ -639,7 +639,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     marginBottom: Spacing.xl,
     borderRadius: BorderRadius.xl,
     overflow: 'hidden',
-    ...Shadows.large,
+    ...ColorsShadows.large,
   },
   ctaGradient: {
     padding: Spacing.xl,

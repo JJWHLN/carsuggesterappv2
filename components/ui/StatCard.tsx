@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
-    ...Shadows.medium,
+    ...ColorsShadows.medium,
   },
   iconWrapper: {
     width: 48,

@@ -15,7 +15,7 @@ import { Button } from './Button';
 import { LoadingSpinner } from './LoadingSpinner';
 import { EmptyState } from './EmptyState';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 export interface CarRecommendation {
   id: string;

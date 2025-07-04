@@ -25,7 +25,7 @@ import {
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
-import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors'; // Removed currentColors
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors
 import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
 import { OptimizedImage } from '@/components/ui/OptimizedImage'; // Import OptimizedImage
 import { fetchCarModelById } from '@/services/api';
@@ -288,7 +288,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
-    ...Shadows.small, // Consider if Shadows need theming
+    ...ColorsShadows.small, // Consider if Shadows need theming
   },
   featureLabel: {
     ...Typography.caption,

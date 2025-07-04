@@ -14,7 +14,7 @@ import { Car, Zap, TrendingUp, ChevronRight } from 'lucide-react-native';
 import { Button } from './Button';
 import { OptimizedImage } from './OptimizedImage';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 const { width, height } = Dimensions.get('window');
 
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
-    ...Shadows.large,
+    ...ColorsShadows.large,
   },
   brandName: {
     ...Typography.h2,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   featureIcon: {
     width: 40,

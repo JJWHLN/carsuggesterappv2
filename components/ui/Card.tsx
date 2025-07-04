@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { BorderRadius, Shadows, Spacing } from '@/constants/Colors';
+import { BorderRadius, Shadows as ColorsShadows, Spacing } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { AnimatedPressable } from './AnimatedPressable';
 
@@ -68,12 +68,12 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     backgroundColor: colors.cardBackground,
     borderWidth: 1,
     borderColor: colors.border,
-    ...Shadows.card,
+    ...ColorsShadows.card,
   },
   featureCard: {
     backgroundColor: colors.cardBackground,
     borderWidth: 1,
     borderColor: colors.border,
-    ...Shadows.card,
+    ...ColorsShadows.card,
   },
 });

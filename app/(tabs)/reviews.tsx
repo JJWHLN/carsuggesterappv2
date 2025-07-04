@@ -19,7 +19,7 @@ import {
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { StatCard } from '@/components/ui/StatCard'; // Import shared StatCard
-import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { fetchCarReviews } from '@/services/supabaseService';
 import { transformDatabaseReviewToReview } from '@/utils/dataTransformers';
 import { Review } from '@/types/database';
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   featuredReview: {
     borderRadius: BorderRadius.xl,
     overflow: 'hidden',
-    ...Shadows.large,
+    ...ColorsShadows.large,
   },
   featuredImage: {
     width: '100%',
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
     overflow: 'hidden',
-    ...Shadows.medium,
+    ...ColorsShadows.medium,
   },
   reviewImage: {
     width: '100%',
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   categoryContent: {
     flex: 1,

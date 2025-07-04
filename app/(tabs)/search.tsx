@@ -19,7 +19,7 @@ import {
   DollarSign
 } from 'lucide-react-native';
 import { ComingSoon } from '@/components/ui/ComingSoon';
-import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: currentColors.border,
-    ...Shadows.small,
+    ...ColorsShadows.small,
     marginBottom: Spacing.md, // Add spacing between rows
     marginRight: Spacing.md, // Add spacing between columns
   },
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
     marginBottom: Spacing.sm,
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   suggestionText: {
     ...Typography.bodySmall,
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
     overflow: 'hidden',
-    ...Shadows.medium,
+    ...ColorsShadows.medium,
   },
   exampleImage: {
     width: '100%',
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
-    ...Shadows.small,
+    ...ColorsShadows.small,
   },
   featureContent: {
     flex: 1,

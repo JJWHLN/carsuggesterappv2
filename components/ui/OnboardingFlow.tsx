@@ -11,7 +11,7 @@ import { ChevronLeft, ChevronRight, Check } from 'lucide-react-native';
 import { PreferenceSelector, PreferenceOption } from './PreferenceSelector';
 import { Button } from './Button';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 
 export interface OnboardingStep {
   id: string;
