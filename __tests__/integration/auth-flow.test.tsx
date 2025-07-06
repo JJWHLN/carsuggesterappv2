@@ -33,8 +33,8 @@ jest.mock('expo-router', () => ({
   useRouter: () => mockRouter,
 }));
 
-// Mock Alert
-jest.spyOn(Alert, 'alert');
+// Mock Alert (it's already mocked in jest.setup.js, so just spy on it)
+const alertSpy = jest.spyOn(Alert, 'alert');
 
 describe('Authentication Flow Integration Tests', () => {
   const renderWithAuthProvider = (component: React.ReactElement) => {

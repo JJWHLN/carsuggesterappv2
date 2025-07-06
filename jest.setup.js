@@ -1,10 +1,161 @@
 import 'react-native-gesture-handler/jestSetup';
 
+// Mock React Native Alert
+jest.mock('react-native', () => {
+  const RN = jest.requireActual('react-native');
+  return {
+    ...RN,
+    Alert: {
+      alert: jest.fn(),
+      prompt: jest.fn(),
+    },
+    Platform: {
+      OS: 'ios',
+      select: jest.fn((obj) => obj.ios),
+    },
+    Dimensions: {
+      get: jest.fn(() => ({ width: 390, height: 844 })),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    },
+    Appearance: {
+      getColorScheme: jest.fn(() => 'light'),
+      addChangeListener: jest.fn(),
+      removeChangeListener: jest.fn(),
+    },
+    AccessibilityInfo: {
+      isScreenReaderEnabled: jest.fn().mockResolvedValue(false),
+      isReduceMotionEnabled: jest.fn().mockResolvedValue(false),
+      isReduceTransparencyEnabled: jest.fn().mockResolvedValue(false),
+      isBoldTextEnabled: jest.fn().mockResolvedValue(false),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    },
+  };
+});
+
+// Mock Expo modules
+jest.mock('expo-linear-gradient', () => ({
+  LinearGradient: 'LinearGradient',
+}));
+
+jest.mock('expo-constants', () => ({
+  default: {
+    expoConfig: {},
+  },
+}));
+
+// Mock react-native-svg
+jest.mock('react-native-svg', () => ({
+  Svg: 'Svg',
+  Path: 'Path',
+  Circle: 'Circle',
+  Rect: 'Rect',
+  G: 'G',
+  Text: 'Text',
+  Defs: 'Defs',
+  LinearGradient: 'LinearGradient',
+  Stop: 'Stop',
+  Mixin: {},
+}));
+
+// Mock lucide-react-native icons
+jest.mock('lucide-react-native', () => ({
+  Search: 'Search',
+  Filter: 'Filter',
+  MapPin: 'MapPin',
+  DollarSign: 'DollarSign',
+  Car: 'Car',
+  TrendingUp: 'TrendingUp',
+  Users: 'Users',
+  Shield: 'Shield',
+  Star: 'Star',
+  Building2: 'Building2',
+  Award: 'Award',
+  Clock: 'Clock',
+  ChevronRight: 'ChevronRight',
+  Phone: 'Phone',
+  Mail: 'Mail',
+  ExternalLink: 'ExternalLink',
+  Grid2x2: 'Grid2x2',
+  List: 'List',
+  CircleAlert: 'CircleAlert',
+  X: 'X',
+  Sparkles: 'Sparkles',
+  Camera: 'Camera',
+  Plus: 'Plus',
+  Eye: 'Eye',
+  EyeOff: 'EyeOff',
+  ChevronDown: 'ChevronDown',
+  Upload: 'Upload',
+  Image: 'Image',
+  CalendarDays: 'CalendarDays',
+  Settings: 'Settings',
+  User: 'User',
+  Home: 'Home',
+  Heart: 'Heart',
+  MessageSquare: 'MessageSquare',
+  Bookmark: 'Bookmark',
+}));
+
+// Mock react-native-safe-area-context
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaView: 'SafeAreaView',
+  SafeAreaProvider: ({ children }) => children,
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+  useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
+}));
+
 // Mock react-native-reanimated
 jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  return Reanimated;
+  return {
+    default: {
+      call: () => {},
+      Value: jest.fn(() => ({ setValue: jest.fn() })),
+      event: jest.fn(() => jest.fn()),
+      add: jest.fn(),
+      eq: jest.fn(),
+      set: jest.fn(),
+      cond: jest.fn(),
+      interpolate: jest.fn(),
+      View: jest.fn(),
+      Extrapolate: { CLAMP: 'clamp' },
+      Transition: { Together: 'together' },
+      Easing: { in: jest.fn(), out: jest.fn(), inOut: jest.fn() },
+      runOnJS: jest.fn((fn) => fn),
+      useSharedValue: jest.fn(() => ({ value: 0 })),
+      useAnimatedStyle: jest.fn(() => ({})),
+      useDerivedValue: jest.fn(),
+      useAnimatedGestureHandler: jest.fn(),
+      useAnimatedProps: jest.fn(),
+      interpolateColor: jest.fn(),
+      createAnimatedComponent: jest.fn((Component) => Component),
+      withTiming: jest.fn((value) => value),
+      withSpring: jest.fn((value) => value),
+      withSequence: jest.fn((...values) => values[values.length - 1]),
+      withRepeat: jest.fn((value) => value),
+      cancelAnimation: jest.fn(),
+    },
+    useSharedValue: jest.fn(() => ({ value: 0 })),
+    useAnimatedStyle: jest.fn(() => ({})),
+    useDerivedValue: jest.fn(),
+    useAnimatedGestureHandler: jest.fn(),
+    useAnimatedProps: jest.fn(),
+    interpolateColor: jest.fn(),
+    createAnimatedComponent: jest.fn((Component) => Component),
+    withTiming: jest.fn((value) => value),
+    withSpring: jest.fn((value) => value),
+    withSequence: jest.fn((...values) => values[values.length - 1]),
+    withRepeat: jest.fn((value) => value),
+    cancelAnimation: jest.fn(),
+    runOnJS: jest.fn((fn) => fn),
+    Easing: { 
+      in: jest.fn(), 
+      out: jest.fn((fn) => fn), 
+      inOut: jest.fn(),
+      ease: jest.fn(),
+    },
+  };
 });
 
 // Mock expo-router
