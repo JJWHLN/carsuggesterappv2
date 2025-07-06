@@ -42,13 +42,18 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useAuth } from '@/contexts/AuthContext';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { useCanPerformAction } from '@/components/ui/RoleProtection';
 
 const { width } = Dimensions.get('window');
 
 
 export default function ProfileScreen() {
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, role, signOut, loading: authLoading } = useAuth();
   const { colors } = useThemeColors();
+  const canPostCars = useCanPerformAction('postCars');
+  const canWriteReviews = useCanPerformAction('writeReviews');
+  const canBookmarkCars = useCanPerformAction('bookmarkCars');
+  const canAccessAI = useCanPerformAction('accessAI');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
 
@@ -75,10 +80,40 @@ export default function ProfileScreen() {
     );
   };
 
-  // Placeholder for future navigation or actions
+  // Navigation handlers
   const handleNavigateToSettings = () => Alert.alert('Settings', 'Settings screen coming soon!');
-  const handleNavigateToSavedCars = () => Alert.alert('Saved Cars', 'Saved Cars screen coming soon!');
+  const handleNavigateToSavedCars = () => {
+    if (canBookmarkCars) {
+      // Navigate to a saved cars section or show alert for now
+      Alert.alert('Saved Cars', 'Saved Cars feature coming soon!');
+    } else {
+      Alert.alert('Sign In Required', 'Please sign in to view saved cars');
+    }
+  };
   const handleNavigateToMyReviews = () => Alert.alert('My Reviews', 'My Reviews screen coming soon!');
+  const handleNavigateToAddCar = () => {
+    if (canPostCars) {
+      Alert.alert('Add Car', 'Add Car feature coming soon!');
+    } else {
+      Alert.alert('Access Denied', 'Only dealers can post cars. Contact admin to upgrade your account.');
+    }
+  };
+  const handleNavigateToAdmin = () => {
+    if (role === 'admin') {
+      Alert.alert('Admin Panel', 'Admin panel coming soon!');
+    } else {
+      Alert.alert('Access Denied', 'Admin access required');
+    }
+  };
+
+  const getRoleColor = (userRole: string) => {
+    switch (userRole) {
+      case 'admin': return colors.error;
+      case 'dealer': return colors.warning;
+      case 'user': return colors.success;
+      default: return colors.textSecondary;
+    }
+  };
 
 
   const renderMenuItem = (icon: React.ReactNode, title: string, subtitle: string, onPress: () => void) => (
@@ -228,9 +263,18 @@ export default function ProfileScreen() {
                 <User color={colors.primary} size={32} />
               </View>
               <View style={styles.profileInfo}>
-                <Text style={[styles.profileName, { color: colors.text }]}>
-                  {user.email?.split('@')[0] || 'User'}
-                </Text>
+                <View style={styles.profileNameContainer}>
+                  <Text style={[styles.profileName, { color: colors.text }]}>
+                    {user.email?.split('@')[0] || 'User'}
+                  </Text>
+                  {role && (
+                    <View style={[styles.roleBadge, { backgroundColor: getRoleColor(role) + '20' }]}>
+                      <Text style={[styles.roleText, { color: getRoleColor(role) }]}>
+                        {role.toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                </View>
                 <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
                   {user.email}
                 </Text>
@@ -261,25 +305,39 @@ export default function ProfileScreen() {
           <Card style={styles.menuCard}>
             <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Quick Actions</Text>
             
-            {renderMenuItem(
+            {canAccessAI && renderMenuItem(
               <Sparkles color={colors.primary} size={20} />,
               'Get AI Recommendations',
               'Discover cars tailored for you',
-              () => router.push('/recommendations')
+              () => router.push('/search')
             )}
             
-            {renderMenuItem(
+            {canBookmarkCars && renderMenuItem(
               <Heart color={colors.error} size={20} />,
               'Saved Cars',
               'View your favorite listings',
               handleNavigateToSavedCars
             )}
             
-            {renderMenuItem(
+            {canWriteReviews && renderMenuItem(
               <MessageCircle color={colors.textSecondary} size={20} />,
               'My Reviews',
               'Reviews you\'ve written',
               handleNavigateToMyReviews
+            )}
+
+            {canPostCars && renderMenuItem(
+              <Car color={colors.accentGreen} size={20} />,
+              'Post a Car',
+              'List your car for sale',
+              handleNavigateToAddCar
+            )}
+
+            {role === 'admin' && renderMenuItem(
+              <Shield color={colors.warning} size={20} />,
+              'Admin Panel',
+              'Manage users and content',
+              handleNavigateToAdmin
             )}
           </Card>
         </View>
@@ -523,6 +581,22 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     ...Typography.h2,
     marginBottom: Spacing.xs,
     fontWeight: '700',
+  },
+  profileNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xs,
+  },
+  roleBadge: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+  },
+  roleText: {
+    ...Typography.caption,
+    fontWeight: '700',
+    fontSize: 10,
   },
   profileEmail: {
     ...Typography.body,

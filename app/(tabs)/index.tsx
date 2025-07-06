@@ -37,7 +37,8 @@ import { StatCard } from '@/components/ui/StatCard';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
-import { CarCard } from '@/components/ui/CarCard';
+import { CarCard } from '@/components/CarCard';
+import { useCanPerformAction } from '@/components/ui/RoleProtection';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useApi } from '@/hooks/useApi';
@@ -49,7 +50,9 @@ const { width, height } = Dimensions.get('window');
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const { colors } = useThemeColors();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const canAccessAI = useCanPerformAction('accessAI');
+  const canPostCars = useCanPerformAction('postCars');
   const styles = useMemo(() => getStyles(colors), [colors]);
 
   const handleAuthRequired = (action: () => void, fallbackAction?: () => void) => {
@@ -57,6 +60,14 @@ export default function HomeScreen() {
       action();
     } else if (fallbackAction) {
       fallbackAction();
+    } else {
+      router.push('/auth/sign-in');
+    }
+  };
+
+  const handleAIFeature = () => {
+    if (canAccessAI) {
+      router.push('/search');
     } else {
       router.push('/auth/sign-in');
     }
@@ -181,17 +192,16 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.heroButtons}>
-                <Button
-                  title={user ? "Get AI Recommendations" : "Start Your Journey"}
-                  onPress={() => handleAuthRequired(
-                    () => router.push('/recommendations'),
-                    () => router.push('/auth/sign-in')
-                  )}
-                  variant="secondary"
-                  style={styles.primaryHeroButton}
-                  icon={<Sparkles color={colors.primary} size={20} />}
-                />
+              <View style={styles.heroButtons}>              <Button
+                title={canAccessAI ? "Get AI Recommendations" : "Sign In for AI Features"}
+                onPress={() => handleAuthRequired(
+                  () => router.push('/search'),
+                  () => router.push('/auth/sign-in')
+                )}
+                variant="secondary"
+                style={styles.primaryHeroButton}
+                icon={<Sparkles color={colors.primary} size={20} />}
+              />
                 <Button
                   title="Browse All Cars"
                   onPress={() => router.push('/models')}
@@ -296,21 +306,36 @@ export default function HomeScreen() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.featuredCarsScroll}
             >
-              {featuredCars.map(car => (
-                <View key={car.id} style={styles.featuredCarCard}>
-                  <CarCard
-                    image={car.image_url || 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400'}
-                    name={`${car.brands?.name} ${car.name}`}
-                    year={car.year}
-                    priceRange="Price on request"
-                    tags={car.category || []}
-                    rating={4.5}
-                    location="Multiple locations"
-                    onPress={() => router.push(`/model/${car.id}`)}
-                    style={styles.horizontalCarCard}
-                  />
-                </View>
-              ))}
+              {featuredCars.map(carModel => {
+                // Transform CarModel to Car for the CarCard component
+                const car = {
+                  id: carModel.id.toString(),
+                  make: carModel.brands?.name || 'Unknown',
+                  model: carModel.name,
+                  year: carModel.year || new Date().getFullYear(),
+                  price: 0, // Price on request for models
+                  mileage: 0,
+                  location: 'Multiple locations',
+                  images: carModel.image_url ? [carModel.image_url] : ['https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400'],
+                  created_at: carModel.created_at || new Date().toISOString(),
+                  features: carModel.category || [],
+                  dealer: {
+                    name: 'CarSuggester',
+                    verified: true,
+                  },
+                };
+
+                return (
+                  <View key={carModel.id} style={styles.featuredCarCard}>
+                    <CarCard
+                      car={car}
+                      onPress={() => router.push(`/model/${carModel.id}`)}
+                      carModelId={carModel.id}
+                      showSaveButton={true}
+                    />
+                  </View>
+                );
+              })}
             </ScrollView>
           )}
         </View>
@@ -393,17 +418,16 @@ export default function HomeScreen() {
               </Text>
               <Text style={[styles.ctaSubtitle, { color: colors.white }]}>
                 Get personalized recommendations powered by AI
-              </Text>
-              <Button
-                title={user ? "Get My Recommendations" : "Get Started"}
-                onPress={() => handleAuthRequired(
-                  () => router.push('/recommendations'),
-                  () => router.push('/auth/sign-in')
-                )}
-                variant="secondary"
-                style={styles.ctaButton}
-                icon={<Sparkles color={colors.primary} size={20} />}
-              />
+              </Text>                <Button
+                  title={canAccessAI ? "Get My Recommendations" : "Sign In for AI"}
+                  onPress={() => handleAuthRequired(
+                    () => router.push('/search'),
+                    () => router.push('/auth/sign-in')
+                  )}
+                  variant="secondary"
+                  style={styles.ctaButton}
+                  icon={<Sparkles color={colors.primary} size={20} />}
+                />
             </View>
           </LinearGradient>
         </View>

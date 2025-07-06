@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MapPin, Clock, Heart, Star, Fuel, Settings } from 'lucide-react-native';
 import { OptimizedImage } from './ui/OptimizedImage';
@@ -7,6 +7,9 @@ import { Card } from './ui/Card'; // Card is now memoized and themed
 import { createAccessibilityProps, useAccessibility } from '@/hooks/useAccessibility';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors
 import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
+import { useAuth } from '@/contexts/AuthContext';
+import { useCanPerformAction } from './ui/RoleProtection';
+import { BookmarkService } from '@/services/featureServices';
 import { Car } from '@/types/database';
 import { formatPrice, formatMileage, formatDate, formatCondition, formatFuelType } from '@/utils/dataTransformers';
 
@@ -16,6 +19,8 @@ interface CarCardProps {
   showSaveButton?: boolean;
   onSave?: () => void;
   isSaved?: boolean;
+  carModelId?: number;
+  vehicleListingId?: string;
 }
 
 const CarCard = memo<CarCardProps>(({ 
@@ -23,11 +28,17 @@ const CarCard = memo<CarCardProps>(({
   onPress, 
   showSaveButton = true, 
   onSave, 
-  isSaved = false 
+  isSaved = false,
+  carModelId,
+  vehicleListingId
 }) => {
   const { colors } = useThemeColors();
+  const { user } = useAuth();
+  const canBookmark = useCanPerformAction('bookmarkCars');
   const styles = getThemedCarCardStyles(colors);
   const { announceForAccessibility } = useAccessibility();
+  const [isBookmarked, setIsBookmarked] = useState(isSaved);
+  const [loading, setLoading] = useState(false);
 
   const handlePress = () => {
     announceForAccessibility(
@@ -36,12 +47,37 @@ const CarCard = memo<CarCardProps>(({
     onPress();
   };
 
-  const handleSave = () => {
-    announceForAccessibility(
-      isSaved ? 'Removed from saved cars' : 'Added to saved cars'
-    );
-    onSave?.();
-  };
+  const handleBookmark = useCallback(async () => {
+    if (!user || !canBookmark) {
+      announceForAccessibility('Please sign in to bookmark cars');
+      return;
+    }
+
+    if (loading) return;
+
+    try {
+      setLoading(true);
+      
+      const target = carModelId ? { carModelId } : { vehicleListingId };
+      
+      if (isBookmarked) {
+        await BookmarkService.removeBookmark(user.id, target);
+        setIsBookmarked(false);
+        announceForAccessibility('Removed from saved cars');
+      } else {
+        await BookmarkService.addBookmark(user.id, target);
+        setIsBookmarked(true);
+        announceForAccessibility('Added to saved cars');
+      }
+      
+      onSave?.();
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+      announceForAccessibility('Failed to update bookmark');
+    } finally {
+      setLoading(false);
+    }
+  }, [user, canBookmark, isBookmarked, carModelId, vehicleListingId, onSave, loading]);
 
   const accessibilityLabel = `${car.year} ${car.make} ${car.model}, ${formatPrice(car.price)}, ${formatMileage(car.mileage)} miles, located in ${car.location}`;
 
@@ -66,19 +102,20 @@ const CarCard = memo<CarCardProps>(({
             fallbackSource={require('@/assets/images/icon.png')} // Use local fallback
           />
           
-          {showSaveButton && (
+          {showSaveButton && canBookmark && (
             <AnimatedPressable 
-              style={styles.saveButton}
-              onPress={handleSave}
+              style={[styles.saveButton, loading && styles.saveButtonDisabled]}
+              onPress={handleBookmark}
+              disabled={loading}
               {...createAccessibilityProps(
-                isSaved ? 'Remove from saved' : 'Save car',
-                isSaved ? 'Double tap to remove from saved cars' : 'Double tap to save this car'
+                isBookmarked ? 'Remove from saved' : 'Save car',
+                isBookmarked ? 'Double tap to remove from saved cars' : 'Double tap to save this car'
               )}
             >
               <Heart 
-                color={isSaved ? colors.error : colors.white} // Use themed error, themed white
+                color={isBookmarked ? colors.error : colors.white} // Use themed error, themed white
                 size={20}
-                fill={isSaved ? colors.error : 'transparent'} // Use themed error
+                fill={isBookmarked ? colors.error : 'transparent'} // Use themed error
               />
             </AnimatedPressable>
           )}
@@ -182,6 +219,9 @@ const getThemedCarCardStyles = (colors: typeof import('@/constants/Colors').Colo
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // This could be themed if needed
     borderRadius: BorderRadius.full,
     padding: Spacing.sm,
+  },
+  saveButtonDisabled: {
+    opacity: 0.6,
   },
   verifiedBadge: { // backgroundColor applied inline
     position: 'absolute',

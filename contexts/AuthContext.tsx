@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserRole = async (userId: string): Promise<{ role: string | null; isNew: boolean }> => {
     try {
       const { data, error, status } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .select('role, onboarding_completed')
         .eq('id', userId)
         .single();
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       await supabase
-        .from('user_profiles')
+        .from('profiles')
         .upsert({ 
           id: user.id, 
           onboarding_completed: true,

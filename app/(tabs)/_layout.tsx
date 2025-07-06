@@ -2,9 +2,13 @@ import { Tabs } from 'expo-router';
 import { Chrome as Home, Car, TrendingUp, FileText, Sparkles, User } from 'lucide-react-native';
 import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCanPerformAction } from '@/components/ui/RoleProtection';
 
 export default function TabLayout() {
   const { colors } = useThemeColors();
+  const { user } = useAuth();
+  const canAccessAI = useCanPerformAction('accessAI');
 
   return (
     <Tabs
@@ -78,10 +82,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="ai-search-tab"
         options={{
-          title: 'AI',
-          href: '/search',
+          title: user ? 'AI Assistant' : 'Sign In for AI',
+          href: canAccessAI ? '/search' : '/auth/sign-in',
           tabBarIcon: ({ color, focused }) => (
-            <Sparkles color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
+            <Sparkles 
+              color={canAccessAI ? color : colors.textSecondary} 
+              size={focused ? 26 : 24} 
+              strokeWidth={focused ? 2.5 : 2} 
+            />
           ),
         }}
       />

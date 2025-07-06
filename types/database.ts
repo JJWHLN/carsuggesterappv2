@@ -213,6 +213,15 @@ export interface DatabaseBrand {
   updated_at?: string;
 }
 
+export interface Profile {
+  id: string;
+  email?: string;
+  role: 'user' | 'dealer' | 'admin';
+  onboarding_completed?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 // API Response types
 export interface ApiResponse<T> {
   data: T | null;
