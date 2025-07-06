@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Search, Car, TrendingUp, FileText, User } from 'lucide-react-native';
+import { Chrome as Home, Search, Car, TrendingUp, FileText, User } from 'lucide-react-native';
 import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 
