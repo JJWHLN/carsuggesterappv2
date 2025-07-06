@@ -19,7 +19,18 @@ import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { 
+  CategoryChip, 
+  SectionHeader, 
+  Badge, 
+  HeroSection, 
+  ViewToggle, 
+  FilterButton, 
+  ResultsHeader, 
+  LoadingContainer 
+} from '@/components/ui/SharedComponents';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { createCommonStyles } from '@/constants/CommonStyles';
 import { useThemeColors } from '@/hooks/useTheme';
 import { fetchVehicleListings } from '@/services/supabaseService';
 import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
@@ -31,6 +42,7 @@ const { width } = Dimensions.get('window');
 export default function MarketplaceScreen() {
   const { colors } = useThemeColors();
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
+  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -244,13 +256,12 @@ export default function MarketplaceScreen() {
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      {/* Hero Section */}
-      <View style={styles.heroSection}>
-        <Text style={styles.heroTitle}>Car Marketplace</Text>
-        <Text style={styles.heroSubtitle}>
-          Find your perfect car from verified dealers nationwide
-        </Text>
-        
+      {/* Hero Section using shared component */}
+      <HeroSection
+        title="Car Marketplace"
+        subtitle="Find your perfect car from verified dealers nationwide"
+        style={styles.heroSection}
+      >
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -258,11 +269,11 @@ export default function MarketplaceScreen() {
           onClear={() => setSearchQuery('')}
           containerStyle={styles.heroSearchBar}
         />
-      </View>
+      </HeroSection>
 
-      {/* Stats */}
-      <View style={styles.statsSection}>
-        <View style={styles.statsGrid}>
+      {/* Stats using common layout */}
+      <View style={commonStyles.statsSection}>
+        <View style={commonStyles.statsGrid}>
           {marketplaceStats.map((stat, index) => (
             <StatCard
               key={index}
@@ -274,36 +285,30 @@ export default function MarketplaceScreen() {
         </View>
       </View>
 
-      {/* Controls */}
+      {/* Controls using shared components */}
       <View style={styles.controlsContainer}>
         <View style={styles.leftControls}>
-          <TouchableOpacity style={styles.filterButton}>
-            <Filter color={colors.primary} size={18} />
-            <Text style={styles.filterButtonText}>Filters</Text>
-          </TouchableOpacity>
+          <FilterButton
+            text="Filters"
+            onPress={() => {}} // TODO: Implement filter functionality
+            icon={<Filter color={colors.primary} size={18} />}
+          />
           
-          <TouchableOpacity style={styles.sortButton}>
-            <Text style={styles.sortButtonText}>Price: Low to High</Text>
-          </TouchableOpacity>
+          <FilterButton
+            text="Price: Low to High"
+            onPress={() => {}} // TODO: Implement sort functionality
+          />
         </View>
         
-        <View style={styles.viewToggle}>
-          <TouchableOpacity
-            style={[styles.viewButton, viewMode === 'grid' && styles.viewButtonActive]}
-            onPress={() => setViewMode('grid')}
-          >
-            <Grid2x2 color={viewMode === 'grid' ? colors.white : colors.textSecondary} size={16} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.viewButton, viewMode === 'list' && styles.viewButtonActive]}
-            onPress={() => setViewMode('list')}
-          >
-            <List color={viewMode === 'list' ? colors.white : colors.textSecondary} size={16} />
-          </TouchableOpacity>
-        </View>
+        <ViewToggle
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          gridIcon={<Grid2x2 color={viewMode === 'grid' ? colors.white : colors.textSecondary} size={16} />}
+          listIcon={<List color={viewMode === 'list' ? colors.white : colors.textSecondary} size={16} />}
+        />
       </View>
 
-      {/* Categories */}
+      {/* Categories using shared CategoryChip */}
       <View style={styles.categoriesContainer}>
         <FlatList
           horizontal
@@ -311,44 +316,33 @@ export default function MarketplaceScreen() {
           data={categories}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.categoryChip,
-                selectedCategory === item.id && styles.categoryChipActive
-              ]}
+            <CategoryChip
+              text={`${item.name} (${item.count})`}
+              isActive={selectedCategory === item.id}
               onPress={() => setSelectedCategory(item.id)}
-            >
-              <Text style={[
-                styles.categoryText,
-                selectedCategory === item.id && styles.categoryTextActive
-              ]}>
-                {item.name} ({item.count})
-              </Text>
-            </TouchableOpacity>
+              style={{ marginRight: Spacing.sm }}
+            />
           )}
           contentContainerStyle={styles.categoriesContent}
         />
       </View>
 
-      {/* Results Header */}
-      <View style={styles.resultsHeader}>
-        <Text style={styles.resultsCount}>
-          {cars.length} cars found
-        </Text>
-        <Text style={styles.resultsLocation}>from verified dealers</Text>
-      </View>
+      {/* Results Header using shared component */}
+      <ResultsHeader
+        count={cars.length}
+        itemType="car"
+        location="verified dealers"
+      />
     </View>
   );
 
   // Loading state
   if (loading && cars.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
+      <SafeAreaView style={commonStyles.safeContainer}>
+        <LoadingContainer text="Finding the best cars for you...">
           <LoadingSpinner size={32} color={colors.primary} />
-          <Text style={styles.loadingText}>Finding the best cars for you...</Text>
-          <Text style={styles.loadingSubtext}>Connecting to our marketplace database</Text>
-        </View>
+        </LoadingContainer>
       </SafeAreaView>
     );
   }
@@ -356,7 +350,7 @@ export default function MarketplaceScreen() {
   // Error state
   if (error && cars.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={commonStyles.safeContainer}>
         <ErrorState
           title="Unable to Load Marketplace"
           message={error}
@@ -369,9 +363,9 @@ export default function MarketplaceScreen() {
   // Empty state
   if (!loading && cars.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={commonStyles.safeContainer}>
         {renderHeader()}
-        <View style={styles.emptyStateContainer}>
+        <View style={commonStyles.centeredContainer}>
           <EmptyState
             title="No vehicles available"
             subtitle={searchQuery ? "Try adjusting your search criteria or browse all available cars" : "We're working to add more listings to our marketplace"}
@@ -398,7 +392,7 @@ export default function MarketplaceScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={commonStyles.safeContainer}>
       <FlatList
         data={cars}
         renderItem={renderListing}

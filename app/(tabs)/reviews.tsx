@@ -33,7 +33,18 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { 
+  CategoryChip, 
+  SectionHeader, 
+  Badge, 
+  HeroSection, 
+  ViewToggle, 
+  FilterButton, 
+  ResultsHeader, 
+  LoadingContainer 
+} from '@/components/ui/SharedComponents';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { createCommonStyles } from '@/constants/CommonStyles';
 import { useThemeColors } from '@/hooks/useTheme';
 import { fetchCarReviews } from '@/services/supabaseService';
 import { transformDatabaseReviewToReview } from '@/utils/dataTransformers';
@@ -46,6 +57,7 @@ export default function ReviewsScreen() {
   const { colors } = useThemeColors();
   const { user } = useAuth();
   const styles = useMemo(() => getStyles(colors), [colors]);
+  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

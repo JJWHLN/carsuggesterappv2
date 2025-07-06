@@ -29,7 +29,18 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { 
+  CategoryChip, 
+  SectionHeader, 
+  Badge, 
+  HeroSection, 
+  ViewToggle, 
+  FilterButton, 
+  ResultsHeader, 
+  LoadingContainer 
+} from '@/components/ui/SharedComponents';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { createCommonStyles } from '@/constants/CommonStyles';
 import { useThemeColors } from '@/hooks/useTheme';
 import { fetchCarModels } from '@/services/api';
 import { useApi } from '@/hooks/useApi';
@@ -46,6 +57,7 @@ export default function ModelsScreen() {
   const { colors } = useThemeColors();
   const { user } = useAuth();
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
+  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);

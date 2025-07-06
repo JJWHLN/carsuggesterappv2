@@ -39,7 +39,18 @@ import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { CarCard } from '@/components/CarCard';
 import { useCanPerformAction } from '@/components/ui/RoleProtection';
+import { 
+  CategoryChip, 
+  SectionHeader, 
+  Badge, 
+  HeroSection, 
+  ViewToggle, 
+  FilterButton, 
+  ResultsHeader, 
+  LoadingContainer 
+} from '@/components/ui/SharedComponents';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { createCommonStyles } from '@/constants/CommonStyles';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useApi } from '@/hooks/useApi';
 import { fetchCarModels, fetchPopularBrands } from '@/services/api';
@@ -54,6 +65,7 @@ export default function HomeScreen() {
   const canAccessAI = useCanPerformAction('accessAI');
   const canPostCars = useCanPerformAction('postCars');
   const styles = useMemo(() => getStyles(colors), [colors]);
+  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
 
   const handleAuthRequired = (action: () => void, fallbackAction?: () => void) => {
     if (user) {
