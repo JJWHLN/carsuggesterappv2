@@ -15,19 +15,20 @@ import {
   Filter, 
   SlidersHorizontal, 
   Search,
-  TrendingUp,
-  Award,
-  Zap,
-  Crown,
-  Shield,
-  Rocket,
+  MapPin,
+  Heart,
+  Star,
+  Fuel,
+  Settings,
+  Calendar,
+  Grid2x2,
+  List,
 } from 'lucide-react-native';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { CarCard } from '@/components/ui/CarCard';
 import { SearchBar } from '@/components/ui/SearchBar';
-import { Button } from '@/components/ui/Button';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { fetchCarModels } from '@/services/api';
@@ -39,7 +40,7 @@ import { CarModel } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
 
 const { width } = Dimensions.get('window');
-const ITEM_ESTIMATED_HEIGHT = 320;
+const ITEM_ESTIMATED_HEIGHT = 280;
 
 export default function ModelsScreen() {
   const { colors } = useThemeColors();
@@ -49,11 +50,13 @@ export default function ModelsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'year'>('name');
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const optimizedListProps = useOptimizedFlatList({
     estimatedItemSize: ITEM_ESTIMATED_HEIGHT,
-    numColumns: 2,
+    numColumns: viewMode === 'grid' ? 2 : 1,
   });
 
   const { data: models, loading, error, refetch } = useApi(
@@ -65,106 +68,183 @@ export default function ModelsScreen() {
   );
 
   const categories = [
-    { name: 'All', icon: Car, color: colors.textSecondary },
-    { name: 'Electric', icon: Zap, color: '#10B981' },
-    { name: 'Luxury', icon: Crown, color: '#8B5CF6' },
-    { name: 'SUV', icon: Shield, color: '#3B82F6' },
-    { name: 'Sports', icon: Rocket, color: '#EF4444' },
-    { name: 'Sedan', icon: Car, color: colors.primary },
+    { name: 'All', count: models?.length || 0 },
+    { name: 'Electric', count: 45 },
+    { name: 'Luxury', count: 32 },
+    { name: 'SUV', count: 78 },
+    { name: 'Sports', count: 23 },
+    { name: 'Sedan', count: 56 },
   ];
 
-  // useEffect and filterModels are no longer needed as filtering is done server-side
-  // useEffect(() => {
-  //   if (models) {
-  //     filterModels();
-  //   }
-  // }, [searchQuery, selectedCategory, models]);
+  const sortOptions = [
+    { key: 'name', label: 'Name A-Z' },
+    { key: 'price', label: 'Price: Low to High' },
+    { key: 'year', label: 'Year: Newest First' },
+  ];
 
-  // const filterModels = useCallback(() => {
-  //   if (!models) return;
-  //   let filtered = models;
-  //   if (searchQuery.trim()) {
-  //     const query = sanitizeSearchQuery(searchQuery).toLowerCase();
-  //     filtered = filtered.filter(model =>
-  //       model.name.toLowerCase().includes(query) ||
-  //       model.brands?.name.toLowerCase().includes(query) ||
-  //       model.description?.toLowerCase().includes(query)
-  //     );
-  //   }
-  //   if (selectedCategory && selectedCategory !== 'All') {
-  //     filtered = filtered.filter(model =>
-  //       model.category?.some(cat =>
-  //         cat.toLowerCase().includes(selectedCategory.toLowerCase())
-  //       )
-  //     );
-  //   }
-  //   setFilteredModels(filtered);
-  // }, [models, searchQuery, selectedCategory]);
-
-  const handleModelPress = useCallback((modelId: number | string) => { // Accept modelId
+  const handleModelPress = useCallback((modelId: number | string) => {
     router.push(`/model/${modelId}`);
-  }, []); // router is stable, so this callback is stable
+  }, []);
 
   const handleFavoriteToggle = useCallback((modelId: number) => {
     if (!user) {
-      // Redirect to sign in if not authenticated
       router.push('/auth/sign-in');
       return;
     }
-    
-    // TODO: Implement favorite toggle for authenticated users
     console.log('Toggle favorite for model:', modelId);
   }, [user, router]);
 
-  const renderModel: ListRenderItem<CarModel> = useCallback(({ item }) => (
-    // Add a wrapper View for styling if using numColumns > 1 for spacing
-    <View style={styles.modelCardWrapper}>
-      <CarCard
-        image={item.image_url || ''}
-        name={`${item.brands?.name} ${item.name}`}
-        year={item.year}
-        priceRange="Price on request"
-        tags={item.category || []}
-        rating={4.5}
-        location="Multiple locations"
-        onPress={() => handleModelPress(item.id)}
-        onFavorite={user ? () => handleFavoriteToggle(item.id) : undefined}
-        isFavorite={false} // TODO: Check if model is favorited by user
-      />
-    </View>
-  ), [handleModelPress, handleFavoriteToggle, user, styles.modelCardWrapper]); // styles.modelCardWrapper will be stable if styles is from useMemo
+  const CarListingCard = useCallback(({ item, isListView = false }: { item: CarModel, isListView?: boolean }) => (
+    <TouchableOpacity
+      style={[styles.carCard, isListView && styles.carCardList]}
+      onPress={() => handleModelPress(item.id)}
+      activeOpacity={0.9}
+    >
+      <View style={[styles.carImageContainer, isListView && styles.carImageContainerList]}>
+        <OptimizedImage
+          source={{ uri: item.image_url || 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400' }}
+          style={styles.carImage}
+          resizeMode="cover"
+        />
+        
+        <TouchableOpacity 
+          style={styles.favoriteButton}
+          onPress={() => handleFavoriteToggle(item.id)}
+        >
+          <Heart color={colors.white} size={18} />
+        </TouchableOpacity>
+        
+        <View style={styles.carBadge}>
+          <Text style={styles.carBadgeText}>New Listing</Text>
+        </View>
+      </View>
+      
+      <View style={[styles.carContent, isListView && styles.carContentList]}>
+        <View style={styles.carHeader}>
+          <Text style={styles.carPrice}>From $35,000</Text>
+          <View style={styles.ratingContainer}>
+            <Star color={colors.warning} size={14} fill={colors.warning} />
+            <Text style={styles.ratingText}>4.5</Text>
+          </View>
+        </View>
+        
+        <Text style={styles.carTitle}>{item.brands?.name} {item.name}</Text>
+        <Text style={styles.carYear}>{item.year} Model</Text>
+        
+        <View style={styles.carSpecs}>
+          <View style={styles.specItem}>
+            <Fuel color={colors.textSecondary} size={12} />
+            <Text style={styles.specText}>Hybrid</Text>
+          </View>
+          <View style={styles.specItem}>
+            <Settings color={colors.textSecondary} size={12} />
+            <Text style={styles.specText}>Auto</Text>
+          </View>
+          <View style={styles.specItem}>
+            <Calendar color={colors.textSecondary} size={12} />
+            <Text style={styles.specText}>2024</Text>
+          </View>
+        </View>
+        
+        <View style={styles.carLocation}>
+          <MapPin color={colors.textSecondary} size={14} />
+          <Text style={styles.locationText}>Available Nationwide</Text>
+        </View>
+        
+        {isListView && (
+          <Text style={styles.carDescription} numberOfLines={2}>
+            {item.description || 'Experience luxury and performance in this exceptional vehicle with premium features and cutting-edge technology.'}
+          </Text>
+        )}
+      </View>
+    </TouchableOpacity>
+  ), [handleModelPress, handleFavoriteToggle, colors, styles]);
 
-  const renderCategoryFilter = () => (
-    <View style={styles.categoriesFilter}>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={categories}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.categoryButton,
-              selectedCategory === item.name && styles.categoryButtonActive
-            ]}
-            onPress={() => setSelectedCategory(item.name === 'All' ? null : item.name)}
+  const renderModel: ListRenderItem<CarModel> = useCallback(({ item }) => (
+    <View style={viewMode === 'grid' ? styles.gridItemWrapper : styles.listItemWrapper}>
+      <CarListingCard item={item} isListView={viewMode === 'list'} />
+    </View>
+  ), [viewMode, CarListingCard, styles]);
+
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      {/* Search Bar */}
+      <SearchBar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Search by make, model, or features..."
+        onClear={() => setSearchQuery('')}
+        containerStyle={styles.searchBarContainer}
+      />
+
+      {/* Filter Controls */}
+      <View style={styles.controlsContainer}>
+        <View style={styles.leftControls}>
+          <TouchableOpacity 
+            style={styles.filterButton}
+            onPress={() => setShowFilters(!showFilters)}
           >
-            <View style={styles.categoryContent}>
-              <item.icon 
-                color={selectedCategory === item.name ? colors.white : item.color} 
-                size={16} 
-              />
+            <SlidersHorizontal color={colors.primary} size={20} />
+            <Text style={styles.filterButtonText}>Filters</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.sortButton}>
+            <Text style={styles.sortButtonText}>Sort: {sortOptions.find(s => s.key === sortBy)?.label}</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.viewToggle}>
+          <TouchableOpacity
+            style={[styles.viewButton, viewMode === 'grid' && styles.viewButtonActive]}
+            onPress={() => setViewMode('grid')}
+          >
+            <Grid2x2 color={viewMode === 'grid' ? colors.white : colors.textSecondary} size={18} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.viewButton, viewMode === 'list' && styles.viewButtonActive]}
+            onPress={() => setViewMode('list')}
+          >
+            <List color={viewMode === 'list' ? colors.white : colors.textSecondary} size={18} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Category Filters */}
+      <View style={styles.categoriesContainer}>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={categories}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.categoryChip,
+                selectedCategory === item.name && styles.categoryChipActive
+              ]}
+              onPress={() => setSelectedCategory(item.name === 'All' ? null : item.name)}
+            >
               <Text style={[
                 styles.categoryText,
                 selectedCategory === item.name && styles.categoryTextActive
               ]}>
-                {item.name}
+                {item.name} ({item.count})
               </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={styles.categoriesContent}
-      />
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={styles.categoriesContent}
+        />
+      </View>
+
+      {/* Results Count */}
+      <View style={styles.resultsHeader}>
+        <Text style={styles.resultsCount}>
+          {models?.length || 0} cars available
+        </Text>
+        <Text style={styles.resultsSubtext}>
+          {selectedCategory && selectedCategory !== 'All' ? `in ${selectedCategory}` : 'in all categories'}
+        </Text>
+      </View>
     </View>
   );
 
@@ -173,7 +253,7 @@ export default function ModelsScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
           <LoadingSpinner size={32} />
-          <Text style={styles.loadingText}>Loading car models...</Text>
+          <Text style={styles.loadingText}>Finding the perfect cars for you...</Text>
         </View>
       </SafeAreaView>
     );
@@ -183,7 +263,7 @@ export default function ModelsScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <ErrorState
-          title="Failed to Load Models"
+          title="Failed to Load Cars"
           message={error}
           onRetry={refetch}
         />
@@ -193,51 +273,24 @@ export default function ModelsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Car Models</Text>
-        <Text style={styles.subtitle}>
-          {/* Update subtitle to use models?.length directly */}
-          {models?.length || 0} {(models?.length || 0) === 1 ? 'model' : 'models'} available
-        </Text>
-      </View>
-
-      {/* Search Bar */}
-      <SearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Search models, brands..."
-        onClear={() => setSearchQuery('')}
-        // onSubmit can trigger refetch or be handled by debouncedSearchQuery
-        containerStyle={styles.searchBarContainer} // Add specific container style if needed
-      />
-
-      {/* Category Filter */}
-      {renderCategoryFilter()}
-
-      {/* Models List */}
       <FlatList
         data={models || []}
         renderItem={renderModel}
         keyExtractor={(item) => item.id.toString()}
-        numColumns={2} // Set to 2 columns
+        numColumns={viewMode === 'grid' ? 2 : 1}
+        key={viewMode} // Force re-render when view mode changes
+        ListHeaderComponent={renderHeader}
         contentContainerStyle={styles.listContent}
-        columnWrapperStyle={styles.columnWrapper} // For spacing between columns
+        columnWrapperStyle={viewMode === 'grid' ? styles.columnWrapper : undefined}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <EmptyState
-            title="No models found"
+            title="No cars found"
             subtitle={searchQuery ? "Try adjusting your search criteria" : "No car models available"}
             icon={<Car color={colors.textSecondary} size={48} />}
           />
         }
-        // Remove optimizedListProps spread to avoid conflicts with keyExtractor and numColumns
-        // Use individual optimized props if needed
-        getItemLayout={optimizedListProps.getItemLayout}
-        removeClippedSubviews={optimizedListProps.removeClippedSubviews}
-        maxToRenderPerBatch={optimizedListProps.maxToRenderPerBatch}
-        windowSize={optimizedListProps.windowSize}
-        initialNumToRender={optimizedListProps.initialNumToRender}
+        {...optimizedListProps}
       />
     </SafeAreaView>
   );
@@ -253,82 +306,260 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     justifyContent: 'center',
     alignItems: 'center',
     gap: Spacing.md,
-    backgroundColor: colors.background, // Ensure loading container uses themed background
   },
   loadingText: {
     ...Typography.body,
     color: colors.textSecondary,
   },
-  header: {
-    padding: Spacing.lg,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  title: {
-    ...Typography.h1,
-    color: colors.text,
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    ...Typography.body,
-    color: colors.textSecondary,
+  
+  // Header
+  headerContainer: {
+    backgroundColor: colors.background,
+    paddingBottom: Spacing.lg,
   },
   searchBarContainer: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    backgroundColor: colors.background,
   },
-  categoriesFilter: {
-    backgroundColor: colors.background,
+  
+  // Controls
+  controlsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    marginBottom: Spacing.md,
   },
-  categoriesContent: {
-    paddingLeft: Spacing.xs,
+  leftControls: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
   },
-  categoryButton: {
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.surface,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.xl,
-    marginRight: Spacing.sm,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    ...ColorsShadows.small,
+    gap: Spacing.xs,
   },
-  categoryButtonActive: {
+  filterButtonText: {
+    ...Typography.bodySmall,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  sortButton: {
+    backgroundColor: colors.surface,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sortButtonText: {
+    ...Typography.bodySmall,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  viewToggle: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+  },
+  viewButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  viewButtonActive: {
+    backgroundColor: colors.primary,
+  },
+  
+  // Categories
+  categoriesContainer: {
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
+  },
+  categoriesContent: {
+    paddingRight: Spacing.lg,
+  },
+  categoryChip: {
+    backgroundColor: colors.surface,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginRight: Spacing.sm,
+  },
+  categoryChipActive: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
-    ...ColorsShadows.medium,
-  },
-  categoryContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
   },
   categoryText: {
     ...Typography.bodySmall,
-    fontWeight: '500',
     color: colors.text,
+    fontWeight: '500',
   },
   categoryTextActive: {
     color: colors.white,
     fontWeight: '600',
   },
-  listContent: {
-    paddingHorizontal: Spacing.lg - (Spacing.md / 2),
-    paddingVertical: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+  
+  // Results Header
+  resultsHeader: {
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
   },
-  modelCardWrapper: {
-    width: '50%',
-    paddingHorizontal: Spacing.md / 2,
-    marginBottom: Spacing.lg,
+  resultsCount: {
+    ...Typography.h3,
+    color: colors.text,
+    fontWeight: '700',
+  },
+  resultsSubtext: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+  },
+  
+  // List
+  listContent: {
+    paddingBottom: Spacing.xxl,
   },
   columnWrapper: {
     justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+  },
+  gridItemWrapper: {
+    width: (width - Spacing.lg * 2 - Spacing.md) / 2,
+    marginBottom: Spacing.lg,
+  },
+  listItemWrapper: {
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
+  },
+  
+  // Car Cards
+  carCard: {
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
+    ...ColorsShadows.card,
+  },
+  carCardList: {
+    flexDirection: 'row',
+    height: 140,
+  },
+  carImageContainer: {
+    position: 'relative',
+    height: 160,
+  },
+  carImageContainerList: {
+    width: 140,
+    height: '100%',
+  },
+  carImage: {
+    width: '100%',
+    height: '100%',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: Spacing.sm,
+    right: Spacing.sm,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: BorderRadius.full,
+    padding: Spacing.sm,
+  },
+  carBadge: {
+    position: 'absolute',
+    top: Spacing.sm,
+    left: Spacing.sm,
+    backgroundColor: colors.success,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+  },
+  carBadgeText: {
+    ...Typography.caption,
+    color: colors.white,
+    fontWeight: '600',
+    fontSize: 10,
+  },
+  carContent: {
+    padding: Spacing.md,
+  },
+  carContentList: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  carHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  carPrice: {
+    ...Typography.h3,
+    color: colors.primary,
+    fontWeight: '700',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  ratingText: {
+    ...Typography.bodySmall,
+    color: colors.text,
+    fontWeight: '600',
+  },
+  carTitle: {
+    ...Typography.body,
+    color: colors.text,
+    fontWeight: '600',
+    marginBottom: Spacing.xs,
+  },
+  carYear: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+    marginBottom: Spacing.sm,
+  },
+  carSpecs: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  specItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.xs,
+    gap: 2,
+  },
+  specText: {
+    ...Typography.caption,
+    color: colors.primary,
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  carLocation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  locationText: {
+    ...Typography.caption,
+    color: colors.textSecondary,
+  },
+  carDescription: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+    lineHeight: 18,
   },
 });

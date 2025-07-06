@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
@@ -22,8 +23,12 @@ import {
   Award,
   Clock,
   ChevronRight,
+  Phone,
+  Mail,
+  ExternalLink,
+  Grid2x2,
+  List,
 } from 'lucide-react-native';
-import { ComingSoon } from '@/components/ui/ComingSoon';
 import { StatCard } from '@/components/ui/StatCard';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { Card } from '@/components/ui/Card';
@@ -32,265 +37,304 @@ import { Button } from '@/components/ui/Button';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 
+const { width } = Dimensions.get('window');
+
 export default function MarketplaceScreen() {
   const { colors } = useThemeColors();
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
   
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Mock data for marketplace features
-  const featuredDealers = [
+  // Mock marketplace data
+  const featuredListings = [
     {
       id: 1,
-      name: "Premium Auto Group",
+      title: "2023 BMW X5 xDrive40i",
+      price: 65900,
+      originalPrice: 72000,
+      mileage: 12500,
       location: "Los Angeles, CA",
-      rating: 4.8,
+      images: ["https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=400"],
+      dealer: "Premium BMW",
       verified: true,
-      specialties: ["Luxury", "Sports Cars"],
-      image: "https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=400",
-      inventory: 45,
-      yearsInBusiness: 15,
+      rating: 4.8,
+      features: ["Leather", "Navigation", "AWD"],
+      condition: "Excellent",
+      fuelType: "Gasoline",
+      transmission: "Automatic",
+      isFeatured: true,
     },
     {
       id: 2,
-      name: "City Motors",
+      title: "2024 Tesla Model 3 Long Range",
+      price: 47240,
+      mileage: 2100,
       location: "San Francisco, CA",
-      rating: 4.6,
+      images: ["https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&w=400"],
+      dealer: "Tesla Direct",
       verified: true,
-      specialties: ["Family Cars", "Electric"],
-      image: "https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg?auto=compress&cs=tinysrgb&w=400",
-      inventory: 32,
-      yearsInBusiness: 8,
+      rating: 4.9,
+      features: ["Autopilot", "Premium Interior", "Supercharging"],
+      condition: "Like New",
+      fuelType: "Electric",
+      transmission: "Single Speed",
+      isFeatured: true,
     },
     {
       id: 3,
-      name: "Electric Future Motors",
+      title: "2022 Toyota Camry Hybrid LE",
+      price: 28500,
+      mileage: 18000,
       location: "Austin, TX",
-      rating: 4.9,
+      images: ["https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg?auto=compress&cs=tinysrgb&w=400"],
+      dealer: "City Toyota",
       verified: true,
-      specialties: ["Electric", "Hybrid", "Eco-Friendly"],
-      image: "https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&w=400",
-      inventory: 28,
-      yearsInBusiness: 5,
-    }
+      rating: 4.7,
+      features: ["Hybrid", "Safety Sense", "Bluetooth"],
+      condition: "Excellent",
+      fuelType: "Hybrid",
+      transmission: "CVT",
+      isFeatured: false,
+    },
+    {
+      id: 4,
+      title: "2023 Mercedes-Benz C-Class C300",
+      price: 52900,
+      mileage: 8500,
+      location: "Miami, FL",
+      images: ["https://images.pexels.com/photos/1545743/pexels-photo-1545743.jpeg?auto=compress&cs=tinysrgb&w=400"],
+      dealer: "Luxury Motors",
+      verified: true,
+      rating: 4.6,
+      features: ["Premium Package", "AMG Line", "Panoramic Roof"],
+      condition: "Excellent",
+      fuelType: "Gasoline",
+      transmission: "Automatic",
+      isFeatured: true,
+    },
   ];
 
-  const popularSearches = [
-    "Toyota Camry under $25,000",
-    "BMW 3 Series in California", 
-    "Electric vehicles near me",
-    "SUVs with low mileage",
-    "Certified pre-owned luxury cars",
-    "Honda Civic 2020-2023",
+  const categories = [
+    { id: 'all', name: 'All Cars', count: 1247 },
+    { id: 'luxury', name: 'Luxury', count: 156 },
+    { id: 'electric', name: 'Electric', count: 89 },
+    { id: 'suv', name: 'SUV', count: 234 },
+    { id: 'sedan', name: 'Sedan', count: 345 },
+    { id: 'truck', name: 'Truck', count: 123 },
   ];
 
   const marketplaceStats = [
-    { icon: <Car color={colors.primary} size={24} />, value: "10,000+", label: "Cars Available" },
-    { icon: <Users color={colors.success} size={24} />, value: "500+", label: "Verified Dealers" },
+    { icon: <Car color={colors.primary} size={24} />, value: "1,247", label: "Cars Available" },
+    { icon: <Users color={colors.success} size={24} />, value: "89", label: "Verified Dealers" },
     { icon: <Shield color={colors.accentGreen} size={24} />, value: "100%", label: "Verified Listings" },
   ];
 
-  const SearchSuggestionCard = useCallback(({ suggestion }: { suggestion: string }) => (
-    <TouchableOpacity style={styles.suggestionCard}>
-      <Search color={colors.textSecondary} size={16} />
-      <Text style={styles.suggestionText}>{suggestion}</Text>
-      <ChevronRight color={colors.textSecondary} size={16} />
-    </TouchableOpacity>
-  ), [colors, styles]);
-
-  const DealerCard = useCallback(({ dealer }: { dealer: any }) => (
-    <Card style={styles.dealerCard} onPress={() => console.log("Dealer pressed:", dealer.id)}>
-      <OptimizedImage source={{ uri: dealer.image }} style={styles.dealerImage} />
-      <View style={styles.dealerContent}>
-        <View style={styles.dealerHeader}>
-          <Text style={styles.dealerName}>{dealer.name}</Text>
-          {dealer.verified && (
-            <View style={styles.verifiedBadge}>
-              <Shield color={colors.white} size={12} />
-              <Text style={styles.verifiedText}>Verified</Text>
-            </View>
+  const CarListingCard = useCallback(({ listing, isListView = false }: { listing: any, isListView?: boolean }) => (
+    <TouchableOpacity 
+      style={[styles.listingCard, isListView && styles.listingCardList]}
+      activeOpacity={0.9}
+    >
+      <View style={[styles.listingImageContainer, isListView && styles.listingImageContainerList]}>
+        <OptimizedImage 
+          source={{ uri: listing.images[0] }} 
+          style={styles.listingImage} 
+        />
+        
+        {listing.isFeatured && (
+          <View style={styles.featuredBadge}>
+            <Star color={colors.white} size={12} fill={colors.white} />
+            <Text style={styles.featuredText}>Featured</Text>
+          </View>
+        )}
+        
+        {listing.originalPrice && (
+          <View style={styles.savingsBadge}>
+            <Text style={styles.savingsText}>
+              Save ${(listing.originalPrice - listing.price).toLocaleString()}
+            </Text>
+          </View>
+        )}
+      </View>
+      
+      <View style={[styles.listingContent, isListView && styles.listingContentList]}>
+        <View style={styles.listingHeader}>
+          <Text style={styles.listingPrice}>${listing.price.toLocaleString()}</Text>
+          {listing.originalPrice && (
+            <Text style={styles.originalPrice}>${listing.originalPrice.toLocaleString()}</Text>
           )}
         </View>
         
-        <View style={styles.dealerDetails}>
-          <View style={styles.dealerDetailRow}>
-            <MapPin color={colors.textSecondary} size={14} />
-            <Text style={styles.dealerLocationText}>{dealer.location}</Text>
+        <Text style={styles.listingTitle} numberOfLines={2}>{listing.title}</Text>
+        
+        <View style={styles.listingSpecs}>
+          <View style={styles.specBadge}>
+            <Text style={styles.specText}>{listing.mileage.toLocaleString()} mi</Text>
           </View>
-          
-          <View style={styles.dealerDetailRow}>
-            <Star color={colors.warning} size={14} fill={colors.warning} />
-            <Text style={styles.dealerRatingText}>{dealer.rating}</Text>
+          <View style={styles.specBadge}>
+            <Text style={styles.specText}>{listing.fuelType}</Text>
           </View>
-          
-          <View style={styles.dealerDetailRow}>
-            <Building2 color={colors.textSecondary} size={14} />
-            <Text style={styles.dealerDetailText}>{dealer.inventory} cars</Text>
-          </View>
-          
-          <View style={styles.dealerDetailRow}>
-            <Clock color={colors.textSecondary} size={14} />
-            <Text style={styles.dealerDetailText}>{dealer.yearsInBusiness} years</Text>
+          <View style={styles.specBadge}>
+            <Text style={styles.specText}>{listing.condition}</Text>
           </View>
         </View>
         
-        <View style={styles.dealerSpecialties}>
-          {dealer.specialties.map((specialty: string, index: number) => (
-            <View key={index} style={styles.specialtyTag}>
-              <Text style={styles.specialtyText}>{specialty}</Text>
-            </View>
+        <View style={styles.dealerInfo}>
+          <View style={styles.dealerLeft}>
+            <Text style={styles.dealerName}>{listing.dealer}</Text>
+            {listing.verified && (
+              <View style={styles.verifiedBadge}>
+                <Shield color={colors.success} size={10} />
+                <Text style={styles.verifiedText}>Verified</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.ratingContainer}>
+            <Star color={colors.warning} size={12} fill={colors.warning} />
+            <Text style={styles.ratingText}>{listing.rating}</Text>
+          </View>
+        </View>
+        
+        <View style={styles.listingLocation}>
+          <MapPin color={colors.textSecondary} size={14} />
+          <Text style={styles.locationText}>{listing.location}</Text>
+        </View>
+        
+        {isListView && (
+          <View style={styles.listingActions}>
+            <Button
+              title="Contact Dealer"
+              onPress={() => {}}
+              variant="outline"
+              style={styles.contactButton}
+            />
+            <TouchableOpacity style={styles.phoneButton}>
+              <Phone color={colors.primary} size={16} />
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  ), [colors, styles]);
+
+  const renderListing = ({ item }: { item: any }) => (
+    <View style={viewMode === 'grid' ? styles.gridItem : styles.listItem}>
+      <CarListingCard listing={item} isListView={viewMode === 'list'} />
+    </View>
+  );
+
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      {/* Hero Section */}
+      <View style={styles.heroSection}>
+        <Text style={styles.heroTitle}>Car Marketplace</Text>
+        <Text style={styles.heroSubtitle}>
+          Find your perfect car from verified dealers nationwide
+        </Text>
+        
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by make, model, or location..."
+          onClear={() => setSearchQuery('')}
+          containerStyle={styles.heroSearchBar}
+        />
+      </View>
+
+      {/* Stats */}
+      <View style={styles.statsSection}>
+        <View style={styles.statsGrid}>
+          {marketplaceStats.map((stat, index) => (
+            <StatCard
+              key={index}
+              icon={stat.icon}
+              value={stat.value}
+              label={stat.label}
+            />
           ))}
         </View>
       </View>
-    </Card>
-  ), [colors, styles]);
+
+      {/* Controls */}
+      <View style={styles.controlsContainer}>
+        <View style={styles.leftControls}>
+          <TouchableOpacity style={styles.filterButton}>
+            <Filter color={colors.primary} size={18} />
+            <Text style={styles.filterButtonText}>Filters</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.sortButton}>
+            <Text style={styles.sortButtonText}>Price: Low to High</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.viewToggle}>
+          <TouchableOpacity
+            style={[styles.viewButton, viewMode === 'grid' && styles.viewButtonActive]}
+            onPress={() => setViewMode('grid')}
+          >
+            <Grid2x2 color={viewMode === 'grid' ? colors.white : colors.textSecondary} size={16} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.viewButton, viewMode === 'list' && styles.viewButtonActive]}
+            onPress={() => setViewMode('list')}
+          >
+            <List color={viewMode === 'list' ? colors.white : colors.textSecondary} size={16} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Categories */}
+      <View style={styles.categoriesContainer}>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={categories}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.categoryChip,
+                selectedCategory === item.id && styles.categoryChipActive
+              ]}
+              onPress={() => setSelectedCategory(item.id)}
+            >
+              <Text style={[
+                styles.categoryText,
+                selectedCategory === item.id && styles.categoryTextActive
+              ]}>
+                {item.name} ({item.count})
+              </Text>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={styles.categoriesContent}
+        />
+      </View>
+
+      {/* Results Header */}
+      <View style={styles.resultsHeader}>
+        <Text style={styles.resultsCount}>
+          {featuredListings.length} cars found
+        </Text>
+        <Text style={styles.resultsLocation}>in your area</Text>
+      </View>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
+      <FlatList
+        data={featuredListings}
+        renderItem={renderListing}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={viewMode === 'grid' ? 2 : 1}
+        key={viewMode}
+        ListHeaderComponent={renderHeader}
+        contentContainerStyle={styles.listContent}
+        columnWrapperStyle={viewMode === 'grid' ? styles.columnWrapper : undefined}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContentContainer}
-      >
-        {/* Hero Header */}
-        <View style={styles.hero}>
-          <Text style={styles.heroTitle}>Car Marketplace</Text>
-          <Text style={styles.heroSubtitle}>
-            Connect with verified dealers and find your perfect car
-          </Text>
-        </View>
-
-        {/* Search Section */}
-        <View style={styles.searchSection}>
-          <SearchBar
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search cars, dealers, locations..."
-            onClear={() => setSearchQuery('')}
-            containerStyle={styles.searchBarContainer}
-          />
-        </View>
-
-        {/* Coming Soon Notice */}
-        <View style={styles.comingSoonSection}>
-          <ComingSoon
-            title="Marketplace Coming Soon!"
-            message="We're building an amazing marketplace experience with verified dealers and comprehensive car listings. Stay tuned for the launch!"
-            icon={<TrendingUp color={colors.primary} size={32} />}
-          />
-        </View>
-
-        {/* Stats Section */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Marketplace Overview</Text>
-          <View style={styles.statsGrid}>
-            {marketplaceStats.map((stat, index) => (
-              <StatCard
-                key={index}
-                icon={stat.icon}
-                value={stat.value}
-                label={stat.label}
-              />
-            ))}
-          </View>
-        </View>
-
-        {/* Featured Dealers Preview */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Featured Dealers</Text>
-            <Text style={styles.sectionSubtitle}>
-              Premium verified dealers you can trust
-            </Text>
-          </View>
-          
-          <FlatList
-            data={featuredDealers}
-            renderItem={({ item }) => <DealerCard dealer={item} />}
-            keyExtractor={(item) => item.id.toString()}
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
-
-        {/* Popular Searches */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Popular Searches</Text>
-            <Text style={styles.sectionSubtitle}>
-              Quick search suggestions from our community
-            </Text>
-          </View>
-          
-          <FlatList
-            data={popularSearches}
-            renderItem={({ item }) => <SearchSuggestionCard suggestion={item} />}
-            keyExtractor={(item, index) => index.toString()}
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
-
-        {/* Features Preview */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>What's Coming</Text>
-            <Text style={styles.sectionSubtitle}>
-              Features that will make car buying effortless
-            </Text>
-          </View>
-          
-          <View style={styles.featureCard}>
-            <View style={styles.featureIconContainer}>
-              <Shield color={colors.success} size={24} />
-            </View>
-            <View style={styles.featureContent}>
-              <Text style={styles.featureTitle}>Verified Dealers Only</Text>
-              <Text style={styles.featureDescription}>
-                All dealers go through a rigorous verification process to ensure quality and trustworthiness
-              </Text>
-            </View>
-          </View>
-          
-          <View style={styles.featureCard}>
-            <View style={styles.featureIconContainer}>
-              <DollarSign color={colors.primary} size={24} />
-            </View>
-            <View style={styles.featureContent}>
-              <Text style={styles.featureTitle}>Transparent Pricing</Text>
-              <Text style={styles.featureDescription}>
-                No hidden fees, clear pricing information for every listing with upfront costs
-              </Text>
-            </View>
-          </View>
-          
-          <View style={styles.featureCard}>
-            <View style={styles.featureIconContainer}>
-              <Award color={colors.accentGreen} size={24} />
-            </View>
-            <View style={styles.featureContent}>
-              <Text style={styles.featureTitle}>Quality Guarantee</Text>
-              <Text style={styles.featureDescription}>
-                Complete vehicle history reports and professional inspection details for peace of mind
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Call to Action */}
-        <View style={styles.ctaSection}>
-          <Text style={styles.ctaTitle}>Ready to find your perfect car?</Text>
-          <Text style={styles.ctaSubtitle}>
-            Join thousands of happy customers who found their dream car through our platform
-          </Text>
-          <Button
-            title="Notify Me When Ready"
-            onPress={() => console.log('Notify me pressed')}
-            variant="primary"
-            style={styles.ctaButton}
-          />
-        </View>
-      </ScrollView>
+      />
     </SafeAreaView>
   );
 }
@@ -300,207 +344,342 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     flex: 1,
     backgroundColor: colors.background,
   },
-  scrollView: {
-    flex: 1,
+  
+  // Header
+  headerContainer: {
+    backgroundColor: colors.background,
   },
-  scrollContentContainer: {
-    paddingBottom: Spacing.xxl,
-  },
-  hero: {
-    padding: Spacing.xl,
+  heroSection: {
     backgroundColor: colors.surface,
+    padding: Spacing.xl,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    alignItems: 'center',
   },
   heroTitle: {
     ...Typography.h1,
     color: colors.text,
-    marginBottom: Spacing.sm,
+    fontWeight: '800',
     textAlign: 'center',
+    marginBottom: Spacing.sm,
   },
   heroSubtitle: {
-    ...Typography.bodyLarge,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  searchSection: {
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  searchBarContainer: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-  },
-  comingSoonSection: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl,
-  },
-  statsSection: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl,
-    backgroundColor: colors.background,
-  },
-  sectionHeader: {
-    marginBottom: Spacing.lg,
-  },
-  sectionTitle: {
-    ...Typography.h2,
-    color: colors.text,
-    marginBottom: Spacing.sm,
-  },
-  sectionSubtitle: {
     ...Typography.body,
     color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+  },
+  heroSearchBar: {
+    backgroundColor: colors.background,
+    borderRadius: BorderRadius.xl,
+    ...ColorsShadows.medium,
+  },
+  
+  // Stats
+  statsSection: {
+    padding: Spacing.lg,
+    backgroundColor: colors.background,
   },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: Spacing.md,
   },
-  section: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl,
-  },
-  dealerCard: {
-    marginBottom: Spacing.lg,
-  },
-  dealerImage: {
-    width: '100%',
-    height: 160,
-    borderTopLeftRadius: BorderRadius.lg,
-    borderTopRightRadius: BorderRadius.lg,
-    backgroundColor: colors.surfaceDark,
-  },
-  dealerContent: {
-    padding: Spacing.lg,
-  },
-  dealerHeader: {
+  
+  // Controls
+  controlsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: Spacing.md,
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  dealerName: {
+  leftControls: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: Spacing.xs,
+  },
+  filterButtonText: {
+    ...Typography.bodySmall,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  sortButton: {
+    backgroundColor: colors.background,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sortButtonText: {
+    ...Typography.bodySmall,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  viewToggle: {
+    flexDirection: 'row',
+    backgroundColor: colors.background,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+  },
+  viewButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  viewButtonActive: {
+    backgroundColor: colors.primary,
+  },
+  
+  // Categories
+  categoriesContainer: {
+    paddingVertical: Spacing.md,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  categoriesContent: {
+    paddingHorizontal: Spacing.lg,
+  },
+  categoryChip: {
+    backgroundColor: colors.background,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginRight: Spacing.sm,
+  },
+  categoryChipActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  categoryText: {
+    ...Typography.bodySmall,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  categoryTextActive: {
+    color: colors.white,
+    fontWeight: '600',
+  },
+  
+  // Results
+  resultsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    backgroundColor: colors.background,
+    gap: Spacing.xs,
+  },
+  resultsCount: {
     ...Typography.h3,
     color: colors.text,
+    fontWeight: '700',
+  },
+  resultsLocation: {
+    ...Typography.body,
+    color: colors.textSecondary,
+  },
+  
+  // List
+  listContent: {
+    paddingBottom: Spacing.xxl,
+  },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+  },
+  gridItem: {
+    width: (width - Spacing.lg * 2 - Spacing.md) / 2,
+    marginBottom: Spacing.lg,
+  },
+  listItem: {
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
+  },
+  
+  // Listing Cards
+  listingCard: {
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
+    ...ColorsShadows.card,
+  },
+  listingCardList: {
+    flexDirection: 'row',
+    height: 160,
+  },
+  listingImageContainer: {
+    position: 'relative',
+    height: 140,
+  },
+  listingImageContainerList: {
+    width: 140,
+    height: '100%',
+  },
+  listingImage: {
+    width: '100%',
+    height: '100%',
+  },
+  featuredBadge: {
+    position: 'absolute',
+    top: Spacing.sm,
+    left: Spacing.sm,
+    backgroundColor: colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+    gap: 2,
+  },
+  featuredText: {
+    ...Typography.caption,
+    color: colors.white,
+    fontWeight: '600',
+    fontSize: 10,
+  },
+  savingsBadge: {
+    position: 'absolute',
+    top: Spacing.sm,
+    right: Spacing.sm,
+    backgroundColor: colors.error,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+  },
+  savingsText: {
+    ...Typography.caption,
+    color: colors.white,
+    fontWeight: '600',
+    fontSize: 10,
+  },
+  listingContent: {
+    padding: Spacing.md,
+  },
+  listingContentList: {
     flex: 1,
-    marginRight: Spacing.md,
+    justifyContent: 'space-between',
+  },
+  listingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+    gap: Spacing.sm,
+  },
+  listingPrice: {
+    ...Typography.h3,
+    color: colors.primary,
+    fontWeight: '700',
+  },
+  originalPrice: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+    textDecorationLine: 'line-through',
+  },
+  listingTitle: {
+    ...Typography.body,
+    color: colors.text,
+    fontWeight: '600',
+    marginBottom: Spacing.sm,
+  },
+  listingSpecs: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+    flexWrap: 'wrap',
+  },
+  specBadge: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.xs,
+  },
+  specText: {
+    ...Typography.caption,
+    color: colors.primary,
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  dealerInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+  dealerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  dealerName: {
+    ...Typography.bodySmall,
+    color: colors.text,
+    fontWeight: '500',
   },
   verifiedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.success,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.full,
-    gap: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 1,
+    borderRadius: BorderRadius.xs,
+    gap: 2,
   },
   verifiedText: {
     ...Typography.caption,
     color: colors.white,
+    fontSize: 9,
     fontWeight: '600',
   },
-  dealerDetails: {
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  dealerDetailRow: {
+  ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: 2,
   },
-  dealerLocationText: {
-    ...Typography.bodySmall,
-    color: colors.textSecondary,
-  },
-  dealerRatingText: {
-    ...Typography.bodySmall,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  dealerDetailText: {
-    ...Typography.bodySmall,
-    color: colors.textSecondary,
-  },
-  dealerSpecialties: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  specialtyTag: {
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-  },
-  specialtyText: {
+  ratingText: {
     ...Typography.caption,
-    color: colors.primary,
-    fontWeight: '500',
+    color: colors.text,
+    fontWeight: '600',
   },
-  suggestionCard: {
-    backgroundColor: colors.surface,
-    padding: Spacing.md,
+  listingLocation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  locationText: {
+    ...Typography.caption,
+    color: colors.textSecondary,
+  },
+  listingActions: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    alignItems: 'center',
+  },
+  contactButton: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+  },
+  phoneButton: {
+    backgroundColor: colors.primaryLight,
+    padding: Spacing.sm,
     borderRadius: BorderRadius.md,
-    marginBottom: Spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    ...ColorsShadows.small,
-  },
-  suggestionText: {
-    ...Typography.body,
-    color: colors.text,
-    flex: 1,
-  },
-  featureCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: colors.surface,
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    marginBottom: Spacing.md,
-    ...ColorsShadows.small,
-  },
-  featureIconContainer: {
-    marginRight: Spacing.md,
-    paddingTop: Spacing.xs,
-  },
-  featureContent: {
-    flex: 1,
-  },
-  featureTitle: {
-    ...Typography.h3,
-    color: colors.text,
-    marginBottom: Spacing.sm,
-  },
-  featureDescription: {
-    ...Typography.body,
-    color: colors.textSecondary,
-    lineHeight: 22,
-  },
-  ctaSection: {
-    padding: Spacing.xl,
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    alignItems: 'center',
-  },
-  ctaTitle: {
-    ...Typography.h2,
-    color: colors.text,
-    marginBottom: Spacing.sm,
-    textAlign: 'center',
-  },
-  ctaSubtitle: {
-    ...Typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-  },
-  ctaButton: {
-    minWidth: 200,
   },
 });
