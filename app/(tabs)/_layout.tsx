@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Search, Car, TrendingUp, FileText, User } from 'lucide-react-native';
+import { Chrome as Home, Car, TrendingUp, FileText, Sparkles, User } from 'lucide-react-native';
 import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 
@@ -69,6 +69,16 @@ export default function TabLayout() {
           title: 'Reviews',
           tabBarIcon: ({ color }) => (
             <FileText color={color} size={24} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ai-search-tab"
+        options={{
+          title: 'AI',
+          href: '/search',
+          tabBarIcon: ({ color, size }) => (
+            <Sparkles color={color} size={24} />
           ),
         }}
       />
