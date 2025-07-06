@@ -10,27 +10,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  Search, 
-  Filter, 
-  MapPin, 
-  DollarSign, 
-  Car,
-  TrendingUp,
-  Users,
-  Shield,
-  Star,
-  Building2,
-  Award,
-  Clock,
-  ChevronRight,
-  Phone,
-  Mail,
-  ExternalLink,
-  Grid2x2,
-  List,
-  AlertCircle,
-} from 'lucide-react-native';
+import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Shield, Star, Building2, Award, Clock, ChevronRight, Phone, Mail, ExternalLink, Grid2x2, List, CircleAlert as AlertCircle } from 'lucide-react-native';
 import { StatCard } from '@/components/ui/StatCard';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { Card } from '@/components/ui/Card';
