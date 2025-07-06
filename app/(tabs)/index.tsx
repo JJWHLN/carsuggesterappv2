@@ -12,24 +12,32 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { 
   Search,
-  MapPin,
-  Heart,
-  Star,
+  SlidersHorizontal,
+  Zap as ElectricIcon,
+  Crown as LuxuryIcon,
+  Shield as FamilySUVIcon,
+  Rocket as SportsCarIcon,
+  Building2 as BrandIcon,
   TrendingUp,
   Car,
-  Filter,
+  Star,
   ChevronRight,
-  Play,
-  Award,
+  Sparkles,
+  MapPin,
   Users,
-  Building2,
+  Award,
+  ArrowRight,
+  Filter,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
+import { StatCard } from '@/components/ui/StatCard';
 import { SearchBar } from '@/components/ui/SearchBar';
+import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { CarCard } from '@/components/ui/CarCard';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useApi } from '@/hooks/useApi';
@@ -44,137 +52,85 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const styles = useMemo(() => getStyles(colors), [colors]);
 
+  const handleAuthRequired = (action: () => void, fallbackAction?: () => void) => {
+    if (user) {
+      action();
+    } else if (fallbackAction) {
+      fallbackAction();
+    } else {
+      router.push('/auth/sign-in');
+    }
+  };
+
   const {
     data: featuredCars,
     loading: featuredCarsLoading,
     error: featuredCarsError,
     refetch: refetchFeaturedCars
-  } = useApi(() => fetchCarModels({ limit: 8 }), []);
+  } = useApi(() => fetchCarModels({ limit: 6 }), []);
 
   const {
     data: popularBrands,
     loading: popularBrandsLoading,
     error: popularBrandsError,
     refetch: refetchPopularBrands
-  } = useApi(() => fetchPopularBrands(6), []);
+  } = useApi(() => fetchPopularBrands(8), []);
 
-  // Mock featured reviews data
-  const featuredReviews = [
-    {
-      id: 1,
-      title: "2024 BMW X5 Review: Luxury Redefined",
-      image: "https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=800",
-      rating: 4.8,
-      author: "CarSuggester Expert",
-      readTime: "8 min read",
-      hasVideo: true,
+  const quickCategories = [
+    { 
+      name: 'Electric', 
+      icon: ElectricIcon, 
+      color: '#10B981',
+      bgColor: '#ECFDF5',
+      description: 'Zero emissions',
+      onPress: () => router.push({ pathname: '/models', params: { category: 'Electric' }})
     },
-    {
-      id: 2,
-      title: "Tesla Model 3 vs Model Y: Which to Choose?",
-      image: "https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&w=800",
-      rating: 4.6,
-      author: "Electric Car Specialist",
-      readTime: "12 min read",
-      hasVideo: false,
+    { 
+      name: 'Luxury', 
+      icon: LuxuryIcon, 
+      color: '#8B5CF6',
+      bgColor: '#F3E8FF',
+      description: 'Premium comfort',
+      onPress: () => router.push({ pathname: '/models', params: { category: 'Luxury' }})
     },
-    {
-      id: 3,
-      title: "Toyota Camry Hybrid: The Perfect Family Car",
-      image: "https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg?auto=compress&cs=tinysrgb&w=800",
-      rating: 4.7,
-      author: "Family Car Expert",
-      readTime: "6 min read",
-      hasVideo: true,
+    { 
+      name: 'Family SUV', 
+      icon: FamilySUVIcon, 
+      color: '#3B82F6',
+      bgColor: '#EFF6FF',
+      description: 'Safe & spacious',
+      onPress: () => router.push({ pathname: '/models', params: { category: 'SUV' }})
+    },
+    { 
+      name: 'Sports Car', 
+      icon: SportsCarIcon, 
+      color: '#EF4444',
+      bgColor: '#FEF2F2',
+      description: 'Pure performance',
+      onPress: () => router.push({ pathname: '/models', params: { category: 'Sports' }})
     },
   ];
 
-  const quickStats = [
-    { icon: <Car color={colors.primary} size={24} />, value: "15,000+", label: "Cars Listed" },
-    { icon: <Users color={colors.success} size={24} />, value: "2,500+", label: "Happy Customers" },
-    { icon: <Building2 color={colors.accentGreen} size={24} />, value: "500+", label: "Verified Dealers" },
+  const stats = [
+    { 
+      title: '15K+', 
+      subtitle: 'Cars Available', 
+      icon: <Car color={colors.primary} size={28} />,
+      bgColor: colors.primaryLight
+    },
+    { 
+      title: '2.5K+', 
+      subtitle: 'Verified Dealers', 
+      icon: <Users color={colors.accentGreen} size={28} />,
+      bgColor: '#ECFDF5'
+    },
+    { 
+      title: '50+', 
+      subtitle: 'Car Brands', 
+      icon: <Award color={colors.success} size={28} />,
+      bgColor: '#F0FDF4'
+    },
   ];
-
-  const FeaturedCarCard = ({ car }: { car: any }) => (
-    <TouchableOpacity 
-      style={styles.featuredCarCard}
-      onPress={() => router.push(`/model/${car.id}`)}
-      activeOpacity={0.9}
-    >
-      <View style={styles.carImageContainer}>
-        <OptimizedImage
-          source={{ uri: car.image_url || 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400' }}
-          style={styles.carImage}
-          resizeMode="cover"
-        />
-        <TouchableOpacity style={styles.favoriteButton}>
-          <Heart color={colors.white} size={18} />
-        </TouchableOpacity>
-        <View style={styles.carBadge}>
-          <Text style={styles.carBadgeText}>Featured</Text>
-        </View>
-      </View>
-      
-      <View style={styles.carCardContent}>
-        <Text style={styles.carPrice}>From $35,000</Text>
-        <Text style={styles.carTitle}>{car.brands?.name} {car.name}</Text>
-        <Text style={styles.carYear}>{car.year} Model</Text>
-        
-        <View style={styles.carFeatures}>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureText}>Automatic</Text>
-          </View>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureText}>Hybrid</Text>
-          </View>
-        </View>
-        
-        <View style={styles.carLocation}>
-          <MapPin color={colors.textSecondary} size={14} />
-          <Text style={styles.locationText}>Multiple Locations</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const ReviewCard = ({ review }: { review: any }) => (
-    <TouchableOpacity 
-      style={styles.reviewCard}
-      onPress={() => router.push(`/review/${review.id}`)}
-      activeOpacity={0.9}
-    >
-      <ImageBackground
-        source={{ uri: review.image }}
-        style={styles.reviewImageBackground}
-        imageStyle={styles.reviewImage}
-      >
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.8)']}
-          style={styles.reviewGradient}
-        >
-          {review.hasVideo && (
-            <View style={styles.playButton}>
-              <Play color={colors.white} size={20} fill={colors.white} />
-            </View>
-          )}
-          
-          <View style={styles.reviewContent}>
-            <View style={styles.reviewRating}>
-              <Star color={colors.warning} size={16} fill={colors.warning} />
-              <Text style={styles.ratingText}>{review.rating}</Text>
-            </View>
-            
-            <Text style={styles.reviewTitle}>{review.title}</Text>
-            
-            <View style={styles.reviewMeta}>
-              <Text style={styles.reviewAuthor}>{review.author}</Text>
-              <Text style={styles.reviewReadTime}>{review.readTime}</Text>
-            </View>
-          </View>
-        </LinearGradient>
-      </ImageBackground>
-    </TouchableOpacity>
-  );
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -183,89 +139,145 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContentContainer}
       >
-        {/* Hero Search Section */}
+        {/* Enhanced Hero Section */}
         <View style={styles.heroSection}>
-          <LinearGradient
-            colors={[colors.primary, colors.primaryHover]}
-            style={styles.heroGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <ImageBackground
+            source={{ uri: 'https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=1200' }}
+            style={styles.heroBackground}
+            imageStyle={styles.heroBackgroundImage}
           >
-            <View style={styles.heroContent}>
-              <Text style={styles.heroTitle}>Find Your Perfect Car</Text>
-              <Text style={styles.heroSubtitle}>
-                Browse thousands of verified listings from trusted dealers
-              </Text>
-              
-              <View style={styles.searchContainer}>
-                <SearchBar
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                  placeholder="Search by make, model, or location..."
-                  onSubmit={() => router.push({ pathname: '/search', params: { query: searchQuery }})}
-                  containerStyle={styles.heroSearchBar}
-                />
-                
-                <TouchableOpacity style={styles.filterButton}>
-                  <Filter color={colors.primary} size={20} />
-                </TouchableOpacity>
-              </View>
-              
-              <View style={styles.quickFilters}>
-                {['Under $20k', 'Electric', 'SUV', 'Luxury'].map((filter, index) => (
-                  <TouchableOpacity key={index} style={styles.quickFilterChip}>
-                    <Text style={styles.quickFilterText}>{filter}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          </LinearGradient>
-        </View>
-
-        {/* Quick Stats */}
-        <View style={styles.statsSection}>
-          <View style={styles.statsContainer}>
-            {quickStats.map((stat, index) => (
-              <View key={index} style={styles.statCard}>
-                <View style={styles.statIcon}>{stat.icon}</View>
-                <Text style={styles.statValue}>{stat.value}</Text>
-                <Text style={styles.statLabel}>{stat.label}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        {/* Featured Reviews */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Latest Reviews</Text>
-            <TouchableOpacity style={styles.viewAllButton}>
-              <Text style={styles.viewAllText}>View All</Text>
-              <ChevronRight color={colors.primary} size={16} />
-            </TouchableOpacity>
-          </View>
-          
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.reviewsScroll}
-          >
-            {featuredReviews.map(review => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Featured Cars */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Featured Cars</Text>
-            <TouchableOpacity 
-              style={styles.viewAllButton}
-              onPress={() => router.push('/models')}
+            <LinearGradient
+              colors={['rgba(34, 197, 94, 0.9)', 'rgba(22, 163, 74, 0.95)']}
+              style={styles.heroOverlay}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
             >
-              <Text style={styles.viewAllText}>View All</Text>
-              <ChevronRight color={colors.primary} size={16} />
+              <View style={styles.heroContent}>
+                {/* Hero Badge */}
+                <View style={styles.heroBadge}>
+                  <Sparkles color={colors.primary} size={16} />
+                  <Text style={[styles.heroBadgeText, { color: colors.primary }]}>
+                    AI-Powered Car Discovery
+                  </Text>
+                </View>
+
+                <Text style={[styles.heroTitle, { color: colors.white }]}>
+                  Find Your Perfect Car
+                </Text>
+                <Text style={[styles.heroSubtitle, { color: colors.white }]}>
+                  AI-powered recommendations, expert reviews, and thousands of verified listings all in one place
+                </Text>
+                
+                <View style={styles.heroSearchContainer}>
+                  <View style={styles.searchBarWrapper}>
+                    <View style={styles.searchInputContainer}>
+                      <Search color={colors.textSecondary} size={20} />
+                      <Text style={styles.searchPlaceholder}>
+                        Try 'BMW under $30k' or 'Family SUV'
+                      </Text>
+                    </View>
+                    <TouchableOpacity 
+                      style={styles.searchButton}
+                      onPress={() => router.push({ pathname: '/search', params: { query: searchQuery }})}
+                    >
+                      <Search color={colors.white} size={20} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <View style={styles.heroButtons}>
+                  <Button
+                    title={user ? "Get AI Recommendations" : "Start Your Journey"}
+                    onPress={() => handleAuthRequired(
+                      () => router.push('/recommendations'),
+                      () => router.push('/auth/sign-in')
+                    )}
+                    variant="secondary"
+                    style={styles.primaryHeroButton}
+                    icon={<Sparkles color={colors.primary} size={20} />}
+                  />
+                  <Button
+                    title="Browse All Cars"
+                    onPress={() => router.push('/models')}
+                    variant="outline"
+                    style={styles.secondaryHeroButton}
+                    icon={<ArrowRight color={colors.white} size={20} />}
+                  />
+                </View>
+              </View>
+            </LinearGradient>
+          </ImageBackground>
+        </View>
+
+        {/* Enhanced Stats Section */}
+        <View style={styles.statsSection}>
+          <View style={styles.statsHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Trusted by Car Enthusiasts
+            </Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+              Join thousands of satisfied customers
+            </Text>
+          </View>
+          <View style={styles.statsGrid}>
+            {stats.map((stat, index) => (
+              <View key={index} style={styles.statCardWrapper}>
+                <View style={[styles.statIconContainer, { backgroundColor: stat.bgColor }]}>
+                  {stat.icon}
+                </View>
+                <Text style={[styles.statValue, { color: colors.text }]}>{stat.title}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stat.subtitle}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Enhanced Categories Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Browse by Category</Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+              Find exactly what you're looking for
+            </Text>
+          </View>
+          <View style={styles.categoriesGrid}>
+            {quickCategories.map((category, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.categoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={category.onPress}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.categoryIconContainer, { backgroundColor: category.bgColor }]}>
+                  <category.icon color={category.color} size={32} />
+                </View>
+                <View style={styles.categoryContent}>
+                  <Text style={[styles.categoryTitle, { color: colors.text }]}>{category.name}</Text>
+                  <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>
+                    {category.description}
+                  </Text>
+                </View>
+                <ChevronRight color={colors.textSecondary} size={20} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Enhanced Featured Cars Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Featured Cars</Text>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                Hand-picked recommendations
+              </Text>
+            </View>
+            <TouchableOpacity 
+              onPress={() => router.push('/models')}
+              style={styles.viewAllButton}
+            >
+              <Text style={[styles.viewAllText, { color: colors.primary }]}>View All</Text>
+              <ArrowRight color={colors.primary} size={16} />
             </TouchableOpacity>
           </View>
           
@@ -284,21 +296,45 @@ export default function HomeScreen() {
           )}
           
           {featuredCars && featuredCars.length > 0 && (
-            <View style={styles.carsGrid}>
-              {featuredCars.slice(0, 6).map(car => (
-                <FeaturedCarCard key={car.id} car={car} />
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.featuredCarsScroll}
+            >
+              {featuredCars.map(car => (
+                <View key={car.id} style={styles.featuredCarCard}>
+                  <CarCard
+                    image={car.image_url || 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400'}
+                    name={`${car.brands?.name} ${car.name}`}
+                    year={car.year}
+                    priceRange="Price on request"
+                    tags={car.category || []}
+                    rating={4.5}
+                    location="Multiple locations"
+                    onPress={() => router.push(`/model/${car.id}`)}
+                    style={styles.horizontalCarCard}
+                  />
+                </View>
               ))}
-            </View>
+            </ScrollView>
           )}
         </View>
 
-        {/* Popular Brands */}
+        {/* Enhanced Popular Brands Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Shop by Brand</Text>
-            <TouchableOpacity style={styles.viewAllButton}>
-              <Text style={styles.viewAllText}>View All</Text>
-              <ChevronRight color={colors.primary} size={16} />
+            <View>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Popular Brands</Text>
+              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+                Explore top automotive brands
+              </Text>
+            </View>
+            <TouchableOpacity 
+              onPress={() => router.push('/models')}
+              style={styles.viewAllButton}
+            >
+              <Text style={[styles.viewAllText, { color: colors.primary }]}>View All</Text>
+              <ArrowRight color={colors.primary} size={16} />
             </TouchableOpacity>
           </View>
           
@@ -308,42 +344,73 @@ export default function HomeScreen() {
             </View>
           )}
           
+          {popularBrandsError && (
+            <ErrorState 
+              title="Could Not Load Brands" 
+              message={popularBrandsError} 
+              onRetry={refetchPopularBrands} 
+            />
+          )}
+          
           {popularBrands && popularBrands.length > 0 && (
             <View style={styles.brandsGrid}>
               {popularBrands.map(brand => (
                 <TouchableOpacity
                   key={brand.id}
-                  style={styles.brandCard}
+                  style={[styles.brandCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                   onPress={() => router.push(`/brand/${brand.id}`)}
                   activeOpacity={0.8}
                 >
-                  <OptimizedImage
-                    source={{ uri: brand.logo_url || '' }}
-                    style={styles.brandLogo}
-                    resizeMode="contain"
-                    fallbackSource={require('@/assets/images/icon.png')}
-                  />
-                  <Text style={styles.brandName}>{brand.name}</Text>
+                  <View style={styles.brandLogoContainer}>
+                    {brand.logo_url ? (
+                      <OptimizedImage
+                        source={{uri: brand.logo_url}}
+                        style={styles.brandLogo}
+                        resizeMode="contain"
+                        fallbackSource={require('@/assets/images/icon.png')}
+                      />
+                    ) : (
+                      <View style={[styles.brandLogoPlaceholder, { backgroundColor: colors.primaryLight }]}>
+                        <BrandIcon color={colors.primary} size={24} />
+                      </View>
+                    )}
+                  </View>
+                  <Text style={[styles.brandName, { color: colors.text }]} numberOfLines={1}>
+                    {brand.name}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
           )}
         </View>
 
-        {/* Call to Action */}
+        {/* Call to Action Section */}
         <View style={styles.ctaSection}>
-          <View style={styles.ctaCard}>
-            <Award color={colors.primary} size={32} />
-            <Text style={styles.ctaTitle}>Ready to Sell Your Car?</Text>
-            <Text style={styles.ctaSubtitle}>
-              List your car for free and reach thousands of potential buyers
-            </Text>
-            <Button
-              title="List Your Car"
-              onPress={() => router.push('/add-car')}
-              style={styles.ctaButton}
-            />
-          </View>
+          <LinearGradient
+            colors={[colors.primary, colors.primaryHover]}
+            style={styles.ctaGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <View style={styles.ctaContent}>
+              <Text style={[styles.ctaTitle, { color: colors.white }]}>
+                Ready to Find Your Dream Car?
+              </Text>
+              <Text style={[styles.ctaSubtitle, { color: colors.white }]}>
+                Get personalized recommendations powered by AI
+              </Text>
+              <Button
+                title={user ? "Get My Recommendations" : "Get Started"}
+                onPress={() => handleAuthRequired(
+                  () => router.push('/recommendations'),
+                  () => router.push('/auth/sign-in')
+                )}
+                variant="secondary"
+                style={styles.ctaButton}
+                icon={<Sparkles color={colors.primary} size={20} />}
+              />
+            </View>
+          </LinearGradient>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -360,119 +427,158 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
   scrollContentContainer: {
     paddingBottom: Spacing.xxl,
   },
-  
-  // Hero Section
   heroSection: {
+    height: height * 0.65,
     marginBottom: Spacing.xl,
   },
-  heroGradient: {
+  heroBackground: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  heroBackgroundImage: {
+    opacity: 0.3,
+  },
+  heroOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl * 1.5,
   },
   heroContent: {
     alignItems: 'center',
-  },
-  heroTitle: {
-    ...Typography.heroTitle,
-    color: colors.white,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-    fontWeight: '800',
-  },
-  heroSubtitle: {
-    ...Typography.bodyLarge,
-    color: colors.white,
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-    opacity: 0.9,
-  },
-  searchContainer: {
-    flexDirection: 'row',
     width: '100%',
-    gap: Spacing.md,
-    marginBottom: Spacing.lg,
+    maxWidth: 400,
   },
-  heroSearchBar: {
-    flex: 1,
-    backgroundColor: colors.white,
-    borderRadius: BorderRadius.xl,
-    ...ColorsShadows.large,
-  },
-  filterButton: {
-    backgroundColor: colors.white,
-    borderRadius: BorderRadius.xl,
-    padding: Spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...ColorsShadows.large,
-  },
-  quickFilters: {
+  heroBadge: {
     flexDirection: 'row',
-    gap: Spacing.sm,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  quickFilterChip: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    backgroundColor: colors.white,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    marginBottom: Spacing.lg,
+    gap: Spacing.xs,
+    ...ColorsShadows.medium,
   },
-  quickFilterText: {
-    ...Typography.bodySmall,
-    color: colors.white,
-    fontWeight: '500',
+  heroBadgeText: {
+    ...Typography.caption,
+    fontWeight: '600',
   },
-
-  // Stats Section
+  heroTitle: {
+    ...Typography.heroTitle,
+    textAlign: 'center',
+    marginBottom: Spacing.md,
+    fontWeight: '800',
+    fontSize: 36,
+  },
+  heroSubtitle: {
+    ...Typography.bodyLarge,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+    opacity: 0.95,
+    lineHeight: 26,
+  },
+  heroSearchContainer: {
+    width: '100%',
+    marginBottom: Spacing.lg,
+  },
+  searchBarWrapper: {
+    flexDirection: 'row',
+    backgroundColor: colors.white,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.xs,
+    alignItems: 'center',
+    ...ColorsShadows.large,
+  },
+  searchInputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  searchPlaceholder: {
+    ...Typography.body,
+    color: colors.textSecondary,
+    marginLeft: Spacing.sm,
+  },
+  searchButton: {
+    backgroundColor: colors.primary,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    width: '100%',
+    marginTop: Spacing.md,
+  },
+  primaryHeroButton: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
+  },
+  secondaryHeroButton: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
+  },
   statsSection: {
     paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.xl,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    paddingVertical: Spacing.xl,
     backgroundColor: colors.surface,
+    marginHorizontal: Spacing.lg,
     borderRadius: BorderRadius.xl,
-    padding: Spacing.lg,
+    marginBottom: Spacing.xl,
     ...ColorsShadows.card,
   },
-  statCard: {
+  statsHeader: {
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  statCardWrapper: {
     alignItems: 'center',
     flex: 1,
   },
-  statIcon: {
-    marginBottom: Spacing.sm,
+  statIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
   },
   statValue: {
     ...Typography.h2,
-    color: colors.text,
     fontWeight: '700',
     marginBottom: Spacing.xs,
   },
   statLabel: {
     ...Typography.caption,
-    color: colors.textSecondary,
     textAlign: 'center',
   },
-
-  // Section Styles
   section: {
+    paddingHorizontal: Spacing.lg,
     marginBottom: Spacing.xl,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
+    alignItems: 'flex-start',
     marginBottom: Spacing.lg,
   },
   sectionTitle: {
     ...Typography.h2,
-    color: colors.text,
     fontWeight: '700',
+    marginBottom: Spacing.xs,
+  },
+  sectionSubtitle: {
+    ...Typography.body,
   },
   viewAllButton: {
     flexDirection: 'row',
@@ -481,225 +587,112 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
   },
   viewAllText: {
     ...Typography.body,
-    color: colors.primary,
     fontWeight: '600',
   },
-
-  // Review Cards
-  reviewsScroll: {
+  categoriesGrid: {
+    gap: Spacing.md,
+  },
+  categoryCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    ...ColorsShadows.small,
+  },
+  categoryIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.lg,
+  },
+  categoryContent: {
+    flex: 1,
+  },
+  categoryTitle: {
+    ...Typography.h3,
+    fontWeight: '600',
+    marginBottom: Spacing.xs,
+  },
+  categoryDescription: {
+    ...Typography.bodySmall,
+  },
+  loadingContainer: {
+    paddingVertical: Spacing.xl,
+    alignItems: 'center',
+  },
+  featuredCarsScroll: {
     paddingLeft: Spacing.lg,
     paddingRight: Spacing.md,
   },
-  reviewCard: {
-    width: width * 0.75,
-    height: 200,
-    marginRight: Spacing.md,
-    borderRadius: BorderRadius.xl,
-    overflow: 'hidden',
-    ...ColorsShadows.large,
-  },
-  reviewImageBackground: {
-    flex: 1,
-  },
-  reviewImage: {
-    borderRadius: BorderRadius.xl,
-  },
-  reviewGradient: {
-    flex: 1,
-    justifyContent: 'space-between',
-    padding: Spacing.lg,
-  },
-  playButton: {
-    alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    borderRadius: BorderRadius.full,
-    padding: Spacing.md,
-  },
-  reviewContent: {
-    gap: Spacing.sm,
-  },
-  reviewRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  ratingText: {
-    ...Typography.bodySmall,
-    color: colors.white,
-    fontWeight: '600',
-  },
-  reviewTitle: {
-    ...Typography.h3,
-    color: colors.white,
-    fontWeight: '700',
-  },
-  reviewMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  reviewAuthor: {
-    ...Typography.bodySmall,
-    color: colors.white,
-    opacity: 0.9,
-  },
-  reviewReadTime: {
-    ...Typography.bodySmall,
-    color: colors.white,
-    opacity: 0.9,
-  },
-
-  // Car Cards
-  carsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: Spacing.lg,
-    gap: Spacing.md,
-  },
   featuredCarCard: {
-    width: (width - Spacing.lg * 2 - Spacing.md) / 2,
-    backgroundColor: colors.surface,
-    borderRadius: BorderRadius.xl,
-    overflow: 'hidden',
-    ...ColorsShadows.card,
+    marginRight: Spacing.md,
   },
-  carImageContainer: {
-    position: 'relative',
-    height: 140,
+  horizontalCarCard: {
+    width: width * 0.7,
   },
-  carImage: {
-    width: '100%',
-    height: '100%',
-  },
-  favoriteButton: {
-    position: 'absolute',
-    top: Spacing.sm,
-    right: Spacing.sm,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: BorderRadius.full,
-    padding: Spacing.sm,
-  },
-  carBadge: {
-    position: 'absolute',
-    top: Spacing.sm,
-    left: Spacing.sm,
-    backgroundColor: colors.primary,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-  },
-  carBadgeText: {
-    ...Typography.caption,
-    color: colors.white,
-    fontWeight: '600',
-    fontSize: 10,
-  },
-  carCardContent: {
-    padding: Spacing.md,
-  },
-  carPrice: {
-    ...Typography.h3,
-    color: colors.primary,
-    fontWeight: '700',
-    marginBottom: Spacing.xs,
-  },
-  carTitle: {
-    ...Typography.body,
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: Spacing.xs,
-  },
-  carYear: {
-    ...Typography.bodySmall,
-    color: colors.textSecondary,
-    marginBottom: Spacing.sm,
-  },
-  carFeatures: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-    marginBottom: Spacing.sm,
-  },
-  featureItem: {
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
-    borderRadius: BorderRadius.xs,
-  },
-  featureText: {
-    ...Typography.caption,
-    color: colors.primary,
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  carLocation: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  locationText: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-  },
-
-  // Brands Grid
   brandsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: Spacing.lg,
+    justifyContent: 'space-between',
     gap: Spacing.md,
   },
   brandCard: {
-    width: (width - Spacing.lg * 2 - Spacing.md * 2) / 3,
-    backgroundColor: colors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
+    width: (width - Spacing.lg * 3) / 4,
     alignItems: 'center',
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
     ...ColorsShadows.small,
+  },
+  brandLogoContainer: {
+    marginBottom: Spacing.sm,
   },
   brandLogo: {
     width: 40,
     height: 40,
-    marginBottom: Spacing.sm,
+    borderRadius: 20,
+  },
+  brandLogoPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   brandName: {
     ...Typography.caption,
-    color: colors.text,
-    fontWeight: '600',
     textAlign: 'center',
+    fontWeight: '600',
   },
-
-  // CTA Section
   ctaSection: {
-    paddingHorizontal: Spacing.lg,
-    marginTop: Spacing.xl,
-  },
-  ctaCard: {
-    backgroundColor: colors.surface,
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.xl,
     borderRadius: BorderRadius.xl,
-    padding: Spacing.xl,
-    alignItems: 'center',
+    overflow: 'hidden',
     ...ColorsShadows.large,
+  },
+  ctaGradient: {
+    padding: Spacing.xl,
+  },
+  ctaContent: {
+    alignItems: 'center',
   },
   ctaTitle: {
     ...Typography.h2,
-    color: colors.text,
     fontWeight: '700',
     textAlign: 'center',
-    marginTop: Spacing.md,
     marginBottom: Spacing.sm,
   },
   ctaSubtitle: {
     ...Typography.body,
-    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: Spacing.lg,
+    opacity: 0.9,
   },
   ctaButton: {
-    minWidth: 200,
-  },
-
-  // Loading
-  loadingContainer: {
-    paddingVertical: Spacing.xl,
-    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
   },
 });
