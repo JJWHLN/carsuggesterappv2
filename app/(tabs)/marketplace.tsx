@@ -361,7 +361,6 @@ export default function MarketplaceScreen() {
           title="Unable to Load Marketplace"
           message={error}
           onRetry={() => loadCars(true)}
-          icon={<AlertCircle color={colors.error} size={48} />}
         />
       </SafeAreaView>
     );

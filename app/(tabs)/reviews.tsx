@@ -33,7 +33,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
-import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { fetchCarReviews } from '@/services/supabaseService';
 import { transformDatabaseReviewToReview } from '@/utils/dataTransformers';

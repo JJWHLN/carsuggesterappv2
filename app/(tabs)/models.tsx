@@ -276,8 +276,6 @@ export default function ModelsScreen() {
       <FlatList
         data={models || []}
         renderItem={renderModel}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={viewMode === 'grid' ? 2 : 1}
         key={viewMode} // Force re-render when view mode changes
         ListHeaderComponent={renderHeader}
         contentContainerStyle={styles.listContent}
@@ -291,6 +289,8 @@ export default function ModelsScreen() {
           />
         }
         {...optimizedListProps}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={viewMode === 'grid' ? 2 : 1}
       />
     </SafeAreaView>
   );
