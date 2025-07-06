@@ -16,23 +16,26 @@ export default function TabLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: 70,
-          paddingBottom: Spacing.sm,
-          paddingTop: Spacing.xs,
-          elevation: 8,
+          height: 80,
+          paddingBottom: Spacing.md,
+          paddingTop: Spacing.sm,
+          elevation: 12,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
         },
         tabBarLabelStyle: {
           ...Typography.caption,
-          marginTop: 2,
+          marginTop: 4,
           fontWeight: '600',
-          fontSize: 11,
+          fontSize: 12,
         },
         tabBarIconStyle: {
-          marginBottom: 0,
+          marginBottom: 2,
+        },
+        tabBarItemStyle: {
+          paddingVertical: Spacing.xs,
         }
       }}
     >
@@ -40,8 +43,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Home color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <Home color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
@@ -49,8 +52,8 @@ export default function TabLayout() {
         name="models"
         options={{
           title: 'Browse Cars',
-          tabBarIcon: ({ color, size }) => (
-            <Car color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <Car color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
@@ -58,8 +61,8 @@ export default function TabLayout() {
         name="marketplace"
         options={{
           title: 'Marketplace',
-          tabBarIcon: ({ color, size }) => (
-            <TrendingUp color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <TrendingUp color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
@@ -67,8 +70,8 @@ export default function TabLayout() {
         name="reviews"
         options={{
           title: 'Reviews',
-          tabBarIcon: ({ color }) => (
-            <FileText color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <FileText color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
@@ -77,8 +80,8 @@ export default function TabLayout() {
         options={{
           title: 'AI',
           href: '/search',
-          tabBarIcon: ({ color, size }) => (
-            <Sparkles color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <Sparkles color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
@@ -86,8 +89,8 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => (
-            <User color={color} size={24} />
+          tabBarIcon: ({ color, focused }) => (
+            <User color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
