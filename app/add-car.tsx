@@ -30,6 +30,18 @@ import { ComingSoon } from '@/components/ui/ComingSoon';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
+import { StorageService } from '@/services/storageService';
+import { VehicleListingService } from '@/services/featureServices';
+import { 
+  validateForm, 
+  validateField,
+  VehicleValidationRules, 
+  formatValidationErrors, 
+  getFieldError,
+  sanitizeInput,
+  FormField as ValidationFormField,
+  ValidationError
+} from '@/utils/validation';
 
 interface FormField {
   id: string;
@@ -48,6 +60,10 @@ export default function AddCarScreen() {
 
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [uploading, setUploading] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   const formFields: FormField[] = [
     {
@@ -118,14 +134,47 @@ export default function AddCarScreen() {
     }
   ];
 
-  const handleAddImage = () => {
+  const handleAddImage = async () => {
+    if (selectedImages.length >= 8) {
+      Alert.alert('Maximum Photos', 'You can upload up to 8 photos.');
+      return;
+    }
+
     Alert.alert(
       'Add Photos',
       'Choose how you want to add photos',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Camera', onPress: () => console.log('Open camera') },
-        { text: 'Gallery', onPress: () => console.log('Open gallery') }
+        { 
+          text: 'Camera', 
+          onPress: async () => {
+            try {
+              setUploadingImages(true);
+              // Mock camera capture - in real app would use actual camera
+              const mockImageUri = `https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800`;
+              setSelectedImages(prev => [...prev, mockImageUri]);
+            } catch (error) {
+              Alert.alert('Error', 'Failed to capture image');
+            } finally {
+              setUploadingImages(false);
+            }
+          }
+        },
+        { 
+          text: 'Gallery', 
+          onPress: async () => {
+            try {
+              setUploadingImages(true);
+              // Mock gallery selection - in real app would use actual gallery
+              const mockImageUri = `https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800`;
+              setSelectedImages(prev => [...prev, mockImageUri]);
+            } catch (error) {
+              Alert.alert('Error', 'Failed to select image');
+            } finally {
+              setUploadingImages(false);
+            }
+          }
+        }
       ]
     );
   };
@@ -134,7 +183,45 @@ export default function AddCarScreen() {
     setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
+  const validateSingleField = (fieldId: string, value: any) => {
+    const field = formFields.find(f => f.id === fieldId);
+    if (!field) return '';
+
+    const rules = VehicleValidationRules[fieldId as keyof typeof VehicleValidationRules];
+    if (!rules) return '';
+
+    return validateField(fieldId, value, rules) || '';
+  };
+
+  const handleFieldChange = (fieldId: string, value: any) => {
+    // Sanitize input based on field type
+    let sanitizedValue = value;
+    if (typeof value === 'string') {
+      if (fieldId === 'price' || fieldId === 'mileage' || fieldId === 'year') {
+        sanitizedValue = sanitizeInput.number(value);
+      } else {
+        sanitizedValue = sanitizeInput.text(value);
+      }
+    }
+    
+    // Update form data
+    setFormData(prev => ({ ...prev, [fieldId]: sanitizedValue }));
+    
+    // Mark field as touched
+    setTouchedFields(prev => new Set([...prev, fieldId]));
+    
+    // Validate field and update errors
+    const error = validateSingleField(fieldId, sanitizedValue);
+    setValidationErrors(prev => {
+      const filtered = prev.filter(e => e.field !== fieldId);
+      if (error) {
+        return [...filtered, { field: fieldId, message: error }];
+      }
+      return filtered;
+    });
+  };
+
+  const handleSubmit = async () => {
     if (!user) {
       Alert.alert(
         'Authentication Required',
@@ -147,47 +234,149 @@ export default function AddCarScreen() {
       return;
     }
 
-    // Validate required fields
-    const missingFields = formFields
-      .filter(field => field.required && !formData[field.id])
-      .map(field => field.label);
+    // Mark all fields as touched for validation display
+    const allFieldIds = formFields.map(f => f.id);
+    setTouchedFields(new Set(allFieldIds));
 
-    if (missingFields.length > 0) {
+    // Build form fields for validation
+    const validationFields: ValidationFormField[] = formFields
+      .filter(field => VehicleValidationRules[field.id as keyof typeof VehicleValidationRules])
+      .map(field => ({
+        name: field.id,
+        value: formData[field.id],
+        rules: VehicleValidationRules[field.id as keyof typeof VehicleValidationRules],
+      }));
+
+    // Validate entire form
+    const errors = validateForm(validationFields);
+    setValidationErrors(errors);
+
+    if (errors.length > 0) {
+      const errorMessage = formatValidationErrors(errors);
       Alert.alert(
-        'Missing Information',
-        `Please fill in the following required fields: ${missingFields.join(', ')}`
+        'Validation Errors',
+        errorMessage
       );
       return;
     }
 
-    console.log('Submitting car listing:', formData);
-    Alert.alert(
-      'Success!',
-      'Your car listing has been submitted for review.',
-      [{ text: 'OK', onPress: () => router.back() }]
-    );
+    try {
+      setUploading(true);
+
+      // Upload images to Supabase Storage
+      let uploadedImageUrls: string[] = [];
+      if (selectedImages.length > 0) {
+        try {
+          // Generate a temporary listing ID for organizing images
+          const tempListingId = `temp_${user.id}_${Date.now()}`;
+          
+          uploadedImageUrls = await StorageService.uploadCarImages(
+            user.id,
+            tempListingId,
+            selectedImages
+          );
+        } catch (uploadError) {
+          console.error('Image upload failed:', uploadError);
+          Alert.alert(
+            'Upload Warning',
+            'Some images failed to upload. The listing will be created without images.'
+          );
+        }
+      }
+
+      // Create the vehicle listing
+      const listingData = {
+        title: `${formData.year} ${formData.make} ${formData.model}`,
+        make: formData.make,
+        model: formData.model,
+        year: parseInt(formData.year),
+        price: parseInt(formData.price),
+        mileage: formData.mileage ? parseInt(formData.mileage) : undefined,
+        location_city: formData.location?.split(',')[0]?.trim(),
+        location_state: formData.location?.split(',')[1]?.trim(),
+        condition: formData.condition?.toLowerCase(),
+        fuel_type: formData.fuel_type?.toLowerCase(),
+        description: formData.description,
+        images: uploadedImageUrls,
+        features: [] // Add feature selection logic later
+      };
+
+      await VehicleListingService.createListing(user.id, listingData);
+
+      Alert.alert(
+        'Success!',
+        'Your car listing has been created successfully.',
+        [{ text: 'OK', onPress: () => router.back() }]
+      );
+    } catch (error) {
+      console.error('Error creating listing:', error);
+      Alert.alert(
+        'Error',
+        error instanceof Error ? error.message : 'Failed to create listing. Please try again.'
+      );
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const FormField = ({ field }: { field: FormField }) => (
-    <Card style={styles.fieldCard}>
-      <View style={styles.fieldHeader}>
-        {field.icon}
-        <Text style={styles.fieldLabel}>
-          {field.label}
-          {field.required && <Text style={styles.requiredMark}> *</Text>}
-        </Text>
-      </View>
-      
-      <TouchableOpacity style={styles.fieldInput}>
-        <Text style={[
-          styles.fieldInputText,
-          !formData[field.id] && styles.placeholderText
-        ]}>
-          {formData[field.id] || field.placeholder}
-        </Text>
-      </TouchableOpacity>
-    </Card>
-  );
+  const FormField = ({ field }: { field: FormField }) => {
+    const fieldError = getFieldError(validationErrors, field.id);
+    const isFieldTouched = touchedFields.has(field.id);
+    const showError = isFieldTouched && fieldError;
+    
+    return (
+      <Card style={styles.fieldCard}>
+        <View style={styles.fieldHeader}>
+          {field.icon}
+          <Text style={styles.fieldLabel}>
+            {field.label}
+            {field.required && <Text style={styles.requiredMark}> *</Text>}
+          </Text>
+        </View>
+        
+        <TouchableOpacity 
+          style={[
+            styles.fieldInput,
+            showError && styles.fieldInputError
+          ]}
+          onPress={() => {
+            if (field.type === 'select' && field.options) {
+              Alert.alert(
+                field.label,
+                'Select an option:',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  ...field.options.map(option => ({
+                    text: option,
+                    onPress: () => handleFieldChange(field.id, option)
+                  }))
+                ]
+              );
+            } else {
+              Alert.prompt(
+                field.label,
+                field.placeholder,
+                (text) => handleFieldChange(field.id, text),
+                'plain-text',
+                formData[field.id]?.toString() || ''
+              );
+            }
+          }}
+        >
+          <Text style={[
+            styles.fieldInputText,
+            !formData[field.id] && styles.placeholderText
+          ]}>
+            {formData[field.id] || field.placeholder}
+          </Text>
+        </TouchableOpacity>
+        
+        {showError && (
+          <Text style={styles.errorText}>{fieldError}</Text>
+        )}
+      </Card>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -292,11 +481,15 @@ export default function AddCarScreen() {
         {/* Submit Button */}
         <View style={styles.submitSection}>
           <Button
-            title="Submit Listing"
+            title={uploading ? "Creating Listing..." : "Submit Listing"}
             onPress={handleSubmit}
             variant="primary"
-            icon={<Upload color={colors.white} size={20} />}
-            style={styles.submitButton}
+            icon={uploading ? undefined : <Upload color={colors.white} size={20} />}
+            style={uploading ? 
+              { ...styles.submitButton, ...styles.submitButtonDisabled } : 
+              styles.submitButton
+            }
+            disabled={uploading}
           />
           
           <Text style={styles.submitNote}>
@@ -424,6 +617,16 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     minHeight: 48,
     justifyContent: 'center',
   },
+  fieldInputError: {
+    borderColor: colors.error,
+    backgroundColor: colors.background,
+  },
+  errorText: {
+    ...Typography.caption,
+    color: colors.error,
+    marginTop: Spacing.xs,
+    marginLeft: Spacing.sm,
+  },
   textAreaInput: {
     minHeight: 80,
     alignItems: 'flex-start',
@@ -463,6 +666,9 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   submitButton: {
     minWidth: 200,
     marginBottom: Spacing.lg,
+  },
+  submitButtonDisabled: {
+    opacity: 0.6,
   },
   submitNote: {
     ...Typography.caption,

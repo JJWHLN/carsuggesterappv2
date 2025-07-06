@@ -49,6 +49,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useOptimizedFlatList } from '@/hooks/useOptimizedFlatList';
 import { CarModel } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
+import { AnalyticsService } from '@/services/analyticsService';
 
 const { width } = Dimensions.get('window');
 const ITEM_ESTIMATED_HEIGHT = 280;
@@ -79,6 +80,51 @@ export default function ModelsScreen() {
     [debouncedSearchQuery, selectedCategory]
   );
 
+  // Track screen view and analytics
+  useEffect(() => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackScreenView('models', { 
+      user_id: user?.id,
+      models_count: models?.length || 0 
+    });
+  }, [user?.id, models?.length]);
+
+  // Track search behavior
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      const analytics = AnalyticsService.getInstance();
+      analytics.trackSearchBehavior(debouncedSearchQuery, models || [], {
+        category: selectedCategory,
+        view_mode: viewMode,
+        sort_by: sortBy,
+      });
+    }
+  }, [debouncedSearchQuery, models, selectedCategory, viewMode, sortBy]);
+
+  // Track feature usage
+  const handleViewModeChange = (mode: 'grid' | 'list') => {
+    setViewMode(mode);
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackFeatureUsage('models_view', 'change_view_mode', { mode });
+  };
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category === 'All' ? null : category);
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackFeatureUsage('models_filter', 'select_category', { category });
+  };
+
+  const handleModelPress = useCallback((model: CarModel) => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackUserAction('tap', 'car_model', {
+      model_id: model.id,
+      model_name: model.name,
+      brand: model.brands?.name,
+      year: model.year,
+    });
+    router.push(`/model/${model.id}`);
+  }, []);
+
   const categories = [
     { name: 'All', count: models?.length || 0 },
     { name: 'Electric', count: 45 },
@@ -94,10 +140,6 @@ export default function ModelsScreen() {
     { key: 'year', label: 'Year: Newest First' },
   ];
 
-  const handleModelPress = useCallback((modelId: number | string) => {
-    router.push(`/model/${modelId}`);
-  }, []);
-
   const handleFavoriteToggle = useCallback((modelId: number) => {
     if (!user) {
       router.push('/auth/sign-in');
@@ -109,7 +151,7 @@ export default function ModelsScreen() {
   const CarListingCard = useCallback(({ item, isListView = false }: { item: CarModel, isListView?: boolean }) => (
     <TouchableOpacity
       style={[styles.carCard, isListView && styles.carCardList]}
-      onPress={() => handleModelPress(item.id)}
+      onPress={() => handleModelPress(item)}
       activeOpacity={0.9}
     >
       <View style={[styles.carImageContainer, isListView && styles.carImageContainerList]}>
@@ -208,13 +250,13 @@ export default function ModelsScreen() {
         <View style={styles.viewToggle}>
           <TouchableOpacity
             style={[styles.viewButton, viewMode === 'grid' && styles.viewButtonActive]}
-            onPress={() => setViewMode('grid')}
+            onPress={() => handleViewModeChange('grid')}
           >
             <Grid2x2 color={viewMode === 'grid' ? colors.white : colors.textSecondary} size={18} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.viewButton, viewMode === 'list' && styles.viewButtonActive]}
-            onPress={() => setViewMode('list')}
+            onPress={() => handleViewModeChange('list')}
           >
             <List color={viewMode === 'list' ? colors.white : colors.textSecondary} size={18} />
           </TouchableOpacity>
@@ -234,7 +276,7 @@ export default function ModelsScreen() {
                 styles.categoryChip,
                 selectedCategory === item.name && styles.categoryChipActive
               ]}
-              onPress={() => setSelectedCategory(item.name === 'All' ? null : item.name)}
+              onPress={() => handleCategorySelect(item.name)}
             >
               <Text style={[
                 styles.categoryText,

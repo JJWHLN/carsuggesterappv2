@@ -3,6 +3,7 @@ import { Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { LoadingSpinner } from './LoadingSpinner';
 import { AnimatedPressable } from './AnimatedPressable';
 import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { createSemanticProps, useAccessibility } from '@/hooks/useAccessibility';
 
 interface ButtonProps {
   title: string;
@@ -16,6 +17,9 @@ interface ButtonProps {
   icon?: React.ReactNode;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  accessibilityValue?: string;
+  destructive?: boolean;
+  testID?: string;
 }
 
 export function Button({
@@ -30,8 +34,24 @@ export function Button({
   icon,
   accessibilityLabel,
   accessibilityHint,
+  accessibilityValue,
+  destructive = false,
+  testID,
 }: ButtonProps) {
+  const accessibilityHook = useAccessibility();
   const isDisabled = disabled || loading;
+
+  const handlePress = () => {
+    if (isDisabled) return;
+    
+    // Announce action for screen readers
+    if (accessibilityHook.isScreenReaderEnabled) {
+      const action = loading ? 'Loading' : 'Activated';
+      accessibilityHook.announceForAccessibility(`${accessibilityLabel || title} ${action}`);
+    }
+    
+    onPress();
+  };
 
   const getButtonStyles = () => {
     const baseStyle: ViewStyle = {
@@ -39,6 +59,13 @@ export function Button({
       ...(styles[size] || styles.medium),
       ...(styles[variant] || styles.primary),
     };
+
+    // Apply destructive styling
+    if (destructive) {
+      baseStyle.backgroundColor = variant === 'primary' ? currentColors.error : baseStyle.backgroundColor;
+      baseStyle.borderColor = currentColors.error;
+    }
+
     if (variant === 'primary') {
       return [baseStyle, ColorsShadows.button, isDisabled && styles.disabled, style];
     }
@@ -46,28 +73,59 @@ export function Button({
   };
 
   const getTextStyle = () => {
-    return [
+    const textStyles = [
       styles.textBase,
       styles[`${variant}Text`],
       isDisabled && styles.disabledText,
       textStyle,
     ];
+
+    // Apply bold text if accessibility setting is enabled
+    if (accessibilityHook.isBoldTextEnabled) {
+      textStyles.push(styles.boldText);
+    }
+
+    // Apply destructive text color
+    if (destructive && variant !== 'primary') {
+      textStyles.push(styles.destructiveText);
+    }
+
+    return textStyles;
   };
 
   const loadingSpinnerColor =
     variant === 'primary' ? currentColors.white : currentColors.primary;
 
+  // Create comprehensive accessibility props
+  const accessibilityProps = createSemanticProps(
+    accessibilityLabel || title,
+    'button',
+    {
+      hint: accessibilityHint || (loading ? 'Loading, please wait' : undefined),
+      value: accessibilityValue,
+      disabled: isDisabled,
+      busy: loading,
+    }
+  );
+
   return (
     <AnimatedPressable
       style={getButtonStyles()}
-      onPress={onPress}
+      onPress={handlePress}
       disabled={isDisabled}
       pressedScaleValue={0.95}
       animationDuration={150}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel || title}
-      accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled: isDisabled }}
+      testID={testID}
+      {...accessibilityProps}
+      // Additional accessibility properties
+      accessibilityActions={[
+        { name: 'activate', label: title }
+      ]}
+      onAccessibilityAction={(event) => {
+        if (event.nativeEvent.actionName === 'activate') {
+          handlePress();
+        }
+      }}
     >
       {loading ? (
         <LoadingSpinner 
@@ -155,5 +213,11 @@ const styles = StyleSheet.create({
   },
   disabledText: {
     color: currentColors.textMuted,
+  },
+  boldText: {
+    fontWeight: '700',
+  },
+  destructiveText: {
+    color: currentColors.error,
   },
 });

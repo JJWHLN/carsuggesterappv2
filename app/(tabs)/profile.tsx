@@ -43,6 +43,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useCanPerformAction } from '@/components/ui/RoleProtection';
+import { AnalyticsService } from '@/services/analyticsService';
+import { useEngagementTracking } from '@/hooks/useAnalytics';
 
 const { width } = Dimensions.get('window');
 
@@ -56,6 +58,19 @@ export default function ProfileScreen() {
   const canAccessAI = useCanPerformAction('accessAI');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
+
+  // Analytics
+  const engagementTracking = useEngagementTracking('profile');
+
+  // Track screen view
+  useEffect(() => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackScreenView('profile', { 
+      user_id: user?.id,
+      role: role,
+      has_profile_picture: !!user?.user_metadata?.avatar_url
+    });
+  }, [user?.id, role, user?.user_metadata?.avatar_url]);
 
   const handleSignOut = async () => {
     Alert.alert(
@@ -80,9 +95,19 @@ export default function ProfileScreen() {
     );
   };
 
-  // Navigation handlers
-  const handleNavigateToSettings = () => Alert.alert('Settings', 'Settings screen coming soon!');
+  // Navigation handlers with analytics
+  const handleNavigateToSettings = () => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackUserAction('settings_accessed', 'menu_item', { user_id: user?.id });
+    engagementTracking.trackInteraction('settings_press');
+    Alert.alert('Settings', 'Settings screen coming soon!');
+  };
+
   const handleNavigateToSavedCars = () => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackUserAction('saved_cars_accessed', 'menu_item', { user_id: user?.id, can_bookmark: canBookmarkCars });
+    engagementTracking.trackInteraction('saved_cars_press');
+    
     if (canBookmarkCars) {
       // Navigate to a saved cars section or show alert for now
       Alert.alert('Saved Cars', 'Saved Cars feature coming soon!');
@@ -90,15 +115,31 @@ export default function ProfileScreen() {
       Alert.alert('Sign In Required', 'Please sign in to view saved cars');
     }
   };
-  const handleNavigateToMyReviews = () => Alert.alert('My Reviews', 'My Reviews screen coming soon!');
+
+  const handleNavigateToMyReviews = () => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackUserAction('my_reviews_accessed', 'menu_item', { user_id: user?.id, can_write_reviews: canWriteReviews });
+    engagementTracking.trackInteraction('my_reviews_press');
+    Alert.alert('My Reviews', 'My Reviews screen coming soon!');
+  };
+
   const handleNavigateToAddCar = () => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackUserAction('add_car_accessed', 'menu_item', { user_id: user?.id, can_post_cars: canPostCars });
+    engagementTracking.trackInteraction('add_car_press');
+    
     if (canPostCars) {
       Alert.alert('Add Car', 'Add Car feature coming soon!');
     } else {
       Alert.alert('Access Denied', 'Only dealers can post cars. Contact admin to upgrade your account.');
     }
   };
+
   const handleNavigateToAdmin = () => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackUserAction('admin_panel_accessed', 'menu_item', { user_id: user?.id, role: role });
+    engagementTracking.trackInteraction('admin_panel_press');
+    
     if (role === 'admin') {
       Alert.alert('Admin Panel', 'Admin panel coming soon!');
     } else {

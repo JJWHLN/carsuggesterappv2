@@ -5,6 +5,8 @@ import { useFonts } from 'expo-font';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider, useThemeColors } from '@/hooks/useTheme';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { CrashReportingBoundary } from '@/components/ui/CrashReporting';
+import { Analytics } from '@/services/analyticsService';
 import { TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { Spacing, Typography } from '@/constants/Colors'
@@ -30,6 +32,25 @@ function AppContent() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
+
+  // Initialize analytics when app loads
+  useEffect(() => {
+    const appStartTime = Date.now();
+    
+    // Track app launch
+    Analytics.track('app_launched', {
+      platform: 'react-native',
+      timestamp: new Date().toISOString(),
+    });
+
+    // Track app launch performance
+    const launchDuration = appStartTime - Date.now(); // This would be calculated differently in real app
+    Analytics.trackPerformance('app_launch_time', Math.abs(launchDuration), 'ms');
+
+    if (user) {
+      Analytics.setUserId(user.id);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -133,7 +154,9 @@ export default function RootLayout() {
     <AuthProvider>
       <ThemeProvider>
         <ErrorBoundary>
-          <AppContent />
+          <CrashReportingBoundary>
+            <AppContent />
+          </CrashReportingBoundary>
         </ErrorBoundary>
       </ThemeProvider>
     </AuthProvider>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo, useMemo } from 'react';
+import React, { useState, useCallback, memo, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -29,12 +29,18 @@ import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Search, Sparkles, Filter, SlidersHorizontal } from 'lucide-react-native';
 import { router } from 'expo-router';
+import { usePerformanceTracking, useSearchTracking } from '@/hooks/useAnalytics';
+import { trackScreenView } from '@/services/analyticsService';
 
 const ITEM_HEIGHT = 380;
 
 const SearchScreen = memo(() => {
   const { colors } = useThemeColors();
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
+
+  // Analytics hooks
+  const performanceTracker = usePerformanceTracking('SearchScreen');
+  const searchTracker = useSearchTracking();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [aiSearchLoading, setAiSearchLoading] = useState(false);
@@ -82,6 +88,7 @@ const SearchScreen = memo(() => {
   const handleAISearch = useCallback(async () => {
     if (!searchQuery.trim()) return;
 
+    const startTime = Date.now();
     setAiSearchLoading(true);
     setAiSearchError(null);
     
@@ -95,16 +102,38 @@ const SearchScreen = memo(() => {
       setAiResults(transformedCars);
       setSearchPerformed(true);
       
+      // Track successful AI search
+      const duration = Date.now() - startTime;
+      searchTracker.trackSearch(searchQuery, transformedCars.length, 'ai');
+      searchTracker.trackSearchPerformance(searchQuery, duration, 'ai');
+      
+      performanceTracker.trackUserInteraction('ai_search_success', {
+        query: searchQuery,
+        results_count: transformedCars.length,
+        duration,
+      });
+      
     } catch (error) {
       console.error('AI Search error:', error);
       const errorMessage = error instanceof SupabaseError 
         ? `Search failed: ${error.message}`
         : 'AI search is currently unavailable. Please try the regular search.';
       setAiSearchError(errorMessage);
+      
+      // Track search error
+      searchTracker.trackSearchError(searchQuery, error instanceof Error ? error : new Error(errorMessage), 'ai');
+      
     } finally {
       setAiSearchLoading(false);
     }
-  }, [searchQuery]);
+  }, [searchQuery, searchTracker, performanceTracker]);
+
+  useEffect(() => {
+    // Track screen view when component mounts
+    trackScreenView('ai_search', {
+      has_initial_query: searchQuery.length > 0,
+    });
+  }, []);
 
   const handleClearSearch = useCallback(() => {
     setSearchQuery('');

@@ -4,7 +4,7 @@ import { MapPin, Clock, Heart, Star, Fuel, Settings } from 'lucide-react-native'
 import { OptimizedImage } from './ui/OptimizedImage';
 import { AnimatedPressable } from './ui/AnimatedPressable';
 import { Card } from './ui/Card'; // Card is now memoized and themed
-import { createAccessibilityProps, useAccessibility } from '@/hooks/useAccessibility';
+import { createSemanticProps, createListItemProps, useAccessibility } from '@/hooks/useAccessibility';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors
 import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,6 +21,8 @@ interface CarCardProps {
   isSaved?: boolean;
   carModelId?: number;
   vehicleListingId?: string;
+  position?: { setIndex: number; setSize: number };
+  testID?: string;
 }
 
 const CarCard = memo<CarCardProps>(({ 
@@ -30,7 +32,9 @@ const CarCard = memo<CarCardProps>(({
   onSave, 
   isSaved = false,
   carModelId,
-  vehicleListingId
+  vehicleListingId,
+  position,
+  testID
 }) => {
   const { colors } = useThemeColors();
   const { user } = useAuth();
@@ -80,18 +84,59 @@ const CarCard = memo<CarCardProps>(({
   }, [user, canBookmark, isBookmarked, carModelId, vehicleListingId, onSave, loading]);
 
   const accessibilityLabel = `${car.year} ${car.make} ${car.model}, ${formatPrice(car.price)}, ${formatMileage(car.mileage)} miles, located in ${car.location}`;
+  const accessibilityHint = `Double tap to view detailed information and photos for this ${car.year} ${car.make} ${car.model}`;
+  
+  // Build descriptive value for screen readers
+  const accessibilityValue = [
+    `Price: ${formatPrice(car.price)}`,
+    `Mileage: ${formatMileage(car.mileage)} miles`,
+    car.condition && `Condition: ${formatCondition(car.condition)}`,
+    car.fuel_type && `Fuel type: ${formatFuelType(car.fuel_type)}`,
+    car.dealer?.verified && 'Verified dealer',
+    car.features && car.features.length > 0 && `${car.features.length} features available`,
+  ].filter(Boolean).join(', ');
 
   const imageSource = car.images?.[0] 
     ? { uri: car.images[0] }
     : { uri: 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=800' };
 
+  // Create appropriate accessibility props based on whether position is provided
+  const cardAccessibilityProps = position 
+    ? createListItemProps(accessibilityLabel, position, {
+        hint: accessibilityHint,
+      })
+    : createSemanticProps(accessibilityLabel, 'button', {
+        hint: accessibilityHint,
+        value: accessibilityValue,
+      });
+
   return (
     <AnimatedPressable 
       onPress={handlePress}
-      {...createAccessibilityProps(
-        accessibilityLabel,
-        'Double tap to view car details'
-      )}
+      testID={testID}
+      {...cardAccessibilityProps}
+      // Additional accessibility enhancements
+      accessibilityActions={[
+        { name: 'activate', label: 'View car details' },
+        ...(showSaveButton && canBookmark ? [
+          { 
+            name: 'magicTap', 
+            label: isBookmarked ? 'Remove from saved' : 'Save car' 
+          }
+        ] : [])
+      ]}
+      onAccessibilityAction={(event) => {
+        switch (event.nativeEvent.actionName) {
+          case 'activate':
+            handlePress();
+            break;
+          case 'magicTap':
+            if (showSaveButton && canBookmark) {
+              handleBookmark();
+            }
+            break;
+        }
+      }}
     >
       <Card style={styles.card}>
         <View style={styles.imageContainer}>
@@ -107,9 +152,17 @@ const CarCard = memo<CarCardProps>(({
               style={[styles.saveButton, loading && styles.saveButtonDisabled]}
               onPress={handleBookmark}
               disabled={loading}
-              {...createAccessibilityProps(
-                isBookmarked ? 'Remove from saved' : 'Save car',
-                isBookmarked ? 'Double tap to remove from saved cars' : 'Double tap to save this car'
+              testID={testID ? `${testID}-bookmark` : undefined}
+              {...createSemanticProps(
+                isBookmarked ? 'Remove from saved cars' : 'Save this car',
+                'button',
+                {
+                  hint: isBookmarked 
+                    ? 'Double tap to remove this car from your saved list' 
+                    : 'Double tap to add this car to your saved list',
+                  disabled: loading,
+                  busy: loading,
+                }
               )}
             >
               <Heart 
@@ -131,16 +184,30 @@ const CarCard = memo<CarCardProps>(({
         <View style={styles.content}>
           <View style={styles.header}>
             <View style={styles.titleContainer}>
-              <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
+              <Text 
+                style={[styles.title, { color: colors.text }]} 
+                numberOfLines={1}
+                accessibilityRole="header"
+              >
                 {car.year} {car.make} {car.model}
               </Text>
               {car.condition && (
-                <View style={[styles.conditionBadge, { backgroundColor: colors.primaryLight }]}>
+                <View 
+                  style={[styles.conditionBadge, { backgroundColor: colors.primaryLight }]}
+                  accessibilityLabel={`Condition: ${formatCondition(car.condition)}`}
+                  accessibilityRole="text"
+                >
                   <Text style={[styles.conditionText, { color: colors.primary }]}>{formatCondition(car.condition)}</Text>
                 </View>
               )}
             </View>
-            <Text style={[styles.price, { color: colors.primary }]}>{formatPrice(car.price)}</Text>
+            <Text 
+              style={[styles.price, { color: colors.primary }]}
+              accessibilityLabel={`Price: ${formatPrice(car.price)}`}
+              accessibilityRole="text"
+            >
+              {formatPrice(car.price)}
+            </Text>
           </View>
           
           <View style={styles.details}>

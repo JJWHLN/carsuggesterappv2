@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -55,6 +55,8 @@ import { useThemeColors } from '@/hooks/useTheme';
 import { useApi } from '@/hooks/useApi';
 import { fetchCarModels, fetchPopularBrands } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { AnalyticsService } from '@/services/analyticsService';
+import { usePerformanceTracking, useEngagementTracking } from '@/hooks/useAnalytics';
 
 const { width, height } = Dimensions.get('window');
 
@@ -99,6 +101,34 @@ export default function HomeScreen() {
     refetch: refetchPopularBrands
   } = useApi(() => fetchPopularBrands(8), []);
 
+  // Analytics hooks
+  const performanceTracking = usePerformanceTracking('home');
+  const engagementTracking = useEngagementTracking('home');
+
+  // Track screen view
+  useEffect(() => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackScreenView('home', { 
+      user_id: user?.id,
+      role: role,
+      featured_cars_count: featuredCars?.length || 0,
+      popular_brands_count: popularBrands?.length || 0
+    });
+  }, [user?.id, role, featuredCars?.length, popularBrands?.length]);
+
+  // Track category interaction
+  const handleCategoryPress = (categoryName: string, categoryType: string) => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackUserAction('category_selected', 'category_button', {
+      category_name: categoryName,
+      category_type: categoryType,
+      user_id: user?.id,
+      source: 'home_screen'
+    });
+    engagementTracking.trackInteraction('category_press', { category: categoryName });
+    router.push({ pathname: '/models', params: { category: categoryType }});
+  };
+
   const quickCategories = [
     { 
       name: 'Electric', 
@@ -106,7 +136,7 @@ export default function HomeScreen() {
       color: '#10B981',
       bgColor: '#ECFDF5',
       description: 'Zero emissions',
-      onPress: () => router.push({ pathname: '/models', params: { category: 'Electric' }})
+      onPress: () => handleCategoryPress('Electric', 'Electric')
     },
     { 
       name: 'Luxury', 
@@ -114,7 +144,7 @@ export default function HomeScreen() {
       color: '#8B5CF6',
       bgColor: '#F3E8FF',
       description: 'Premium comfort',
-      onPress: () => router.push({ pathname: '/models', params: { category: 'Luxury' }})
+      onPress: () => handleCategoryPress('Luxury', 'Luxury')
     },
     { 
       name: 'Family SUV', 
@@ -122,7 +152,7 @@ export default function HomeScreen() {
       color: '#3B82F6',
       bgColor: '#EFF6FF',
       description: 'Safe & spacious',
-      onPress: () => router.push({ pathname: '/models', params: { category: 'SUV' }})
+      onPress: () => handleCategoryPress('Family SUV', 'SUV')
     },
     { 
       name: 'Sports Car', 
@@ -130,7 +160,7 @@ export default function HomeScreen() {
       color: '#EF4444',
       bgColor: '#FEF2F2',
       description: 'Pure performance',
-      onPress: () => router.push({ pathname: '/models', params: { category: 'Sports' }})
+      onPress: () => handleCategoryPress('Sports Car', 'Sports')
     },
   ];
 

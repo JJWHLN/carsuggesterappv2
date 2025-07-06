@@ -28,6 +28,7 @@ import {
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { RealtimeService, RealtimeSubscription } from '@/services/realtimeService';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -50,6 +51,8 @@ import { fetchCarReviews } from '@/services/supabaseService';
 import { transformDatabaseReviewToReview } from '@/utils/dataTransformers';
 import { Review } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
+import { AnalyticsService } from '@/services/analyticsService';
+import { useEngagementTracking } from '@/hooks/useAnalytics';
 
 const { width } = Dimensions.get('window');
 
@@ -65,6 +68,21 @@ export default function ReviewsScreen() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState<'recent' | 'rating' | 'helpful'>('recent');
+
+  // Analytics
+  const engagementTracking = useEngagementTracking('reviews');
+
+  // Track screen view
+  useEffect(() => {
+    const analytics = AnalyticsService.getInstance();
+    analytics.trackScreenView('reviews', { 
+      user_id: user?.id,
+      reviews_count: reviews.length,
+      view_mode: viewMode,
+      selected_category: selectedCategory,
+      sort_by: sortBy
+    });
+  }, [user?.id, reviews.length, viewMode, selectedCategory, sortBy]);
 
   // Mock featured reviews data
   const featuredReviews = [
@@ -173,6 +191,40 @@ export default function ReviewsScreen() {
       setLoading(false);
     }
   };
+
+  // Set up real-time subscriptions for reviews
+  useEffect(() => {
+    const subscriptions: Array<RealtimeSubscription> = [];
+
+    // Subscribe to reviews changes
+    const reviewsSubscription = RealtimeService.subscribeToReviews(
+      (payload) => {
+        console.log('🔄 Real-time review update:', payload);
+        
+        if (payload.eventType === 'INSERT') {
+          const newReview = transformDatabaseReviewToReview(payload.new);
+          setReviews(prevReviews => [newReview, ...prevReviews]);
+        } else if (payload.eventType === 'UPDATE') {
+          const updatedReview = transformDatabaseReviewToReview(payload.new);
+          setReviews(prevReviews => 
+            prevReviews.map(review => review.id === updatedReview.id ? updatedReview : review)
+          );
+        } else if (payload.eventType === 'DELETE' && payload.old?.id !== undefined) {
+          const deletedId = payload.old.id;
+          setReviews(prevReviews => 
+            prevReviews.filter(review => review.id !== deletedId.toString())
+          );
+        }
+      }
+    );
+
+    subscriptions.push(reviewsSubscription);
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      subscriptions.forEach(subscription => subscription.unsubscribe());
+    };
+  }, []);
 
   const ReviewCard = useCallback(({ review, isListView = false }: { review: any, isListView?: boolean }) => (
     <TouchableOpacity 

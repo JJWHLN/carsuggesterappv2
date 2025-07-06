@@ -36,6 +36,9 @@ import { fetchVehicleListings } from '@/services/supabaseService';
 import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
 import { Car as CarType } from '@/types/database';
 import { useDebounce } from '@/hooks/useDebounce';
+import { RealtimeService, RealtimeSubscription } from '@/services/realtimeService';
+import { usePerformanceTracking, useEngagementTracking, useSearchTracking } from '@/hooks/useAnalytics';
+import { trackScreenView, trackCarInteraction, trackError } from '@/services/analyticsService';
 
 const { width } = Dimensions.get('window');
 
@@ -43,6 +46,11 @@ export default function MarketplaceScreen() {
   const { colors } = useThemeColors();
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
   const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
+  
+  // Analytics hooks
+  const performanceTracker = usePerformanceTracking('MarketplaceScreen');
+  const engagementTracker = useEngagementTracking('marketplace');
+  const searchTracker = useSearchTracking();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -75,9 +83,57 @@ export default function MarketplaceScreen() {
   // Load initial data
   useEffect(() => {
     loadCars(true);
+    
+    // Track screen view
+    trackScreenView('marketplace', {
+      category: selectedCategory,
+      view_mode: viewMode,
+    });
   }, [debouncedSearchQuery]);
 
+  // Track search queries
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      searchTracker.trackSearch(debouncedSearchQuery, cars.length, 'basic');
+    }
+  }, [debouncedSearchQuery, cars.length]);
+
+  // Set up real-time subscriptions
+  useEffect(() => {
+    const subscriptions: Array<RealtimeSubscription> = [];
+
+    // Subscribe to vehicle listings changes
+    const vehicleListingsSubscription = RealtimeService.subscribeToVehicleListings(
+      (payload) => {
+        console.log('🔄 Real-time vehicle listing update:', payload);
+        
+        if (payload.eventType === 'INSERT') {
+          const newCar = transformDatabaseVehicleListingToCar(payload.new);
+          setCars(prevCars => [newCar, ...prevCars]);
+        } else if (payload.eventType === 'UPDATE') {
+          const updatedCar = transformDatabaseVehicleListingToCar(payload.new);
+          setCars(prevCars => 
+            prevCars.map(car => car.id === updatedCar.id ? updatedCar : car)
+          );
+        } else if (payload.eventType === 'DELETE') {
+          setCars(prevCars => 
+            prevCars.filter(car => car.id !== payload.old.id)
+          );
+        }
+      }
+    );
+
+    subscriptions.push(vehicleListingsSubscription);
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      subscriptions.forEach(subscription => subscription.unsubscribe());
+    };
+  }, []);
+
   const loadCars = async (reset = false) => {
+    const startTime = Date.now();
+    
     try {
       if (reset) {
         setLoading(true);
@@ -100,32 +156,36 @@ export default function MarketplaceScreen() {
         if (reset) {
           setCars(transformedCars);
         } else {
-          setCars(prev => [...prev, ...transformedCars]);
+          setCars(prevCars => [...prevCars, ...transformedCars]);
         }
         
-        setHasMore(data.length === limit);
+        setHasMore(transformedCars.length === limit);
         setPage(currentPage + 1);
+        
+        // Track successful load
+        const duration = Date.now() - startTime;
+        performanceTracker.trackLoadingTime(duration);
         
         console.log('✅ Successfully loaded cars:', transformedCars.length);
       } else {
         console.warn('⚠️ No data returned from fetchVehicleListings');
-        if (reset) {
-          setCars([]);
-        }
         setHasMore(false);
       }
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to load cars';
       console.error('❌ Error loading cars:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load car listings';
-      setError(errorMessage);
+      setError(errorMsg);
+      setHasMore(false);
       
-      if (reset) {
-        setCars([]);
-      }
+      // Track error
+      trackError(err instanceof Error ? err : new Error(errorMsg), {
+        context: 'loadCars',
+        page: reset ? 0 : page,
+        searchQuery: debouncedSearchQuery,
+      });
     } finally {
       setLoading(false);
       setLoadingMore(false);
-      setRefreshing(false);
     }
   };
 
@@ -141,10 +201,19 @@ export default function MarketplaceScreen() {
   }, [loadingMore, hasMore, cars.length]);
 
   const handleCarPress = useCallback((carId: string) => {
+    // Track car interaction
+    trackCarInteraction('view', carId, {
+      source: 'marketplace',
+      view_mode: viewMode,
+      search_query: searchQuery,
+    });
+    
+    engagementTracker.trackInteraction('car_card_tap', { car_id: carId });
+    
     console.log('Navigate to car details:', carId);
     // TODO: Navigate to car detail screen
     // router.push(`/car/${carId}`);
-  }, []);
+  }, [viewMode, searchQuery, engagementTracker]);
 
   const CarListingCard = useCallback(({ listing, isListView = false }: { listing: CarType, isListView?: boolean }) => (
     <TouchableOpacity 
