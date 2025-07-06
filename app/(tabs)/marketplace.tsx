@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
@@ -28,14 +29,22 @@ import {
   ExternalLink,
   Grid2x2,
   List,
+  AlertCircle,
 } from 'lucide-react-native';
 import { StatCard } from '@/components/ui/StatCard';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Button } from '@/components/ui/Button';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { fetchVehicleListings } from '@/services/supabaseService';
+import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
+import { Car as CarType } from '@/types/database';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const { width } = Dimensions.get('window');
 
@@ -46,114 +55,127 @@ export default function MarketplaceScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [cars, setCars] = useState<CarType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  // Mock marketplace data
-  const featuredListings = [
-    {
-      id: 1,
-      title: "2023 BMW X5 xDrive40i",
-      price: 65900,
-      originalPrice: 72000,
-      mileage: 12500,
-      location: "Los Angeles, CA",
-      images: ["https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=400"],
-      dealer: "Premium BMW",
-      verified: true,
-      rating: 4.8,
-      features: ["Leather", "Navigation", "AWD"],
-      condition: "Excellent",
-      fuelType: "Gasoline",
-      transmission: "Automatic",
-      isFeatured: true,
-    },
-    {
-      id: 2,
-      title: "2024 Tesla Model 3 Long Range",
-      price: 47240,
-      mileage: 2100,
-      location: "San Francisco, CA",
-      images: ["https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&w=400"],
-      dealer: "Tesla Direct",
-      verified: true,
-      rating: 4.9,
-      features: ["Autopilot", "Premium Interior", "Supercharging"],
-      condition: "Like New",
-      fuelType: "Electric",
-      transmission: "Single Speed",
-      isFeatured: true,
-    },
-    {
-      id: 3,
-      title: "2022 Toyota Camry Hybrid LE",
-      price: 28500,
-      mileage: 18000,
-      location: "Austin, TX",
-      images: ["https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg?auto=compress&cs=tinysrgb&w=400"],
-      dealer: "City Toyota",
-      verified: true,
-      rating: 4.7,
-      features: ["Hybrid", "Safety Sense", "Bluetooth"],
-      condition: "Excellent",
-      fuelType: "Hybrid",
-      transmission: "CVT",
-      isFeatured: false,
-    },
-    {
-      id: 4,
-      title: "2023 Mercedes-Benz C-Class C300",
-      price: 52900,
-      mileage: 8500,
-      location: "Miami, FL",
-      images: ["https://images.pexels.com/photos/1545743/pexels-photo-1545743.jpeg?auto=compress&cs=tinysrgb&w=400"],
-      dealer: "Luxury Motors",
-      verified: true,
-      rating: 4.6,
-      features: ["Premium Package", "AMG Line", "Panoramic Roof"],
-      condition: "Excellent",
-      fuelType: "Gasoline",
-      transmission: "Automatic",
-      isFeatured: true,
-    },
-  ];
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const categories = [
-    { id: 'all', name: 'All Cars', count: 1247 },
-    { id: 'luxury', name: 'Luxury', count: 156 },
-    { id: 'electric', name: 'Electric', count: 89 },
-    { id: 'suv', name: 'SUV', count: 234 },
-    { id: 'sedan', name: 'Sedan', count: 345 },
-    { id: 'truck', name: 'Truck', count: 123 },
+    { id: 'all', name: 'All Cars', count: cars.length },
+    { id: 'luxury', name: 'Luxury', count: 0 },
+    { id: 'electric', name: 'Electric', count: 0 },
+    { id: 'suv', name: 'SUV', count: 0 },
+    { id: 'sedan', name: 'Sedan', count: 0 },
+    { id: 'truck', name: 'Truck', count: 0 },
   ];
 
   const marketplaceStats = [
-    { icon: <Car color={colors.primary} size={24} />, value: "1,247", label: "Cars Available" },
+    { icon: <Car color={colors.primary} size={24} />, value: cars.length.toString(), label: "Cars Available" },
     { icon: <Users color={colors.success} size={24} />, value: "89", label: "Verified Dealers" },
     { icon: <Shield color={colors.accentGreen} size={24} />, value: "100%", label: "Verified Listings" },
   ];
 
-  const CarListingCard = useCallback(({ listing, isListView = false }: { listing: any, isListView?: boolean }) => (
+  // Load initial data
+  useEffect(() => {
+    loadCars(true);
+  }, [debouncedSearchQuery]);
+
+  const loadCars = async (reset = false) => {
+    try {
+      if (reset) {
+        setLoading(true);
+        setError(null);
+        setPage(0);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const currentPage = reset ? 0 : page;
+      const limit = 10;
+      
+      console.log('🔍 Fetching cars from Supabase...', { page: currentPage, limit, searchQuery: debouncedSearchQuery });
+      
+      const data = await fetchVehicleListings(currentPage, limit, debouncedSearchQuery || undefined);
+      
+      if (data && Array.isArray(data)) {
+        const transformedCars = data.map(transformDatabaseVehicleListingToCar);
+        
+        if (reset) {
+          setCars(transformedCars);
+        } else {
+          setCars(prev => [...prev, ...transformedCars]);
+        }
+        
+        setHasMore(data.length === limit);
+        setPage(currentPage + 1);
+        
+        console.log('✅ Successfully loaded cars:', transformedCars.length);
+      } else {
+        console.warn('⚠️ No data returned from fetchVehicleListings');
+        if (reset) {
+          setCars([]);
+        }
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error('❌ Error loading cars:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load car listings';
+      setError(errorMessage);
+      
+      if (reset) {
+        setCars([]);
+      }
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadCars(true);
+  }, [debouncedSearchQuery]);
+
+  const handleLoadMore = useCallback(() => {
+    if (!loadingMore && hasMore && cars.length > 0) {
+      loadCars(false);
+    }
+  }, [loadingMore, hasMore, cars.length]);
+
+  const handleCarPress = useCallback((carId: string) => {
+    console.log('Navigate to car details:', carId);
+    // TODO: Navigate to car detail screen
+    // router.push(`/car/${carId}`);
+  }, []);
+
+  const CarListingCard = useCallback(({ listing, isListView = false }: { listing: CarType, isListView?: boolean }) => (
     <TouchableOpacity 
       style={[styles.listingCard, isListView && styles.listingCardList]}
+      onPress={() => handleCarPress(listing.id)}
       activeOpacity={0.9}
     >
       <View style={[styles.listingImageContainer, isListView && styles.listingImageContainerList]}>
         <OptimizedImage 
-          source={{ uri: listing.images[0] }} 
-          style={styles.listingImage} 
+          source={{ uri: listing.images[0] || 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400' }} 
+          style={styles.listingImage}
+          fallbackSource={{ uri: 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400' }}
         />
         
-        {listing.isFeatured && (
-          <View style={styles.featuredBadge}>
-            <Star color={colors.white} size={12} fill={colors.white} />
-            <Text style={styles.featuredText}>Featured</Text>
-          </View>
-        )}
+        <View style={styles.featuredBadge}>
+          <Star color={colors.white} size={12} fill={colors.white} />
+          <Text style={styles.featuredText}>Listed</Text>
+        </View>
         
-        {listing.originalPrice && (
-          <View style={styles.savingsBadge}>
-            <Text style={styles.savingsText}>
-              Save ${(listing.originalPrice - listing.price).toLocaleString()}
-            </Text>
+        {listing.dealer?.verified && (
+          <View style={styles.verifiedBadge}>
+            <Shield color={colors.success} size={10} />
+            <Text style={styles.verifiedText}>Verified</Text>
           </View>
         )}
       </View>
@@ -161,40 +183,45 @@ export default function MarketplaceScreen() {
       <View style={[styles.listingContent, isListView && styles.listingContentList]}>
         <View style={styles.listingHeader}>
           <Text style={styles.listingPrice}>${listing.price.toLocaleString()}</Text>
-          {listing.originalPrice && (
-            <Text style={styles.originalPrice}>${listing.originalPrice.toLocaleString()}</Text>
-          )}
         </View>
         
-        <Text style={styles.listingTitle} numberOfLines={2}>{listing.title}</Text>
+        <Text style={styles.listingTitle} numberOfLines={2}>
+          {listing.year} {listing.make} {listing.model}
+        </Text>
         
         <View style={styles.listingSpecs}>
           <View style={styles.specBadge}>
             <Text style={styles.specText}>{listing.mileage.toLocaleString()} mi</Text>
           </View>
-          <View style={styles.specBadge}>
-            <Text style={styles.specText}>{listing.fuelType}</Text>
-          </View>
-          <View style={styles.specBadge}>
-            <Text style={styles.specText}>{listing.condition}</Text>
-          </View>
+          {listing.fuel_type && (
+            <View style={styles.specBadge}>
+              <Text style={styles.specText}>{listing.fuel_type}</Text>
+            </View>
+          )}
+          {listing.condition && (
+            <View style={styles.specBadge}>
+              <Text style={styles.specText}>{listing.condition}</Text>
+            </View>
+          )}
         </View>
         
-        <View style={styles.dealerInfo}>
-          <View style={styles.dealerLeft}>
-            <Text style={styles.dealerName}>{listing.dealer}</Text>
-            {listing.verified && (
-              <View style={styles.verifiedBadge}>
-                <Shield color={colors.success} size={10} />
-                <Text style={styles.verifiedText}>Verified</Text>
-              </View>
-            )}
+        {listing.dealer && (
+          <View style={styles.dealerInfo}>
+            <View style={styles.dealerLeft}>
+              <Text style={styles.dealerName}>{listing.dealer.name}</Text>
+              {listing.dealer.verified && (
+                <View style={styles.dealerVerifiedBadge}>
+                  <Shield color={colors.success} size={10} />
+                  <Text style={styles.dealerVerifiedText}>Verified</Text>
+                </View>
+              )}
+            </View>
+            <View style={styles.ratingContainer}>
+              <Star color={colors.warning} size={12} fill={colors.warning} />
+              <Text style={styles.ratingText}>4.5</Text>
+            </View>
           </View>
-          <View style={styles.ratingContainer}>
-            <Star color={colors.warning} size={12} fill={colors.warning} />
-            <Text style={styles.ratingText}>{listing.rating}</Text>
-          </View>
-        </View>
+        )}
         
         <View style={styles.listingLocation}>
           <MapPin color={colors.textSecondary} size={14} />
@@ -216,13 +243,24 @@ export default function MarketplaceScreen() {
         )}
       </View>
     </TouchableOpacity>
-  ), [colors, styles]);
+  ), [colors, styles, handleCarPress]);
 
-  const renderListing = ({ item }: { item: any }) => (
+  const renderListing = ({ item }: { item: CarType }) => (
     <View style={viewMode === 'grid' ? styles.gridItem : styles.listItem}>
       <CarListingCard listing={item} isListView={viewMode === 'list'} />
     </View>
   );
+
+  const renderFooter = () => {
+    if (!loadingMore) return null;
+    
+    return (
+      <View style={styles.footerLoader}>
+        <LoadingSpinner size={24} color={colors.primary} />
+        <Text style={styles.footerLoaderText}>Loading more cars...</Text>
+      </View>
+    );
+  };
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
@@ -315,25 +353,94 @@ export default function MarketplaceScreen() {
       {/* Results Header */}
       <View style={styles.resultsHeader}>
         <Text style={styles.resultsCount}>
-          {featuredListings.length} cars found
+          {cars.length} cars found
         </Text>
-        <Text style={styles.resultsLocation}>in your area</Text>
+        <Text style={styles.resultsLocation}>from verified dealers</Text>
       </View>
     </View>
   );
 
+  // Loading state
+  if (loading && cars.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <LoadingSpinner size={32} color={colors.primary} />
+          <Text style={styles.loadingText}>Finding the best cars for you...</Text>
+          <Text style={styles.loadingSubtext}>Connecting to our marketplace database</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Error state
+  if (error && cars.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ErrorState
+          title="Unable to Load Marketplace"
+          message={error}
+          onRetry={() => loadCars(true)}
+          icon={<AlertCircle color={colors.error} size={48} />}
+        />
+      </SafeAreaView>
+    );
+  }
+
+  // Empty state
+  if (!loading && cars.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        {renderHeader()}
+        <View style={styles.emptyStateContainer}>
+          <EmptyState
+            title="No vehicles available"
+            subtitle={searchQuery ? "Try adjusting your search criteria or browse all available cars" : "We're working to add more listings to our marketplace"}
+            icon={<Car color={colors.textSecondary} size={64} />}
+            action={
+              searchQuery ? (
+                <Button
+                  title="Clear Search"
+                  onPress={() => setSearchQuery('')}
+                  variant="outline"
+                />
+              ) : (
+                <Button
+                  title="Refresh Listings"
+                  onPress={() => loadCars(true)}
+                  variant="primary"
+                />
+              )
+            }
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={featuredListings}
+        data={cars}
         renderItem={renderListing}
         keyExtractor={(item) => item.id.toString()}
         numColumns={viewMode === 'grid' ? 2 : 1}
         key={viewMode}
         ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderFooter}
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={viewMode === 'grid' ? styles.columnWrapper : undefined}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
       />
     </SafeAreaView>
   );
@@ -343,6 +450,43 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  
+  // Loading States
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    gap: Spacing.md,
+  },
+  loadingText: {
+    ...Typography.h3,
+    color: colors.text,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  loadingSubtext: {
+    ...Typography.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  footerLoader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.xl,
+    gap: Spacing.sm,
+  },
+  footerLoaderText: {
+    ...Typography.body,
+    color: colors.textSecondary,
   },
   
   // Header
@@ -555,16 +699,19 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     fontWeight: '600',
     fontSize: 10,
   },
-  savingsBadge: {
+  verifiedBadge: {
     position: 'absolute',
     top: Spacing.sm,
     right: Spacing.sm,
-    backgroundColor: colors.error,
+    backgroundColor: colors.success,
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.sm,
+    gap: 2,
   },
-  savingsText: {
+  verifiedText: {
     ...Typography.caption,
     color: colors.white,
     fontWeight: '600',
@@ -587,11 +734,6 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     ...Typography.h3,
     color: colors.primary,
     fontWeight: '700',
-  },
-  originalPrice: {
-    ...Typography.bodySmall,
-    color: colors.textSecondary,
-    textDecorationLine: 'line-through',
   },
   listingTitle: {
     ...Typography.body,
@@ -633,7 +775,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     color: colors.text,
     fontWeight: '500',
   },
-  verifiedBadge: {
+  dealerVerifiedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.success,
@@ -642,7 +784,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     borderRadius: BorderRadius.xs,
     gap: 2,
   },
-  verifiedText: {
+  dealerVerifiedText: {
     ...Typography.caption,
     color: colors.white,
     fontSize: 9,
