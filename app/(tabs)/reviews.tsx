@@ -394,12 +394,15 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     textAlign: 'center',
     marginBottom: Spacing.sm,
     fontWeight: '800',
+    fontSize: Math.min(32, width * 0.08),
   },
   heroSubtitle: {
     ...Typography.body,
     color: colors.white,
     textAlign: 'center',
     opacity: 0.9,
+    maxWidth: width * 0.8,
+    lineHeight: 24,
   },
   
   // Stats

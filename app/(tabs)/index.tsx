@@ -141,72 +141,67 @@ export default function HomeScreen() {
       >
         {/* Enhanced Hero Section */}
         <View style={styles.heroSection}>
-          <ImageBackground
-            source={{ uri: 'https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=1200' }}
-            style={styles.heroBackground}
-            imageStyle={styles.heroBackgroundImage}
+          <LinearGradient
+            colors={[colors.primary, colors.primaryHover]}
+            style={styles.heroGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
           >
-            <LinearGradient
-              colors={['rgba(34, 197, 94, 0.9)', 'rgba(22, 163, 74, 0.95)']}
-              style={styles.heroOverlay}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <View style={styles.heroContent}>
-                {/* Hero Badge */}
-                <View style={styles.heroBadge}>
-                  <Sparkles color={colors.primary} size={16} />
-                  <Text style={[styles.heroBadgeText, { color: colors.primary }]}>
-                    AI-Powered Car Discovery
-                  </Text>
-                </View>
-
-                <Text style={[styles.heroTitle, { color: colors.white }]}>
-                  Find Your Perfect Car
+            <View style={styles.heroContent}>
+              {/* Hero Badge */}
+              <View style={styles.heroBadge}>
+                <Sparkles color={colors.white} size={16} />
+                <Text style={[styles.heroBadgeText, { color: colors.primary }]}>
+                  AI-Powered Car Discovery
                 </Text>
-                <Text style={[styles.heroSubtitle, { color: colors.white }]}>
-                  AI-powered recommendations, expert reviews, and thousands of verified listings all in one place
-                </Text>
-                
-                <View style={styles.heroSearchContainer}>
-                  <View style={styles.searchBarWrapper}>
-                    <View style={styles.searchInputContainer}>
-                      <Search color={colors.textSecondary} size={20} />
-                      <Text style={styles.searchPlaceholder}>
-                        Try 'BMW under $30k' or 'Family SUV'
-                      </Text>
-                    </View>
-                    <TouchableOpacity 
-                      style={styles.searchButton}
-                      onPress={() => router.push({ pathname: '/search', params: { query: searchQuery }})}
-                    >
-                      <Search color={colors.white} size={20} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                <View style={styles.heroButtons}>
-                  <Button
-                    title={user ? "Get AI Recommendations" : "Start Your Journey"}
-                    onPress={() => handleAuthRequired(
-                      () => router.push('/recommendations'),
-                      () => router.push('/auth/sign-in')
-                    )}
-                    variant="secondary"
-                    style={styles.primaryHeroButton}
-                    icon={<Sparkles color={colors.primary} size={20} />}
-                  />
-                  <Button
-                    title="Browse All Cars"
-                    onPress={() => router.push('/models')}
-                    variant="outline"
-                    style={styles.secondaryHeroButton}
-                    icon={<ArrowRight color={colors.white} size={20} />}
-                  />
-                </View>
               </View>
-            </LinearGradient>
-          </ImageBackground>
+
+              <Text style={[styles.heroTitle, { color: colors.white }]}>
+                Find Your Perfect Car
+              </Text>
+              <Text style={[styles.heroSubtitle, { color: colors.white }]}>
+                AI-powered recommendations, expert reviews, and thousands of verified listings all in one place
+              </Text>
+              
+              <View style={styles.heroSearchContainer}>
+                <TouchableOpacity 
+                  style={styles.searchBarWrapper}
+                  onPress={() => router.push('/search')}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.searchInputContainer}>
+                    <Search color={colors.textSecondary} size={20} />
+                    <Text style={styles.searchPlaceholder}>
+                      Try 'BMW under $30k' or 'Family SUV'
+                    </Text>
+                  </View>
+                  <View style={styles.searchButton}>
+                    <Search color={colors.white} size={20} />
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.heroButtons}>
+                <Button
+                  title={user ? "Get AI Recommendations" : "Start Your Journey"}
+                  onPress={() => handleAuthRequired(
+                    () => router.push('/recommendations'),
+                    () => router.push('/auth/sign-in')
+                  )}
+                  variant="secondary"
+                  style={styles.primaryHeroButton}
+                  icon={<Sparkles color={colors.primary} size={20} />}
+                />
+                <Button
+                  title="Browse All Cars"
+                  onPress={() => router.push('/models')}
+                  variant="outline"
+                  style={styles.secondaryHeroButton}
+                  icon={<ArrowRight color={colors.white} size={20} />}
+                />
+              </View>
+            </View>
+          </LinearGradient>
         </View>
 
         {/* Enhanced Stats Section */}
@@ -428,26 +423,18 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     paddingBottom: Spacing.xxl,
   },
   heroSection: {
-    height: height * 0.65,
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
-  heroBackground: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  heroBackgroundImage: {
-    opacity: 0.3,
-  },
-  heroOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  heroGradient: {
+    paddingTop: Spacing.xl * 2,
+    paddingBottom: Spacing.xl * 1.5,
     paddingHorizontal: Spacing.lg,
+    minHeight: height * 0.5,
+    justifyContent: 'center',
   },
   heroContent: {
     alignItems: 'center',
     width: '100%',
-    maxWidth: 400,
   },
   heroBadge: {
     flexDirection: 'row',
@@ -458,7 +445,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     borderRadius: BorderRadius.full,
     marginBottom: Spacing.lg,
     gap: Spacing.xs,
-    ...ColorsShadows.medium,
+    ...ColorsShadows.large,
   },
   heroBadgeText: {
     ...Typography.caption,
@@ -469,7 +456,8 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     textAlign: 'center',
     marginBottom: Spacing.md,
     fontWeight: '800',
-    fontSize: 36,
+    fontSize: Math.min(36, width * 0.09),
+    lineHeight: Math.min(40, width * 0.1),
   },
   heroSubtitle: {
     ...Typography.bodyLarge,
@@ -477,16 +465,18 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     marginBottom: Spacing.xl,
     opacity: 0.95,
     lineHeight: 26,
+    maxWidth: width * 0.85,
   },
   heroSearchContainer: {
     width: '100%',
     marginBottom: Spacing.lg,
+    maxWidth: 400,
   },
   searchBarWrapper: {
     flexDirection: 'row',
     backgroundColor: colors.white,
     borderRadius: BorderRadius.xl,
-    padding: Spacing.xs,
+    padding: Spacing.sm,
     alignItems: 'center',
     ...ColorsShadows.large,
   },
@@ -495,12 +485,13 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
   },
   searchPlaceholder: {
     ...Typography.body,
     color: colors.textSecondary,
     marginLeft: Spacing.sm,
+    flex: 1,
   },
   searchButton: {
     backgroundColor: colors.primary,
@@ -508,6 +499,8 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     padding: Spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: 48,
+    minHeight: 48,
   },
   heroButtons: {
     flexDirection: 'row',
@@ -540,10 +533,12 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    gap: Spacing.sm,
   },
   statCardWrapper: {
     alignItems: 'center',
     flex: 1,
+    minWidth: 0,
   },
   statIconContainer: {
     width: 56,
@@ -557,10 +552,12 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     ...Typography.h2,
     fontWeight: '700',
     marginBottom: Spacing.xs,
+    textAlign: 'center',
   },
   statLabel: {
     ...Typography.caption,
     textAlign: 'center',
+    lineHeight: 16,
   },
   section: {
     paddingHorizontal: Spacing.lg,

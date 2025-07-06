@@ -16,7 +16,7 @@ export default function TabLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: 60 + Spacing.md,
+          height: 70,
           paddingBottom: Spacing.sm,
           paddingTop: Spacing.xs,
           elevation: 8,
@@ -27,11 +27,12 @@ export default function TabLayout() {
         },
         tabBarLabelStyle: {
           ...Typography.caption,
-          marginTop: 0,
+          marginTop: 2,
           fontWeight: '600',
+          fontSize: 11,
         },
         tabBarIconStyle: {
-          marginBottom: 2,
+          marginBottom: 0,
         }
       }}
     >

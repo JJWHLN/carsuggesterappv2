@@ -348,6 +348,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   // Header
   headerContainer: {
     backgroundColor: colors.background,
+    paddingBottom: Spacing.md,
   },
   heroSection: {
     backgroundColor: colors.surface,
@@ -367,11 +368,10 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: Spacing.xl,
+    lineHeight: 22,
   },
   heroSearchBar: {
-    backgroundColor: colors.background,
-    borderRadius: BorderRadius.xl,
-    ...ColorsShadows.medium,
+    marginHorizontal: 0,
   },
   
   // Stats

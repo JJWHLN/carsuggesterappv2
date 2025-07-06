@@ -315,11 +315,13 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   // Header
   headerContainer: {
     backgroundColor: colors.background,
-    paddingBottom: Spacing.lg,
   },
   searchBarContainer: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   
   // Controls
@@ -328,7 +330,8 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
+    paddingVertical: Spacing.md,
+    backgroundColor: colors.background,
   },
   leftControls: {
     flexDirection: 'row',
