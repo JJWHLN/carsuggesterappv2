@@ -187,7 +187,7 @@ export default function ModelDetailScreen() {
             />
             <Button
               title="Compare Models"
-              onPress={() => router.push('/models')}
+              onPress={() => router.push('/marketplace')}
               variant="outline"
               icon={<Car color={colors.primary} size={20} />}
               style={styles.actionButton}

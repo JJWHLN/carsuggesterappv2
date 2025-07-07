@@ -8,7 +8,7 @@ import { createSemanticProps, useAccessibility } from '@/hooks/useAccessibility'
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'outlineWhite' | 'ghost';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   loading?: boolean;
@@ -168,6 +168,11 @@ const styles = StyleSheet.create({
     borderColor: currentColors.primary,
     borderWidth: 1,
   },
+  outlineWhite: {
+    backgroundColor: currentColors.transparent,
+    borderColor: currentColors.white,
+    borderWidth: 2,
+  },
   ghost: {
     backgroundColor: currentColors.transparent,
     borderColor: currentColors.transparent,
@@ -207,6 +212,9 @@ const styles = StyleSheet.create({
   },
   outlineText: {
     color: currentColors.primary,
+  },
+  outlineWhiteText: {
+    color: currentColors.white,
   },
   ghostText: {
     color: currentColors.primary,

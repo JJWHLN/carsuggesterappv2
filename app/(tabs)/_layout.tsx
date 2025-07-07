@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Car, TrendingUp, FileText, Sparkles, User } from 'lucide-react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { Home, MessageSquare, ShoppingBag, Sparkles, User } from 'lucide-react-native';
 import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,31 +17,28 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
-          height: 80,
-          paddingBottom: Spacing.md,
-          paddingTop: Spacing.sm,
-          elevation: 12,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.15,
-          shadowRadius: 12,
-        },
-        tabBarLabelStyle: {
-          ...Typography.caption,
-          marginTop: 4,
-          fontWeight: '600',
-          fontSize: 12,
-        },
-        tabBarIconStyle: {
-          marginBottom: 2,
-        },
-        tabBarItemStyle: {
-          paddingVertical: Spacing.xs,
-        }
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            backgroundColor: colors.white,
+            borderTopColor: colors.border,
+            ...Platform.select({
+              ios: {
+                boxShadow: '0 -2px 8px rgba(0,0,0,0.06)',
+              },
+              android: {
+                elevation: 12,
+              },
+            }),
+          }
+        ],
+        tabBarLabelStyle: [
+          styles.tabBarLabel,
+          Typography.caption,
+        ],
+        tabBarIconStyle: styles.tabBarIcon,
+        tabBarItemStyle: styles.tabBarItem,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen
@@ -48,25 +46,11 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Home color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="models"
-        options={{
-          title: 'Browse Cars',
-          tabBarIcon: ({ color, focused }) => (
-            <Car color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="marketplace"
-        options={{
-          title: 'Marketplace',
-          tabBarIcon: ({ color, focused }) => (
-            <TrendingUp color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
+            <Home 
+              color={focused ? colors.primary : color} 
+              size={focused ? 26 : 24} 
+              strokeWidth={focused ? 2.5 : 2} 
+            />
           ),
         }}
       />
@@ -75,18 +59,34 @@ export default function TabLayout() {
         options={{
           title: 'Reviews',
           tabBarIcon: ({ color, focused }) => (
-            <FileText color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
+            <MessageSquare 
+              color={focused ? colors.primary : color} 
+              size={focused ? 26 : 24} 
+              strokeWidth={focused ? 2.5 : 2} 
+            />
           ),
         }}
       />
       <Tabs.Screen
-        name="ai-search-tab"
+        name="marketplace"
         options={{
-          title: user ? 'AI Assistant' : 'Sign In for AI',
-          href: canAccessAI ? '/search' : '/auth/sign-in',
+          title: 'Marketplace',
+          tabBarIcon: ({ color, focused }) => (
+            <ShoppingBag 
+              color={focused ? colors.primary : color} 
+              size={focused ? 26 : 24} 
+              strokeWidth={focused ? 2.5 : 2} 
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ai"
+        options={{
+          title: 'AI',
           tabBarIcon: ({ color, focused }) => (
             <Sparkles 
-              color={canAccessAI ? color : colors.textSecondary} 
+              color={focused ? colors.primary : color} 
               size={focused ? 26 : 24} 
               strokeWidth={focused ? 2.5 : 2} 
             />
@@ -96,12 +96,69 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: 'Account',
           tabBarIcon: ({ color, focused }) => (
-            <User color={color} size={focused ? 26 : 24} strokeWidth={focused ? 2.5 : 2} />
+            <User 
+              color={focused ? colors.primary : color} 
+              size={focused ? 26 : 24} 
+              strokeWidth={focused ? 2.5 : 2} 
+            />
           ),
+        }}
+      />
+      
+      {/* Hidden routes - accessible but not shown in tab bar */}
+      <Tabs.Screen
+        name="models"
+        options={{
+          href: null, // This hides the tab from the tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="reviews_new"
+        options={{
+          href: null, // This hides the tab from the tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          href: null, // This hides the tab from the tab bar
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    height: Platform.OS === 'ios' ? 88 : 68,
+    paddingBottom: Platform.OS === 'ios' ? Spacing.lg : Spacing.md,
+    paddingTop: Spacing.sm,
+    borderTopWidth: 0.5,
+    elevation: Platform.OS === 'android' ? 12 : 0,
+    ...Platform.select({
+      ios: {
+        boxShadow: '0 -3px 12px rgba(0,0,0,0.08)',
+      },
+      default: {},
+    }),
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  tabBarLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 4,
+    letterSpacing: 0.3,
+    textAlign: 'center',
+  },
+  tabBarIcon: {
+    marginBottom: 2,
+  },
+  tabBarItem: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+    borderRadius: 8,
+  },
+});

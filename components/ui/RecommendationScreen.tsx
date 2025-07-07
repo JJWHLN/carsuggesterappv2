@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Filter, SlidersHorizontal, Grid2x2 as Grid, List, Star } from 'lucide-react-native';
-import { CarCard } from './CarCard';
+import { Filter, SlidersHorizontal, Grid2x2 as Grid, List, Star, Heart } from 'lucide-react-native';
+// Import removed - using inline card component instead of CarCard
+import { OptimizedImage } from './OptimizedImage';
 import { Button } from './Button';
 import { LoadingSpinner } from './LoadingSpinner';
 import { EmptyState } from './EmptyState';
@@ -79,19 +80,35 @@ export const RecommendationScreen = memo<RecommendationScreenProps>(({
     return (
       <View style={viewMode === 'grid' ? styles.gridItem : styles.listItem}>
         <View style={[styles.carCardContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <CarCard
-            image={item.image}
-            name={item.name}
-            year={item.year}
-            priceRange={item.priceRange}
-            tags={item.tags}
-            rating={item.rating}
-            location={item.location}
-            onPress={() => onCarPress(item)}
-            onFavorite={onFavoriteToggle ? () => onFavoriteToggle(item.id) : undefined}
-            isFavorite={isFavorite}
-            style={viewMode === 'list' ? styles.listCarCard : undefined}
-          />
+          <TouchableOpacity style={styles.simpleCard} onPress={() => onCarPress(item)}>
+            <OptimizedImage source={{ uri: item.image }} style={styles.cardImage} />
+            <View style={styles.cardContent}>
+              <Text style={[styles.cardTitle, { color: colors.text }]}>{item.name}</Text>
+              {item.year && <Text style={[styles.cardYear, { color: colors.textMuted }]}>{item.year}</Text>}
+              <Text style={[styles.cardPrice, { color: colors.primary }]}>{item.priceRange}</Text>
+              {item.rating && (
+                <View style={styles.ratingContainer}>
+                  <Star color="#FFD700" size={16} fill="#FFD700" />
+                  <Text style={[styles.ratingText, { color: colors.textMuted }]}>{item.rating}</Text>
+                </View>
+              )}
+              {item.location && <Text style={[styles.locationText, { color: colors.textMuted }]}>{item.location}</Text>}
+              {item.tags && (
+                <View style={styles.tagsContainer}>
+                  {item.tags.map((tag: string, idx: number) => (
+                    <Text key={idx} style={[styles.tag, { backgroundColor: colors.primaryLight, color: colors.textMuted }]}>
+                      {tag}
+                    </Text>
+                  ))}
+                </View>
+              )}
+            </View>
+            {onFavoriteToggle && (
+              <TouchableOpacity style={styles.favoriteButton} onPress={() => onFavoriteToggle(item.id)}>
+                <Heart color={isFavorite ? "#FF4444" : colors.textMuted} size={20} fill={isFavorite ? "#FF4444" : "none"} />
+              </TouchableOpacity>
+            )}
+          </TouchableOpacity>
           
           {/* Enhanced Match Score Badge */}
           {item.matchScore && (
@@ -572,6 +589,72 @@ const styles = StyleSheet.create({
   },
   loadMoreButton: {
     paddingHorizontal: Spacing.xl,
+    ...ColorsShadows.small,
+  },
+  // Simple Card Styles (missing from previous implementation)
+  simpleCard: {
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    overflow: 'hidden',
+    ...ColorsShadows.card,
+    position: 'relative',
+  },
+  cardImage: {
+    width: '100%',
+    height: 180,
+  },
+  cardContent: {
+    padding: Spacing.md,
+  },
+  cardTitle: {
+    ...Typography.h4,
+    fontWeight: '600',
+    marginBottom: Spacing.xs,
+  },
+  cardYear: {
+    ...Typography.caption,
+    marginBottom: Spacing.xs,
+  },
+  cardPrice: {
+    ...Typography.h4,
+    fontWeight: '700',
+    marginBottom: Spacing.sm,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  ratingText: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+  },
+  locationText: {
+    ...Typography.caption,
+    marginBottom: Spacing.sm,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  tag: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.sm,
+    ...Typography.caption,
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: Spacing.sm,
+    right: Spacing.sm,
+    padding: Spacing.xs,
+    borderRadius: BorderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     ...ColorsShadows.small,
   },
 });

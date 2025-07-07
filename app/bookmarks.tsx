@@ -184,7 +184,7 @@ export default function BookmarksScreen() {
             action={
               <TouchableOpacity 
                 style={[styles.browseButton, { backgroundColor: colors.primary }]}
-                onPress={() => router.push('/models')}
+                onPress={() => router.push('/marketplace')}
               >
                 <Text style={[styles.browseButtonText, { color: colors.white }]}>
                   Browse Cars
