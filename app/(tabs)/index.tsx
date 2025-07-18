@@ -13,31 +13,44 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { Search, Sparkles, ArrowRight, Car, Users, Award } from 'lucide-react-native';
+import { Search, Sparkles, ArrowRight, Car, Users, Award } from '@/utils/icons';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { EnhancedButton } from '@/components/ui/EnhancedButton';
-import { useCanPerformAction } from '@/components/ui/RoleProtection';
+import { Button } from '@/components/ui/Button';
+import { CarCard } from '@/components/CarCard';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
+import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useApi } from '@/hooks/useApi';
 import { fetchCarModels, fetchPopularBrands } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
-import { AnalyticsService } from '@/services/analyticsService';
-import { usePerformanceTracking, useEngagementTracking } from '@/hooks/useAnalytics';
-import { 
-  PlatformOptimizations, 
-  ResponsiveSpacing, 
-  getPlatformShadow,
-  getTouchableProps,
-  getResponsiveFontSize 
-} from '@/constants/PlatformOptimizations';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 const { width, height } = Dimensions.get('window');
 
-export default function HomeScreen() {
+function HomeScreen() {
   const { colors } = useThemeColors();
-  const { user, role } = useAuth();
-  const canAccessAI = useCanPerformAction('accessAI');
+  const { layout, cards, buttons } = useDesignTokens();
+  const { user } = useAuth();
+  
+  // Use unified search/filter hook
+  const {
+    filters,
+    searchTerm,
+    debouncedSearchTerm,
+    updateFilters,
+    clearFilters,
+    setSearchTerm,
+    hasActiveFilters,
+  } = useSearchFilters({
+    searchTerm: '',
+    categories: {},
+    sortBy: 'popularity',
+    sortOrder: 'desc',
+    viewMode: 'grid',
+  });
 
   const {
     data: featuredCars,
@@ -53,32 +66,13 @@ export default function HomeScreen() {
     refetch: refetchPopularBrands
   } = useApi(() => fetchPopularBrands(8), []);
 
-  // Analytics hooks
-  const performanceTracking = usePerformanceTracking('home');
-  const engagementTracking = useEngagementTracking('home');
-
-  // Track screen view
-  useEffect(() => {
-    const analytics = AnalyticsService.getInstance();
-    analytics.trackScreenView('home', { 
-      user_id: user?.id,
-      role: role,
-      featured_cars_count: featuredCars?.length || 0,
-      popular_brands_count: popularBrands?.length || 0
-    });
-  }, [user?.id, role, featuredCars?.length, popularBrands?.length]);
-
   const handleSearchPress = useCallback(async () => {
-    if (Platform.OS === 'ios') {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push('/search');
   }, []);
 
   const handleGetRecommendations = useCallback(async () => {
-    if (Platform.OS === 'ios') {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (user) {
       router.push('/search');
     } else {
@@ -87,45 +81,39 @@ export default function HomeScreen() {
   }, [user]);
 
   const handleBrowseAllCars = useCallback(async () => {
-    if (Platform.OS === 'ios') {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push('/marketplace');
   }, []);
 
   const handleCategoryPress = useCallback(async (category: string) => {
-    if (Platform.OS === 'ios') {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push('/marketplace');
   }, []);
 
   if (featuredCarsLoading && !featuredCars) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <LoadingSpinner color="#22C55E" />
-        </View>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <LoadingState />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Hero Section */}
         <View style={styles.heroSection}>
           <LinearGradient
-            colors={['#22C55E', '#16A34A', '#15803D']}
+            colors={[colors.primary, '#16A34A', '#15803D']}
             style={styles.heroGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
             <View style={styles.heroContent}>
-              {/* Trust Badge - removed fake claim */}
+              {/* Trust Badge */}
               <View style={styles.trustBadge}>
-                <Sparkles color="#22C55E" size={14} />
-                <Text style={styles.trustBadgeText}>Expert Car Recommendations</Text>
+                <Sparkles color={colors.primary} size={14} />
+                <Text style={[styles.trustBadgeText, { color: colors.primary }]}>Expert Car Recommendations</Text>
               </View>
 
               {/* Main Headlines */}
@@ -135,40 +123,47 @@ export default function HomeScreen() {
                 Get AI-powered recommendations tailored just for you.
               </Text>
 
-              {/* Search Bar */}
-              <TouchableOpacity 
-                style={styles.searchBar}
-                onPress={handleSearchPress}
-                activeOpacity={0.9}
-              >
-                <Search color="#6B7280" size={20} />
-                <Text style={styles.searchPlaceholder}>
-                  Try "BMW under $30k" or "Family SUV"
-                </Text>
-                <View style={styles.searchButton}>
-                  <Search color="#FFFFFF" size={20} />
-                </View>
-              </TouchableOpacity>
+              {/* Enhanced Search Bar */}
+              <View style={{ marginBottom: 24 }}>
+                <UnifiedSearchFilter
+                  searchPlaceholder="Try 'BMW under $30k' or 'Family SUV'"
+                  searchValue={searchTerm}
+                  onSearchChange={(value) => {
+                    setSearchTerm(value);
+                    if (value.length > 0) {
+                      // Navigate to search page with query
+                      router.push(`/search?q=${encodeURIComponent(value)}`);
+                    }
+                  }}
+                  enableSearch={true}
+                  
+                  enableFilters={false}
+                  enableSort={false}
+                  enableViewToggle={false}
+                  enableQuickFilters={false}
+                  
+                  showResultsCount={false}
+                  variant="compact"
+                  showClearAll={searchTerm.length > 0}
+                  onClearAll={clearFilters}
+                />
+              </View>
 
               {/* Action Buttons */}
               <View style={styles.actionButtons}>
-                <EnhancedButton
-                  title={canAccessAI ? "Get AI Recommendations" : "Try AI Search Free"}
+                <Button
+                  title="Get AI Recommendations"
                   onPress={handleGetRecommendations}
-                  variant="outline"
+                  variant="secondary"
                   style={styles.primaryButton}
-                  icon={<Sparkles color="#FFFFFF" size={18} />}
-                  hapticFeedback={true}
-                  testID="ai-recommendations-button"
+                  icon={<Sparkles color={colors.background} size={18} />}
                 />
-                <EnhancedButton
+                <Button
                   title="Browse All Cars"
                   onPress={handleBrowseAllCars}
                   variant="outline"
                   style={styles.secondaryButton}
-                  icon={<ArrowRight color="#FFFFFF" size={18} />}
-                  hapticFeedback={true}
-                  testID="browse-cars-button"
+                  icon={<ArrowRight color={colors.background} size={18} />}
                 />
               </View>
             </View>
@@ -176,52 +171,72 @@ export default function HomeScreen() {
         </View>
 
         {/* Stats Section */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Platform Statistics</Text>
+        <View style={[styles.statsSection, { backgroundColor: colors.cardBackground }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Platform Statistics</Text>
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
-              <View style={styles.statIcon}>
-                <Car color="#22C55E" size={28} />
+              <View style={[styles.statIcon, { backgroundColor: colors.background }]}>
+                <Car color={colors.primary} size={28} />
               </View>
-              <Text style={styles.statNumber}>Live</Text>
-              <Text style={styles.statLabel}>Car Listings</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>Live</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Car Listings</Text>
             </View>
             <View style={styles.statCard}>
-              <View style={styles.statIcon}>
+              <View style={[styles.statIcon, { backgroundColor: colors.background }]}>
                 <Users color="#3B82F6" size={28} />
               </View>
-              <Text style={styles.statNumber}>Active</Text>
-              <Text style={styles.statLabel}>Dealer Network</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>Active</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Dealer Network</Text>
             </View>
             <View style={styles.statCard}>
-              <View style={styles.statIcon}>
+              <View style={[styles.statIcon, { backgroundColor: colors.background }]}>
                 <Award color="#F59E0B" size={28} />
               </View>
-              <Text style={styles.statNumber}>Real</Text>
-              <Text style={styles.statLabel}>User Reviews</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>Real</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>User Reviews</Text>
             </View>
           </View>
         </View>
 
         {/* Categories Section */}
         <View style={styles.categoriesSection}>
-          <Text style={styles.sectionTitle}>Browse by Category</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Browse by Category</Text>
           <View style={styles.categoriesGrid}>
-            <TouchableOpacity style={styles.categoryCard} onPress={() => handleCategoryPress('electric')} {...getTouchableProps()}>
-              <Text style={styles.categoryTitle}>🔋 Electric</Text>
-              <Text style={styles.categoryDescription}>Zero emissions</Text>
+            <TouchableOpacity 
+              style={[styles.categoryCard, { backgroundColor: colors.cardBackground }]} 
+              onPress={() => handleCategoryPress('electric')}
+            >
+              <View>
+                <Text style={[styles.categoryTitle, { color: colors.text }]}>🔋 Electric</Text>
+                <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>Zero emissions</Text>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryCard} onPress={() => handleCategoryPress('luxury')} {...getTouchableProps()}>
-              <Text style={styles.categoryTitle}>👑 Luxury</Text>
-              <Text style={styles.categoryDescription}>Premium comfort</Text>
+            <TouchableOpacity 
+              style={[styles.categoryCard, { backgroundColor: colors.cardBackground }]} 
+              onPress={() => handleCategoryPress('luxury')}
+            >
+              <View>
+                <Text style={[styles.categoryTitle, { color: colors.text }]}>👑 Luxury</Text>
+                <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>Premium comfort</Text>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryCard} onPress={() => handleCategoryPress('family')} {...getTouchableProps()}>
-              <Text style={styles.categoryTitle}>🛡️ Family SUV</Text>
-              <Text style={styles.categoryDescription}>Safe & spacious</Text>
+            <TouchableOpacity 
+              style={[styles.categoryCard, { backgroundColor: colors.cardBackground }]} 
+              onPress={() => handleCategoryPress('family')}
+            >
+              <View>
+                <Text style={[styles.categoryTitle, { color: colors.text }]}>🛡️ Family SUV</Text>
+                <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>Safe & spacious</Text>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryCard} onPress={() => handleCategoryPress('sports')} {...getTouchableProps()}>
-              <Text style={styles.categoryTitle}>🚀 Sports Car</Text>
-              <Text style={styles.categoryDescription}>Pure performance</Text>
+            <TouchableOpacity 
+              style={[styles.categoryCard, { backgroundColor: colors.cardBackground }]} 
+              onPress={() => handleCategoryPress('sports')}
+            >
+              <View>
+                <Text style={[styles.categoryTitle, { color: colors.text }]}>🚀 Sports Car</Text>
+                <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>Pure performance</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -233,19 +248,36 @@ export default function HomeScreen() {
               title="Could Not Load Cars" 
               message={featuredCarsError} 
               onRetry={refetchFeaturedCars} 
+              retryText="Try Again"
             />
           </View>
         ) : (
           <View style={styles.featuredSection}>
-            <Text style={styles.sectionTitle}>Featured Cars</Text>
+            <View style={styles.sectionHeader}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Featured Cars</Text>
+              <TouchableOpacity onPress={handleBrowseAllCars}>
+                <Text style={[styles.viewAllText, { color: colors.primary }]}>View All</Text>
+              </TouchableOpacity>
+            </View>
+            
             {featuredCarsLoading ? (
-              <View style={styles.loadingContainer}>
-                <LoadingSpinner color="#22C55E" />
-              </View>
+              <LoadingState />
+            ) : featuredCars && featuredCars.length > 0 ? (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {featuredCars.map((car) => (
+                  <CarCard
+                    key={car.id}
+                    car={car as any} // Type conversion - CarModel to Car
+                    onPress={() => router.push(`/car/${car.id}`)}
+                  />
+                ))}
+              </ScrollView>
             ) : (
-              <Text style={styles.placeholder}>
-                {featuredCars?.length || 0} cars available
-              </Text>
+              <EmptyState
+                title="No Featured Cars"
+                subtitle="Check back later for featured listings"
+                icon={<Car color={colors.textSecondary} size={48} />}
+              />
             )}
           </View>
         )}
@@ -253,21 +285,19 @@ export default function HomeScreen() {
         {/* Call to Action */}
         <View style={styles.ctaSection}>
           <LinearGradient
-            colors={['#22C55E', '#16A34A']}
+            colors={[colors.primary, '#16A34A']}
             style={styles.ctaGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
             <Text style={styles.ctaTitle}>Ready to Find Your Dream Car?</Text>
             <Text style={styles.ctaSubtitle}>Get personalized recommendations powered by AI</Text>
-            <EnhancedButton
-              title={canAccessAI ? "Get My Recommendations" : "Sign In for AI"}
+            <Button
+              title="Get My Recommendations"
               onPress={handleGetRecommendations}
               variant="secondary"
               style={styles.ctaButton}
-              icon={<Sparkles color="#22C55E" size={20} />}
-              hapticFeedback={true}
-              testID="cta-recommendations-button"
+              icon={<Sparkles color={colors.primary} size={20} />}
             />
           </LinearGradient>
         </View>
@@ -276,22 +306,23 @@ export default function HomeScreen() {
   );
 }
 
+export default function WrappedHomeScreen() {
+  return (
+    <ErrorBoundary>
+      <HomeScreen />
+    </ErrorBoundary>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   scrollView: {
     flex: 1,
   },
   content: {
     flexGrow: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
   },
   section: {
     marginVertical: 15,
@@ -330,7 +361,6 @@ const styles = StyleSheet.create({
   trustBadgeText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#22C55E',
   },
   heroTitle: {
     fontSize: Math.min(36, width * 0.09),
@@ -350,32 +380,9 @@ const styles = StyleSheet.create({
     maxWidth: width * 0.9,
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
     marginBottom: 24,
     width: '100%',
     maxWidth: 400,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  searchPlaceholder: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginLeft: 12,
-    flex: 1,
-  },
-  searchButton: {
-    backgroundColor: '#22C55E',
-    borderRadius: 12,
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   actionButtons: {
     flexDirection: 'row',
@@ -394,7 +401,6 @@ const styles = StyleSheet.create({
   statsSection: {
     paddingHorizontal: 20,
     paddingVertical: 32,
-    backgroundColor: '#FFFFFF',
     marginHorizontal: 20,
     borderRadius: 16,
     marginBottom: 24,
@@ -407,7 +413,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -424,7 +429,6 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#f3f4f6',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -432,12 +436,10 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1f2937',
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: '#6b7280',
     textAlign: 'center',
   },
 
@@ -453,7 +455,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
     shadowColor: '#000',
@@ -465,12 +466,10 @@ const styles = StyleSheet.create({
   categoryTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
     marginBottom: 4,
   },
   categoryDescription: {
     fontSize: 14,
-    color: '#6b7280',
   },
 
   // Featured Section
@@ -478,13 +477,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 24,
   },
-  placeholder: {
-    fontSize: 16,
-    color: '#6b7280',
-    textAlign: 'center',
-    padding: 20,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 12,
+  carCard: {
+    marginBottom: 16,
   },
 
   // CTA Section
@@ -519,5 +513,17 @@ const styles = StyleSheet.create({
   },
   ctaButton: {
     paddingHorizontal: 32,
+  },
+  viewAllText: {
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'right',
+    marginTop: 4,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
 });

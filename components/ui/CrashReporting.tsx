@@ -1,6 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react-native';
+import { AlertTriangle, RefreshCw, Home } from '@/utils/icons';
 import { trackError } from '@/services/analyticsService';
 import { useThemeColors } from '@/hooks/useTheme';
 import { router } from 'expo-router';

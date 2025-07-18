@@ -1,35 +1,26 @@
 import { supabase } from '@/lib/supabase';
 import { SecurityService, UserRole } from './securityService';
+import { BaseService } from './BaseService';
 
 /**
  * Admin service for managing users, roles, and content moderation
  */
-export class AdminService {
+export class AdminService extends BaseService {
   /**
    * Get all users (admin only)
    */
   static async getAllUsers(adminUserId: string) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          email,
-          role,
-          onboarding_completed,
-          created_at,
-          updated_at
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching all users:', error);
-      throw error;
-    }
+    return this.executeAdminOperation(
+      adminUserId,
+      () => this.executeQueryArray(
+        () => supabase
+          .from('profiles')
+          .select('id, email, role, onboarding_completed, created_at, updated_at')
+          .order('created_at', { ascending: false }),
+        'getAllUsers'
+      ),
+      'getAllUsers'
+    );
   }
 
   /**
@@ -40,84 +31,71 @@ export class AdminService {
     targetUserId: string,
     newRole: UserRole
   ) {
-    await SecurityService.updateUserRole(adminUserId, targetUserId, newRole);
+    return SecurityService.updateUserRole(adminUserId, targetUserId, newRole);
   }
 
   /**
    * Get all reviews for moderation (admin only)
    */
   static async getAllReviews(adminUserId: string) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
-
-    try {
-      const { data, error } = await supabase
-        .from('reviews')
-        .select(`
-          *,
-          car_models (
-            id,
-            name,
-            year,
-            brands (
-              id,
-              name
-            )
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching all reviews:', error);
-      throw error;
-    }
+    return this.executeAdminOperation(
+      adminUserId,
+      () => this.executeQueryArray(
+        () => supabase
+          .from('reviews')
+          .select(this.buildSelectQuery(
+            'reviews',
+            ['*'],
+            {
+              'car_models': ['id', 'name', 'year', 'brands (id, name)']
+            }
+          ))
+          .order('created_at', { ascending: false }),
+        'getAllReviews'
+      ),
+      'getAllReviews'
+    );
   }
 
   /**
    * Delete any review (admin only)
    */
   static async deleteReview(adminUserId: string, reviewId: string) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
-
-    try {
-      const { error } = await supabase
-        .from('reviews')
-        .delete()
-        .eq('id', reviewId);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error deleting review:', error);
-      throw error;
-    }
+    return this.executeAdminOperation(
+      adminUserId,
+      () => this.executeQuery(
+        () => supabase
+          .from('reviews')
+          .delete()
+          .eq('id', reviewId),
+        'deleteReview',
+        { reviewId }
+      ),
+      'deleteReview'
+    );
   }
 
   /**
    * Get all vehicle listings for moderation (admin only)
    */
   static async getAllListings(adminUserId: string) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
-
-    try {
-      const { data, error } = await supabase
-        .from('vehicle_listings')
-        .select(`
-          *,
-          dealers (
-            business_name,
-            verified,
-            rating
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching all listings:', error);
-      throw error;
-    }
+    return this.executeAdminOperation(
+      adminUserId,
+      () => this.executeQueryArray(
+        () => supabase
+          .from('vehicle_listings')
+          .select(this.buildSelectQuery(
+            'vehicle_listings',
+            ['*'],
+            {
+              'dealers': ['business_name', 'verified', 'rating']
+            }
+          ))
+          .order('created_at', { ascending: false }),
+        'getAllListings'
+      ),
+      'getAllListings'
+    );
   }
 
   /**
@@ -128,132 +106,125 @@ export class AdminService {
     listingId: string,
     status: 'active' | 'inactive' | 'suspended'
   ) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
-
-    try {
-      const { data, error } = await supabase
-        .from('vehicle_listings')
-        .update({ status })
-        .eq('id', listingId)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error updating listing status:', error);
-      throw error;
-    }
+    return this.executeAdminOperation(
+      adminUserId,
+      () => this.executeQuery(
+        () => supabase
+          .from('vehicle_listings')
+          .update({ status })
+          .eq('id', listingId)
+          .select()
+          .single(),
+        'updateListingStatus',
+        { listingId, status }
+      ),
+      'updateListingStatus'
+    );
   }
 
   /**
    * Get platform statistics (admin only)
    */
   static async getPlatformStats(adminUserId: string) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
+    return this.executeAdminOperation(
+      adminUserId,
+      async () => {
+        // Get user counts by role
+        const userStats = await this.executeQueryArray(
+          () => supabase
+            .from('profiles')
+            .select('role')
+            .not('role', 'is', null),
+          'getPlatformStats.userStats'
+        );
 
-    try {
-      // Get user counts by role
-      const { data: userStats, error: userError } = await supabase
-        .from('profiles')
-        .select('role')
-        .not('role', 'is', null);
+        const roleCounts = userStats.reduce((acc, user) => {
+          acc[user.role] = (acc[user.role] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
 
-      if (userError) throw userError;
+        // Get review count
+        const { count: reviewCount } = await supabase
+          .from('reviews')
+          .select('*', { count: 'exact', head: true });
 
-      const roleCounts = userStats.reduce((acc, user) => {
-        acc[user.role] = (acc[user.role] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+        // Get active listings count
+        const { count: listingCount } = await supabase
+          .from('vehicle_listings')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'active');
 
-      // Get review count
-      const { count: reviewCount, error: reviewError } = await supabase
-        .from('reviews')
-        .select('*', { count: 'exact', head: true });
+        // Get bookmark count
+        const { count: bookmarkCount } = await supabase
+          .from('bookmarks')
+          .select('*', { count: 'exact', head: true });
 
-      if (reviewError) throw reviewError;
-
-      // Get active listings count
-      const { count: listingCount, error: listingError } = await supabase
-        .from('vehicle_listings')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'active');
-
-      if (listingError) throw listingError;
-
-      // Get bookmark count
-      const { count: bookmarkCount, error: bookmarkError } = await supabase
-        .from('bookmarks')
-        .select('*', { count: 'exact', head: true });
-
-      if (bookmarkError) throw bookmarkError;
-
-      return {
-        users: {
-          total: userStats.length,
-          byRole: roleCounts,
-        },
-        content: {
-          reviews: reviewCount || 0,
-          activeListings: listingCount || 0,
-          bookmarks: bookmarkCount || 0,
-        },
-      };
-    } catch (error) {
-      console.error('Error fetching platform stats:', error);
-      throw error;
-    }
+        return {
+          users: {
+            total: userStats.length,
+            byRole: roleCounts,
+          },
+          content: {
+            reviews: reviewCount || 0,
+            activeListings: listingCount || 0,
+            bookmarks: bookmarkCount || 0,
+          },
+        };
+      },
+      'getPlatformStats'
+    );
   }
 
   /**
    * Get recent activity (admin only)
    */
   static async getRecentActivity(adminUserId: string, limit: number = 20) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
+    return this.executeAdminOperation(
+      adminUserId,
+      async () => {
+        // Get recent reviews
+        const recentReviews = await this.executeQueryArray(
+          () => supabase
+            .from('reviews')
+            .select('id, title, created_at, author')
+            .order('created_at', { ascending: false })
+            .limit(limit / 2),
+          'getRecentActivity.reviews'
+        );
 
-    try {
-      // Get recent reviews
-      const { data: recentReviews, error: reviewError } = await supabase
-        .from('reviews')
-        .select('id, title, created_at, author')
-        .order('created_at', { ascending: false })
-        .limit(limit / 2);
+        // Get recent listings
+        const recentListings = await this.executeQueryArray(
+          () => supabase
+            .from('vehicle_listings')
+            .select('id, title, created_at, status')
+            .order('created_at', { ascending: false })
+            .limit(limit / 2),
+          'getRecentActivity.listings'
+        );
 
-      if (reviewError) throw reviewError;
+        // Combine and sort by date
+        const activities = [
+          ...recentReviews.map(review => ({
+            type: 'review' as const,
+            id: review.id,
+            title: review.title,
+            author: review.author,
+            created_at: review.created_at,
+          })),
+          ...recentListings.map(listing => ({
+            type: 'listing' as const,
+            id: listing.id,
+            title: listing.title,
+            status: listing.status,
+            created_at: listing.created_at,
+          })),
+        ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+         .slice(0, limit);
 
-      // Get recent listings
-      const { data: recentListings, error: listingError } = await supabase
-        .from('vehicle_listings')
-        .select('id, title, created_at, status')
-        .order('created_at', { ascending: false })
-        .limit(limit / 2);
-
-      if (listingError) throw listingError;
-
-      // Combine and sort by date
-      const activities = [
-        ...(recentReviews || []).map(review => ({
-          type: 'review' as const,
-          id: review.id,
-          title: review.title,
-          author: review.author,
-          created_at: review.created_at,
-        })),
-        ...(recentListings || []).map(listing => ({
-          type: 'listing' as const,
-          id: listing.id,
-          title: listing.title,
-          status: listing.status,
-          created_at: listing.created_at,
-        })),
-      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-       .slice(0, limit);
-
-      return activities;
-    } catch (error) {
-      console.error('Error fetching recent activity:', error);
-      throw error;
-    }
+        return activities;
+      },
+      'getRecentActivity'
+    );
   }
 
   /**
@@ -270,34 +241,27 @@ export class AdminService {
       state?: string;
     }
   ) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
-
-    try {
-      // First create auth user (this would typically be done through Supabase Auth Admin API)
-      // For now, we'll assume the user signs up themselves and then gets upgraded to dealer
-      
-      // Create dealer profile
-      const { data: dealerProfile, error: dealerError } = await supabase
-        .from('dealers')
-        .insert({
-          business_name: dealerData.businessName,
-          contact_name: dealerData.contactName,
-          email: dealerData.email,
-          phone: dealerData.phone,
-          city: dealerData.city,
-          state: dealerData.state,
-          verified: true, // Admin-created dealers are automatically verified
-        })
-        .select()
-        .single();
-
-      if (dealerError) throw dealerError;
-
-      return dealerProfile;
-    } catch (error) {
-      console.error('Error creating dealer account:', error);
-      throw error;
-    }
+    return this.executeAdminOperation(
+      adminUserId,
+      () => this.executeQuery(
+        () => supabase
+          .from('dealers')
+          .insert({
+            business_name: dealerData.businessName,
+            contact_name: dealerData.contactName,
+            email: dealerData.email,
+            phone: dealerData.phone,
+            city: dealerData.city,
+            state: dealerData.state,
+            verified: true, // Admin-created dealers are automatically verified
+          })
+          .select()
+          .single(),
+        'createDealerAccount',
+        { dealerData }
+      ),
+      'createDealerAccount'
+    );
   }
 
   /**
@@ -308,21 +272,19 @@ export class AdminService {
     dealerId: string,
     verified: boolean
   ) {
-    await SecurityService.requireRole(adminUserId, ['admin']);
-
-    try {
-      const { data, error } = await supabase
-        .from('dealers')
-        .update({ verified })
-        .eq('id', dealerId)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error verifying dealer:', error);
-      throw error;
-    }
+    return this.executeAdminOperation(
+      adminUserId,
+      () => this.executeQuery(
+        () => supabase
+          .from('dealers')
+          .update({ verified })
+          .eq('id', dealerId)
+          .select()
+          .single(),
+        'verifyDealer',
+        { dealerId, verified }
+      ),
+      'verifyDealer'
+    );
   }
 }

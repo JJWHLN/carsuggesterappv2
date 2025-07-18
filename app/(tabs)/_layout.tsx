@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Platform, StyleSheet } from 'react-native';
-import { Home, MessageSquare, ShoppingBag, Sparkles, User } from 'lucide-react-native';
+import { Home, MessageSquare, ShoppingBag, Sparkles, User } from '@/utils/icons';
 import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
@@ -83,7 +83,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="ai"
         options={{
-          title: 'AI',
+          title: 'AI Search',
           tabBarIcon: ({ color, focused }) => (
             <Sparkles 
               color={focused ? colors.primary : color} 

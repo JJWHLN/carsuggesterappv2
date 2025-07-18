@@ -15,6 +15,9 @@ module.exports = {
     '/node_modules/',
     '__tests__/e2e/'
   ],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1'
+  },
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',

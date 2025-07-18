@@ -1,6 +1,6 @@
 import React, { memo, useState, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { MapPin, Clock, Heart, Star, Fuel, Settings } from 'lucide-react-native';
+import { MapPin, Clock, Heart, Star, Fuel, Settings } from '@/utils/icons';
 import { OptimizedImage } from './ui/OptimizedImage';
 import { AnimatedPressable } from './ui/AnimatedPressable';
 import { Card } from './ui/Card'; // Card is now memoized and themed

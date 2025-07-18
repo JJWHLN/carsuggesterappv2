@@ -1,6 +1,6 @@
 import React, { memo } from 'react'; // Import memo
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronRight } from '@/utils/icons';
 import { Card } from './ui/Card'; // Card is now memoized and themed
 import { OptimizedImage } from './ui/OptimizedImage';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors

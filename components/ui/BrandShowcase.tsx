@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import { ArrowRight, Building2, TrendingUp } from 'lucide-react-native';
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withSpring, 
+  withTiming,
+  interpolate,
+  Extrapolate,
+  runOnJS
+} from 'react-native-reanimated';
+import { ArrowRight, Building2, TrendingUp, Star } from '@/utils/icons';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { BrandSkeletonLoader } from '@/components/ui/SkeletonLoader';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 
 const { width } = Dimensions.get('window');
+const BRAND_CARD_WIDTH = 140;
+const BRAND_CARD_SPACING = 16;
+const ANIMATION_DURATION = 300;
 
 interface Brand {
   id: string;
@@ -13,6 +26,8 @@ interface Brand {
   logo_url?: string;
   model_count?: number;
   popular?: boolean;
+  rating?: number;
+  new_arrivals?: number;
 }
 
 interface BrandShowcaseProps {
@@ -20,6 +35,7 @@ interface BrandShowcaseProps {
   loading: boolean;
   onViewAll: () => void;
   onBrandPress: (brandId: string) => void;
+  testID?: string;
 }
 
 export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
@@ -27,8 +43,38 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
   loading,
   onViewAll,
   onBrandPress,
+  testID = 'brand-showcase'
 }) => {
   const { colors } = useThemeColors();
+  
+  // Animation values
+  const fadeAnim = useSharedValue(0);
+  const slideAnim = useSharedValue(20);
+  
+  // Memoize expensive computations
+  const { featuredBrands, regularBrands } = useMemo(() => ({
+    featuredBrands: brands.slice(0, 3),
+    regularBrands: brands.slice(3),
+  }), [brands]);
+  
+  // Animate on mount
+  React.useEffect(() => {
+    fadeAnim.value = withTiming(1, { duration: ANIMATION_DURATION });
+    slideAnim.value = withSpring(0, { 
+      damping: 15,
+      stiffness: 100,
+    });
+  }, []);
+
+  // Optimized press handler
+  const handleBrandPress = useCallback((brandId: string) => {
+    onBrandPress(brandId);
+  }, [onBrandPress]);
+
+  // Optimized view all handler
+  const handleViewAll = useCallback(() => {
+    onViewAll();
+  }, [onViewAll]);
 
   // Popular brand logos (fallback for well-known brands)
   const brandLogos: Record<string, string> = {
@@ -42,67 +88,115 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
     'Volkswagen': 'https://images.vexels.com/media/users/3/166430/isolated/preview/b1de45ccfb80b89e4d5b23b5bf7b3db1-volkswagen-car-logo.png',
   };
 
-  const BrandCard: React.FC<{ brand: Brand; featured?: boolean }> = ({ brand, featured = false }) => (
-    <TouchableOpacity
-      style={[
-        featured ? styles.featuredBrandCard : styles.brandCard,
-        { backgroundColor: colors.white, borderColor: colors.border }
-      ]}
-      onPress={() => onBrandPress(brand.id)}
-      activeOpacity={0.9}
-    >
-      {/* Logo Container */}
-      <View style={[styles.logoContainer, featured && styles.featuredLogoContainer]}>
-        {brand.logo_url || brandLogos[brand.name] ? (
-          <OptimizedImage
-            source={{ uri: brand.logo_url || brandLogos[brand.name] }}
-            style={featured ? styles.featuredBrandLogo : styles.brandLogo}
-            resizeMode="contain"
-            fallbackSource={require('@/assets/images/icon.png')}
-          />
-        ) : (
-          <View style={[styles.logoPlaceholder, { backgroundColor: colors.primaryLight }]}>
-            <Building2 color={colors.primary} size={featured ? 32 : 24} />
+  const BrandCard: React.FC<{ 
+    brand: Brand; 
+    featured?: boolean; 
+    index?: number;
+    onPress?: (brandId: string) => void;
+  }> = ({ brand, featured = false, index = 0, onPress }) => {
+    const scaleAnim = useSharedValue(1);
+    const opacityAnim = useSharedValue(0);
+
+    // Staggered entrance animation
+    React.useEffect(() => {
+      const delay = index * 100;
+      setTimeout(() => {
+        opacityAnim.value = withTiming(1, { duration: 300 });
+      }, delay);
+    }, [index]);
+
+    const handlePress = () => {
+      scaleAnim.value = withSpring(0.95, { duration: 100 }, () => {
+        scaleAnim.value = withSpring(1, { duration: 100 });
+      });
+      if (onPress) onPress(brand.id);
+    };
+
+    const cardStyle = useAnimatedStyle(() => ({
+      opacity: opacityAnim.value,
+      transform: [{ scale: scaleAnim.value }],
+    }));
+
+    return (
+      <Animated.View style={cardStyle}>
+        <TouchableOpacity
+          style={[
+            featured ? styles.featuredBrandCard : styles.brandCard,
+            { backgroundColor: colors.white, borderColor: colors.border }
+          ]}
+          onPress={handlePress}
+          activeOpacity={0.9}
+        >
+          {/* Logo Container */}
+          <View style={[styles.logoContainer, featured && styles.featuredLogoContainer]}>
+            {brand.logo_url || brandLogos[brand.name] ? (
+              <OptimizedImage
+                source={{ uri: brand.logo_url || brandLogos[brand.name] }}
+                style={featured ? styles.featuredBrandLogo : styles.brandLogo}
+                resizeMode="contain"
+                fallbackSource={require('@/assets/images/icon.png')}
+              />
+            ) : (
+              <View style={[styles.logoPlaceholder, { backgroundColor: colors.primaryLight }]}>
+                <Building2 color={colors.primary} size={featured ? 32 : 24} />
+              </View>
+            )}
+            
+            {brand.popular ? (
+              <View style={styles.popularBadge}>
+                <TrendingUp color="#F59E0B" size={12} />
+              </View>
+            ) : null}
+
+            {/* Rating badge for featured brands */}
+            {featured && brand.rating ? (
+              <View style={styles.ratingBadge}>
+                <Star color="#FFD700" size={10} fill="#FFD700" />
+                <Text style={styles.ratingText}>{brand.rating}</Text>
+              </View>
+            ) : null}
           </View>
-        )}
-        
-        {brand.popular && (
-          <View style={styles.popularBadge}>
-            <TrendingUp color="#F59E0B" size={12} />
+
+          {/* Brand Info */}
+          <View style={styles.brandInfo}>
+            <Text style={[
+              featured ? styles.featuredBrandName : styles.brandName,
+              { color: colors.text }
+            ]} numberOfLines={1}>
+              {brand.name}
+            </Text>
+            
+            {featured && brand.model_count ? (
+              <Text style={[styles.modelCount, { color: colors.textSecondary }]}>
+                {brand.model_count} models
+              </Text>
+            ) : null}
+
+            {featured && brand.new_arrivals ? (
+              <Text style={[styles.newArrivals, { color: colors.primary }]}>
+                +{brand.new_arrivals} new
+              </Text>
+            ) : null}
           </View>
-        )}
-      </View>
 
-      {/* Brand Info */}
-      <View style={styles.brandInfo}>
-        <Text style={[
-          featured ? styles.featuredBrandName : styles.brandName,
-          { color: colors.text }
-        ]} numberOfLines={1}>
-          {brand.name}
-        </Text>
-        
-        {brand.model_count && featured && (
-          <Text style={[styles.modelCount, { color: colors.textSecondary }]}>
-            {brand.model_count} models
-          </Text>
-        )}
-      </View>
+          {featured ? (
+            <View style={styles.featuredIndicator}>
+              <ArrowRight color={colors.primary} size={16} />
+            </View>
+          ) : null}
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
 
-      {featured && (
-        <View style={styles.featuredIndicator}>
-          <ArrowRight color={colors.primary} size={16} />
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-
-  // Split brands into featured and regular
-  const featuredBrands = brands.slice(0, 3);
-  const regularBrands = brands.slice(3);
+  // Container animation style
+  const containerStyle = useAnimatedStyle(() => ({
+    opacity: fadeAnim.value,
+    transform: [{ translateY: slideAnim.value }],
+  }));
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, containerStyle]} testID={testID}>
       {/* Section Header */}
       <View style={styles.header}>
         <View>
@@ -114,7 +208,7 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
           </Text>
         </View>
         <TouchableOpacity 
-          onPress={onViewAll}
+          onPress={handleViewAll}
           style={styles.viewAllButton}
           activeOpacity={0.8}
         >
@@ -126,15 +220,53 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
       </View>
 
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-            Loading brands...
+        <View>
+          {/* Featured Brands Skeleton */}
+          <View style={styles.featuredSection}>
+            <Text style={[styles.sectionLabel, { color: colors.text }]}>
+              Most Popular
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.featuredScroll}
+            >
+              {[...Array(3)].map((_, index) => (
+                <BrandSkeletonLoader key={index} featured={true} />
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Regular Brands Skeleton */}
+          <View style={styles.regularSection}>
+            <Text style={[styles.sectionLabel, { color: colors.text }]}>
+              All Brands
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.brandsGrid}
+            >
+              {[...Array(6)].map((_, index) => (
+                <BrandSkeletonLoader key={index} featured={false} />
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      ) : brands.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Building2 color={colors.textSecondary} size={48} />
+          <Text style={[styles.emptyStateTitle, { color: colors.text }]}>
+            No brands available
+          </Text>
+          <Text style={[styles.emptyStateSubtitle, { color: colors.textSecondary }]}>
+            We're working on adding more car brands for you
           </Text>
         </View>
       ) : (
         <View>
           {/* Featured Brands */}
-          {featuredBrands.length > 0 && (
+          {featuredBrands.length > 0 ? (
             <View style={styles.featuredSection}>
               <Text style={[styles.sectionLabel, { color: colors.text }]}>
                 Most Popular
@@ -143,18 +275,25 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.featuredScroll}
+                decelerationRate="fast"
+                snapToInterval={BRAND_CARD_WIDTH + BRAND_CARD_SPACING}
+                snapToAlignment="start"
               >
-                {featuredBrands.map((brand) => (
-                  <View key={brand.id} style={styles.featuredBrandWrapper}>
-                    <BrandCard brand={brand} featured={true} />
-                  </View>
+                {featuredBrands.map((brand, index) => (
+                  <BrandCard 
+                    key={brand.id} 
+                    brand={brand} 
+                    featured={true}
+                    index={index}
+                    onPress={handleBrandPress}
+                  />
                 ))}
               </ScrollView>
             </View>
-          )}
+          ) : null}
 
           {/* Regular Brands Grid */}
-          {regularBrands.length > 0 && (
+          {regularBrands.length > 0 ? (
             <View style={styles.regularSection}>
               <Text style={[styles.sectionLabel, { color: colors.text }]}>
                 All Brands
@@ -163,17 +302,22 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.brandsGrid}
+                decelerationRate="fast"
               >
-                {regularBrands.map((brand) => (
-                  <View key={brand.id} style={styles.brandCardWrapper}>
-                    <BrandCard brand={brand} />
-                  </View>
+                {regularBrands.map((brand, index) => (
+                  <BrandCard 
+                    key={brand.id} 
+                    brand={brand} 
+                    featured={false}
+                    index={index}
+                    onPress={handleBrandPress}
+                  />
                 ))}
                 
                 {/* View All Card */}
                 <TouchableOpacity
                   style={[styles.viewMoreCard, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
-                  onPress={onViewAll}
+                  onPress={handleViewAll}
                   activeOpacity={0.8}
                 >
                   <View style={styles.viewMoreContent}>
@@ -187,10 +331,10 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
                 </TouchableOpacity>
               </ScrollView>
             </View>
-          )}
+          ) : null}
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 };
 
@@ -253,11 +397,12 @@ const styles = StyleSheet.create({
     marginRight: Spacing.md,
   },
   featuredBrandCard: {
-    width: 140,
+    width: BRAND_CARD_WIDTH,
     padding: Spacing.lg,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     alignItems: 'center',
+    marginRight: BRAND_CARD_SPACING,
     ...Shadows.card,
   },
   brandsGrid: {
@@ -273,6 +418,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     alignItems: 'center',
+    marginRight: Spacing.sm,
     ...Shadows.small,
   },
   logoContainer: {
@@ -356,5 +502,54 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     lineHeight: 14,
+  },
+  ratingBadge: {
+    position: 'absolute',
+    bottom: -6,
+    right: -6,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: '#FFD700',
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  ratingText: {
+    ...Typography.caption,
+    fontSize: 10,
+    fontWeight: '600',
+    marginLeft: 2,
+    color: '#FFD700',
+  },
+  newArrivals: {
+    ...Typography.caption,
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
+    textAlign: 'center',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: Spacing.xxl,
+    paddingHorizontal: Spacing.lg,
+  },
+  emptyStateTitle: {
+    ...Typography.cardTitle,
+    fontWeight: '600',
+    marginTop: Spacing.md,
+    marginBottom: Spacing.xs,
+    textAlign: 'center',
+  },
+  emptyStateSubtitle: {
+    ...Typography.bodyText,
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });

@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, FlatList, ScrollView, ViewStyle, RefreshControl } from 'react-native';
+import { View, Text, FlatList, ScrollView, ViewStyle, RefreshControl, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingContainer } from '@/components/ui/SharedComponents';
-import { createCommonStyles } from '@/constants/CommonStyles';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useMemo } from 'react';
 
@@ -62,7 +61,12 @@ export const BaseScreenLayout: React.FC<BaseScreenLayoutProps> = ({
   style 
 }) => {
   const { colors } = useThemeColors();
-  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
+  const commonStyles = useMemo(() => StyleSheet.create({
+    safeContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+  }), [colors]);
 
   return (
     <SafeAreaView style={[commonStyles.safeContainer, style]}>
@@ -96,7 +100,18 @@ export function ListScreenLayout<T>({
   contentContainerStyle,
 }: ListScreenLayoutProps<T>) {
   const { colors } = useThemeColors();
-  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
+  const commonStyles = useMemo(() => StyleSheet.create({
+    safeContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    centeredContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+  }), [colors]);
 
   // Loading state
   if (loading && data.length === 0) {
@@ -192,7 +207,18 @@ export const ScrollScreenLayout: React.FC<ScrollScreenLayoutProps> = ({
   showEmptyWhenNoChildren = false,
 }) => {
   const { colors } = useThemeColors();
-  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
+  const commonStyles = useMemo(() => StyleSheet.create({
+    safeContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    centeredContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+  }), [colors]);
 
   // Loading state
   if (loading) {

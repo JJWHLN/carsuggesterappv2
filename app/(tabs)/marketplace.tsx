@@ -3,58 +3,55 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
-  FlatList,
   Dimensions,
+  FlatList,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Shield, Star, Building2, Award, Clock, ChevronRight, Phone, Mail, ExternalLink, Grid2x2, List, CircleAlert as AlertCircle } from 'lucide-react-native';
-import { StatCard } from '@/components/ui/StatCard';
-import { SearchBar } from '@/components/ui/SearchBar';
-import { Card } from '@/components/ui/Card';
-import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Shield, Star, Building2, Award, Clock, ChevronRight, Phone, Mail, ExternalLink, List } from '@/utils/icons';
 import { Button } from '@/components/ui/Button';
+import { CarCard } from '@/components/CarCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { 
-  CategoryChip, 
-  SectionHeader, 
-  Badge, 
-  HeroSection, 
-  ViewToggle, 
-  FilterButton, 
-  ResultsHeader, 
-  LoadingContainer 
-} from '@/components/ui/SharedComponents';
-import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
-import { createCommonStyles } from '@/constants/CommonStyles';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
+import { withUnifiedTabScreen } from '@/components/ui/UnifiedTabScreen';
+import { UnifiedList } from '@/components/ui/UnifiedList';
+import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
+import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { fetchVehicleListings } from '@/services/supabaseService';
 import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
 import { Car as CarType } from '@/types/database';
 import { useDebounce } from '@/hooks/useDebounce';
-import { RealtimeService, RealtimeSubscription } from '@/services/realtimeService';
-import { usePerformanceTracking, useEngagementTracking, useSearchTracking } from '@/hooks/useAnalytics';
-import { trackScreenView, trackCarInteraction, trackError } from '@/services/analyticsService';
 
 const { width } = Dimensions.get('window');
 
-export default function MarketplaceScreen() {
+function MarketplaceScreen() {
   const { colors } = useThemeColors();
+  const { layout, cards, buttons } = useDesignTokens();
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
-  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
   
-  // Analytics hooks
-  const performanceTracker = usePerformanceTracking('MarketplaceScreen');
-  const engagementTracker = useEngagementTracking('marketplace');
-  const searchTracker = useSearchTracking();
+  // Use unified search/filter hook
+  const {
+    filters,
+    searchTerm,
+    debouncedSearchTerm,
+    updateFilters,
+    clearFilters,
+    setSearchTerm,
+    hasActiveFilters,
+  } = useSearchFilters({
+    searchTerm: '',
+    categories: {},
+    sortBy: 'price',
+    sortOrder: 'asc',
+    viewMode: 'grid',
+  });
   
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [cars, setCars] = useState<CarType[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -63,77 +60,67 @@ export default function MarketplaceScreen() {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  // Additional state for components not covered by unified hook
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
+  // Categories for the old category filter (will be deprecated)
   const categories = [
-    { id: 'all', name: 'All Cars', count: cars.length },
-    { id: 'luxury', name: 'Luxury', count: 0 },
-    { id: 'electric', name: 'Electric', count: 0 },
-    { id: 'suv', name: 'SUV', count: 0 },
-    { id: 'sedan', name: 'Sedan', count: 0 },
-    { id: 'truck', name: 'Truck', count: 0 },
+    { id: 'all', label: 'All Cars', count: cars.length },
+    { id: 'sedan', label: 'Sedan', count: 25 },
+    { id: 'suv', label: 'SUV', count: 18 },
+    { id: 'hatchback', label: 'Hatchback', count: 12 },
+    { id: 'coupe', label: 'Coupe', count: 8 },
+    { id: 'convertible', label: 'Convertible', count: 5 },
+  ];
+
+  // Filter categories for the unified search/filter
+  const filterCategories = [
+    {
+      id: 'category',
+      label: 'Category',
+      type: 'single' as const,
+      options: [
+        { id: 'all', label: 'All Cars', value: 'all', count: cars.length },
+        { id: 'sedan', label: 'Sedan', value: 'sedan', count: 25 },
+        { id: 'suv', label: 'SUV', value: 'suv', count: 18 },
+        { id: 'hatchback', label: 'Hatchback', value: 'hatchback', count: 12 },
+        { id: 'coupe', label: 'Coupe', value: 'coupe', count: 8 },
+        { id: 'convertible', label: 'Convertible', value: 'convertible', count: 5 },
+      ],
+    },
+    {
+      id: 'priceRange',
+      label: 'Price Range',
+      type: 'single' as const,
+      options: [
+        { id: 'under25k', label: 'Under $25,000', value: '0-25000' },
+        { id: '25k-50k', label: '$25,000 - $50,000', value: '25000-50000' },
+        { id: '50k-100k', label: '$50,000 - $100,000', value: '50000-100000' },
+        { id: 'over100k', label: 'Over $100,000', value: '100000+' },
+      ],
+    },
+  ];
+
+  const quickFilters = [
+    { id: 'category', label: 'Electric', value: 'electric' },
+    { id: 'category', label: 'Luxury', value: 'luxury' },
+    { id: 'category', label: 'Sports', value: 'sports' },
+    { id: 'priceRange', label: 'Under $30k', value: '0-30000' },
   ];
 
   const marketplaceStats = [
     { icon: <Car color={colors.primary} size={24} />, value: cars.length.toString(), label: "Cars Available" },
     { icon: <Users color={colors.success} size={24} />, value: "89", label: "Verified Dealers" },
-    { icon: <Shield color={colors.accentGreen} size={24} />, value: "100%", label: "Verified Listings" },
+    { icon: <Shield color={colors.primary} size={24} />, value: "100%", label: "Verified Listings" },
   ];
 
   // Load initial data
   useEffect(() => {
     loadCars(true);
-    
-    // Track screen view
-    trackScreenView('marketplace', {
-      category: selectedCategory,
-      view_mode: viewMode,
-    });
-  }, [debouncedSearchQuery]);
-
-  // Track search queries
-  useEffect(() => {
-    if (debouncedSearchQuery) {
-      searchTracker.trackSearch(debouncedSearchQuery, cars.length, 'basic');
-    }
-  }, [debouncedSearchQuery, cars.length]);
-
-  // Set up real-time subscriptions
-  useEffect(() => {
-    const subscriptions: Array<RealtimeSubscription> = [];
-
-    // Subscribe to vehicle listings changes
-    const vehicleListingsSubscription = RealtimeService.subscribeToVehicleListings(
-      (payload) => {
-        console.log('🔄 Real-time vehicle listing update:', payload);
-        
-        if (payload.eventType === 'INSERT') {
-          const newCar = transformDatabaseVehicleListingToCar(payload.new);
-          setCars(prevCars => [newCar, ...prevCars]);
-        } else if (payload.eventType === 'UPDATE') {
-          const updatedCar = transformDatabaseVehicleListingToCar(payload.new);
-          setCars(prevCars => 
-            prevCars.map(car => car.id === updatedCar.id ? updatedCar : car)
-          );
-        } else if (payload.eventType === 'DELETE') {
-          setCars(prevCars => 
-            prevCars.filter(car => car.id !== payload.old.id)
-          );
-        }
-      }
-    );
-
-    subscriptions.push(vehicleListingsSubscription);
-
-    // Cleanup subscriptions on unmount
-    return () => {
-      subscriptions.forEach(subscription => subscription.unsubscribe());
-    };
-  }, []);
+  }, [debouncedSearchTerm]);
 
   const loadCars = async (reset = false) => {
-    const startTime = Date.now();
-    
     try {
       if (reset) {
         setLoading(true);
@@ -146,9 +133,7 @@ export default function MarketplaceScreen() {
       const currentPage = reset ? 0 : page;
       const limit = 10;
       
-      console.log('🔍 Fetching cars from Supabase...', { page: currentPage, limit, searchQuery: debouncedSearchQuery });
-      
-      const data = await fetchVehicleListings(currentPage, limit, debouncedSearchQuery || undefined);
+      const data = await fetchVehicleListings(currentPage, limit, debouncedSearchTerm || undefined);
       
       if (data && Array.isArray(data)) {
         const transformedCars = data.map(transformDatabaseVehicleListingToCar);
@@ -161,28 +146,13 @@ export default function MarketplaceScreen() {
         
         setHasMore(transformedCars.length === limit);
         setPage(currentPage + 1);
-        
-        // Track successful load
-        const duration = Date.now() - startTime;
-        performanceTracker.trackLoadingTime(duration);
-        
-        console.log('✅ Successfully loaded cars:', transformedCars.length);
       } else {
-        console.warn('⚠️ No data returned from fetchVehicleListings');
         setHasMore(false);
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to load cars';
-      console.error('❌ Error loading cars:', err);
       setError(errorMsg);
       setHasMore(false);
-      
-      // Track error
-      trackError(err instanceof Error ? err : new Error(errorMsg), {
-        context: 'loadCars',
-        page: reset ? 0 : page,
-        searchQuery: debouncedSearchQuery,
-      });
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -192,7 +162,7 @@ export default function MarketplaceScreen() {
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
     loadCars(true);
-  }, [debouncedSearchQuery]);
+  }, [debouncedSearchTerm]);
 
   const handleLoadMore = useCallback(() => {
     if (!loadingMore && hasMore && cars.length > 0) {
@@ -201,114 +171,17 @@ export default function MarketplaceScreen() {
   }, [loadingMore, hasMore, cars.length]);
 
   const handleCarPress = useCallback((carId: string) => {
-    // Track car interaction
-    trackCarInteraction('view', carId, {
-      source: 'marketplace',
-      view_mode: viewMode,
-      search_query: searchQuery,
-    });
-    
-    engagementTracker.trackInteraction('car_card_tap', { car_id: carId });
-    
     console.log('Navigate to car details:', carId);
     // TODO: Navigate to car detail screen
     // router.push(`/car/${carId}`);
-  }, [viewMode, searchQuery, engagementTracker]);
-
-  const CarListingCard = useCallback(({ listing, isListView = false }: { listing: CarType, isListView?: boolean }) => (
-    <TouchableOpacity 
-      style={[styles.listingCard, isListView && styles.listingCardList]}
-      onPress={() => handleCarPress(listing.id)}
-      activeOpacity={0.9}
-    >
-      <View style={[styles.listingImageContainer, isListView && styles.listingImageContainerList]}>
-        <OptimizedImage 
-          source={{ uri: listing.images[0] || 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400' }} 
-          style={styles.listingImage}
-          fallbackSource={{ uri: 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400' }}
-        />
-        
-        <View style={styles.featuredBadge}>
-          <Star color={colors.white} size={12} fill={colors.white} />
-          <Text style={styles.featuredText}>Listed</Text>
-        </View>
-        
-        {listing.dealer?.verified && (
-          <View style={styles.verifiedBadge}>
-            <Shield color={colors.success} size={10} />
-            <Text style={styles.verifiedText}>Verified</Text>
-          </View>
-        )}
-      </View>
-      
-      <View style={[styles.listingContent, isListView && styles.listingContentList]}>
-        <View style={styles.listingHeader}>
-          <Text style={styles.listingPrice}>${listing.price.toLocaleString()}</Text>
-        </View>
-        
-        <Text style={styles.listingTitle} numberOfLines={2}>
-          {listing.year} {listing.make} {listing.model}
-        </Text>
-        
-        <View style={styles.listingSpecs}>
-          <View style={styles.specBadge}>
-            <Text style={styles.specText}>{listing.mileage.toLocaleString()} mi</Text>
-          </View>
-          {listing.fuel_type && (
-            <View style={styles.specBadge}>
-              <Text style={styles.specText}>{listing.fuel_type}</Text>
-            </View>
-          )}
-          {listing.condition && (
-            <View style={styles.specBadge}>
-              <Text style={styles.specText}>{listing.condition}</Text>
-            </View>
-          )}
-        </View>
-        
-        {listing.dealer && (
-          <View style={styles.dealerInfo}>
-            <View style={styles.dealerLeft}>
-              <Text style={styles.dealerName}>{listing.dealer.name}</Text>
-              {listing.dealer.verified && (
-                <View style={styles.dealerVerifiedBadge}>
-                  <Shield color={colors.success} size={10} />
-                  <Text style={styles.dealerVerifiedText}>Verified</Text>
-                </View>
-              )}
-            </View>
-            <View style={styles.ratingContainer}>
-              <Star color={colors.warning} size={12} fill={colors.warning} />
-              <Text style={styles.ratingText}>4.5</Text>
-            </View>
-          </View>
-        )}
-        
-        <View style={styles.listingLocation}>
-          <MapPin color={colors.textSecondary} size={14} />
-          <Text style={styles.locationText}>{listing.location}</Text>
-        </View>
-        
-        {isListView && (
-          <View style={styles.listingActions}>
-            <Button
-              title="Contact Dealer"
-              onPress={() => {}}
-              variant="outline"
-              style={styles.contactButton}
-            />
-            <TouchableOpacity style={styles.phoneButton}>
-              <Phone color={colors.primary} size={16} />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  ), [colors, styles, handleCarPress]);
+  }, []);
 
   const renderListing = ({ item }: { item: CarType }) => (
     <View style={viewMode === 'grid' ? styles.gridItem : styles.listItem}>
-      <CarListingCard listing={item} isListView={viewMode === 'list'} />
+      <CarCard
+        car={item}
+        onPress={() => handleCarPress(item.id)}
+      />
     </View>
   );
 
@@ -325,59 +198,88 @@ export default function MarketplaceScreen() {
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      {/* Hero Section using shared component */}
-      <HeroSection
-        title="Car Marketplace"
-        subtitle="Find your perfect car from verified dealers nationwide"
-        style={styles.heroSection}
-      >
-        <SearchBar
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search by make, model, or location..."
-          onClear={() => setSearchQuery('')}
-          containerStyle={styles.heroSearchBar}
-        />
-      </HeroSection>
+      {/* Hero Section */}
+      <View style={styles.heroSection}>
+        <Text style={[styles.heroTitle, { color: colors.text }]}>Car Marketplace</Text>
+        <Text style={[styles.heroSubtitle, { color: colors.textSecondary }]}>
+          Find your perfect car from verified dealers nationwide
+        </Text>
+        
+        <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+          <UnifiedSearchFilter
+            searchPlaceholder="Search by make, model, or location..."
+            searchValue={searchTerm}
+            onSearchChange={setSearchTerm}
+            enableSearch={true}
+            
+            filterCategories={filterCategories}
+            activeFilters={filters}
+            onFiltersChange={updateFilters}
+            enableFilters={true}
+            
+            quickFilters={quickFilters}
+            enableQuickFilters={true}
+            
+            resultsCount={cars.length}
+            resultsLabel="cars available"
+            showResultsCount={true}
+            
+            variant="compact"
+            showClearAll={true}
+            onClearAll={clearFilters}
+          />
+        </View>
+      </View>
 
-      {/* Stats using common layout */}
-      <View style={commonStyles.statsSection}>
-        <View style={commonStyles.statsGrid}>
+      {/* Stats */}
+      <View style={styles.statsSection}>
+        <View style={styles.statsGrid}>
           {marketplaceStats.map((stat, index) => (
-            <StatCard
-              key={index}
-              icon={stat.icon}
-              value={stat.value}
-              label={stat.label}
-            />
+            <View key={index} style={styles.statCard}>
+              {stat.icon}
+              <Text style={[styles.statValue, { color: colors.text }]}>{stat.value}</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stat.label}</Text>
+            </View>
           ))}
         </View>
       </View>
 
-      {/* Controls using shared components */}
+      {/* Controls */}
       <View style={styles.controlsContainer}>
         <View style={styles.leftControls}>
-          <FilterButton
-            text="Filters"
-            onPress={() => {}} // TODO: Implement filter functionality
-            icon={<Filter color={colors.primary} size={18} />}
-          />
+          <TouchableOpacity
+            style={[styles.filterButton, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}
+            onPress={() => {}}
+          >
+            <Filter color={colors.primary} size={18} />
+            <Text style={[styles.filterButtonText, { color: colors.text }]}>Filters</Text>
+          </TouchableOpacity>
           
-          <FilterButton
-            text="Price: Low to High"
-            onPress={() => {}} // TODO: Implement sort functionality
-          />
+          <TouchableOpacity
+            style={[styles.sortButton, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}
+            onPress={() => {}}
+          >
+            <Text style={[styles.sortButtonText, { color: colors.text }]}>Price: Low to High</Text>
+          </TouchableOpacity>
         </View>
         
-        <ViewToggle
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          gridIcon={<Grid2x2 color={viewMode === 'grid' ? colors.white : colors.textSecondary} size={16} />}
-          listIcon={<List color={viewMode === 'list' ? colors.white : colors.textSecondary} size={16} />}
-        />
+        <View style={[styles.viewToggle, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+          <TouchableOpacity
+            style={[styles.viewButton, viewMode === 'grid' && { backgroundColor: colors.primary }]}
+            onPress={() => setViewMode('grid')}
+          >
+            <Text style={{ color: viewMode === 'grid' ? colors.background : colors.textSecondary }}>Grid</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.viewButton, viewMode === 'list' && { backgroundColor: colors.primary }]}
+            onPress={() => setViewMode('list')}
+          >
+            <List color={viewMode === 'list' ? colors.background : colors.textSecondary} size={16} />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Categories using shared CategoryChip */}
+      {/* Categories */}
       <View style={styles.categoriesContainer}>
         <FlatList
           horizontal
@@ -385,33 +287,38 @@ export default function MarketplaceScreen() {
           data={categories}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <CategoryChip
-              text={`${item.name} (${item.count})`}
-              isActive={selectedCategory === item.id}
+            <TouchableOpacity
+              style={[
+                styles.categoryChip,
+                selectedCategory === item.id && { backgroundColor: colors.primary, borderColor: colors.primary }
+              ]}
               onPress={() => setSelectedCategory(item.id)}
-              style={{ marginRight: Spacing.sm }}
-            />
+            >
+              <Text style={[
+                styles.categoryText,
+                selectedCategory === item.id && { color: colors.background }
+              ]}>
+                {item.label} ({item.count})
+              </Text>
+            </TouchableOpacity>
           )}
           contentContainerStyle={styles.categoriesContent}
         />
       </View>
 
-      {/* Results Header using shared component */}
-      <ResultsHeader
-        count={cars.length}
-        itemType="car"
-        location="verified dealers"
-      />
+      {/* Results Header */}
+      <View style={styles.resultsHeader}>
+        <Text style={[styles.resultsCount, { color: colors.text }]}>{cars.length} cars</Text>
+        <Text style={[styles.resultsLocation, { color: colors.textSecondary }]}>from verified dealers</Text>
+      </View>
     </View>
   );
 
   // Loading state
   if (loading && cars.length === 0) {
     return (
-      <SafeAreaView style={commonStyles.safeContainer}>
-        <LoadingContainer text="Finding the best cars for you...">
-          <LoadingSpinner size={32} color={colors.primary} />
-        </LoadingContainer>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <LoadingState />
       </SafeAreaView>
     );
   }
@@ -419,7 +326,7 @@ export default function MarketplaceScreen() {
   // Error state
   if (error && cars.length === 0) {
     return (
-      <SafeAreaView style={commonStyles.safeContainer}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <ErrorState
           title="Unable to Load Marketplace"
           message={error}
@@ -432,18 +339,18 @@ export default function MarketplaceScreen() {
   // Empty state
   if (!loading && cars.length === 0) {
     return (
-      <SafeAreaView style={commonStyles.safeContainer}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         {renderHeader()}
-        <View style={commonStyles.centeredContainer}>
+        <View style={styles.emptyStateContainer}>
           <EmptyState
             title="No vehicles available"
-            subtitle={searchQuery ? "Try adjusting your search criteria or browse all available cars" : "We're working to add more listings to our marketplace"}
+            subtitle={searchTerm ? "Try adjusting your search criteria or browse all available cars" : "We're working to add more listings to our marketplace"}
             icon={<Car color={colors.textSecondary} size={64} />}
             action={
-              searchQuery ? (
+              searchTerm ? (
                 <Button
                   title="Clear Search"
-                  onPress={() => setSearchQuery('')}
+                  onPress={() => setSearchTerm('')}
                   variant="outline"
                 />
               ) : (
@@ -461,7 +368,7 @@ export default function MarketplaceScreen() {
   }
 
   return (
-    <SafeAreaView style={commonStyles.safeContainer}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
         data={cars}
         renderItem={renderListing}
@@ -488,10 +395,17 @@ export default function MarketplaceScreen() {
   );
 }
 
-const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
+export default function WrappedMarketplaceScreen() {
+  return (
+    <ErrorBoundary>
+      <MarketplaceScreen />
+    </ErrorBoundary>
+  );
+}
+
+const getThemedStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   
   // Loading States
@@ -499,17 +413,17 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    gap: Spacing.md,
+    paddingHorizontal: 20,
+    gap: 16,
   },
   loadingText: {
-    ...Typography.h3,
+    fontSize: 18,
     color: colors.text,
     textAlign: 'center',
     fontWeight: '600',
   },
   loadingSubtext: {
-    ...Typography.body,
+    fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
   },
@@ -517,43 +431,41 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
+    paddingHorizontal: 20,
   },
   footerLoader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Spacing.xl,
-    gap: Spacing.sm,
+    paddingVertical: 20,
+    gap: 8,
   },
   footerLoaderText: {
-    ...Typography.body,
+    fontSize: 14,
     color: colors.textSecondary,
   },
   
   // Header
   headerContainer: {
     backgroundColor: colors.background,
-    paddingBottom: Spacing.md,
+    paddingBottom: 16,
   },
   heroSection: {
-    backgroundColor: colors.surface,
-    padding: Spacing.xl,
+    backgroundColor: colors.cardBackground,
+    padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   heroTitle: {
-    ...Typography.h1,
-    color: colors.text,
+    fontSize: 24,
     fontWeight: '800',
     textAlign: 'center',
-    marginBottom: Spacing.sm,
+    marginBottom: 8,
   },
   heroSubtitle: {
-    ...Typography.body,
-    color: colors.textSecondary,
+    fontSize: 14,
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: 20,
     lineHeight: 22,
   },
   heroSearchBar: {
@@ -562,13 +474,29 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   
   // Stats
   statsSection: {
-    padding: Spacing.lg,
+    padding: 16,
     backgroundColor: colors.background,
   },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: Spacing.md,
+    gap: 16,
+  },
+  statCard: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: colors.cardBackground,
+    padding: 16,
+    borderRadius: 12,
+    gap: 8,
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  statLabel: {
+    fontSize: 12,
+    textAlign: 'center',
   },
   
   // Controls
@@ -576,294 +504,116 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    backgroundColor: colors.surface,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.cardBackground,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   leftControls: {
     flexDirection: 'row',
-    gap: Spacing.sm,
+    gap: 8,
   },
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.lg,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border,
-    gap: Spacing.xs,
+    gap: 4,
   },
   filterButtonText: {
-    ...Typography.bodySmall,
-    color: colors.text,
+    fontSize: 12,
     fontWeight: '500',
   },
   sortButton: {
-    backgroundColor: colors.background,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.lg,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border,
   },
   sortButtonText: {
-    ...Typography.bodySmall,
-    color: colors.text,
+    fontSize: 12,
     fontWeight: '500',
   },
   viewToggle: {
     flexDirection: 'row',
-    backgroundColor: colors.background,
-    borderRadius: BorderRadius.lg,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border,
     overflow: 'hidden',
   },
   viewButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-  },
-  viewButtonActive: {
-    backgroundColor: colors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   
   // Categories
   categoriesContainer: {
-    paddingVertical: Spacing.md,
-    backgroundColor: colors.surface,
+    paddingVertical: 12,
+    backgroundColor: colors.cardBackground,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   categoriesContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: 16,
   },
   categoryChip: {
     backgroundColor: colors.background,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.full,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.border,
-    marginRight: Spacing.sm,
-  },
-  categoryChipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    marginRight: 8,
   },
   categoryText: {
-    ...Typography.bodySmall,
-    color: colors.text,
+    fontSize: 12,
     fontWeight: '500',
-  },
-  categoryTextActive: {
-    color: colors.white,
-    fontWeight: '600',
+    color: colors.text,
   },
   
   // Results
   resultsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     backgroundColor: colors.background,
-    gap: Spacing.xs,
+    gap: 4,
   },
   resultsCount: {
-    ...Typography.h3,
-    color: colors.text,
+    fontSize: 18,
     fontWeight: '700',
   },
   resultsLocation: {
-    ...Typography.body,
-    color: colors.textSecondary,
+    fontSize: 14,
   },
   
   // List
   listContent: {
-    paddingBottom: Spacing.xxl,
+    paddingBottom: 40,
   },
   columnWrapper: {
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: 16,
   },
   gridItem: {
-    width: (width - Spacing.lg * 2 - Spacing.md) / 2,
-    marginBottom: Spacing.lg,
+    width: (width - 16 * 2 - 12) / 2,
+    marginBottom: 16,
   },
   listItem: {
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.lg,
+    paddingHorizontal: 16,
+    marginBottom: 16,
   },
-  
-  // Listing Cards
-  listingCard: {
-    backgroundColor: colors.surface,
-    borderRadius: BorderRadius.xl,
+  carCard: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
     overflow: 'hidden',
-    ...ColorsShadows.card,
-  },
-  listingCardList: {
-    flexDirection: 'row',
-    height: 160,
-  },
-  listingImageContainer: {
-    position: 'relative',
-    height: 140,
-  },
-  listingImageContainerList: {
-    width: 140,
-    height: '100%',
-  },
-  listingImage: {
-    width: '100%',
-    height: '100%',
-  },
-  featuredBadge: {
-    position: 'absolute',
-    top: Spacing.sm,
-    left: Spacing.sm,
-    backgroundColor: colors.primary,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-    gap: 2,
-  },
-  featuredText: {
-    ...Typography.caption,
-    color: colors.white,
-    fontWeight: '600',
-    fontSize: 10,
-  },
-  verifiedBadge: {
-    position: 'absolute',
-    top: Spacing.sm,
-    right: Spacing.sm,
-    backgroundColor: colors.success,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-    gap: 2,
-  },
-  verifiedText: {
-    ...Typography.caption,
-    color: colors.white,
-    fontWeight: '600',
-    fontSize: 10,
-  },
-  listingContent: {
-    padding: Spacing.md,
-  },
-  listingContentList: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  listingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.xs,
-    gap: Spacing.sm,
-  },
-  listingPrice: {
-    ...Typography.h3,
-    color: colors.primary,
-    fontWeight: '700',
-  },
-  listingTitle: {
-    ...Typography.body,
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: Spacing.sm,
-  },
-  listingSpecs: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-    marginBottom: Spacing.sm,
-    flexWrap: 'wrap',
-  },
-  specBadge: {
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
-    borderRadius: BorderRadius.xs,
-  },
-  specText: {
-    ...Typography.caption,
-    color: colors.primary,
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  dealerInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  dealerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  dealerName: {
-    ...Typography.bodySmall,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  dealerVerifiedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.success,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: 1,
-    borderRadius: BorderRadius.xs,
-    gap: 2,
-  },
-  dealerVerifiedText: {
-    ...Typography.caption,
-    color: colors.white,
-    fontSize: 9,
-    fontWeight: '600',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  ratingText: {
-    ...Typography.caption,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  listingLocation: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-    marginBottom: Spacing.sm,
-  },
-  locationText: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-  },
-  listingActions: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    alignItems: 'center',
-  },
-  contactButton: {
-    flex: 1,
-    paddingVertical: Spacing.sm,
-  },
-  phoneButton: {
-    backgroundColor: colors.primaryLight,
-    padding: Spacing.sm,
-    borderRadius: BorderRadius.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

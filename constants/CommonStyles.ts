@@ -1,10 +1,11 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { Colors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from './Colors';
+import DesignSystem from './DesignSystem';
 
 const { width } = Dimensions.get('window');
 
 // Common style functions to reduce duplication across components
-export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.create({
+// Now uses unified DesignSystem for consistency
+export const createCommonStyles = (colors: typeof DesignSystem.Colors.light) => StyleSheet.create({
   // Container Styles
   flexContainer: {
     flex: 1,
@@ -22,17 +23,17 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: Spacing.md,
+    gap: DesignSystem.Spacing.md,
     backgroundColor: colors.background,
   },
   
   // Content Styles
   scrollContent: {
-    paddingBottom: Spacing.xxl,
+    paddingBottom: DesignSystem.Spacing.xxl,
   },
   section: {
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.xl,
+    paddingHorizontal: DesignSystem.Spacing.lg,
+    marginBottom: DesignSystem.Spacing.xl,
   },
   
   // Header Styles
@@ -40,16 +41,16 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: Spacing.lg,
+    marginBottom: DesignSystem.Spacing.lg,
   },
   sectionTitle: {
-    ...Typography.h2,
+    ...DesignSystem.Typography.h2,
     color: colors.text,
     fontWeight: '700',
-    marginBottom: Spacing.xs,
+    marginBottom: DesignSystem.Spacing.xs,
   },
   sectionSubtitle: {
-    ...Typography.body,
+    ...DesignSystem.Typography.body,
     color: colors.textSecondary,
   },
   
@@ -58,29 +59,29 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surface,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.lg,
+    paddingHorizontal: DesignSystem.Spacing.md,
+    paddingVertical: DesignSystem.Spacing.sm,
+    borderRadius: DesignSystem.BorderRadius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    gap: Spacing.xs,
+    gap: DesignSystem.Spacing.xs,
   },
   filterButtonText: {
-    ...Typography.bodySmall,
+    ...DesignSystem.Typography.bodySmall,
     color: colors.text,
     fontWeight: '500',
   },
   viewToggle: {
     flexDirection: 'row',
     backgroundColor: colors.surface,
-    borderRadius: BorderRadius.lg,
+    borderRadius: DesignSystem.BorderRadius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
   },
   viewButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: DesignSystem.Spacing.md,
+    paddingVertical: DesignSystem.Spacing.sm,
   },
   viewButtonActive: {
     backgroundColor: colors.primary,
@@ -88,10 +89,10 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
   viewAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: DesignSystem.Spacing.xs,
   },
   viewAllText: {
-    ...Typography.body,
+    ...DesignSystem.Typography.body,
     color: colors.primary,
     fontWeight: '600',
   },
@@ -99,11 +100,11 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
   // Card Styles
   baseCard: {
     backgroundColor: colors.surface,
-    borderRadius: BorderRadius.xl,
+    borderRadius: DesignSystem.BorderRadius.xl,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
-    ...ColorsShadows.card,
+    ...DesignSystem.Shadows.card,
   },
   listCard: {
     flexDirection: 'row',
@@ -126,9 +127,9 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
   
   // Badge Styles
   baseBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
+    paddingHorizontal: DesignSystem.Spacing.sm,
+    paddingVertical: DesignSystem.Spacing.xs,
+    borderRadius: DesignSystem.BorderRadius.sm,
   },
   primaryBadge: {
     backgroundColor: colors.primary,
@@ -137,7 +138,7 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
     backgroundColor: colors.success,
   },
   badgeText: {
-    ...Typography.caption,
+    ...DesignSystem.Typography.caption,
     color: colors.white,
     fontWeight: '600',
     fontSize: 10,
@@ -146,19 +147,19 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
   // Category/Tag Styles
   categoryChip: {
     backgroundColor: colors.surface,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.full,
+    paddingHorizontal: DesignSystem.Spacing.md,
+    paddingVertical: DesignSystem.Spacing.sm,
+    borderRadius: DesignSystem.BorderRadius.full,
     borderWidth: 1,
     borderColor: colors.border,
-    marginRight: Spacing.sm,
+    marginRight: DesignSystem.Spacing.sm,
   },
   categoryChipActive: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
   },
   categoryText: {
-    ...Typography.bodySmall,
+    ...DesignSystem.Typography.bodySmall,
     color: colors.text,
     fontWeight: '500',
   },
@@ -172,35 +173,35 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: Spacing.md,
+    gap: DesignSystem.Spacing.md,
   },
   gridItem: {
-    width: (width - Spacing.lg * 2 - Spacing.md) / 2,
-    marginBottom: Spacing.lg,
+    width: (width - DesignSystem.Spacing.lg * 2 - DesignSystem.Spacing.md) / 2,
+    marginBottom: DesignSystem.Spacing.lg,
   },
   listItem: {
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.lg,
+    paddingHorizontal: DesignSystem.Spacing.lg,
+    marginBottom: DesignSystem.Spacing.lg,
   },
   columnWrapper: {
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: DesignSystem.Spacing.lg,
   },
   
   // Stats Layouts
   statsSection: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xl,
+    paddingHorizontal: DesignSystem.Spacing.lg,
+    paddingVertical: DesignSystem.Spacing.xl,
     backgroundColor: colors.background,
   },
   statsGrid: {
     flexDirection: 'row',
-    gap: Spacing.md,
+    gap: DesignSystem.Spacing.md,
   },
   
   // Text Styles
   loadingText: {
-    ...Typography.body,
+    ...DesignSystem.Typography.body,
     color: colors.textSecondary,
   },
   
@@ -209,38 +210,38 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: DesignSystem.Spacing.lg,
+    paddingVertical: DesignSystem.Spacing.md,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   leftControls: {
     flexDirection: 'row',
-    gap: Spacing.sm,
+    gap: DesignSystem.Spacing.sm,
   },
   
   // Results Header
   resultsHeader: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: DesignSystem.Spacing.lg,
+    paddingVertical: DesignSystem.Spacing.md,
     backgroundColor: colors.background,
   },
   resultsCount: {
-    ...Typography.h3,
+    ...DesignSystem.Typography.h3,
     color: colors.text,
     fontWeight: '700',
   },
   resultsSubtext: {
-    ...Typography.bodySmall,
+    ...DesignSystem.Typography.bodySmall,
     color: colors.textSecondary,
   },
   
   // Hero Section
   heroGradient: {
-    paddingTop: Spacing.xl * 2,
-    paddingBottom: Spacing.xl * 1.5,
-    paddingHorizontal: Spacing.lg,
+    paddingTop: DesignSystem.Spacing.xl * 2,
+    paddingBottom: DesignSystem.Spacing.xl * 1.5,
+    paddingHorizontal: DesignSystem.Spacing.lg,
     justifyContent: 'center',
   },
   heroContent: {
@@ -248,17 +249,17 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
     width: '100%',
   },
   heroTitle: {
-    ...Typography.heroTitle,
+    ...DesignSystem.Typography.heroTitle,
     color: colors.white,
     textAlign: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: DesignSystem.Spacing.md,
     fontWeight: '800',
   },
   heroSubtitle: {
-    ...Typography.bodyLarge,
+    ...DesignSystem.Typography.bodyLarge,
     color: colors.white,
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: DesignSystem.Spacing.xl,
     opacity: 0.95,
     lineHeight: 26,
   },
@@ -267,10 +268,10 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: DesignSystem.Spacing.xs,
   },
   detailText: {
-    ...Typography.bodySmall,
+    ...DesignSystem.Typography.bodySmall,
     color: colors.textSecondary,
     fontWeight: '500',
   },
@@ -279,10 +280,10 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: DesignSystem.Spacing.xs,
   },
   locationText: {
-    ...Typography.caption,
+    ...DesignSystem.Typography.caption,
     color: colors.textSecondary,
   },
   
@@ -290,10 +291,10 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: DesignSystem.Spacing.xs,
   },
   ratingText: {
-    ...Typography.caption,
+    ...DesignSystem.Typography.caption,
     color: colors.text,
     fontWeight: '600',
   },
@@ -301,7 +302,7 @@ export const createCommonStyles = (colors: typeof Colors.light) => StyleSheet.cr
 
 // Utility functions for common styling patterns
 export const getCardDimensions = (viewMode: 'grid' | 'list') => ({
-  width: viewMode === 'grid' ? (width - Spacing.lg * 2 - Spacing.md) / 2 : width,
+  width: viewMode === 'grid' ? (width - DesignSystem.Spacing.lg * 2 - DesignSystem.Spacing.md) / 2 : width,
   height: viewMode === 'list' ? 160 : undefined,
 });
 
@@ -312,13 +313,9 @@ export const getImageDimensions = (viewMode: 'grid' | 'list') => ({
 
 // Common animation configurations
 export const COMMON_ANIMATIONS = {
-  springConfig: {
-    damping: 15,
-    mass: 1,
-    stiffness: 150,
-  },
+  springConfig: DesignSystem.Animations.spring.gentle,
   fadeConfig: {
-    duration: 200,
+    duration: DesignSystem.Animations.duration.short,
   },
 };
 
@@ -326,6 +323,9 @@ export const COMMON_ANIMATIONS = {
 export const LAYOUT_CONSTANTS = {
   CARD_MIN_HEIGHT: 200,
   HERO_HEIGHT_RATIO: 0.5,
-  TAB_BAR_HEIGHT: 80,
+  TAB_BAR_HEIGHT: DesignSystem.Platform.ui.tabBarHeight,
   HEADER_HEIGHT: 60,
 };
+
+// Re-export DesignSystem components for backward compatibility
+export const { Colors, Spacing, Typography, BorderRadius, Shadows } = DesignSystem;

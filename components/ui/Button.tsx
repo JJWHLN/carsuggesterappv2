@@ -1,231 +1,295 @@
-import React from 'react';
-import { Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { LoadingSpinner } from './LoadingSpinner';
-import { AnimatedPressable } from './AnimatedPressable';
-import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
-import { createSemanticProps, useAccessibility } from '@/hooks/useAccessibility';
+import React, { memo } from 'react';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+  ActivityIndicator,
+  View,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { useTheme } from '@/theme/ThemeContext';
+import { Typography, ComponentSizes, BorderRadius, Spacing } from '@/theme/Theme';
+
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+type ButtonSize = 'small' | 'medium' | 'large';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'outlineWhite' | 'ghost';
-  size?: 'small' | 'medium' | 'large';
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
+  icon?: React.ReactNode;
+  iconPosition?: 'left' | 'right';
+  fullWidth?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
-  icon?: React.ReactNode;
+  testID?: string;
   accessibilityLabel?: string;
   accessibilityHint?: string;
-  accessibilityValue?: string;
-  destructive?: boolean;
-  testID?: string;
 }
 
-export function Button({
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
+export const Button = memo<ButtonProps>(({
   title,
   onPress,
   variant = 'primary',
   size = 'medium',
   disabled = false,
   loading = false,
+  icon,
+  iconPosition = 'left',
+  fullWidth = false,
   style,
   textStyle,
-  icon,
+  testID,
   accessibilityLabel,
   accessibilityHint,
-  accessibilityValue,
-  destructive = false,
-  testID,
-}: ButtonProps) {
-  const accessibilityHook = useAccessibility();
-  const isDisabled = disabled || loading;
+}) => {
+  const { colors } = useTheme();
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
 
-  const handlePress = () => {
-    if (isDisabled) return;
-    
-    // Announce action for screen readers
-    if (accessibilityHook.isScreenReaderEnabled) {
-      const action = loading ? 'Loading' : 'Activated';
-      accessibilityHook.announceForAccessibility(`${accessibilityLabel || title} ${action}`);
-    }
-    
-    onPress();
+  // Animation handlers
+  const handlePressIn = () => {
+    scale.value = withSpring(0.95, { damping: 15, stiffness: 100 });
+    opacity.value = withTiming(0.8, { duration: 100 });
   };
 
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 100 });
+    opacity.value = withTiming(1, { duration: 100 });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  // Get button height based on size
+  const getButtonHeight = () => {
+    switch (size) {
+      case 'small':
+        return ComponentSizes.buttonHeight.small;
+      case 'large':
+        return ComponentSizes.buttonHeight.large;
+      default:
+        return ComponentSizes.buttonHeight.medium;
+    }
+  };
+
+  // Get typography based on size
+  const getTypography = () => {
+    switch (size) {
+      case 'small':
+        return Typography.buttonSmall;
+      default:
+        return Typography.button;
+    }
+  };
+
+  // Get button styles based on variant
   const getButtonStyles = () => {
-    const baseStyle: ViewStyle = {
-      ...styles.base,
-      ...(styles[size] || styles.medium),
-      ...(styles[variant] || styles.primary),
+    const baseStyle = {
+      height: getButtonHeight(),
+      borderRadius: BorderRadius.lg,
+      paddingHorizontal: size === 'small' ? Spacing.md : Spacing.lg,
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      width: fullWidth ? '100%' as const : undefined,
     };
 
-    // Apply destructive styling
-    if (destructive) {
-      baseStyle.backgroundColor = variant === 'primary' ? currentColors.error : baseStyle.backgroundColor;
-      baseStyle.borderColor = currentColors.error;
+    switch (variant) {
+      case 'primary':
+        return {
+          ...baseStyle,
+          backgroundColor: colors.primary,
+        };
+      case 'secondary':
+        return {
+          ...baseStyle,
+          backgroundColor: colors.secondary,
+          borderWidth: 1,
+          borderColor: colors.border,
+        };
+      case 'outline':
+        return {
+          ...baseStyle,
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          borderColor: colors.primary,
+        };
+      case 'ghost':
+        return {
+          ...baseStyle,
+          backgroundColor: 'transparent',
+        };
+      case 'danger':
+        return {
+          ...baseStyle,
+          backgroundColor: colors.error,
+        };
+      default:
+        return baseStyle;
     }
-
-    if (variant === 'primary') {
-      return [baseStyle, ColorsShadows.button, isDisabled && styles.disabled, style];
-    }
-    return [baseStyle, isDisabled && styles.disabled, style];
   };
 
-  const getTextStyle = () => {
-    const textStyles = [
-      styles.textBase,
-      styles[`${variant}Text`],
-      isDisabled && styles.disabledText,
-      textStyle,
-    ];
-
-    // Apply bold text if accessibility setting is enabled
-    if (accessibilityHook.isBoldTextEnabled) {
-      textStyles.push(styles.boldText);
+  // Get text styles based on variant
+  const getTextStyles = () => {
+    const baseTypography = getTypography();
+    
+    switch (variant) {
+      case 'primary':
+        return {
+          ...baseTypography,
+          color: colors.textInverse,
+        };
+      case 'secondary':
+        return {
+          ...baseTypography,
+          color: colors.text,
+        };
+      case 'outline':
+        return {
+          ...baseTypography,
+          color: colors.primary,
+        };
+      case 'ghost':
+        return {
+          ...baseTypography,
+          color: colors.primary,
+        };
+      case 'danger':
+        return {
+          ...baseTypography,
+          color: colors.textInverse,
+        };
+      default:
+        return baseTypography;
     }
-
-    // Apply destructive text color
-    if (destructive && variant !== 'primary') {
-      textStyles.push(styles.destructiveText);
-    }
-
-    return textStyles;
   };
 
-  const loadingSpinnerColor =
-    variant === 'primary' ? currentColors.white : currentColors.primary;
-
-  // Create comprehensive accessibility props
-  const accessibilityProps = createSemanticProps(
-    accessibilityLabel || title,
-    'button',
-    {
-      hint: accessibilityHint || (loading ? 'Loading, please wait' : undefined),
-      value: accessibilityValue,
-      disabled: isDisabled,
-      busy: loading,
+  // Render button content
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator 
+            size="small" 
+            color={variant === 'primary' || variant === 'danger' ? colors.textInverse : colors.primary}
+          />
+          <Text style={[getTextStyles(), styles.loadingText, textStyle]}>
+            {title}
+          </Text>
+        </View>
+      );
     }
-  );
 
+    const iconElement = icon && (
+      <View style={[
+        styles.iconContainer,
+        iconPosition === 'right' && styles.iconRight
+      ]}>
+        {icon}
+      </View>
+    );
+
+    return (
+      <View style={styles.contentContainer}>
+        {iconPosition === 'left' && iconElement}
+        <Text style={[getTextStyles(), textStyle]}>{title}</Text>
+        {iconPosition === 'right' && iconElement}
+      </View>
+    );
+  };
+
+  // Render with gradient for primary button
+  if (variant === 'primary' && !disabled) {
+    return (
+      <AnimatedTouchableOpacity
+        style={[animatedStyle, style]}
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled || loading}
+        testID={testID}
+        accessibilityLabel={accessibilityLabel || title}
+        accessibilityHint={accessibilityHint}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: disabled || loading }}
+      >
+        <LinearGradient
+          colors={[colors.primary, colors.primaryDark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[getButtonStyles(), disabled && styles.disabled]}
+        >
+          {renderContent()}
+        </LinearGradient>
+      </AnimatedTouchableOpacity>
+    );
+  }
+
+  // Regular button without gradient
   return (
-    <AnimatedPressable
-      style={getButtonStyles()}
-      onPress={handlePress}
-      disabled={isDisabled}
-      pressedScaleValue={0.95}
-      animationDuration={150}
-      testID={testID}
-      {...accessibilityProps}
-      // Additional accessibility properties
-      accessibilityActions={[
-        { name: 'activate', label: title }
+    <AnimatedTouchableOpacity
+      style={[
+        animatedStyle,
+        getButtonStyles(),
+        disabled && styles.disabled,
+        style
       ]}
-      onAccessibilityAction={(event) => {
-        if (event.nativeEvent.actionName === 'activate') {
-          handlePress();
-        }
-      }}
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      disabled={disabled || loading}
+      testID={testID}
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityHint={accessibilityHint}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || loading }}
     >
-      {loading ? (
-        <LoadingSpinner 
-          size={20}
-          color={loadingSpinnerColor}
-        />
-      ) : (
-        <>
-          {icon && <>{icon}</>}
-          <Text style={getTextStyle()}>{title}</Text>
-        </>
-      )}
-    </AnimatedPressable>
+      {renderContent()}
+    </AnimatedTouchableOpacity>
   );
-}
+});
+
+Button.displayName = 'Button';
 
 const styles = StyleSheet.create({
-  base: {
+  contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: BorderRadius.md,
-    borderWidth: 2,
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm + Spacing.xs,
-    minHeight: 44,
   },
-  primary: {
-    backgroundColor: currentColors.primary,
-    borderColor: currentColors.primary,
+  iconContainer: {
+    marginHorizontal: Spacing.xs,
   },
-  secondary: {
-    backgroundColor: currentColors.transparent,
-    borderColor: currentColors.primary,
-    borderWidth: 2,
+  iconRight: {
+    marginLeft: Spacing.sm,
+    marginRight: 0,
   },
-  outline: {
-    backgroundColor: currentColors.transparent,
-    borderColor: currentColors.primary,
-    borderWidth: 1,
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  outlineWhite: {
-    backgroundColor: currentColors.transparent,
-    borderColor: currentColors.white,
-    borderWidth: 2,
-  },
-  ghost: {
-    backgroundColor: currentColors.transparent,
-    borderColor: currentColors.transparent,
-    borderWidth: 0,
-  },
-  small: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-    minHeight: 44,
-    borderRadius: BorderRadius.sm,
-  },
-  medium: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm + Spacing.xs,
-    minHeight: 44,
-  },
-  large: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    minHeight: 52,
-    borderRadius: BorderRadius.lg,
+  loadingText: {
+    marginLeft: Spacing.sm,
   },
   disabled: {
-    backgroundColor: currentColors.surfaceDark,
-    borderColor: currentColors.border,
-    opacity: 0.6,
-  },
-  textBase: {
-    ...Typography.buttonText,
-    textAlign: 'center',
-  },
-  primaryText: {
-    color: currentColors.white,
-  },
-  secondaryText: {
-    color: currentColors.primary,
-  },
-  outlineText: {
-    color: currentColors.primary,
-  },
-  outlineWhiteText: {
-    color: currentColors.white,
-  },
-  ghostText: {
-    color: currentColors.primary,
-  },
-  disabledText: {
-    color: currentColors.textMuted,
-  },
-  boldText: {
-    fontWeight: '700',
-  },
-  destructiveText: {
-    color: currentColors.error,
+    opacity: 0.5,
   },
 });
+
+export default Button;

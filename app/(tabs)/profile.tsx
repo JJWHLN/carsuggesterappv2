@@ -6,9 +6,9 @@ import {
   ScrollView,
   Alert,
   TouchableOpacity,
-  ActivityIndicator,
   Switch,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -33,44 +33,24 @@ import {
   Sparkles,
   TrendingUp,
   MessageCircle,
-} from 'lucide-react-native';
+} from '@/utils/icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { StatCard } from '@/components/ui/StatCard';
-import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { BaseFormInput, FloatingLabelInput, FormFieldGroup, useFormValidation } from '@/components/ui/UnifiedFormComponents';
+import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useAuth } from '@/contexts/AuthContext';
-import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
-import { useCanPerformAction } from '@/components/ui/RoleProtection';
-import { AnalyticsService } from '@/services/analyticsService';
-import { useEngagementTracking } from '@/hooks/useAnalytics';
 
 const { width } = Dimensions.get('window');
 
-
-export default function ProfileScreen() {
+function ProfileScreen() {
   const { user, role, signOut, loading: authLoading } = useAuth();
   const { colors } = useThemeColors();
-  const canPostCars = useCanPerformAction('postCars');
-  const canWriteReviews = useCanPerformAction('writeReviews');
-  const canBookmarkCars = useCanPerformAction('bookmarkCars');
-  const canAccessAI = useCanPerformAction('accessAI');
+  const { layout, cards, buttons, inputs } = useDesignTokens();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
-
-  // Analytics
-  const engagementTracking = useEngagementTracking('profile');
-
-  // Track screen view
-  useEffect(() => {
-    const analytics = AnalyticsService.getInstance();
-    analytics.trackScreenView('profile', { 
-      user_id: user?.id,
-      role: role,
-      has_profile_picture: !!user?.user_metadata?.avatar_url
-    });
-  }, [user?.id, role, user?.user_metadata?.avatar_url]);
 
   const handleSignOut = async () => {
     Alert.alert(
@@ -84,7 +64,6 @@ export default function ProfileScreen() {
           onPress: async () => {
             try {
               await signOut();
-              // Navigation will be handled by RootLayout/AppContent due to auth state change
             } catch (error) {
               console.error('Error signing out:', error);
               Alert.alert('Error', 'Failed to sign out.');
@@ -95,21 +74,13 @@ export default function ProfileScreen() {
     );
   };
 
-  // Navigation handlers with analytics
+  // Navigation handlers
   const handleNavigateToSettings = () => {
-    const analytics = AnalyticsService.getInstance();
-    analytics.trackUserAction('settings_accessed', 'menu_item', { user_id: user?.id });
-    engagementTracking.trackInteraction('settings_press');
     Alert.alert('Settings', 'Settings screen coming soon!');
   };
 
   const handleNavigateToSavedCars = () => {
-    const analytics = AnalyticsService.getInstance();
-    analytics.trackUserAction('saved_cars_accessed', 'menu_item', { user_id: user?.id, can_bookmark: canBookmarkCars });
-    engagementTracking.trackInteraction('saved_cars_press');
-    
-    if (canBookmarkCars) {
-      // Navigate to a saved cars section or show alert for now
+    if (user) {
       Alert.alert('Saved Cars', 'Saved Cars feature coming soon!');
     } else {
       Alert.alert('Sign In Required', 'Please sign in to view saved cars');
@@ -117,33 +88,14 @@ export default function ProfileScreen() {
   };
 
   const handleNavigateToMyReviews = () => {
-    const analytics = AnalyticsService.getInstance();
-    analytics.trackUserAction('my_reviews_accessed', 'menu_item', { user_id: user?.id, can_write_reviews: canWriteReviews });
-    engagementTracking.trackInteraction('my_reviews_press');
     Alert.alert('My Reviews', 'My Reviews screen coming soon!');
   };
 
   const handleNavigateToAddCar = () => {
-    const analytics = AnalyticsService.getInstance();
-    analytics.trackUserAction('add_car_accessed', 'menu_item', { user_id: user?.id, can_post_cars: canPostCars });
-    engagementTracking.trackInteraction('add_car_press');
-    
-    if (canPostCars) {
+    if (role === 'dealer' || role === 'admin') {
       Alert.alert('Add Car', 'Add Car feature coming soon!');
     } else {
       Alert.alert('Access Denied', 'Only dealers can post cars. Contact admin to upgrade your account.');
-    }
-  };
-
-  const handleNavigateToAdmin = () => {
-    const analytics = AnalyticsService.getInstance();
-    analytics.trackUserAction('admin_panel_accessed', 'menu_item', { user_id: user?.id, role: role });
-    engagementTracking.trackInteraction('admin_panel_press');
-    
-    if (role === 'admin') {
-      Alert.alert('Admin Panel', 'Admin panel coming soon!');
-    } else {
-      Alert.alert('Access Denied', 'Admin access required');
     }
   };
 
@@ -157,7 +109,7 @@ export default function ProfileScreen() {
   };
 
 
-  const renderMenuItem = (icon: React.ReactNode, title: string, subtitle: string, onPress: () => void) => (
+    const renderMenuItem = (icon: React.ReactNode, title: string, subtitle: string, onPress: () => void) => (
     <TouchableOpacity style={[styles.menuItem, { borderBottomColor: colors.border }]} onPress={onPress}>
       <View style={styles.menuIcon}>{icon}</View>
       <View style={styles.menuContent}>
@@ -167,6 +119,96 @@ export default function ProfileScreen() {
       <ChevronRight color={colors.textSecondary} size={20} />
     </TouchableOpacity>
   );
+
+  if (authLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <LoadingState />
+      </SafeAreaView>
+    );
+  }
+
+  if (!user) {
+    // Anonymous user experience
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Hero Section for Anonymous Users */}
+          <View style={styles.heroSection}>
+            <LinearGradient
+              colors={[colors.primary, '#16A34A']}
+              style={styles.heroGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <View style={styles.heroContent}>
+                <View style={styles.heroIcon}>
+                  <Sparkles color={colors.background} size={32} />
+                </View>
+                <Text style={styles.heroTitle}>
+                  Unlock Premium Features
+                </Text>
+                <Text style={styles.heroSubtitle}>
+                  Sign in to save favorites, write reviews, and get AI-powered recommendations
+                </Text>
+                <View style={styles.heroButtons}>
+                  <Button
+                    title="Sign In"
+                    onPress={() => router.push('/auth/sign-in')}
+                    variant="secondary"
+                    style={styles.heroButton}
+                  />
+                  <Button
+                    title="Create Account"
+                    onPress={() => router.push('/auth/sign-up')}
+                    variant="outline"
+                    style={styles.heroButton}
+                  />
+                </View>
+              </View>
+            </LinearGradient>
+          </View>
+
+          {/* Benefits Preview */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              What You'll Get
+            </Text>
+            <View style={styles.benefitsGrid}>
+              <View style={[styles.benefitCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+                <Heart color={colors.error} size={24} />
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>Save Favorites</Text>
+                <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>
+                  Bookmark cars and get notifications
+                </Text>
+              </View>
+              <View style={[styles.benefitCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+                <MessageCircle color={colors.primary} size={24} />
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>Write Reviews</Text>
+                <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>
+                  Share your car experiences
+                </Text>
+              </View>
+              <View style={[styles.benefitCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+                <Sparkles color={colors.success} size={24} />
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>AI Recommendations</Text>
+                <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>
+                  Get personalized car suggestions
+                </Text>
+              </View>
+              <View style={[styles.benefitCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+                <TrendingUp color={colors.warning} size={24} />
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>Market Insights</Text>
+                <Text style={[styles.benefitDescription, { color: colors.textSecondary }]}>
+                  Get price trends and alerts
+                </Text>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   if (authLoading) {
     return (
@@ -259,7 +301,7 @@ export default function ProfileScreen() {
 
           {/* Basic Settings */}
           <View style={styles.section}>
-            <Card style={styles.menuCard}>
+            <View style={[styles.menuCard, { backgroundColor: colors.cardBackground }]}>
               <Text style={[styles.menuSectionTitle, { color: colors.text }]}>App Settings</Text>
               
               <View style={styles.settingItem}>
@@ -286,21 +328,22 @@ export default function ProfileScreen() {
                 'Manage your alerts and updates',
                 () => Alert.alert('Notifications', 'Notification settings coming soon!')
               )}
-            </Card>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
     );
   }
 
+  // Authenticated user experience
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Enhanced Profile Header */}
+        {/* Profile Header */}
         <View style={styles.section}>
-          <Card style={styles.profileCard}>
+          <View style={[styles.profileCard, { backgroundColor: colors.cardBackground }]}>
             <View style={styles.profileHeader}>
-              <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
+              <View style={[styles.avatar, { backgroundColor: colors.primary + '20' }]}>
                 <User color={colors.primary} size={32} />
               </View>
               <View style={styles.profileInfo}>
@@ -338,54 +381,47 @@ export default function ProfileScreen() {
                 <Edit color={colors.textSecondary} size={20} />
               </TouchableOpacity>
             </View>
-          </Card>
+          </View>
         </View>
 
         {/* Quick Actions */}
         <View style={styles.section}>
-          <Card style={styles.menuCard}>
+          <View style={[styles.menuCard, { backgroundColor: colors.cardBackground }]}>
             <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Quick Actions</Text>
             
-            {canAccessAI && renderMenuItem(
+            {renderMenuItem(
               <Sparkles color={colors.primary} size={20} />,
               'Get AI Recommendations',
               'Discover cars tailored for you',
               () => router.push('/search')
             )}
             
-            {canBookmarkCars && renderMenuItem(
+            {renderMenuItem(
               <Heart color={colors.error} size={20} />,
               'Saved Cars',
               'View your favorite listings',
               handleNavigateToSavedCars
             )}
             
-            {canWriteReviews && renderMenuItem(
+            {renderMenuItem(
               <MessageCircle color={colors.textSecondary} size={20} />,
               'My Reviews',
               'Reviews you\'ve written',
               handleNavigateToMyReviews
             )}
 
-            {canPostCars && renderMenuItem(
-              <Car color={colors.accentGreen} size={20} />,
+            {(role === 'dealer' || role === 'admin') && renderMenuItem(
+              <Car color={colors.success} size={20} />,
               'Post a Car',
               'List your car for sale',
               handleNavigateToAddCar
             )}
-
-            {role === 'admin' && renderMenuItem(
-              <Shield color={colors.warning} size={20} />,
-              'Admin Panel',
-              'Manage users and content',
-              handleNavigateToAdmin
-            )}
-          </Card>
+          </View>
         </View>
 
         {/* Account Settings */}
         <View style={styles.section}>
-          <Card style={styles.menuCard}>
+          <View style={[styles.menuCard, { backgroundColor: colors.cardBackground }]}>
             <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Account & Settings</Text>
             
             {renderMenuItem(
@@ -409,7 +445,7 @@ export default function ProfileScreen() {
                 value={isDarkMode}
                 onValueChange={setIsDarkMode}
                 trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={colors.white}
+                thumbColor={colors.background}
               />
             </View>
             
@@ -426,12 +462,12 @@ export default function ProfileScreen() {
               'Data and account security',
               () => Alert.alert('Privacy', 'Privacy settings coming soon!')
             )}
-          </Card>
+          </View>
         </View>
 
         {/* Support & About */}
         <View style={styles.section}>
-          <Card style={styles.menuCard}>
+          <View style={[styles.menuCard, { backgroundColor: colors.cardBackground }]}>
             <Text style={[styles.menuSectionTitle, { color: colors.text }]}>Support & About</Text>
             
             {renderMenuItem(
@@ -447,7 +483,7 @@ export default function ProfileScreen() {
               'Learn more about our app',
               () => Alert.alert('About', 'About page coming soon!')
             )}
-          </Card>
+          </View>
         </View>
 
         {/* Sign Out Button */}
@@ -463,38 +499,42 @@ export default function ProfileScreen() {
   );
 }
 
-const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
+export default function WrappedProfileScreen() {
+  return (
+    <ErrorBoundary>
+      <ProfileScreen />
+    </ErrorBoundary>
+  );
+}
+
+const getThemedStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
   },
   scrollView: {
     flex: 1,
   },
-  content: {
-    padding: Spacing.lg,
-    paddingBottom: Spacing.xl,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingText: {
-    ...Typography.body,
-    color: colors.textSecondary,
-  },
   
   // Hero Section (Anonymous Users)
   heroSection: {
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.xl,
-    borderRadius: BorderRadius.xl,
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 32,
+    borderRadius: 16,
     overflow: 'hidden',
-    ...ColorsShadows.large,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   heroGradient: {
-    padding: Spacing.xl,
+    padding: 32,
   },
   heroContent: {
     alignItems: 'center',
@@ -506,26 +546,26 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: 16,
   },
   heroTitle: {
-    ...Typography.h1,
-    color: colors.white,
+    fontSize: 24,
+    color: '#FFFFFF',
     textAlign: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: 12,
     fontWeight: '700',
   },
   heroSubtitle: {
-    ...Typography.body,
-    color: colors.white,
+    fontSize: 16,
+    color: '#FFFFFF',
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: 32,
     opacity: 0.9,
     lineHeight: 24,
   },
   heroButtons: {
     flexDirection: 'row',
-    gap: Spacing.md,
+    gap: 12,
     width: '100%',
   },
   heroButton: {
@@ -534,37 +574,41 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
   
   // Sections and Benefits
   section: {
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.xl,
+    paddingHorizontal: 20,
+    marginBottom: 32,
   },
   sectionTitle: {
-    ...Typography.h2,
-    marginBottom: Spacing.lg,
+    fontSize: 20,
+    marginBottom: 16,
     fontWeight: '700',
   },
   benefitsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.md,
+    gap: 12,
     justifyContent: 'space-between',
   },
   benefitCard: {
-    width: (width - Spacing.lg * 3) / 2,
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
+    width: (width - 20 * 3) / 2,
+    padding: 16,
+    borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
-    ...ColorsShadows.small,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   benefitTitle: {
-    ...Typography.h3,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.xs,
+    fontSize: 16,
+    marginTop: 12,
+    marginBottom: 4,
     textAlign: 'center',
     fontWeight: '600',
   },
   benefitDescription: {
-    ...Typography.bodySmall,
+    fontSize: 12,
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -574,7 +618,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.md,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -584,28 +628,34 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     flex: 1,
   },
   settingContent: {
-    marginLeft: Spacing.md,
+    marginLeft: 12,
     flex: 1,
   },
   settingTitle: {
-    ...Typography.body,
+    fontSize: 16,
     fontWeight: '500',
-    marginBottom: Spacing.xs,
+    marginBottom: 4,
   },
   settingSubtitle: {
-    ...Typography.bodySmall,
+    fontSize: 12,
   },
   
   // Profile Card (Authenticated Users)
   profileCard: {
-    marginBottom: Spacing.lg,
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
+    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   profileHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: 16,
   },
   avatar: {
     width: 72,
@@ -613,100 +663,99 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     borderRadius: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Spacing.lg,
+    marginRight: 16,
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
-    ...Typography.h2,
-    marginBottom: Spacing.xs,
+    fontSize: 20,
+    marginBottom: 4,
     fontWeight: '700',
   },
   profileNameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.xs,
+    gap: 8,
+    marginBottom: 4,
   },
   roleBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   roleText: {
-    ...Typography.caption,
-    fontWeight: '700',
     fontSize: 10,
+    fontWeight: '700',
   },
   profileEmail: {
-    ...Typography.body,
+    fontSize: 16,
     color: colors.textSecondary,
-    marginBottom: Spacing.sm,
+    marginBottom: 8,
   },
   profileStats: {
     flexDirection: 'row',
-    gap: Spacing.lg,
+    gap: 16,
   },
   profileStat: {
     alignItems: 'center',
   },
   profileStatValue: {
-    ...Typography.h3,
+    fontSize: 18,
     fontWeight: '700',
-    marginBottom: Spacing.xs,
+    marginBottom: 4,
   },
   profileStatLabel: {
-    ...Typography.caption,
+    fontSize: 12,
     color: colors.textSecondary,
   },
   editButton: {
-    padding: Spacing.sm,
-    borderRadius: BorderRadius.lg,
+    padding: 8,
+    borderRadius: 12,
     backgroundColor: colors.background,
   },
   
   // Menu items
   menuCard: {
-    marginBottom: Spacing.lg,
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
+    marginBottom: 16,
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   menuSectionTitle: {
-    ...Typography.h3,
-    marginBottom: Spacing.md,
+    fontSize: 18,
+    marginBottom: 12,
     fontWeight: '600',
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Spacing.md,
+    paddingVertical: 12,
     borderBottomWidth: 1,
   },
   menuIcon: {
-    marginRight: Spacing.md,
+    marginRight: 12,
   },
   menuContent: {
     flex: 1,
   },
   menuTitle: {
-    ...Typography.body,
+    fontSize: 16,
     fontWeight: '500',
-    marginBottom: Spacing.xs,
+    marginBottom: 4,
   },
   menuSubtitle: {
-    ...Typography.bodySmall,
-  },
-  menuChevron: {
-    marginLeft: Spacing.sm,
+    fontSize: 12,
   },
   
   // Buttons
   signOutButton: {
-    marginTop: Spacing.md,
-    marginHorizontal: Spacing.lg,
-  },
-  upgradeButton: {
-    marginBottom: Spacing.lg,
+    marginTop: 12,
+    marginHorizontal: 20,
   },
 });

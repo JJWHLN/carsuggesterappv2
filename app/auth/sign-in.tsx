@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, SafeAreaView, ScrollView } from 'react-native'; // Added ScrollView
+import { View, Text, TextInput, StyleSheet, Alert, SafeAreaView, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
-import { Spacing, Typography, currentColors as defaultColors } from '@/constants/Colors'; // Using default for now, theme can be applied later
-import { useThemeColors } from '@/hooks/useTheme'; // To get themed colors
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { useThemeColors } from '@/hooks/useTheme';
 
-export default function SignInScreen() {
+function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { signInWithPassword } = useAuth();
   const router = useRouter();
-  const { colors } = useThemeColors(); // Themed colors
+  const { colors } = useThemeColors();
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -22,8 +22,6 @@ export default function SignInScreen() {
     setLoading(true);
     try {
       await signInWithPassword(email, password);
-      // Navigation to main app content will be handled by RootLayout/AppContent based on auth state
-      // router.replace('/(tabs)/'); // Or let RootLayout handle redirect
     } catch (error: any) {
       Alert.alert('Sign In Failed', error.message || 'An unexpected error occurred.');
     } finally {
@@ -40,7 +38,7 @@ export default function SignInScreen() {
       >
         <Text style={[styles.title, { color: colors.text }]}>Sign In</Text>
         <TextInput
-          style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
+          style={[styles.input, { backgroundColor: colors.cardBackground, color: colors.text, borderColor: colors.border }]}
           placeholder="Email"
           placeholderTextColor={colors.textSecondary}
           value={email}
@@ -49,7 +47,7 @@ export default function SignInScreen() {
           keyboardType="email-address"
         />
         <TextInput
-          style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
+          style={[styles.input, { backgroundColor: colors.cardBackground, color: colors.text, borderColor: colors.border }]}
           placeholder="Password"
           placeholderTextColor={colors.textSecondary}
           value={password}
@@ -61,16 +59,24 @@ export default function SignInScreen() {
           title="Don't have an account? Sign Up"
           onPress={() => router.push('/auth/sign-up')}
           variant="ghost"
-          style={{ marginTop: Spacing.md }}
+          style={{ marginTop: 16 }}
         />
         <Button
           title="Forgot Password?"
           onPress={() => router.push('/auth/forgot-password')}
           variant="ghost"
-          style={{ marginTop: Spacing.sm }}
+          style={{ marginTop: 8 }}
         />
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+export default function WrappedSignInScreen() {
+  return (
+    <ErrorBoundary>
+      <SignInScreen />
+    </ErrorBoundary>
   );
 }
 
@@ -78,22 +84,23 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  container: { // Now for ScrollView's contentContainerStyle
+  container: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: Spacing.lg,
+    padding: 20,
   },
   title: {
-    ...Typography.h1,
+    fontSize: 32,
+    fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: 32,
   },
   input: {
-    ...Typography.body,
+    fontSize: 16,
     height: 50,
     borderWidth: 1,
-    borderRadius: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    marginBottom: 16,
   },
 });

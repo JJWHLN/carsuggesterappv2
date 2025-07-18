@@ -34,6 +34,8 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
+import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { 
   CategoryChip, 
   SectionHeader, 
@@ -58,9 +60,27 @@ const { width } = Dimensions.get('window');
 
 export default function ReviewsScreen() {
   const { colors } = useThemeColors();
+  const { layout, cards, buttons } = useDesignTokens();
   const { user } = useAuth();
   const styles = useMemo(() => getStyles(colors), [colors]);
-  const commonStyles = useMemo(() => createCommonStyles(colors), [colors]);
+  // const commonStyles = useMemo(() => createCommonStyles(colors), [colors]); // Temporarily commented out due to type issues
+  
+  // Use unified search/filter hook
+  const {
+    filters,
+    searchTerm,
+    debouncedSearchTerm,
+    updateFilters,
+    clearFilters,
+    setSearchTerm,
+    hasActiveFilters,
+  } = useSearchFilters({
+    searchTerm: '',
+    categories: { category: 'all' },
+    sortBy: 'recent',
+    sortOrder: 'desc',
+    viewMode: 'grid',
+  });
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Check, ChevronRight } from 'lucide-react-native';
+import { Check, ChevronRight } from '@/utils/icons';
 import { Typography, Spacing, BorderRadius } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 

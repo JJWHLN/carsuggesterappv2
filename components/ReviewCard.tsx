@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, AccessibilityInfo } from 'react-native';
-import { Star, Calendar } from 'lucide-react-native';
+import { Star, Calendar } from '@/utils/icons';
 import { Card } from './ui/Card';
 import { currentColors, Spacing, Typography, BorderRadius } from '@/constants/Colors';
 import { Review } from '@/types/database';

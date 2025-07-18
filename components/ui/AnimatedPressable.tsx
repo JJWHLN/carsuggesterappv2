@@ -46,4 +46,5 @@ const AnimatedPressable = memo<AnimatedPressableProps>(({
 
 AnimatedPressable.displayName = 'AnimatedPressable';
 
+export default AnimatedPressable;
 export { AnimatedPressable };

@@ -1,33 +1,39 @@
 import { Link, Stack } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Home, AlertTriangle } from 'lucide-react-native';
+import { useColors } from '@/hooks/useConsolidatedTheme';
+import { useCommonThemedStyles } from '@/hooks/useThemedStyles';
+import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 export default function NotFoundScreen() {
+  const colors = useColors();
+  const commonStyles = useCommonThemedStyles();
+  
   return (
-    <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
-      <View style={styles.container}>
-        <Text style={styles.text}>This screen doesn't exist.</Text>
-        <Link href="/" style={styles.link}>
-          <Text>Go to home screen!</Text>
-        </Link>
-      </View>
-    </>
+    <ErrorBoundary>
+      <Stack.Screen options={{ title: 'Page Not Found' }} />
+      <SafeAreaView style={commonStyles.container}>
+        <EmptyState
+          icon={<AlertTriangle color={colors.textMuted} size={64} />}
+          title="Page Not Found"
+          subtitle="The page you're looking for doesn't exist or has been moved."
+          action={
+            <Link href="/" asChild>
+              <Button
+                title="Go to Home"
+                icon={<Home color={colors.white} size={20} />}
+                variant="primary"
+                onPress={() => {}}
+              />
+            </Link>
+          }
+        />
+      </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: 600,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-});
+

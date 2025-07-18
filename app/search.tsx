@@ -27,9 +27,10 @@ import { transformDatabaseVehicleListingToCar, sanitizeSearchQuery } from '@/uti
 import { Car } from '@/types/database';
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Search, Sparkles, Filter, SlidersHorizontal } from 'lucide-react-native';
+import { Search, Sparkles, Filter } from '@/utils/icons';
 import { router } from 'expo-router';
-import { usePerformanceTracking, useSearchTracking } from '@/hooks/useAnalytics';
+// Temporarily disabled for testing
+// import { usePerformanceTracking, useSearchTracking } from '@/hooks/useAnalytics';
 import { trackScreenView } from '@/services/analyticsService';
 
 const ITEM_HEIGHT = 380;
@@ -38,9 +39,9 @@ const SearchScreen = memo(() => {
   const { colors } = useThemeColors();
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
 
-  // Analytics hooks
-  const performanceTracker = usePerformanceTracking('SearchScreen');
-  const searchTracker = useSearchTracking();
+  // Analytics hooks - temporarily disabled for testing
+  // const performanceTracker = usePerformanceTracking('SearchScreen');
+  // const searchTracker = useSearchTracking();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [aiSearchLoading, setAiSearchLoading] = useState(false);
@@ -102,16 +103,15 @@ const SearchScreen = memo(() => {
       setAiResults(transformedCars);
       setSearchPerformed(true);
       
-      // Track successful AI search
-      const duration = Date.now() - startTime;
-      searchTracker.trackSearch(searchQuery, transformedCars.length, 'ai');
-      searchTracker.trackSearchPerformance(searchQuery, duration, 'ai');
+      // Track successful AI search - temporarily disabled
+      // searchTracker.trackSearch(searchQuery, transformedCars.length, 'ai');
+      // searchTracker.trackSearchPerformance(searchQuery, duration, 'ai');
       
-      performanceTracker.trackUserInteraction('ai_search_success', {
-        query: searchQuery,
-        results_count: transformedCars.length,
-        duration,
-      });
+      // performanceTracker.trackUserInteraction('ai_search_success', {
+      //   query: searchQuery,
+      //   results_count: transformedCars.length,
+      //   duration,
+      // });
       
     } catch (error) {
       console.error('AI Search error:', error);
@@ -120,13 +120,13 @@ const SearchScreen = memo(() => {
         : 'AI search is currently unavailable. Please try the regular search.';
       setAiSearchError(errorMessage);
       
-      // Track search error
-      searchTracker.trackSearchError(searchQuery, error instanceof Error ? error : new Error(errorMessage), 'ai');
+      // Track search error - temporarily disabled
+      // searchTracker.trackSearchError(searchQuery, error instanceof Error ? error : new Error(errorMessage), 'ai');
       
     } finally {
       setAiSearchLoading(false);
     }
-  }, [searchQuery, searchTracker, performanceTracker]);
+  }, [searchQuery]);  // Removed analytics hooks
 
   useEffect(() => {
     // Track screen view when component mounts
@@ -228,7 +228,7 @@ const SearchScreen = memo(() => {
             'Open advanced search filters'
           )}
         >
-          <SlidersHorizontal color={colors.primary} size={20} />
+          <Filter color={colors.primary} size={20} />
         </TouchableOpacity>
       </View>
 
