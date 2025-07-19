@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ApiResponse, ApiError } from '@/services/api';
 
 export function useApi<T>(
@@ -8,12 +8,16 @@ export function useApi<T>(
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Use ref to avoid stale closure issues
+  const apiRef = useRef(apiFunction);
+  apiRef.current = apiFunction;
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const result = await apiFunction();
+      const result = await apiRef.current();
       setData(result);
     } catch (err) {
       if (err instanceof ApiError) {
@@ -27,11 +31,11 @@ export function useApi<T>(
     } finally {
       setLoading(false);
     }
-  }, dependencies);
+  }, []); // Remove dependencies to avoid unnecessary re-creation
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [...dependencies, fetchData]); // Move dependencies to useEffect
 
   const refetch = useCallback(() => {
     fetchData();

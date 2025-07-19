@@ -38,12 +38,22 @@ export function useInfiniteScroll<T>({
   const initialLoadDoneRef = useRef(false);
   const fetchDataRef = useRef(fetchData);
 
+  // Update refs without causing re-renders
   useEffect(() => {
     loadingRef.current = loading;
+  }, [loading]);
+
+  useEffect(() => {
     pageRef.current = page;
+  }, [page]);
+
+  useEffect(() => {
     hasMoreRef.current = hasMore;
+  }, [hasMore]);
+
+  useEffect(() => {
     fetchDataRef.current = fetchData;
-  }, [loading, page, hasMore, fetchData]);
+  }, [fetchData]);
 
   const loadData = useCallback(async (pageNum: number, reset = false) => {
     if (!enabled || loadingRef.current) return;

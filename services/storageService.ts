@@ -435,6 +435,37 @@ export class StorageService {
     return value;
   }
 
+  /**
+   * Upload car images for vehicle listings
+   */
+  static async uploadCarImages(
+    userId: string,
+    listingId: string,
+    imageUris: string[]
+  ): Promise<string[]> {
+    try {
+      // For now, return mock URLs - in a real app, implement actual upload to Supabase
+      const mockUrls = imageUris.map((_, index) => 
+        `https://example.com/car-images/${listingId}/${Date.now()}-${index}.jpg`
+      );
+      
+      // Simulate upload delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      return mockUrls;
+    } catch (error) {
+      console.error('Error uploading car images:', error);
+      throw new Error('Failed to upload images');
+    }
+  }
+
+  /**
+   * Cleanup method for proper service shutdown
+   */
+  cleanup(): void {
+    this.memoryCache.clear();
+  }
+
   private async encryptValue<T>(value: T): Promise<T> {
     // In a real implementation, you would encrypt the value
     // For now, just return the value as-is

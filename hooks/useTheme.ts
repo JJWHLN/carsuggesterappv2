@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, useMemo, useCallback } from 'react';
 import { Appearance, ColorSchemeName } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
@@ -45,16 +45,27 @@ export function useThemeColors() {
   const [theme, setTheme] = useState<Theme>('auto');
   
   const colorScheme: ColorScheme = theme === 'auto' ? systemColorScheme : theme as ColorScheme;
-  const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
+  
+  // Memoize setTheme to prevent unnecessary re-renders
+  const stableSetTheme = useCallback((newTheme: Theme) => {
+    setTheme(newTheme);
+  }, []);
+  
+  // Memoize derived values to prevent unnecessary re-renders
+  const themeValues = useMemo(() => {
+    const colors = Colors[colorScheme];
+    const isDark = colorScheme === 'dark';
+    
+    return {
+      theme,
+      colorScheme,
+      colors,
+      setTheme: stableSetTheme,
+      isDark,
+    };
+  }, [theme, colorScheme, stableSetTheme]);
 
-  return {
-    theme,
-    colorScheme,
-    colors,
-    setTheme,
-    isDark,
-  };
+  return themeValues;
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }): JSX.Element {

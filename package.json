@@ -14,7 +14,9 @@
     "test:integration": "jest --testPathPattern=integration",
     "test:unit": "jest --testPathPattern=unit",
     "lint": "expo lint",
-    "build": "expo build"
+    "build": "expo build",
+    "bundle:analyze": "npx expo-bundle-analyzer --platform android",
+    "bundle:size": "node scripts/bundle-size-check.js"
   },
   "dependencies": {
     "@expo/config-plugins": "~9.0.0",

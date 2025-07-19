@@ -53,6 +53,10 @@ class PerformanceMonitor {
   private isMonitoring: boolean = false;
   private memoryCheckInterval?: NodeJS.Timeout;
   private maxMetricsCount = 1000;
+  private maxNetworkMetricsCount = 500;
+  private maxMemoryReadings = 100;
+  private maxRenderMetrics = 200;
+  private originalErrorHandler?: any; // Store original error handler for cleanup
 
   static getInstance(): PerformanceMonitor {
     if (!PerformanceMonitor.instance) {
@@ -61,11 +65,43 @@ class PerformanceMonitor {
     return PerformanceMonitor.instance;
   }
 
+  /**
+   * Cleanup singleton instance - useful for testing and memory management
+   */
+  static destroyInstance(): void {
+    if (PerformanceMonitor.instance) {
+      PerformanceMonitor.instance.stopMonitoring();
+      PerformanceMonitor.instance.clearMetrics();
+      PerformanceMonitor.instance = null as any;
+    }
+  }
+
   startMonitoring(): void {
     if (this.isMonitoring) return;
     
     this.isMonitoring = true;
     this.appStartTime = Date.now();
+    
+    // Store original error handler before setting new one
+    this.originalErrorHandler = ErrorUtils.getGlobalHandler();
+    ErrorUtils.setGlobalHandler((error, isFatal) => {
+      // Just store the error in metrics for now
+      this.metrics.push({
+        name: 'GlobalError',
+        startTime: Date.now(),
+        endTime: Date.now(),
+        duration: 0,
+        metadata: { 
+          error: error.message || 'Unknown error',
+          stack: error.stack,
+          isFatal 
+        }
+      });
+      // Call original handler if it exists
+      if (this.originalErrorHandler) {
+        this.originalErrorHandler(error, isFatal);
+      }
+    });
     
     // Start memory monitoring
     this.startMemoryMonitoring();
@@ -81,9 +117,16 @@ class PerformanceMonitor {
     
     this.isMonitoring = false;
     
+    // Clear memory monitoring interval
     if (this.memoryCheckInterval) {
       clearInterval(this.memoryCheckInterval);
       this.memoryCheckInterval = undefined;
+    }
+
+    // Restore original error handler
+    if (this.originalErrorHandler) {
+      ErrorUtils.setGlobalHandler(this.originalErrorHandler);
+      this.originalErrorHandler = undefined;
     }
     
     console.log('Performance monitoring stopped');
@@ -208,8 +251,8 @@ class PerformanceMonitor {
     this.networkMetrics.push(networkMetric);
     
     // Keep network metrics manageable
-    if (this.networkMetrics.length > 500) {
-      this.networkMetrics = this.networkMetrics.slice(-500);
+    if (this.networkMetrics.length > this.maxNetworkMetricsCount) {
+      this.networkMetrics = this.networkMetrics.slice(-this.maxNetworkMetricsCount);
     }
     
     return {
@@ -239,6 +282,15 @@ class PerformanceMonitor {
         lastRenderTime: renderTime,
         propsChanged,
       });
+
+      // Keep render metrics manageable
+      if (this.renderMetrics.size > this.maxRenderMetrics) {
+        // Remove oldest entries
+        const entries = Array.from(this.renderMetrics.entries());
+        const toKeep = entries.slice(-this.maxRenderMetrics);
+        this.renderMetrics.clear();
+        toKeep.forEach(([key, value]) => this.renderMetrics.set(key, value));
+      }
     }
   }
 
@@ -265,9 +317,9 @@ class PerformanceMonitor {
     
     this.memoryUsage.push(memoryData);
     
-    // Keep only last 100 memory readings
-    if (this.memoryUsage.length > 100) {
-      this.memoryUsage = this.memoryUsage.slice(-100);
+    // Keep only last memory readings manageable
+    if (this.memoryUsage.length > this.maxMemoryReadings) {
+      this.memoryUsage = this.memoryUsage.slice(-this.maxMemoryReadings);
     }
     
     // Log memory warnings
