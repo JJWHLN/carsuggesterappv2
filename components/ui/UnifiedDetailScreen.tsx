@@ -7,10 +7,11 @@ import {
   ScrollView, 
   TouchableOpacity,
   RefreshControl,
+  useColorScheme,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useComprehensiveTheme } from '../../hooks/useComprehensiveTheme';
+import DesignSystem from '@/constants/DesignSystem';
 import { LoadingState } from './LoadingState';
 import { ErrorState } from './ErrorState';
 
@@ -64,7 +65,8 @@ export function UnifiedDetailScreen<T = any>({
   onRefresh,
   onBack,
 }: UnifiedDetailScreenProps<T>) {
-  const { theme } = useComprehensiveTheme();
+  const colorScheme = useColorScheme();
+  const theme = { colors: colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light };
   const { id } = useLocalSearchParams<{ id: string }>();
   
   const [data, setData] = useState<T | null>(null);
@@ -186,7 +188,7 @@ export function UnifiedDetailScreen<T = any>({
       borderRadius: 8,
     },
     retryButtonText: {
-      color: theme.colors.onPrimary,
+      color: theme.colors.white,
       fontWeight: '600',
     },
   });

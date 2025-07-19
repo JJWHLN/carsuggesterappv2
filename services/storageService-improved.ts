@@ -26,7 +26,7 @@ interface StorageStats {
   encrypted: number;
 }
 
-class StorageService extends BaseService {
+export class StorageService {
   private static instance: StorageService;
   private memoryCache = new Map<string, StorageItem>();
   private readonly CACHE_PREFIX = '@CarSuggester:';
@@ -417,9 +417,6 @@ class StorageService extends BaseService {
 
 // Export singleton instance
 export const Storage = StorageService.getInstance();
-
-// Export the service class
-export { StorageService };
 
 // Convenience functions for common storage patterns
 export const setUserPreference = async <T>(userId: string, key: string, value: T): Promise<void> => {

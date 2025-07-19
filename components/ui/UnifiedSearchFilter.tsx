@@ -11,9 +11,10 @@ import {
   Animated,
   Dimensions,
   Platform,
+  useColorScheme,
 } from 'react-native';
 import { Search, Filter, X, ChevronDown, Check, Settings } from '@/utils/icons';
-import { useDesignTokens } from '@/hooks/useDesignTokens';
+import DesignSystem from '@/constants/DesignSystem';
 import { BaseFormInput, SearchInput } from '@/components/ui/UnifiedFormComponents';
 import { CategoryChip, FilterButton, ViewToggle } from '@/components/ui/SharedComponents';
 import { Button } from '@/components/ui/Button';
@@ -126,7 +127,9 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
   onFilterModalOpen,
   onFilterModalClose,
 }) => {
-  const { colors, layout, buttons, spacing } = useDesignTokens();
+  const colorScheme = useColorScheme();
+  const colors = colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light;
+  const spacing = DesignSystem.Spacing;
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [localFilters, setLocalFilters] = useState<Partial<SearchFilters>>(activeFilters);
   const [searchTerm, setSearchTerm] = useState(searchValue);
@@ -305,7 +308,7 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
   const renderFilterControls = () => {
     if (variant === 'compact') {
       return (
-        <View style={[styles.compactControls, layout.row]}>
+        <View style={[styles.compactControls, { flexDirection: 'row' }]}>
           {enableFilters && (
             <TouchableOpacity
               style={[styles.compactButton, { backgroundColor: colors.surface }]}
@@ -393,7 +396,7 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
     if (!showResultsCount) return null;
 
     return (
-      <View style={[styles.resultsHeader, layout.rowSpaced]}>
+      <View style={[styles.resultsHeader, { flexDirection: 'row', justifyContent: 'space-between' }]}>
         <Text style={[styles.resultsCount, { color: colors.text }]}>
           {resultsCount} {resultsLabel}
         </Text>

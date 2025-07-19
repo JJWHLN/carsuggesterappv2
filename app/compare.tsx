@@ -51,7 +51,7 @@ import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { PremiumButton } from '@/components/ui/PremiumButton';
+import PremiumButton from '@/components/ui/PremiumButton';
 import { StatCard } from '@/components/ui/StatCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useThemeColors } from '@/hooks/useTheme';

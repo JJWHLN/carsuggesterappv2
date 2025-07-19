@@ -61,6 +61,8 @@ export const UnifiedColors = {
     textSecondary: '#6B7280',
     textMuted: '#9CA3AF',
     cardBackground: '#FFFFFF',
+    card: '#FFFFFF', // Missing property causing TypeScript errors
+    accent: '#F59E0B', // Missing property causing TypeScript errors
     white: '#FFFFFF',
     black: '#000000',
     transparent: 'transparent',
@@ -97,6 +99,8 @@ export const UnifiedColors = {
     textSecondary: '#9CA3AF',
     textMuted: '#6B7280',
     cardBackground: '#27272A',
+    card: '#27272A', // Missing property causing TypeScript errors
+    accent: '#FBBF24', // Missing property causing TypeScript errors
     white: '#FFFFFF',
     black: '#000000',
     transparent: 'transparent',

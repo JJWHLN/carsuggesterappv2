@@ -213,10 +213,12 @@ export interface DatabaseBrand {
   updated_at?: string;
 }
 
+export type UserRole = 'user' | 'dealer' | 'admin';
+
 export interface Profile {
   id: string;
   email?: string;
-  role: 'user' | 'dealer' | 'admin';
+  role: UserRole;
   onboarding_completed?: boolean;
   created_at?: string;
   updated_at?: string;

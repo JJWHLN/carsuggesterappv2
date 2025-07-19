@@ -6,8 +6,9 @@ import {
   StyleSheet, 
   TextInputProps,
   KeyboardTypeOptions,
+  useColorScheme,
 } from 'react-native';
-import { useComprehensiveTheme } from '../../hooks/useComprehensiveTheme';
+import DesignSystem from '@/constants/DesignSystem';
 
 export interface UnifiedFormInputProps extends Omit<TextInputProps, 'style'> {
   label?: string;
@@ -43,7 +44,8 @@ export const UnifiedFormInput: React.FC<UnifiedFormInputProps> = ({
   type = 'text',
   ...textInputProps
 }) => {
-  const { theme } = useComprehensiveTheme();
+  const colorScheme = useColorScheme();
+  const theme = { colors: colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light };
 
   // Determine keyboard type based on input type
   const getKeyboardType = (): KeyboardTypeOptions => {

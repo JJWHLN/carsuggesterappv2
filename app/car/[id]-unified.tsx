@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, useColorScheme } from 'react-native';
 import { UnifiedDetailScreen } from '@/components/ui/UnifiedDetailScreen';
-import { useComprehensiveTheme } from '@/hooks/useComprehensiveTheme';
+import DesignSystem from '@/constants/DesignSystem';
 import { notifications } from '@/services/notifications';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/Button';
@@ -36,7 +36,8 @@ const fetchCarDetails = async (id: string) => {
 };
 
 export default function CarDetailScreen() {
-  const { theme } = useComprehensiveTheme();
+  const colorScheme = useColorScheme();
+  const theme = { colors: colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light };
 
   const renderCarHeader = (car: any) => (
     <View style={styles.headerContainer}>

@@ -6,9 +6,9 @@
  */
 
 import { useMemo } from 'react';
-import { ViewStyle, TextStyle, Platform, Dimensions } from 'react-native';
-import { useConsolidatedTheme } from '@/hooks/useConsolidatedTheme';
+import { ViewStyle, TextStyle, Platform, Dimensions, useColorScheme } from 'react-native';
 import DesignSystem from '@/constants/DesignSystem';
+import { Colors } from '@/constants/Colors';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -24,7 +24,8 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
  * import { useThemeColors } from '@/hooks/useTheme';
  */
 export function useDesignTokens() {
-  const { colors } = useConsolidatedTheme();
+  const colorScheme = useColorScheme();
+  const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
   
   return useMemo(() => ({
     // Dynamic theme colors
@@ -188,7 +189,8 @@ export function useDesignTokens() {
  * Replaces: import { useThemeColors } from '@/hooks/useTheme'
  */
 export function useColors() {
-  const { colors } = useConsolidatedTheme();
+  const colorScheme = useColorScheme();
+  const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
   return colors;
 }
 

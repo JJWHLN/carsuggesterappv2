@@ -1,7 +1,7 @@
-import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { StyleSheet, ViewStyle, TextStyle, ImageStyle, useColorScheme } from 'react-native';
 import { useMemo } from 'react';
 import { Colors } from '@/constants/Colors';
-import { useConsolidatedTheme } from './useConsolidatedTheme';
+import DesignSystem from '@/constants/DesignSystem';
 
 type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 
@@ -15,7 +15,8 @@ type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 export function useThemedStyles<T extends NamedStyles<T>>(
   styleFactory: (colors: typeof Colors.light) => T
 ): T {
-  const { colors } = useConsolidatedTheme();
+  const colorScheme = useColorScheme();
+  const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
   
   return useMemo(() => {
     return StyleSheet.create(styleFactory(colors));

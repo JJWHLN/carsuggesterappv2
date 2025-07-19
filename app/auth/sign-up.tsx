@@ -26,7 +26,7 @@ export default function SignUpScreen() {
     }
     setLoading(true);
     try {
-      const { data } = await signUpWithPassword(email, password);
+      const { data } = await signUpWithPassword(email, password, '', '');
       if (data.user && data.user.identities && data.user.identities.length === 0) {
         // This case might indicate email confirmation is required but user object is returned.
         // Supabase behavior: if email confirmation is on, user is created but session is null until confirmed.

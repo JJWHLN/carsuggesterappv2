@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { performanceMonitor, usePerformanceMonitor } from '@/utils/performanceMonitor';
-import { PremiumButton } from '@/components/ui/PremiumButton';
+import PremiumButton from '@/components/ui/PremiumButton';
 import { Card } from '@/components/ui/Card';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Theme } from '@/theme/Theme';

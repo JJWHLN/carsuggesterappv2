@@ -91,7 +91,7 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
           break;
           
         case 'sign-up':
-          await signUpWithPassword(values.email, values.password);
+          await signUpWithPassword(values.email, values.password, '', '');
           notifications.auth.signUpSuccess();
           break;
           
@@ -171,13 +171,13 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
     title: {
       fontSize: 28,
       fontWeight: 'bold',
-      color: theme.colors.onSurface,
+      color: theme.colors.text,
       marginBottom: 8,
       textAlign: 'center',
     },
     subtitle: {
       fontSize: 16,
-      color: theme.colors.onSurfaceVariant,
+      color: theme.colors.textSecondary,
       textAlign: 'center',
       lineHeight: 22,
     },
@@ -209,7 +209,7 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
     },
     dividerText: {
       fontSize: 14,
-      color: theme.colors.onSurfaceVariant,
+      color: theme.colors.textSecondary,
       marginHorizontal: 16,
     },
     socialButtons: {

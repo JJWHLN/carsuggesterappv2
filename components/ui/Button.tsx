@@ -28,6 +28,7 @@ interface ButtonProps {
   size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
+  destructive?: boolean;
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
   fullWidth?: boolean;
@@ -47,6 +48,7 @@ export const Button = memo<ButtonProps>(({
   size = 'medium',
   disabled = false,
   loading = false,
+  destructive = false,
   icon,
   iconPosition = 'left',
   fullWidth = false,
