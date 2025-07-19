@@ -138,7 +138,7 @@ export class AdminService extends BaseService {
           'getPlatformStats.userStats'
         );
 
-        const roleCounts = userStats.reduce((acc, user) => {
+        const roleCounts = (userStats as Array<{role: string}>).reduce((acc, user) => {
           acc[user.role] = (acc[user.role] || 0) + 1;
           return acc;
         }, {} as Record<string, number>);
@@ -204,14 +204,14 @@ export class AdminService extends BaseService {
 
         // Combine and sort by date
         const activities = [
-          ...recentReviews.map(review => ({
+          ...(recentReviews as Array<any>).map(review => ({
             type: 'review' as const,
             id: review.id,
             title: review.title,
             author: review.author,
             created_at: review.created_at,
           })),
-          ...recentListings.map(listing => ({
+          ...(recentListings as Array<any>).map(listing => ({
             type: 'listing' as const,
             id: listing.id,
             title: listing.title,

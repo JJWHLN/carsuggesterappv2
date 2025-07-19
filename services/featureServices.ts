@@ -1,10 +1,11 @@
 import { supabase } from '@/lib/supabase';
-import { SecurityService, UserRole } from './securityService';
+import { SecurityService, UserRole, SecurityCheck } from './securityService';
+import { BaseService } from './BaseService';
 
 /**
  * Service for managing bookmarks with role-based access control
  */
-export class BookmarkService {
+export class BookmarkService extends BaseService {
   /**
    * Add a bookmark for a car model or vehicle listing
    */
@@ -12,26 +13,22 @@ export class BookmarkService {
     userId: string,
     target: { carModelId?: number; vehicleListingId?: string }
   ): Promise<void> {
-    // Check if user can bookmark cars
-    const canBookmark = await SecurityService.canPerformAction(userId, 'canBookmarkCars');
-    if (!canBookmark) {
-      throw new Error('You need to sign in to bookmark cars');
-    }
-
-    try {
-      const { error } = await supabase
-        .from('bookmarks')
-        .insert({
-          user_id: userId,
-          car_model_id: target.carModelId || null,
-          vehicle_listing_id: target.vehicleListingId || null,
-        });
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error adding bookmark:', error);
-      throw error;
-    }
+    await this.executePermissionOperation(
+      userId,
+      'canBookmarkCars' as keyof SecurityCheck,
+      () => this.executeQuery(
+        () => supabase
+          .from('bookmarks')
+          .insert({
+            user_id: userId,
+            car_model_id: target.carModelId || null,
+            vehicle_listing_id: target.vehicleListingId || null,
+          }),
+        'addBookmark',
+        { userId, target }
+      ),
+      'addBookmark'
+    );
   }
 
   /**
@@ -41,68 +38,46 @@ export class BookmarkService {
     userId: string,
     target: { carModelId?: number; vehicleListingId?: string }
   ): Promise<void> {
-    try {
-      let query = supabase
-        .from('bookmarks')
-        .delete()
-        .eq('user_id', userId);
+    await this.executeQuery(
+      () => {
+        let query = supabase
+          .from('bookmarks')
+          .delete()
+          .eq('user_id', userId);
 
-      if (target.carModelId) {
-        query = query.eq('car_model_id', target.carModelId);
-      } else if (target.vehicleListingId) {
-        query = query.eq('vehicle_listing_id', target.vehicleListingId);
-      }
+        if (target.carModelId) {
+          query = query.eq('car_model_id', target.carModelId);
+        } else if (target.vehicleListingId) {
+          query = query.eq('vehicle_listing_id', target.vehicleListingId);
+        }
 
-      const { error } = await query;
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error removing bookmark:', error);
-      throw error;
-    }
+        return query;
+      },
+      'removeBookmark',
+      { userId, target }
+    );
   }
 
   /**
    * Get user's bookmarks
    */
   static async getUserBookmarks(userId: string) {
-    try {
-      const { data, error } = await supabase
+    return this.executeQueryArray(
+      () => supabase
         .from('bookmarks')
-        .select(`
-          id,
-          car_model_id,
-          vehicle_listing_id,
-          created_at,
-          car_models (
-            id,
-            name,
-            year,
-            image_url,
-            brands (
-              id,
-              name,
-              logo_url
-            )
-          ),
-          vehicle_listings (
-            id,
-            title,
-            make,
-            model,
-            year,
-            price,
-            images
-          )
-        `)
+        .select(this.buildSelectQuery(
+          'bookmarks',
+          ['id', 'car_model_id', 'vehicle_listing_id', 'created_at'],
+          {
+            'car_models': ['id', 'name', 'year', 'image_url', 'brands (id, name, logo_url)'],
+            'vehicle_listings': ['id', 'title', 'make', 'model', 'year', 'price', 'images']
+          }
+        ))
         .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching bookmarks:', error);
-      throw error;
-    }
+        .order('created_at', { ascending: false }),
+      'getUserBookmarks',
+      { userId }
+    );
   }
 
   /**
@@ -113,24 +88,32 @@ export class BookmarkService {
     target: { carModelId?: number; vehicleListingId?: string }
   ): Promise<boolean> {
     try {
-      let query = supabase
-        .from('bookmarks')
-        .select('id')
-        .eq('user_id', userId);
+      const result = await this.executeQuery(
+        () => {
+          let query = supabase
+            .from('bookmarks')
+            .select('id')
+            .eq('user_id', userId);
 
-      if (target.carModelId) {
-        query = query.eq('car_model_id', target.carModelId);
-      } else if (target.vehicleListingId) {
-        query = query.eq('vehicle_listing_id', target.vehicleListingId);
+          if (target.carModelId) {
+            query = query.eq('car_model_id', target.carModelId);
+          } else if (target.vehicleListingId) {
+            query = query.eq('vehicle_listing_id', target.vehicleListingId);
+          }
+
+          return query.single();
+        },
+        'isBookmarked',
+        { userId, target }
+      );
+
+      return result !== null;
+    } catch (error: any) {
+      // Handle "not found" as false rather than error
+      if (error?.code === 'PGRST116') {
+        return false;
       }
-
-      const { data, error } = await query.single();
-      if (error && error.code !== 'PGRST116') throw error;
-      
-      return !!data;
-    } catch (error) {
-      console.error('Error checking bookmark status:', error);
-      return false;
+      throw error;
     }
   }
 }
@@ -138,7 +121,7 @@ export class BookmarkService {
 /**
  * Service for managing vehicle listings with role-based access control
  */
-export class VehicleListingService {
+export class VehicleListingService extends BaseService {
   /**
    * Create a new vehicle listing (dealers and admins only)
    */
@@ -163,29 +146,25 @@ export class VehicleListingService {
       images?: string[];
     }
   ) {
-    // Check if user can post cars
-    const canPost = await SecurityService.canPerformAction(userId, 'canPostCars');
-    if (!canPost) {
-      throw new Error('Only dealers and admins can post vehicle listings');
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('vehicle_listings')
-        .insert({
-          dealer_id: userId,
-          status: 'active',
-          ...listingData,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error creating vehicle listing:', error);
-      throw error;
-    }
+    return this.executePermissionOperation(
+      userId,
+      'canPostCars',
+      () => this.executeQuery(
+        () => supabase
+          .from('vehicle_listings')
+          .insert({
+            dealer_id: userId,
+            ...listingData,
+            status: 'active',
+            created_at: new Date().toISOString(),
+          })
+          .select()
+          .single(),
+        'createListing',
+        { userId, listingData }
+      ),
+      'createListing'
+    );
   }
 
   /**
@@ -200,69 +179,60 @@ export class VehicleListingService {
     priceMax?: number;
     location?: string;
   }) {
-    try {
-      let query = supabase
-        .from('vehicle_listings')
-        .select(`
-          *,
-          dealers (
-            business_name,
-            verified,
-            rating
-          )
-        `)
-        .eq('status', 'active');
+    return this.executeQueryArray(
+      () => {
+        let query = supabase
+          .from('vehicle_listings')
+          .select(this.buildSelectQuery(
+            'vehicle_listings',
+            ['*'],
+            {
+              'dealers': ['business_name', 'verified', 'rating']
+            }
+          ))
+          .eq('status', 'active');
 
-      if (filters?.make) {
-        query = query.ilike('make', `%${filters.make}%`);
-      }
-      if (filters?.model) {
-        query = query.ilike('model', `%${filters.model}%`);
-      }
-      if (filters?.yearMin) {
-        query = query.gte('year', filters.yearMin);
-      }
-      if (filters?.yearMax) {
-        query = query.lte('year', filters.yearMax);
-      }
-      if (filters?.priceMin) {
-        query = query.gte('price', filters.priceMin);
-      }
-      if (filters?.priceMax) {
-        query = query.lte('price', filters.priceMax);
-      }
-      if (filters?.location) {
-        query = query.or(`location_city.ilike.%${filters.location}%,location_state.ilike.%${filters.location}%`);
-      }
+        if (filters) {
+          query = this.applyFilters(query, {
+            make: filters.make,
+            model: filters.model,
+            location_city: filters.location,
+          });
 
-      const { data, error } = await query
-        .order('created_at', { ascending: false });
+          if (filters.yearMin) {
+            query = query.gte('year', filters.yearMin);
+          }
+          if (filters.yearMax) {
+            query = query.lte('year', filters.yearMax);
+          }
+          if (filters.priceMin) {
+            query = query.gte('price', filters.priceMin);
+          }
+          if (filters.priceMax) {
+            query = query.lte('price', filters.priceMax);
+          }
+        }
 
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching vehicle listings:', error);
-      throw error;
-    }
+        return query.order('created_at', { ascending: false });
+      },
+      'getActiveListings',
+      { filters }
+    );
   }
 
   /**
    * Get dealer's listings
    */
   static async getDealerListings(dealerId: string) {
-    try {
-      const { data, error } = await supabase
+    return this.executeQueryArray(
+      () => supabase
         .from('vehicle_listings')
         .select('*')
         .eq('dealer_id', dealerId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching dealer listings:', error);
-      throw error;
-    }
+        .order('created_at', { ascending: false }),
+      'getDealerListings',
+      { dealerId }
+    );
   }
 
   /**
@@ -271,48 +241,54 @@ export class VehicleListingService {
   static async updateListing(
     userId: string,
     listingId: string,
-    updates: Record<string, any>
+    updateData: Partial<{
+      title: string;
+      price: number;
+      mileage: number;
+      condition: string;
+      description: string;
+      features: string[];
+      status: string;
+    }>
   ) {
-    try {
-      const { data, error } = await supabase
+    return this.executeQuery(
+      () => supabase
         .from('vehicle_listings')
-        .update(updates)
+        .update({
+          ...updateData,
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', listingId)
+        .eq('dealer_id', userId) // Only allow owner to update
         .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error updating vehicle listing:', error);
-      throw error;
-    }
+        .single(),
+      'updateListing',
+      { userId, listingId, updateData }
+    );
   }
 
   /**
    * Delete vehicle listing (owner or admin only)
    */
   static async deleteListing(userId: string, listingId: string) {
-    try {
-      const { error } = await supabase
+    return this.executeQuery(
+      () => supabase
         .from('vehicle_listings')
         .delete()
-        .eq('id', listingId);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error deleting vehicle listing:', error);
-      throw error;
-    }
+        .eq('id', listingId)
+        .eq('dealer_id', userId), // Only allow owner to delete
+      'deleteListing',
+      { userId, listingId }
+    );
   }
 }
 
 /**
  * Service for managing reviews with role-based access control
  */
-export class ReviewService {
+export class ReviewService extends BaseService {
   /**
-   * Create a new review (users only - dealers cannot review)
+   * Create a new review (admin only)
    */
   static async createReview(
     userId: string,
@@ -321,9 +297,12 @@ export class ReviewService {
       title: string;
       content: string;
       rating: number;
+      author: string;
       car_make: string;
       car_model: string;
       car_year: number;
+      images?: string[];
+      tags?: string[];
       sections?: {
         performance?: string;
         exterior?: string;
@@ -334,138 +313,218 @@ export class ReviewService {
       };
     }
   ) {
-    // Check if user can write reviews
-    const canWrite = await SecurityService.canPerformAction(userId, 'canWriteReviews');
-    if (!canWrite) {
-      throw new Error('Only regular users can write reviews');
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('reviews')
-        .insert({
-          user_id: userId,
-          author: 'Anonymous User', // Keep reviews anonymous for privacy
-          ...reviewData,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error creating review:', error);
-      throw error;
-    }
+    return this.executePermissionOperation(
+      userId,
+      'canWriteReviews',
+      () => this.executeQuery(
+        () => supabase
+          .from('reviews')
+          .insert({
+            user_id: userId,
+            ...reviewData,
+            created_at: new Date().toISOString(),
+          })
+          .select()
+          .single(),
+        'createReview',
+        { userId, reviewData }
+      ),
+      'createReview'
+    );
   }
 
   /**
-   * Get reviews for a car model
+   * Get all reviews with pagination
    */
-  static async getModelReviews(modelId: number) {
-    try {
-      const { data, error } = await supabase
-        .from('reviews')
-        .select(`
-          *,
-          car_models (
-            id,
-            name,
-            year,
-            brands (
-              id,
-              name
-            )
-          )
-        `)
-        .eq('model_id', modelId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching model reviews:', error);
-      throw error;
+  static async getReviews(
+    page: number = 0,
+    limit: number = 10,
+    filters?: {
+      make?: string;
+      model?: string;
+      year?: number;
+      minRating?: number;
     }
+  ) {
+    return this.executeQueryArray(
+      () => {
+        let query = supabase
+          .from('reviews')
+          .select(this.buildSelectQuery(
+            'reviews',
+            ['*'],
+            {
+              'car_models': ['id', 'name', 'year', 'brands (id, name, logo_url)']
+            }
+          ));
+
+        if (filters) {
+          query = this.applyFilters(query, {
+            car_make: filters.make,
+            car_model: filters.model,
+            car_year: filters.year,
+          });
+
+          if (filters.minRating) {
+            query = query.gte('rating', filters.minRating);
+          }
+        }
+
+        return this.applySorting(
+          this.applyPagination(query, page, limit),
+          'created_at',
+          false
+        );
+      },
+      'getReviews',
+      { page, limit, filters }
+    );
+  }
+
+  /**
+   * Get review by ID
+   */
+  static async getReviewById(reviewId: string) {
+    return this.executeQuery(
+      () => supabase
+        .from('reviews')
+        .select(this.buildSelectQuery(
+          'reviews',
+          ['*'],
+          {
+            'car_models': ['id', 'name', 'year', 'brands (id, name, logo_url)']
+          }
+        ))
+        .eq('id', reviewId)
+        .single(),
+      'getReviewById',
+      { reviewId }
+    );
+  }
+
+  /**
+   * Update review (owner or admin only)
+   */
+  static async updateReview(
+    userId: string,
+    reviewId: string,
+    updateData: Partial<{
+      title: string;
+      content: string;
+      rating: number;
+      images: string[];
+      tags: string[];
+      sections: any;
+    }>
+  ) {
+    return this.executeQuery(
+      () => supabase
+        .from('reviews')
+        .update({
+          ...updateData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', reviewId)
+        .eq('user_id', userId) // Only allow owner to update
+        .select()
+        .single(),
+      'updateReview',
+      { userId, reviewId, updateData }
+    );
   }
 
   /**
    * Delete review (owner or admin only)
    */
   static async deleteReview(userId: string, reviewId: string) {
-    try {
-      const { error } = await supabase
+    return this.executeQuery(
+      () => supabase
         .from('reviews')
         .delete()
-        .eq('id', reviewId);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error deleting review:', error);
-      throw error;
-    }
+        .eq('id', reviewId)
+        .eq('user_id', userId), // Only allow owner to delete
+      'deleteReview',
+      { userId, reviewId }
+    );
   }
 }
 
 /**
  * Service for AI-powered features with role-based access control
  */
-export class AIService {
+export class AIService extends BaseService {
   /**
-   * Get AI car recommendations (authenticated users only)
+   * Generate AI car recommendations (user+ only)
    */
-  static async getCarRecommendations(
+  static async generateRecommendations(
     userId: string,
     preferences: {
       budget?: number;
+      carType?: string;
+      fuelType?: string;
+      features?: string[];
       usage?: string;
-      priorities?: string[];
-      lifestyle?: string;
     }
   ) {
-    // Check if user can access AI features
-    const canAccess = await SecurityService.canPerformAction(userId, 'canAccessAI');
-    if (!canAccess) {
-      throw new Error('Please sign in to access AI recommendations');
-    }
-
-    try {
-      // This would integrate with your OpenAI service
-      // For now, return a placeholder response
-      return {
-        recommendations: [],
-        reasoning: 'AI recommendations require implementation of OpenAI integration',
-      };
-    } catch (error) {
-      console.error('Error getting AI recommendations:', error);
-      throw error;
-    }
+    return this.executePermissionOperation(
+      userId,
+      'canAccessAI',
+      async () => {
+        // This would integrate with OpenAI API
+        // For now, return mock recommendations
+        return {
+          recommendations: [
+            {
+              car_model: 'Toyota Camry',
+              year: 2023,
+              score: 0.95,
+              reasons: ['Excellent fuel economy', 'Reliable brand', 'Within budget'],
+            },
+            {
+              car_model: 'Honda Accord',
+              year: 2023,
+              score: 0.92,
+              reasons: ['Great features', 'Comfortable interior', 'Good resale value'],
+            },
+          ],
+          generated_at: new Date().toISOString(),
+        };
+      },
+      'generateRecommendations'
+    );
   }
 
   /**
-   * Generate AI review summary (authenticated users only)
+   * AI-powered car comparison
    */
-  static async generateReviewSummary(
+  static async compareVehicles(
     userId: string,
-    reviews: any[]
+    vehicleIds: string[]
   ) {
-    // Check if user can access AI features
-    const canAccess = await SecurityService.canPerformAction(userId, 'canAccessAI');
-    if (!canAccess) {
-      throw new Error('Please sign in to access AI features');
-    }
-
-    try {
-      // This would integrate with your OpenAI service
-      // For now, return a placeholder response
-      return {
-        summary: 'AI-generated summary requires OpenAI integration',
-        sentiment: 'neutral',
-        keyPoints: [],
-      };
-    } catch (error) {
-      console.error('Error generating AI summary:', error);
-      throw error;
-    }
+    return this.executePermissionOperation(
+      userId,
+      'canAccessAI',
+      async () => {
+        // This would integrate with OpenAI API for intelligent comparison
+        // For now, return mock comparison
+        return {
+          comparison: {
+            vehicles: vehicleIds,
+            analysis: 'AI-powered comparison analysis would go here',
+            winner: vehicleIds[0],
+            factors: ['Price', 'Fuel Economy', 'Features', 'Reliability'],
+          },
+          generated_at: new Date().toISOString(),
+        };
+      },
+      'compareVehicles'
+    );
   }
 }
+
+export default {
+  BookmarkService,
+  VehicleListingService,
+  ReviewService,
+  AIService,
+};

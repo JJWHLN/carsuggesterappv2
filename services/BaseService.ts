@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { SecurityService, UserRole } from './securityService';
+import { SecurityService, UserRole, SecurityCheck } from './securityService';
 
 /**
  * Base service class with common error handling and utilities
@@ -41,7 +41,7 @@ export abstract class BaseService {
    * Execute a Supabase query with consistent error handling
    */
   protected static async executeQuery<T>(
-    queryFn: () => Promise<{ data: T | null; error: any }>,
+    queryFn: () => any, // Supabase query builder
     operation: string,
     context?: any
   ): Promise<T | null> {
@@ -50,11 +50,13 @@ export abstract class BaseService {
       
       if (error) {
         this.handleError(error, operation, context);
+        return null;
       }
       
       return data;
     } catch (error) {
       this.handleError(error, operation, context);
+      return null;
     }
   }
 
@@ -62,7 +64,7 @@ export abstract class BaseService {
    * Execute a Supabase query that returns an array
    */
   protected static async executeQueryArray<T>(
-    queryFn: () => Promise<{ data: T[] | null; error: any }>,
+    queryFn: () => any, // Supabase query builder
     operation: string,
     context?: any
   ): Promise<T[]> {
@@ -71,11 +73,13 @@ export abstract class BaseService {
       
       if (error) {
         this.handleError(error, operation, context);
+        return [];
       }
       
       return data || [];
     } catch (error) {
       this.handleError(error, operation, context);
+      return [];
     }
   }
 
@@ -119,7 +123,7 @@ export abstract class BaseService {
    */
   protected static async executePermissionOperation<T>(
     userId: string,
-    permission: keyof SecurityService['getPermissions'] extends (role: any) => infer R ? keyof R : never,
+    permission: keyof SecurityCheck,
     operation: () => Promise<T>,
     operationName: string
   ): Promise<T> {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { performanceMonitor, usePerformanceMonitor } from '@/utils/performanceMonitor';
-import PremiumButton from '@/components/ui/PremiumButton';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Theme } from '@/theme/Theme';
@@ -252,7 +252,7 @@ ${testResults.map(result => `
 
       {/* Action Buttons */}
       <View style={styles.buttonContainer}>
-        <PremiumButton
+        <Button
           title={isRunning ? 'Running Tests...' : 'Run Performance Tests'}
           onPress={runPerformanceTests}
           disabled={isRunning}
@@ -260,7 +260,7 @@ ${testResults.map(result => `
         />
         
         {testResults.length > 0 && (
-          <PremiumButton
+          <Button
             title="Generate Full Report"
             onPress={generateFullReport}
             variant="secondary"

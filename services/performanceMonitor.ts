@@ -279,10 +279,10 @@ class PerformanceMonitor {
   // JavaScript Performance Monitoring
   private monitorJavaScriptPerformance(): void {
     // Monitor global errors
-    if (typeof global !== 'undefined' && global.ErrorUtils) {
-      const originalHandler = global.ErrorUtils.getGlobalHandler();
+    if (typeof global !== 'undefined' && (global as any).ErrorUtils) {
+      const originalHandler = (global as any).ErrorUtils.getGlobalHandler();
       
-      global.ErrorUtils.setGlobalHandler((error, isFatal) => {
+      (global as any).ErrorUtils.setGlobalHandler((error: any, isFatal: boolean) => {
         this.metrics.push({
           name: 'JavaScript Error',
           startTime: Date.now(),

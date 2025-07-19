@@ -51,7 +51,7 @@ import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
 import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
-import PremiumButton from '@/components/ui/PremiumButton';
+import { Button } from '@/components/ui/Button'; // Use standard Button instead
 import { StatCard } from '@/components/ui/StatCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useThemeColors } from '@/hooks/useTheme';
@@ -303,7 +303,7 @@ export default function CompareScreen() {
           title="No Cars to Compare"
           subtitle="Add cars to your comparison to see how they stack up against each other."
           action={
-            <PremiumButton
+            <Button
               title="Browse Cars"
               onPress={() => router.push('/search')}
               variant="primary"
@@ -508,14 +508,14 @@ export default function CompareScreen() {
 
         {/* Bottom Actions */}
         <View style={styles.bottomActions}>
-          <PremiumButton
+          <Button
             title="Save Comparison"
             onPress={() => Alert.alert('Feature Coming Soon', 'Save comparison functionality will be available soon!')}
             variant="secondary"
             style={styles.saveButton}
             icon={<Heart color={colors.primary} size={18} />}
           />
-          <PremiumButton
+          <Button
             title="Share Comparison"
             onPress={() => Alert.alert('Feature Coming Soon', 'Share comparison functionality will be available soon!')}
             variant="primary"
