@@ -22,40 +22,9 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
-import { 
-  Car, 
-  Search, 
-  Filter, 
-  MapPin, 
-  Clock, 
-  DollarSign, 
-  MessageCircle, 
-  Heart, 
-  Share2, 
-  Bookmark,
-  Calendar,
-  Gauge,
-  Fuel,
-  Settings,
-  CheckCircle,
-  AlertTriangle,
-  TrendingUp,
-  TrendingDown,
-  Star,
-  Eye,
-  ThumbsUp,
-  MoreHorizontal,
-  ExternalLink,
-  Phone,
-  Navigation,
-  Info,
-  Camera,
-  Grid3X3,
-  List,
-  SlidersHorizontal,
-  ArrowUpDown,
-} from 'lucide-react-native';
+
 import { useAuth } from '@/contexts/AuthContext';
+import { Car, Search, Filter, MapPin, Clock, DollarSign, MessageCircle, Heart, Calendar, Gauge, Fuel, Settings, CheckCircle, AlertTriangle, TrendingUp, Star, Eye, List, SlidersHorizontal } from '@/utils/ultra-optimized-icons';
 
 interface MarketplaceListing {
   id: string;
@@ -635,7 +604,7 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
         newListings: 23,
       });
     } catch (error) {
-      console.error('Error loading marketplace data:', error);
+      logger.error('Error loading marketplace data:', error);
     }
   }, [filters, debouncedSearchQuery]);
 
@@ -687,7 +656,7 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
           },
         });      onMessageDealer?.(listing.dealer_info.id, listing.id);
     } catch (error) {
-      console.error('Error starting dealer conversation:', error);
+      logger.error('Error starting dealer conversation:', error);
       Alert.alert('Error', 'Failed to contact dealer');
     }
   }, [onMessageDealer]);
@@ -704,7 +673,7 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
       }
       setSavedListings(newSavedListings);
     } catch (error) {
-      console.error('Error saving listing:', error);
+      logger.error('Error saving listing:', error);
     }
   }, [savedListings]);
 
@@ -715,12 +684,12 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
       onMessagePress={() => handleMessageDealer(item)}
       onSharePress={() => {
         // TODO: Implement sharing
-        console.log('Share listing:', item.id);
+        logger.debug('Share listing:', item.id);
       }}
       onSavePress={() => handleSaveListing(item.id)}
       onPriceHistoryPress={() => {
         // TODO: Show price history
-        console.log('Show price history:', item.id);
+        logger.debug('Show price history:', item.id);
       }}
       isSaved={savedListings.has(item.id)}
     />

@@ -70,7 +70,7 @@ export default function Recommendations() {
 
   const handleFavoriteToggle = (carId: string) => {
     // TODO: Implement favorite functionality
-    console.log('Toggle favorite for car:', carId);
+    logger.debug('Toggle favorite for car:', carId);
   };
 
   // Show error state if there's an error

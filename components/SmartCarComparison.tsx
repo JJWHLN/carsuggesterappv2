@@ -287,7 +287,7 @@ const SmartCarComparison: React.FC<SmartCarComparisonProps> = ({
         categories: selectedCategories,
       });
     } catch (error) {
-      console.error('Failed to generate comparison:', error);
+      logger.error('Failed to generate comparison:', error);
       Alert.alert('Error', 'Failed to generate comparison. Please try again.');
     } finally {
       setLoading(false);

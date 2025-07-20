@@ -277,7 +277,7 @@ class EnhancedSearchService {
 
       return result;
     } catch (error) {
-      console.error('Error executing search:', error);
+      logger.error('Error executing search:', error);
       throw error;
     }
   }
@@ -318,7 +318,7 @@ class EnhancedSearchService {
         }
       };
     } catch (error) {
-      console.error('Error processing intelligent query:', error);
+      logger.error('Error processing intelligent query:', error);
       throw error;
     }
   }
@@ -358,7 +358,7 @@ class EnhancedSearchService {
 
       return suggestions.sort((a, b) => b.confidenceScore - a.confidenceScore);
     } catch (error) {
-      console.error('Error generating smart filter suggestions:', error);
+      logger.error('Error generating smart filter suggestions:', error);
       return [];
     }
   }
@@ -394,7 +394,7 @@ class EnhancedSearchService {
         .filter(car => car.semanticScore > 0.3)
         .sort((a, b) => b.semanticScore - a.semanticScore);
     } catch (error) {
-      console.error('Error executing semantic search:', error);
+      logger.error('Error executing semantic search:', error);
       return [];
     }
   }
@@ -554,7 +554,7 @@ class EnhancedSearchService {
           enhancedFilters.fuelTypes = preferences.fuelTypes;
         }
       } catch (error) {
-        console.error('Error enhancing filters with ML:', error);
+        logger.error('Error enhancing filters with ML:', error);
       }
     }
 
@@ -611,7 +611,7 @@ class EnhancedSearchService {
     const { data: cars, error } = await queryBuilder;
 
     if (error) {
-      console.error('SQL search error:', error);
+      logger.error('SQL search error:', error);
       return [];
     }
 

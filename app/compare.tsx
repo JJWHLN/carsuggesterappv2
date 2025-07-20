@@ -19,32 +19,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  ArrowLeft,
-  Plus,
-  X,
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  CheckCircle,
-  AlertCircle,
-  Star,
-  Calendar,
-  Gauge,
-  Fuel,
-  Settings,
-  DollarSign,
-  MapPin,
-  Shield,
-  Award,
-  Zap,
-  Users,
-  Clock,
-  Heart,
-  Share2,
-  ExternalLink,
-} from 'lucide-react-native';
 
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
@@ -61,6 +35,7 @@ import { Theme } from '@/theme/Theme';
 import { Car } from '@/types/database';
 import { formatPrice, formatMileage, formatDate, formatCondition, formatFuelType } from '@/utils/dataTransformers';
 import { fetchCarById, fetchCarComparison } from '@/services/api';
+import { ArrowLeft, Plus, X, TrendingUp, Minus, CheckCircle, Star, Calendar, Gauge, Fuel, Settings, DollarSign, MapPin, Award, Zap, Users, Clock, Heart } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.85;

@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Car, Users, Award, Shield, TrendingUp, Star } from 'lucide-react-native';
+
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { Car, Users, Award, TrendingUp, Star } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 

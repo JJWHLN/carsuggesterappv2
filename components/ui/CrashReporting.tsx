@@ -1,9 +1,10 @@
 import React, { Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { AlertTriangle, RefreshCw, Home } from '@/utils/icons';
+
 import { trackError } from '@/services/analyticsService';
 import { useThemeColors } from '@/hooks/useTheme';
 import { router } from 'expo-router';
+import { AlertTriangle, Home } from '@/utils/ultra-optimized-icons';
 
 interface Props {
   children: ReactNode;
@@ -38,8 +39,8 @@ export class CrashReportingBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    console.error('🚨 App Crash:', error);
-    console.error('📍 Error Info:', errorInfo);
+    logger.error('🚨 App Crash:', error);
+    logger.error('📍 Error Info:', errorInfo);
 
     // Track the crash
     trackError(error, {
@@ -86,7 +87,7 @@ export class CrashReportingBoundary extends Component<Props, State> {
     };
 
     // In production, this would send the report to your crash reporting service
-    console.log('🐛 Bug Report:', reportData);
+    logger.debug('🐛 Bug Report:', reportData);
     
     Alert.alert(
       'Report Sent',
@@ -248,7 +249,7 @@ function CrashScreen({
  */
 export function useErrorReporting() {
   const reportError = (error: Error, context?: Record<string, any>) => {
-    console.error('🚨 Reported Error:', error);
+    logger.error('🚨 Reported Error:', error);
     
     trackError(error, {
       ...context,
@@ -258,7 +259,7 @@ export function useErrorReporting() {
   };
 
   const reportWarning = (message: string, context?: Record<string, any>) => {
-    console.warn('⚠️ Warning:', message);
+    logger.warn('⚠️ Warning:', message);
     
     trackError(new Error(message), {
       ...context,

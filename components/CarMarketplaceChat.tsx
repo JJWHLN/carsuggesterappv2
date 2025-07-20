@@ -25,25 +25,9 @@ import {
   ChatTypingIndicator,
 } from '@/services/realTimeChatService';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
-import { 
-  Send, 
-  Image as ImageIcon, 
-  Car, 
-  DollarSign, 
-  Phone, 
-  Video, 
-  MoreVertical,
-  ArrowLeft,
-  CheckCircle,
-  Check,
-  Clock,
-  AlertCircle,
-  Camera,
-  Paperclip,
-  Mic,
-  MapPin,
-} from 'lucide-react-native';
+
 import { useAuth } from '@/contexts/AuthContext';
+import { Car, DollarSign, MoreVertical, ArrowLeft, CheckCircle, Check, Clock, MapPin } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -320,7 +304,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
       const conversationData = await realTimeChatService.getConversation(conversationId);
       setConversation(conversationData);
     } catch (error) {
-      console.error('Error loading conversation:', error);
+      logger.error('Error loading conversation:', error);
       Alert.alert('Error', 'Failed to load conversation');
     }
   }, [conversationId]);
@@ -331,7 +315,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
       const messagesData = await realTimeChatService.getMessages(conversationId, { limit: 50 });
       setMessages(messagesData);
     } catch (error) {
-      console.error('Error loading messages:', error);
+      logger.error('Error loading messages:', error);
       Alert.alert('Error', 'Failed to load messages');
     } finally {
       setLoading(false);
@@ -370,7 +354,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
         },
       });
     } catch (error) {
-      console.error('Error subscribing to real-time updates:', error);
+      logger.error('Error subscribing to real-time updates:', error);
     }
   }, [conversationId]);
 
@@ -400,7 +384,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
       // Stop typing indicator
       await realTimeChatService.stopTyping(conversationId);
     } catch (error) {
-      console.error('Error sending message:', error);
+      logger.error('Error sending message:', error);
       Alert.alert('Error', 'Failed to send message');
       setInputText(inputText); // Restore message on error
     } finally {
@@ -435,7 +419,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
         'Check out this car!'
       );
     } catch (error) {
-      console.error('Error sharing car:', error);
+      logger.error('Error sharing car:', error);
       Alert.alert('Error', 'Failed to share car');
     }
   }, [conversationId]);
@@ -449,7 +433,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
         'Here\'s my price quote for this vehicle:'
       );
     } catch (error) {
-      console.error('Error sending price quote:', error);
+      logger.error('Error sending price quote:', error);
       Alert.alert('Error', 'Failed to send price quote');
     }
   }, [conversationId, carId]);
@@ -550,7 +534,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => console.log('View car details')}
+            onPress={() => logger.debug('View car details')}
             style={[styles.viewCarButton, { backgroundColor: colors.primary }]}
           >
             <Text style={[styles.viewCarButtonText, { color: colors.white }]}>
@@ -585,8 +569,8 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
                 message={message}
                 isOwn={isOwn}
                 showAvatar={showAvatar}
-                onCarPress={(carId) => console.log('View car:', carId)}
-                onImagePress={(imageUrl) => console.log('View image:', imageUrl)}
+                onCarPress={(carId) => logger.debug('View car:', carId)}
+                onImagePress={(imageUrl) => logger.debug('View image:', imageUrl)}
               />
             );
           })}

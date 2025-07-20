@@ -24,25 +24,25 @@ export function usePullToRefresh(onRefresh: () => void, refreshing: boolean) {
 // Common navigation patterns
 export function useNavigationHandlers() {
   const handleCarPress = useCallback((carId: string) => {
-    console.log('Navigate to car details:', carId);
+    logger.debug('Navigate to car details:', carId);
     // TODO: Navigate to car detail screen
     // router.push(`/car/${carId}`);
   }, []);
 
   const handleModelPress = useCallback((modelId: string) => {
-    console.log('Navigate to model details:', modelId);
+    logger.debug('Navigate to model details:', modelId);
     // TODO: Navigate to model detail screen  
     // router.push(`/model/${modelId}`);
   }, []);
 
   const handleBrandPress = useCallback((brandId: string) => {
-    console.log('Navigate to brand details:', brandId);
+    logger.debug('Navigate to brand details:', brandId);
     // TODO: Navigate to brand detail screen
     // router.push(`/brand/${brandId}`);
   }, []);
 
   const handleReviewPress = useCallback((reviewId: string) => {
-    console.log('Navigate to review details:', reviewId);
+    logger.debug('Navigate to review details:', reviewId);
     // TODO: Navigate to review detail screen
     // router.push(`/review/${reviewId}`);
   }, []);
@@ -117,7 +117,7 @@ export function usePagination<T>(
       setPage(currentPage + 1);
       setHasMore(newData.length === limit);
     } catch (error) {
-      console.error('Error loading more data:', error);
+      logger.error('Error loading more data:', error);
     } finally {
       setLoading(false);
     }

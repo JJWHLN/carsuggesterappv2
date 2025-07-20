@@ -9,23 +9,10 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import {
-  Zap,
-  Crown,
-  Shield,
-  Rocket,
-  Car,
-  Users,
-  Building,
-  Truck,
-  Wind,
-  Leaf,
-  TrendingUp,
-  MapPin,
-} from 'lucide-react-native';
 
 import { useThemeColors } from '@/hooks/useTheme';
 import { Theme } from '@/theme/Theme';
+import { Zap, Crown, Car, Users, Truck, Wind, Leaf, TrendingUp, MapPin } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 const CATEGORY_WIDTH = (width - Theme.spacing.xl * 2 - Theme.spacing.md) / 2;

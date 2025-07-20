@@ -16,31 +16,9 @@ import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { socialService, SocialActivity, CarReview, CarComparison, UserProfile } from '@/services/socialService';
 import { realTimeChatService } from '@/services/realTimeChatService';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
-import { 
-  Heart, 
-  MessageCircle, 
-  Share2, 
-  Star, 
-  TrendingUp, 
-  Users, 
-  Car, 
-  ThumbsUp,
-  UserPlus,
-  Calendar,
-  MapPin,
-  DollarSign,
-  Zap,
-  Award,
-  Eye,
-  MoreHorizontal,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Filter,
-  Search,
-  User,
-} from 'lucide-react-native';
+
 import { useAuth } from '@/contexts/AuthContext';
+import { Heart, MessageCircle, Star, TrendingUp, Users, Car, Calendar, MapPin, DollarSign, Zap, Award, Eye, Clock, CheckCircle, Filter, Search, User } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -447,7 +425,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
       setHasMore(newActivities.length === 20);
       setPage(pageNum);
     } catch (error) {
-      console.error('Error loading activities:', error);
+      logger.error('Error loading activities:', error);
       Alert.alert('Error', 'Failed to load social activities');
     } finally {
       setLoading(false);
@@ -472,38 +450,38 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
   const handleLike = useCallback(async (activityId: string) => {
     try {
       // TODO: Implement like functionality
-      console.log('Like activity:', activityId);
+      logger.debug('Like activity:', activityId);
     } catch (error) {
-      console.error('Error liking activity:', error);
+      logger.error('Error liking activity:', error);
     }
   }, []);
 
   const handleComment = useCallback(async (activityId: string) => {
     try {
       // TODO: Navigate to comments screen
-      console.log('Comment on activity:', activityId);
+      logger.debug('Comment on activity:', activityId);
     } catch (error) {
-      console.error('Error commenting on activity:', error);
+      logger.error('Error commenting on activity:', error);
     }
   }, []);
 
   const handleShare = useCallback(async (activityId: string) => {
     try {
       // TODO: Implement share functionality
-      console.log('Share activity:', activityId);
+      logger.debug('Share activity:', activityId);
     } catch (error) {
-      console.error('Error sharing activity:', error);
+      logger.error('Error sharing activity:', error);
     }
   }, []);
 
   const handleUserPress = useCallback((userId: string) => {
     // TODO: Navigate to user profile
-    console.log('View user profile:', userId);
+    logger.debug('View user profile:', userId);
   }, []);
 
   const handleCarPress = useCallback((carId: string) => {
     // TODO: Navigate to car details
-    console.log('View car details:', carId);
+    logger.debug('View car details:', carId);
   }, []);
 
   const filteredActivities = useMemo(() => {

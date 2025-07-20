@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { webCompatibleStorage } from './webCompatibleStorage';
 import NetInfo from '@react-native-community/netinfo';
 import { Car as CarType } from '@/types/database';
 
@@ -108,22 +108,22 @@ class OfflineService {
 
   private async loadSearchCache(): Promise<void> {
     try {
-      const cacheData = await AsyncStorage.getItem('@search_cache');
+      const cacheData = await webCompatibleStorage.getItem('@search_cache');
       if (cacheData) {
         const parsedCache = JSON.parse(cacheData);
         this.searchCache = new Map(Object.entries(parsedCache));
       }
     } catch (error) {
-      console.error('Failed to load search cache:', error);
+      logger.error('Failed to load search cache:', error);
     }
   }
 
   private async saveSearchCache(): Promise<void> {
     try {
       const cacheObj = Object.fromEntries(this.searchCache);
-      await AsyncStorage.setItem('@search_cache', JSON.stringify(cacheObj));
+      await webCompatibleStorage.setItem('@search_cache', JSON.stringify(cacheObj));
     } catch (error) {
-      console.error('Failed to save search cache:', error);
+      logger.error('Failed to save search cache:', error);
     }
   }
 
@@ -138,9 +138,9 @@ class OfflineService {
       };
 
       const updatedFavorites = [newFavorite, ...favorites.filter(f => f.carId !== car.id)];
-      await AsyncStorage.setItem('@favorites', JSON.stringify(updatedFavorites));
+      await webCompatibleStorage.setItem('@favorites', JSON.stringify(updatedFavorites));
     } catch (error) {
-      console.error('Failed to add favorite:', error);
+      logger.error('Failed to add favorite:', error);
     }
   }
 
@@ -148,18 +148,18 @@ class OfflineService {
     try {
       const favorites = await this.getFavorites();
       const updatedFavorites = favorites.filter(f => f.carId !== carId);
-      await AsyncStorage.setItem('@favorites', JSON.stringify(updatedFavorites));
+      await webCompatibleStorage.setItem('@favorites', JSON.stringify(updatedFavorites));
     } catch (error) {
-      console.error('Failed to remove favorite:', error);
+      logger.error('Failed to remove favorite:', error);
     }
   }
 
   async getFavorites(): Promise<OfflineFavorite[]> {
     try {
-      const favoritesData = await AsyncStorage.getItem('@favorites');
+      const favoritesData = await webCompatibleStorage.getItem('@favorites');
       return favoritesData ? JSON.parse(favoritesData) : [];
     } catch (error) {
-      console.error('Failed to get favorites:', error);
+      logger.error('Failed to get favorites:', error);
       return [];
     }
   }
@@ -172,20 +172,20 @@ class OfflineService {
   // User Preferences Management
   async saveUserPreferences(preferences: OfflineUserPreferences): Promise<void> {
     try {
-      await AsyncStorage.setItem('@user_preferences', JSON.stringify(preferences));
+      await webCompatibleStorage.setItem('@user_preferences', JSON.stringify(preferences));
     } catch (error) {
-      console.error('Failed to save user preferences:', error);
+      logger.error('Failed to save user preferences:', error);
     }
   }
 
   async getUserPreferences(): Promise<OfflineUserPreferences> {
     try {
-      const preferencesData = await AsyncStorage.getItem('@user_preferences');
+      const preferencesData = await webCompatibleStorage.getItem('@user_preferences');
       if (preferencesData) {
         return JSON.parse(preferencesData);
       }
     } catch (error) {
-      console.error('Failed to get user preferences:', error);
+      logger.error('Failed to get user preferences:', error);
     }
 
     // Return default preferences
@@ -214,7 +214,7 @@ class OfflineService {
       preferences.searchHistory = updatedHistory;
       await this.saveUserPreferences(preferences);
     } catch (error) {
-      console.error('Failed to update search history:', error);
+      logger.error('Failed to update search history:', error);
     }
   }
 
@@ -233,9 +233,9 @@ class OfflineService {
       const preferences = await this.getUserPreferences();
       // TODO: Send preferences to server
 
-      console.log('Successfully synced with server');
+      logger.debug('Successfully synced with server');
     } catch (error) {
-      console.error('Failed to sync with server:', error);
+      logger.error('Failed to sync with server:', error);
     }
   }
 
@@ -267,15 +267,15 @@ class OfflineService {
   // Clear all offline data
   async clearAllData(): Promise<void> {
     try {
-      await AsyncStorage.multiRemove([
+      await webCompatibleStorage.multiRemove([
         '@search_cache',
         '@favorites',
         '@user_preferences'
       ]);
       this.searchCache.clear();
-      console.log('All offline data cleared');
+      logger.debug('All offline data cleared');
     } catch (error) {
-      console.error('Failed to clear offline data:', error);
+      logger.error('Failed to clear offline data:', error);
     }
   }
 }

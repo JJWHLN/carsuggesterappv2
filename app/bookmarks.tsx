@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft, Heart, Trash2 } from 'lucide-react-native';
+
 import { RoleGate } from '@/components/ui/RoleProtection';
 import { CarCard } from '@/components/CarCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -19,6 +19,7 @@ import { BookmarkService } from '@/services/featureServices';
 import { useAuth } from '@/contexts/AuthContext';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography } from '@/constants/Colors';
+import { ArrowLeft, Heart } from '@/utils/ultra-optimized-icons';
 
 export default function BookmarksScreen() {
   const { colors } = useThemeColors();
@@ -36,7 +37,7 @@ export default function BookmarksScreen() {
       const data = await BookmarkService.getUserBookmarks(user.id);
       setBookmarks(data);
     } catch (err: any) {
-      console.error('Error loading bookmarks:', err);
+      logger.error('Error loading bookmarks:', err);
       setError(err.message || 'Failed to load bookmarks');
     } finally {
       setLoading(false);
@@ -60,7 +61,7 @@ export default function BookmarksScreen() {
       await BookmarkService.removeBookmark(user.id, target);
       setBookmarks(prev => prev.filter(b => b.id !== bookmarkId));
     } catch (err: any) {
-      console.error('Error removing bookmark:', err);
+      logger.error('Error removing bookmark:', err);
     }
   };
 

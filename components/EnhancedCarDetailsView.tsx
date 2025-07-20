@@ -227,7 +227,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
 
       return insights;
     } catch (error) {
-      console.error('Error generating car insights:', error);
+      logger.error('Error generating car insights:', error);
       return [];
     }
   };
@@ -263,7 +263,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
           matchReasons: c.matchReasons
         }));
     } catch (error) {
-      console.error('Error finding similar cars:', error);
+      logger.error('Error finding similar cars:', error);
       return [];
     }
   };
@@ -315,7 +315,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
   const trackViewingEvent = async () => {
     try {
       // Log interaction for analytics (since recordInteraction doesn't exist)
-      console.log('Tracking viewing event:', {
+      logger.debug('Tracking viewing event:', {
         carId: car.id,
         userId: userId || 'anonymous',
         timestamp: Date.now(),
@@ -327,14 +327,14 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         }
       });
     } catch (error) {
-      console.error('Error tracking viewing event:', error);
+      logger.error('Error tracking viewing event:', error);
     }
   };
 
   const trackViewingBehavior = async (action: string, value?: number) => {
     try {
       // Log interaction for analytics
-      console.log('Tracking viewing behavior:', {
+      logger.debug('Tracking viewing behavior:', {
         type: 'car_detail_interaction',
         carId: car.id,
         action,
@@ -342,7 +342,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         timestamp: Date.now()
       });
     } catch (error) {
-      console.error('Error tracking viewing behavior:', error);
+      logger.error('Error tracking viewing behavior:', error);
     }
   };
 
@@ -359,7 +359,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
       await trackViewingBehavior('save_toggle');
       onSave();
     } catch (error) {
-      console.error('Error saving car:', error);
+      logger.error('Error saving car:', error);
     }
   }, [car.id, savedCars, onSave]);
 
@@ -368,7 +368,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
       await trackViewingBehavior('share');
       onShare();
     } catch (error) {
-      console.error('Error sharing car:', error);
+      logger.error('Error sharing car:', error);
     }
   }, [onShare]);
 
@@ -377,7 +377,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
       await trackViewingBehavior('contact_dealer');
       onContactDealer();
     } catch (error) {
-      console.error('Error contacting dealer:', error);
+      logger.error('Error contacting dealer:', error);
     }
   }, [onContactDealer]);
 
@@ -386,7 +386,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
       await trackViewingBehavior('schedule_test_drive');
       onScheduleTestDrive();
     } catch (error) {
-      console.error('Error scheduling test drive:', error);
+      logger.error('Error scheduling test drive:', error);
     }
   }, [onScheduleTestDrive]);
 

@@ -1,10 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, useColorScheme } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
 import { UnifiedDetailScreen } from '@/components/ui/UnifiedDetailScreen';
 import DesignSystem from '@/constants/DesignSystem';
 import { notifications } from '@/services/notifications';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/Button';
+import { CarImage } from '@/components/ui/CarImage';
 
 // Mock API call
 const fetchCarDetails = async (id: string) => {
@@ -41,10 +42,9 @@ export default function CarDetailScreen() {
 
   const renderCarHeader = (car: any) => (
     <View style={styles.headerContainer}>
-      <Image 
-        source={{ uri: car.images[0] }} 
+      <CarImage 
+        uri={car.images?.[0]} 
         style={styles.carImage}
-        defaultSource={require('@/assets/images/car-placeholder.png')}
       />
       <View style={styles.headerInfo}>
         <Text style={[styles.carName, { color: theme.colors.onSurface }]}>
@@ -243,7 +243,7 @@ export default function CarDetailScreen() {
       errorTitle="Car Not Found"
       errorMessage="The car you're looking for could not be found."
       onDataLoaded={(car) => {
-        console.log('Car loaded:', car.name);
+        logger.debug('Car loaded:', car.name);
       }}
     />
   );

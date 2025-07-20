@@ -71,5 +71,9 @@ export function useThemeColors() {
 export function ThemeProvider({ children }: { children: React.ReactNode }): JSX.Element {
   const themeValue = useThemeColors();
   
-  return React.createElement(ThemeContext.Provider, { value: themeValue }, children);
+  return React.createElement(
+    ThemeContext.Provider,
+    { value: themeValue },
+    children
+  );
 }

@@ -35,12 +35,12 @@ export class RealtimeService {
           filter: 'status=eq.active'
         },
         (payload) => {
-          console.log('🔄 Vehicle listing change:', payload);
+          logger.debug('🔄 Vehicle listing change:', payload);
           callback(payload);
         }
       )
       .subscribe((status) => {
-        console.log('📡 Vehicle listings subscription status:', status);
+        logger.debug('📡 Vehicle listings subscription status:', status);
       });
 
     const subscription: RealtimeSubscription = {
@@ -73,12 +73,12 @@ export class RealtimeService {
           table: 'reviews'
         },
         (payload) => {
-          console.log('🔄 Review change:', payload);
+          logger.debug('🔄 Review change:', payload);
           callback(payload as RealtimePostgresChangesPayload<DatabaseReview>);
         }
       )
       .subscribe((status) => {
-        console.log('📡 Reviews subscription status:', status);
+        logger.debug('📡 Reviews subscription status:', status);
       });
 
     const subscription: RealtimeSubscription = {
@@ -113,12 +113,12 @@ export class RealtimeService {
           filter: `user_id=eq.${userId}`
         },
         (payload) => {
-          console.log('🔄 Bookmark change:', payload);
+          logger.debug('🔄 Bookmark change:', payload);
           callback(payload);
         }
       )
       .subscribe((status) => {
-        console.log('📡 Bookmarks subscription status:', status);
+        logger.debug('📡 Bookmarks subscription status:', status);
       });
 
     const subscription: RealtimeSubscription = {
@@ -153,12 +153,12 @@ export class RealtimeService {
           filter: `dealer_id=eq.${dealerId}`
         },
         (payload) => {
-          console.log('🔄 Dealer listing change:', payload);
+          logger.debug('🔄 Dealer listing change:', payload);
           callback(payload as RealtimePostgresChangesPayload<DatabaseVehicleListing>);
         }
       )
       .subscribe((status) => {
-        console.log('📡 Dealer listings subscription status:', status);
+        logger.debug('📡 Dealer listings subscription status:', status);
       });
 
     const subscription: RealtimeSubscription = {
@@ -211,7 +211,7 @@ export class RealtimeService {
         (payload) => callback(payload)
       )
       .subscribe((status) => {
-        console.log('📡 Admin activity subscription status:', status);
+        logger.debug('📡 Admin activity subscription status:', status);
       });
 
     const subscription: RealtimeSubscription = {
@@ -231,7 +231,7 @@ export class RealtimeService {
     if (subscription) {
       subscription.channel.unsubscribe();
       this.subscriptions.delete(channelName);
-      console.log(`🔌 Unsubscribed from ${channelName}`);
+      logger.debug(`🔌 Unsubscribed from ${channelName}`);
     }
   }
 
@@ -241,7 +241,7 @@ export class RealtimeService {
   static unsubscribeAll(): void {
     this.subscriptions.forEach((subscription, channelName) => {
       subscription.channel.unsubscribe();
-      console.log(`🔌 Unsubscribed from ${channelName}`);
+      logger.debug(`🔌 Unsubscribed from ${channelName}`);
     });
     this.subscriptions.clear();
   }

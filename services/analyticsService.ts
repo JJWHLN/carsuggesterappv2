@@ -107,7 +107,7 @@ class AnalyticsService extends BaseService {
     this.addToQueue(event);
     
     if (this.config.development) {
-      console.log('🎯 Analytics Event:', event);
+      logger.debug('🎯 Analytics Event:', event);
     }
   }
 
@@ -315,7 +315,7 @@ class AnalyticsService extends BaseService {
     try {
       await this.sendEvents(events);
     } catch (error) {
-      console.error('Failed to send analytics events:', error);
+      logger.error('Failed to send analytics events:', error);
       // Re-queue events for retry (with limit)
       if (this.eventQueue.length < this.config.batchSize * 2) {
         this.eventQueue.unshift(...events);
@@ -329,7 +329,7 @@ class AnalyticsService extends BaseService {
   private async sendEvents(events: AnalyticsEvent[]): Promise<void> {
     // In a real implementation, this would send to Firebase Analytics, Mixpanel, etc.
     if (this.config.development) {
-      console.log('📊 Sending analytics events:', events);
+      logger.debug('📊 Sending analytics events:', events);
     }
     
     // Mock API call

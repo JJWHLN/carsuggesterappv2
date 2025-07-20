@@ -163,7 +163,7 @@ const VirtualCarShowroom: React.FC<VirtualCarShowroomProps> = ({
       await initializeVirtual3DScene();
       
     } catch (error) {
-      console.error('Failed to initialize showroom:', error);
+      logger.error('Failed to initialize showroom:', error);
       Alert.alert('Error', 'Failed to load virtual showroom');
     } finally {
       setIsLoading(false);
@@ -183,7 +183,7 @@ const VirtualCarShowroom: React.FC<VirtualCarShowroomProps> = ({
   const initializeVirtual3DScene = async () => {
     // Placeholder for 3D scene initialization
     // In a real implementation, this would load 3D models, textures, etc.
-    console.log('Initializing virtual 3D scene for', car.make, car.model);
+    logger.debug('Initializing virtual 3D scene for', car.make, car.model);
   };
 
   const handleViewModeChange = (mode: '3d' | 'ar' | 'vr') => {

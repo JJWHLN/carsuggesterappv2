@@ -14,25 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, useNavigation } from 'expo-router';
-import { 
-  ArrowLeft, 
-  Heart, 
-  Share, 
-  MapPin, 
-  Calendar, 
-  Fuel, 
-  Settings,
-  Star,
-  Phone,
-  Mail,
-  Navigation,
-  Shield,
-  Users,
-  Gauge,
-  Camera,
-  MessageCircle,
-  ExternalLink,
-} from 'lucide-react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -51,6 +33,7 @@ import {
 import { fetchVehicleListingById, SupabaseError } from '@/services/supabaseService';
 import { useApi } from '@/hooks/useApi';
 import { Car as CarType, DatabaseVehicleListing } from '@/types/database';
+import { ArrowLeft, Heart, MapPin, Calendar, Fuel, Settings, Star, Mail, Users, Gauge, MessageCircle } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -93,12 +76,12 @@ export default function CarDetailScreen() {
   const handleSave = useCallback(() => {
     setIsSaved(!isSaved);
     // Add actual save logic here
-    console.log('Save toggled for car:', id, !isSaved);
+    logger.debug('Save toggled for car:', id, !isSaved);
   }, [isSaved, id]);
 
   const handleShare = useCallback(() => {
     // Implement share functionality using React Native's Share API
-    console.log('Share car:', id);
+    logger.debug('Share car:', id);
     // Example: Share.share({ message: `Check out this car: ${car?.year} ${car?.make} ${car?.model}` });
   }, [id]);
 
@@ -134,10 +117,9 @@ export default function CarDetailScreen() {
     });
   }, [navigation, car, isSaved, handleSave, handleShare, colors]);
 
-
   const handleContact = () => {
     // Implement contact dealer functionality
-    console.log('Contact dealer for car:', id);
+    logger.debug('Contact dealer for car:', id);
   };
 
   if (loading) {
@@ -355,7 +337,7 @@ export default function CarDetailScreen() {
             style={styles.secondaryButton}
             onPress={() => {
               // Handle schedule visit
-              console.log('Schedule visit for car:', id);
+              logger.debug('Schedule visit for car:', id);
             }}
           >
             <Calendar color={colors.primary} size={20} />

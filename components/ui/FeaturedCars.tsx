@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import { ArrowRight, MapPin, Fuel, Clock, Star, Heart } from 'lucide-react-native';
+
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Button } from '@/components/ui/Button';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { ArrowRight, MapPin, Fuel, Clock, Star, Heart } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 

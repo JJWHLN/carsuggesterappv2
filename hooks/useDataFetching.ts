@@ -61,7 +61,7 @@ export function useDataFetching<T>(
         setHasMore(false);
       }
     } catch (err) {
-      console.error('Error loading data:', err);
+      logger.error('Error loading data:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
       setError(errorMessage);
       
@@ -150,7 +150,7 @@ export function useSimpleDataFetching<T>(
       const result = await fetchFunction();
       setData(result);
     } catch (err) {
-      console.error('Error loading data:', err);
+      logger.error('Error loading data:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
       setError(errorMessage);
     } finally {

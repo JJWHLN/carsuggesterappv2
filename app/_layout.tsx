@@ -8,9 +8,10 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { CrashReportingBoundary } from '@/components/ui/CrashReporting';
 import { Analytics } from '@/services/analyticsService';
 import { TouchableOpacity, View, ActivityIndicator } from 'react-native';
-import { ArrowLeft } from '@/utils/icons';
+
 import { Spacing, Typography } from '@/constants/Colors'
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import { ArrowLeft } from '@/utils/ultra-optimized-icons';
 
 // Keep the splash screen visible until we're ready to render
 SplashScreen.preventAutoHideAsync();

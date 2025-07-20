@@ -111,7 +111,7 @@ class SmartNotificationService {
 
   private async showSystemNotification(notification: SmartNotification): Promise<void> {
     // TODO: Implement system notification using expo-notifications or react-native-push-notification
-    console.log('System Notification:', notification.title, notification.message);
+    logger.debug('System Notification:', notification.title, notification.message);
   }
 
   // Price Alerts

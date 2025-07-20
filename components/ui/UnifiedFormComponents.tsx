@@ -12,8 +12,9 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import { Eye, EyeOff, Search, X } from '@/utils/icons';
+
 import { useDesignTokens } from '@/hooks/useDesignTokens';
+import { Eye, EyeOff, Search, X } from '@/utils/ultra-optimized-icons';
 
 // Base Form Input Component
 interface BaseFormInputProps extends TextInputProps {

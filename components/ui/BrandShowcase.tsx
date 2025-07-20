@@ -9,11 +9,12 @@ import Animated, {
   Extrapolate,
   runOnJS
 } from 'react-native-reanimated';
-import { ArrowRight, Building2, TrendingUp, Star } from '@/utils/icons';
+
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { BrandSkeletonLoader } from '@/components/ui/SkeletonLoader';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { ArrowRight, Building2, TrendingUp, Star } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 const BRAND_CARD_WIDTH = 140;

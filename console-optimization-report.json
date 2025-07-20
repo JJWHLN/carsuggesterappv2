@@ -1,0 +1,443 @@
+{
+  "timestamp": "2025-07-20T17:38:04.962Z",
+  "filesProcessed": 87,
+  "totalStatements": 444,
+  "optimizedStatements": 443,
+  "files": [
+    {
+      "path": "app\\(tabs)\\ai.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\(tabs)\\index.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\(tabs)\\marketplace.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\(tabs)\\marketplace_new.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\(tabs)\\profile.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\(tabs)\\reviews.tsx",
+      "consoleCount": 4,
+      "optimized": 4
+    },
+    {
+      "path": "app\\(tabs)\\search.tsx",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "app\\add-car.tsx",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "app\\admin.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\auth\\enhanced-sign-in.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\auth\\enhanced-sign-up.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\bookmarks.tsx",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "app\\car\\[id]-unified.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\car\\[id].tsx",
+      "consoleCount": 4,
+      "optimized": 4
+    },
+    {
+      "path": "app\\car\\[id]_new.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\dealers.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\dealership-reviews.tsx",
+      "consoleCount": 3,
+      "optimized": 3
+    },
+    {
+      "path": "app\\model\\[id].tsx",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "app\\preferences\\onboarding.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\recommendations.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "app\\saved-cars.tsx",
+      "consoleCount": 4,
+      "optimized": 4
+    },
+    {
+      "path": "app\\search.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\CarCard.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\CarMarketplaceChat.tsx",
+      "consoleCount": 9,
+      "optimized": 9
+    },
+    {
+      "path": "components\\EnhancedCarDetailsView.tsx",
+      "consoleCount": 10,
+      "optimized": 10
+    },
+    {
+      "path": "components\\EnhancedMarketplaceScreen.tsx",
+      "consoleCount": 5,
+      "optimized": 5
+    },
+    {
+      "path": "components\\EnhancedProfileScreen.tsx",
+      "consoleCount": 8,
+      "optimized": 8
+    },
+    {
+      "path": "components\\MarketIntelligenceDashboard.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\ModernCarCard.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\ProfessionalBranding.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\RealTimeAnalyticsDashboard.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\SmartCarComparison.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\SmartRecommendations.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\SocialFeed.tsx",
+      "consoleCount": 9,
+      "optimized": 9
+    },
+    {
+      "path": "components\\TrustAndAuthority.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\ui\\CrashReporting.tsx",
+      "consoleCount": 5,
+      "optimized": 5
+    },
+    {
+      "path": "components\\ui\\ErrorBoundary.tsx",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "components\\ui\\PerformanceTestScreen.tsx",
+      "consoleCount": 4,
+      "optimized": 4
+    },
+    {
+      "path": "components\\VirtualCarShowroom.tsx",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "constants\\PlatformOptimizations.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "contexts\\AuthContext.tsx",
+      "consoleCount": 3,
+      "optimized": 3
+    },
+    {
+      "path": "hooks\\useAccessibility.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "hooks\\useAdvancedAnalytics.ts",
+      "consoleCount": 4,
+      "optimized": 4
+    },
+    {
+      "path": "hooks\\useCommonUI.ts",
+      "consoleCount": 5,
+      "optimized": 5
+    },
+    {
+      "path": "hooks\\useDataFetching.ts",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "hooks\\useInfiniteScroll.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "hooks\\useMemoryOptimization.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "hooks\\useUnifiedDataFetching.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "hooks\\useUnifiedNavigation.ts",
+      "consoleCount": 7,
+      "optimized": 7
+    },
+    {
+      "path": "lib\\openai-implementation.ts",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "lib\\openai-lazy.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    },
+    {
+      "path": "lib\\supabase.ts",
+      "consoleCount": 11,
+      "optimized": 11
+    },
+    {
+      "path": "services\\advancedAnalytics.ts",
+      "consoleCount": 19,
+      "optimized": 19
+    },
+    {
+      "path": "services\\advancedAnalyticsService.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    },
+    {
+      "path": "services\\advancedMLService.ts",
+      "consoleCount": 7,
+      "optimized": 7
+    },
+    {
+      "path": "services\\advancedThemeManager.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "services\\aiCarRecommendationEngine.ts",
+      "consoleCount": 7,
+      "optimized": 7
+    },
+    {
+      "path": "services\\analyticsService.ts",
+      "consoleCount": 3,
+      "optimized": 3
+    },
+    {
+      "path": "services\\api.ts",
+      "consoleCount": 10,
+      "optimized": 10
+    },
+    {
+      "path": "services\\BaseService.ts",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "services\\carNotificationService.ts",
+      "consoleCount": 13,
+      "optimized": 13
+    },
+    {
+      "path": "services\\carSuggesterPerformanceService.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    },
+    {
+      "path": "services\\dealershipReviewService.ts",
+      "consoleCount": 9,
+      "optimized": 9
+    },
+    {
+      "path": "services\\enhancedAuthService.ts",
+      "consoleCount": 11,
+      "optimized": 11
+    },
+    {
+      "path": "services\\enhancedSearchService.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    },
+    {
+      "path": "services\\offlineService.ts",
+      "consoleCount": 12,
+      "optimized": 12
+    },
+    {
+      "path": "services\\performanceMonitor.ts",
+      "consoleCount": 15,
+      "optimized": 15
+    },
+    {
+      "path": "services\\performanceOptimizationService.ts",
+      "consoleCount": 21,
+      "optimized": 21
+    },
+    {
+      "path": "services\\realTimeChatService.ts",
+      "consoleCount": 15,
+      "optimized": 15
+    },
+    {
+      "path": "services\\realtimeService.ts",
+      "consoleCount": 11,
+      "optimized": 11
+    },
+    {
+      "path": "services\\securityService.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    },
+    {
+      "path": "services\\smartNotificationService.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "services\\socialService.ts",
+      "consoleCount": 16,
+      "optimized": 16
+    },
+    {
+      "path": "services\\storageService.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    },
+    {
+      "path": "services\\supabaseService.ts",
+      "consoleCount": 48,
+      "optimized": 48
+    },
+    {
+      "path": "services\\webCompatibleStorage.ts",
+      "consoleCount": 7,
+      "optimized": 7
+    },
+    {
+      "path": "utils\\advanced-performance-integration.ts",
+      "consoleCount": 2,
+      "optimized": 2
+    },
+    {
+      "path": "utils\\bundle-optimizer.ts",
+      "consoleCount": 4,
+      "optimized": 4
+    },
+    {
+      "path": "utils\\conditional-animations.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "utils\\conditional-netinfo.ts",
+      "consoleCount": 1,
+      "optimized": 1
+    },
+    {
+      "path": "utils\\dataTransformers.ts",
+      "consoleCount": 4,
+      "optimized": 4
+    },
+    {
+      "path": "utils\\feature-flags.ts",
+      "consoleCount": 3,
+      "optimized": 3
+    },
+    {
+      "path": "utils\\logger.ts",
+      "consoleCount": 7,
+      "optimized": 6
+    },
+    {
+      "path": "utils\\optimized-storage.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    },
+    {
+      "path": "utils\\performanceMonitor.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    },
+    {
+      "path": "utils\\remote-module-loader.ts",
+      "consoleCount": 3,
+      "optimized": 3
+    },
+    {
+      "path": "utils\\runtime-optimization.ts",
+      "consoleCount": 6,
+      "optimized": 6
+    }
+  ]
+}

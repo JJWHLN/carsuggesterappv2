@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { CircleAlert as AlertCircle, RefreshCw } from 'lucide-react-native';
+import { AlertTriangle, RefreshCw } from '@/utils/ultra-optimized-icons';
 import { currentColors, Spacing, Typography } from '@/constants/Colors';
 
 interface ErrorStateProps {
@@ -22,7 +22,7 @@ const ErrorState = memo<ErrorStateProps>(({
     <View style={styles.container}>
       {showIcon && (
         <View style={styles.iconContainer}>
-          <AlertCircle color={currentColors.error} size={48} />
+          <AlertTriangle color={currentColors.error} size={48} />
         </View>
       )}
       

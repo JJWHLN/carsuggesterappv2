@@ -37,7 +37,7 @@ export class ApiError extends Error {
     }
 
     // It's good practice to log the original error for debugging
-    console.error(`ApiError: Code: ${this.code}, Message: ${this.message}`);
+    logger.error(`ApiError: Code: ${this.code}, Message: ${this.message}`);
   }
 }
 
@@ -103,7 +103,7 @@ export async function fetchCarModels(options: FetchCarModelsOptions = {}): Promi
     
     return transformedData;
   } catch (error) {
-    // console.error('Error fetching car models:', error); // Logging is now handled within ApiError constructor
+    // logger.error('Error fetching car models:', error); // Logging is now handled within ApiError constructor
     if (error instanceof ApiError) throw error;
     throw new ApiError(error instanceof Error ? error.message : 'Unknown error', undefined, 'Failed to fetch car models due to an unexpected issue.');
   }
@@ -111,7 +111,7 @@ export async function fetchCarModels(options: FetchCarModelsOptions = {}): Promi
 
 export async function fetchBrandById(id: string): Promise<Brand | null> {
   if (!id || isNaN(parseInt(id))) { // Ensure id is a valid number string
-    console.error('Invalid brand ID provided to fetchBrandById:', id);
+    logger.error('Invalid brand ID provided to fetchBrandById:', id);
     throw new ApiError('Invalid brand ID.', 'VALIDATION_ERROR', 'A valid brand identifier is required.');
   }
   try {
@@ -143,7 +143,7 @@ export async function fetchBrandById(id: string): Promise<Brand | null> {
 
 export async function fetchCarModelById(id: string): Promise<CarModel | null> {
   if (!id || isNaN(parseInt(id))) { // Ensure id is a valid number string
-    console.error('Invalid car model ID provided to fetchCarModelById:', id);
+    logger.error('Invalid car model ID provided to fetchCarModelById:', id);
     // Return null or throw error based on how you want to handle this in useApi
     // For useApi, throwing an error that it can catch is better.
     throw new ApiError('Invalid car model ID.', 'VALIDATION_ERROR', 'A valid car model identifier is required.');
@@ -186,7 +186,7 @@ export async function fetchCarModelById(id: string): Promise<CarModel | null> {
     
     return data; // null if not found
   } catch (error) {
-    // console.error('Error fetching car model:', error); // Logging is now handled within ApiError constructor
+    // logger.error('Error fetching car model:', error); // Logging is now handled within ApiError constructor
     if (error instanceof ApiError) throw error;
     throw new ApiError(error instanceof Error ? error.message : 'Unknown error', undefined, 'Failed to fetch car model details due to an unexpected issue.');
   }
@@ -219,7 +219,7 @@ export async function fetchPopularBrands(limit: number = 6): Promise<Brand[]> {
 // REAL SUPABASE IMPLEMENTATION: Replace mock functions with actual database queries
 export const fetchCarById = async (id: string): Promise<Car | null> => {
   if (!id) {
-    console.error('Invalid car ID provided to fetchCarById:', id);
+    logger.error('Invalid car ID provided to fetchCarById:', id);
     return null;
   }
   
@@ -272,7 +272,7 @@ export const fetchCarById = async (id: string): Promise<Car | null> => {
       } : undefined,
     };
   } catch (error) {
-    console.error('Error fetching car by ID:', error);
+    logger.error('Error fetching car by ID:', error);
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       error instanceof Error ? error.message : 'Unknown error', 
@@ -347,7 +347,7 @@ export const fetchCarComparison = async (carIds: string[]): Promise<ComparisonDa
 
     return comparisons;
   } catch (error) {
-    console.error('Error fetching car comparison:', error);
+    logger.error('Error fetching car comparison:', error);
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       error instanceof Error ? error.message : 'Unknown error', 
@@ -423,7 +423,7 @@ export const fetchSimilarCars = async (carId: string): Promise<Car[]> => {
       } : undefined,
     }));
   } catch (error) {
-    console.error('Error fetching similar cars:', error);
+    logger.error('Error fetching similar cars:', error);
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       error instanceof Error ? error.message : 'Unknown error', 
@@ -490,7 +490,7 @@ export const fetchCarReviews = async (carId: string): Promise<Review[]> => {
       photos: review.car_models?.image_url ? [review.car_models.image_url] : [],
     }));
   } catch (error) {
-    console.error('Error fetching car reviews:', error);
+    logger.error('Error fetching car reviews:', error);
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       error instanceof Error ? error.message : 'Unknown error', 

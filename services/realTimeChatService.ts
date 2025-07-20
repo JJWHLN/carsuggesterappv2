@@ -149,7 +149,7 @@ class RealTimeChatService {
 
       return data;
     } catch (error) {
-      console.error('Error creating conversation:', error);
+      logger.error('Error creating conversation:', error);
       throw error;
     }
   }
@@ -191,7 +191,7 @@ class RealTimeChatService {
 
       return data || [];
     } catch (error) {
-      console.error('Error getting conversations:', error);
+      logger.error('Error getting conversations:', error);
       throw error;
     }
   }
@@ -221,7 +221,7 @@ class RealTimeChatService {
       this.conversationCache.set(conversationId, data);
       return data;
     } catch (error) {
-      console.error('Error getting conversation:', error);
+      logger.error('Error getting conversation:', error);
       throw error;
     }
   }
@@ -274,7 +274,7 @@ class RealTimeChatService {
 
       return data;
     } catch (error) {
-      console.error('Error sending message:', error);
+      logger.error('Error sending message:', error);
       throw error;
     }
   }
@@ -312,7 +312,7 @@ class RealTimeChatService {
 
       return messages;
     } catch (error) {
-      console.error('Error getting messages:', error);
+      logger.error('Error getting messages:', error);
       throw error;
     }
   }
@@ -327,7 +327,7 @@ class RealTimeChatService {
         user_id: user.id,
       });
     } catch (error) {
-      console.error('Error marking message as read:', error);
+      logger.error('Error marking message as read:', error);
       throw error;
     }
   }
@@ -354,7 +354,7 @@ class RealTimeChatService {
       // Clear conversation cache
       this.conversationCache.delete(conversationId);
     } catch (error) {
-      console.error('Error adding participant:', error);
+      logger.error('Error adding participant:', error);
       throw error;
     }
   }
@@ -372,7 +372,7 @@ class RealTimeChatService {
       // Clear conversation cache
       this.conversationCache.delete(conversationId);
     } catch (error) {
-      console.error('Error removing participant:', error);
+      logger.error('Error removing participant:', error);
       throw error;
     }
   }
@@ -428,7 +428,7 @@ class RealTimeChatService {
 
       return data;
     } catch (error) {
-      console.error('Error creating dealer inquiry:', error);
+      logger.error('Error creating dealer inquiry:', error);
       throw error;
     }
   }
@@ -466,7 +466,7 @@ class RealTimeChatService {
 
       return data || [];
     } catch (error) {
-      console.error('Error getting dealer inquiries:', error);
+      logger.error('Error getting dealer inquiries:', error);
       throw error;
     }
   }
@@ -558,7 +558,7 @@ class RealTimeChatService {
       this.activeChannels.set(conversationId, channel);
       return channel;
     } catch (error) {
-      console.error('Error subscribing to conversation:', error);
+      logger.error('Error subscribing to conversation:', error);
       throw error;
     }
   }
@@ -604,7 +604,7 @@ class RealTimeChatService {
 
       this.typingTimers.set(conversationId, timer);
     } catch (error) {
-      console.error('Error starting typing:', error);
+      logger.error('Error starting typing:', error);
     }
   }
 
@@ -634,7 +634,7 @@ class RealTimeChatService {
         },
       });
     } catch (error) {
-      console.error('Error stopping typing:', error);
+      logger.error('Error stopping typing:', error);
     }
   }
 
@@ -657,7 +657,7 @@ class RealTimeChatService {
         },
       });
     } catch (error) {
-      console.error('Error sending car share message:', error);
+      logger.error('Error sending car share message:', error);
       throw error;
     }
   }
@@ -706,7 +706,7 @@ class RealTimeChatService {
         .from('chat_notifications')
         .insert(notifications);
     } catch (error) {
-      console.error('Error sending message notifications:', error);
+      logger.error('Error sending message notifications:', error);
     }
   }
 

@@ -17,21 +17,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import {
-  ArrowLeft,
-  Plus,
-  X,
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  CheckCircle,
-  AlertCircle,
-  Star,
-  DollarSign,
-  MapPin,
-  Heart,
-  Share2,
-} from 'lucide-react-native';
 
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { AnimatedPressable } from '@/components/ui/AnimatedPressable';
@@ -45,6 +30,7 @@ import { Card } from '@/components/ui/Card';
 import { useColors, useIsDarkMode } from '@/hooks/useConsolidatedTheme';
 import { useThemedStyles, useCommonThemedStyles } from '@/hooks/useThemedStyles';
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import { ArrowLeft, Plus, X, TrendingUp, CheckCircle, Star, DollarSign, MapPin, Heart } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.85;

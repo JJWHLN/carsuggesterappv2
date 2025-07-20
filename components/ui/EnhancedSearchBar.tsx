@@ -18,10 +18,13 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { Search, X, Clock, TrendingUp, Filter } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+
 import { useThemeColors } from '../../hooks/useTheme';
 import { Spacing, Typography, BorderRadius } from '../../constants/Colors';
 import { getPlatformShadow } from '../../constants/PlatformOptimizations';
+import { Search, X, Clock, TrendingUp, Filter } from '@/utils/ultra-optimized-icons';
 
 interface SearchSuggestion {
   id: string;

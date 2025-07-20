@@ -9,7 +9,8 @@ import Animated, {
   Extrapolate,
   runOnJS
 } from 'react-native-reanimated';
-import { Search, X, Sparkles, Filter, TrendingUp, Clock, Star } from '@/utils/icons';
+import { Search, X, Sparkles, Filter, Star } from '@/utils/ultra-optimized-icons';
+import { TrendingUp, Clock } from '@/utils/ultra-optimized-icons';
 import { AnimatedPressable } from './AnimatedPressable';
 import { createSemanticProps, useAccessibility } from '@/hooks/useAccessibility';
 import { useDebounce } from '@/hooks/useDebounce';

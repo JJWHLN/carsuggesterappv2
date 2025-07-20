@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Filter, SlidersHorizontal, Grid2x2 as Grid, List, Star, Heart } from 'lucide-react-native';
+
 // Import removed - using inline card component instead of CarCard
 import { OptimizedImage } from './OptimizedImage';
 import { Button } from './Button';
@@ -18,6 +18,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { EmptyState } from './EmptyState';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { Filter, SlidersHorizontal, List, Star, Heart } from '@/utils/ultra-optimized-icons';
 
 export interface CarRecommendation {
   id: string;

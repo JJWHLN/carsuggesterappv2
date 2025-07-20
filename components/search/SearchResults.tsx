@@ -7,12 +7,13 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native';
-import { Grid, List } from 'lucide-react-native';
+
 import { useDesignSystem } from '@/hooks/useDesignSystem';
 import { CarCard } from '@/components/CarCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Car as CarType } from '@/types/database';
+import { Grid, List } from '@/utils/ultra-optimized-icons';
 
 interface SearchResultsProps {
   cars: CarType[];

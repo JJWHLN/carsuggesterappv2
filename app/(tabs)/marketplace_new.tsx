@@ -36,7 +36,7 @@ function MarketplaceScreen() {
   ];
 
   const handleCarPress = useCallback((carId: string) => {
-    console.log('Navigate to car details:', carId);
+    logger.debug('Navigate to car details:', carId);
     // TODO: Navigate to car detail screen
     // router.push(`/car/${carId}`);
   }, []);

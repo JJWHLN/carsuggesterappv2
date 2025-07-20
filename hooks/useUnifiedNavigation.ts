@@ -31,7 +31,7 @@ export function useUnifiedNavigation() {
           break;
       }
     } catch (error) {
-      console.warn('Haptics not available:', error);
+      logger.warn('Haptics not available:', error);
     }
   }, []);
 
@@ -52,12 +52,12 @@ export function useUnifiedNavigation() {
     }
 
     if (logNavigation) {
-      console.log('Navigation:', path);
+      logger.debug('Navigation:', path);
     }
 
     if (analyticsEvent) {
       // Track navigation event
-      console.log('Analytics Event:', analyticsEvent, { path });
+      logger.debug('Analytics Event:', analyticsEvent, { path });
     }
 
     router.push(path as any);
@@ -184,7 +184,7 @@ export function useCommonScreenActions() {
     const newState = !currentState;
     onToggle(newState);
     
-    console.log(`${newState ? 'Saved' : 'Unsaved'} ${itemType}:`, itemId);
+    logger.debug(`${newState ? 'Saved' : 'Unsaved'} ${itemType}:`, itemId);
     
     // TODO: Implement actual save logic
   }, [triggerHaptics]);
@@ -205,7 +205,7 @@ export function useCommonScreenActions() {
         url: url || '',
       });
     } catch (error) {
-      console.warn('Share failed:', error);
+      logger.warn('Share failed:', error);
     }
   }, [triggerHaptics]);
 
@@ -216,7 +216,7 @@ export function useCommonScreenActions() {
   ) => {
     await triggerHaptics('medium');
     
-    console.log(`Contact via ${contactType}:`, contactInfo, itemTitle);
+    logger.debug(`Contact via ${contactType}:`, contactInfo, itemTitle);
     
     // TODO: Implement actual contact logic
     // - Phone: open phone app
@@ -231,7 +231,7 @@ export function useCommonScreenActions() {
       const { default: Linking } = await import('react-native').then(rn => ({ default: rn.Linking }));
       await Linking.openURL(url);
     } catch (error) {
-      console.warn('Failed to open external link:', error);
+      logger.warn('Failed to open external link:', error);
     }
   }, [triggerHaptics]);
 

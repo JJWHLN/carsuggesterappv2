@@ -9,20 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { 
-  Camera,
-  Plus,
-  X,
-  Upload,
-  Car,
-  DollarSign,
-  Calendar,
-  MapPin,
-  Settings,
-  Fuel,
-  Award,
-  Info,
-} from 'lucide-react-native';
+
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
@@ -32,6 +19,8 @@ import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import { StorageService } from '@/services/storageService';
 import { VehicleListingService } from '@/services/featureServices';
+import { Plus, X, Car, DollarSign, Calendar, MapPin, Settings, Fuel, Award, Upload, Camera, Info } from '@/utils/ultra-optimized-icons';
+
 import { 
   validateForm, 
   validateField,
@@ -276,7 +265,7 @@ export default function AddCarScreen() {
             selectedImages
           );
         } catch (uploadError) {
-          console.error('Image upload failed:', uploadError);
+          logger.error('Image upload failed:', uploadError);
           Alert.alert(
             'Upload Warning',
             'Some images failed to upload. The listing will be created without images.'
@@ -309,7 +298,7 @@ export default function AddCarScreen() {
         [{ text: 'OK', onPress: () => router.back() }]
       );
     } catch (error) {
-      console.error('Error creating listing:', error);
+      logger.error('Error creating listing:', error);
       Alert.alert(
         'Error',
         error instanceof Error ? error.message : 'Failed to create listing. Please try again.'

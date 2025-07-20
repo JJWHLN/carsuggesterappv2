@@ -9,23 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  Star, 
-  Award, 
-  FileText,
-  Calendar,
-  User,
-  Plus,
-  ThumbsUp,
-  MessageCircle,
-  Heart,
-  Play,
-  Clock,
-  TrendingUp,
-  Filter,
-  Grid2x2,
-  List,
-} from 'lucide-react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { RealtimeService, RealtimeSubscription } from '@/services/realtimeService';
@@ -35,6 +19,9 @@ import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
+import { ExpertReviewCard } from '@/components/ExpertReviewCard';
+import { ExpertHeader } from '@/components/ExpertHeader';
+import { CSScoreDisplay } from '@/components/CSScoreDisplay';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { 
   CategoryChip, 
@@ -55,6 +42,7 @@ import { Review } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
 import { AnalyticsService } from '@/services/analyticsService';
 import { useEngagementTracking } from '@/hooks/useAnalytics';
+import { Star, Award, Calendar, User, Plus, MessageCircle, Heart, Clock, TrendingUp, Filter, List } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -104,75 +92,99 @@ export default function ReviewsScreen() {
     });
   }, [user?.id, reviews.length, viewMode, selectedCategory, sortBy]);
 
-  // Mock featured reviews data
+  // Mock featured reviews data with expert review enhancements
   const featuredReviews = [
     {
       id: 1,
-      title: "2024 BMW X5 M50i: The Ultimate Driving Machine",
+      title: "2024 BMW X5 M50i: The Ultimate Driving Machine Evolves",
       image: "https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=800",
       rating: 4.8,
       author: "Alex Thompson",
+      expertCredentials: "Senior Automotive Journalist, 15+ years",
       readTime: "8 min read",
       hasVideo: true,
       category: "Luxury SUV",
       publishedDate: "2024-01-15",
       likes: 234,
+      views: 15420,
       comments: 45,
       carMake: "BMW",
       carModel: "X5 M50i",
       carYear: 2024,
-      excerpt: "BMW's flagship SUV delivers exceptional performance and luxury in a package that's surprisingly practical for daily use.",
+      cs_score: 89,
+      verificationBadge: true,
+      excerpt: "BMW's flagship SUV delivers exceptional performance and luxury in a package that's surprisingly practical for daily use. Our comprehensive testing reveals impressive engineering.",
+      created_at: "2024-01-15",
+      content: "Detailed review content...",
     },
     {
       id: 2,
-      title: "Tesla Model 3 Performance: Electric Excellence",
+      title: "Tesla Model 3 Performance: Electric Excellence Redefined",
       image: "https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&w=800",
       rating: 4.6,
       author: "Sarah Chen",
+      expertCredentials: "EV Specialist & Technology Reviewer",
       readTime: "12 min read",
       hasVideo: false,
       category: "Electric",
       publishedDate: "2024-01-12",
       likes: 189,
+      views: 22150,
       comments: 67,
       carMake: "Tesla",
       carModel: "Model 3",
       carYear: 2024,
-      excerpt: "The Model 3 Performance proves that electric cars can be thrilling while maintaining efficiency and cutting-edge technology.",
+      cs_score: 92,
+      verificationBadge: true,
+      excerpt: "The Model 3 Performance proves that electric cars can be thrilling while maintaining efficiency and cutting-edge technology. Our track testing shows remarkable capabilities.",
+      created_at: "2024-01-12",
+      content: "Detailed review content...",
     },
     {
       id: 3,
-      title: "Toyota Camry Hybrid: Reliability Redefined",
+      title: "Toyota Camry Hybrid: Reliability Redefined for 2024",
       image: "https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg?auto=compress&cs=tinysrgb&w=800",
       rating: 4.7,
       author: "Mike Rodriguez",
+      expertCredentials: "Hybrid Technology Expert",
       readTime: "6 min read",
       hasVideo: true,
       category: "Hybrid",
       publishedDate: "2024-01-10",
       likes: 156,
+      views: 8930,
       comments: 23,
       carMake: "Toyota",
       carModel: "Camry",
       carYear: 2024,
-      excerpt: "Toyota's latest Camry Hybrid combines outstanding fuel economy with surprising driving dynamics and premium features.",
+      cs_score: 85,
+      verificationBadge: true,
+      excerpt: "Toyota's latest Camry Hybrid combines outstanding fuel economy with surprising driving dynamics and premium features in our extensive real-world testing.",
+      created_at: "2024-01-10",
+      content: "Detailed review content...",
     },
     {
       id: 4,
-      title: "Porsche 911 Turbo S: Track-Ready Perfection",
+      title: "Porsche 911 Turbo S: Track-Ready Perfection Analyzed",
       image: "https://images.pexels.com/photos/1545743/pexels-photo-1545743.jpeg?auto=compress&cs=tinysrgb&w=800",
       rating: 4.9,
       author: "David Kim",
+      expertCredentials: "Performance Car Specialist",
       readTime: "10 min read",
       hasVideo: true,
       category: "Sports Car",
       publishedDate: "2024-01-08",
       likes: 312,
+      views: 31200,
       comments: 89,
       carMake: "Porsche",
       carModel: "911 Turbo S",
       carYear: 2024,
-      excerpt: "The 911 Turbo S represents the pinnacle of sports car engineering with blistering performance and everyday usability.",
+      cs_score: 96,
+      verificationBadge: true,
+      excerpt: "The 911 Turbo S represents the pinnacle of sports car engineering with blistering performance and everyday usability, validated through our comprehensive track testing.",
+      created_at: "2024-01-08",
+      content: "Detailed review content...",
     },
   ];
 
@@ -219,7 +231,7 @@ export default function ReviewsScreen() {
     // Subscribe to reviews changes
     const reviewsSubscription = RealtimeService.subscribeToReviews(
       (payload) => {
-        console.log('🔄 Real-time review update:', payload);
+        logger.debug('🔄 Real-time review update:', payload);
         
         if (payload.eventType === 'INSERT') {
           const newReview = transformDatabaseReviewToReview(payload.new);
@@ -246,112 +258,57 @@ export default function ReviewsScreen() {
     };
   }, []);
 
-  const ReviewCard = useCallback(({ review, isListView = false }: { review: any, isListView?: boolean }) => (
-    <TouchableOpacity 
-      style={[styles.reviewCard, isListView && styles.reviewCardList]}
-      activeOpacity={0.9}
-    >
-      <View style={[styles.reviewImageContainer, isListView && styles.reviewImageContainerList]}>
-        <OptimizedImage
-          source={{ uri: review.image }}
-          style={styles.reviewImage}
-          resizeMode="cover"
-        />
-        
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.7)']}
-          style={styles.reviewImageOverlay}
-        >
-          {review.hasVideo && (
-            <View style={styles.playButton}>
-              <Play color={colors.white} size={16} fill={colors.white} />
-            </View>
-          )}
-          
-          <View style={styles.reviewImageContent}>
-            <View style={styles.categoryBadge}>
-              <Text style={styles.categoryBadgeText}>{review.category}</Text>
-            </View>
-            
-            <View style={styles.ratingContainer}>
-              <Star color={colors.warning} size={14} fill={colors.warning} />
-              <Text style={styles.ratingText}>{review.rating}</Text>
-            </View>
-          </View>
-        </LinearGradient>
-      </View>
-      
-      <View style={[styles.reviewContent, isListView && styles.reviewContentList]}>
-        <Text style={styles.reviewTitle} numberOfLines={isListView ? 3 : 2}>
-          {review.title}
-        </Text>
-        
-        {isListView && (
-          <Text style={styles.reviewExcerpt} numberOfLines={2}>
-            {review.excerpt}
-          </Text>
-        )}
-        
-        <View style={styles.reviewMeta}>
-          <View style={styles.authorInfo}>
-            <User color={colors.textSecondary} size={14} />
-            <Text style={styles.authorName}>{review.author}</Text>
-          </View>
-          <View style={styles.readTime}>
-            <Clock color={colors.textSecondary} size={14} />
-            <Text style={styles.readTimeText}>{review.readTime}</Text>
-          </View>
-        </View>
-        
-        <View style={styles.reviewStats}>
-          <View style={styles.statItem}>
-            <ThumbsUp color={colors.textSecondary} size={14} />
-            <Text style={styles.statText}>{review.likes}</Text>
-          </View>
-          <View style={styles.statItem}>
-            <MessageCircle color={colors.textSecondary} size={14} />
-            <Text style={styles.statText}>{review.comments}</Text>
-          </View>
-          <TouchableOpacity style={styles.statItem}>
-            <Heart color={colors.textSecondary} size={14} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </TouchableOpacity>
-  ), [colors, styles]);
-
   const renderReview = ({ item }: { item: any }) => (
     <View style={viewMode === 'grid' ? styles.gridItem : styles.listItem}>
-      <ReviewCard review={item} isListView={viewMode === 'list'} />
+      <ExpertReviewCard 
+        review={{
+          ...item,
+          car_make: item.carMake,
+          car_model: item.carModel,
+          car_year: item.carYear,
+        }} 
+        isListView={viewMode === 'list'}
+        onPress={() => {
+          // Navigate to review detail
+          logger.debug('Navigate to review:', item.id);
+        }}
+      />
     </View>
   );
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      {/* Hero Section */}
-      <LinearGradient
-        colors={[colors.primary, colors.primaryHover]}
-        style={styles.heroSection}
-      >
-        <Text style={styles.heroTitle}>Expert Car Reviews</Text>
-        <Text style={styles.heroSubtitle}>
-          In-depth reviews from automotive experts and real owners
-        </Text>
-      </LinearGradient>
+      {/* Expert Header - Establishes Authority */}
+      <ExpertHeader
+        expertName="CarSuggester Expert Team"
+        credentials="Professional Automotive Reviewers"
+        yearsExperience={15}
+        reviewsCount={156}
+        averageRating={4.8}
+        specializations={["Luxury Cars", "Electric Vehicles", "Sports Cars", "SUVs"]}
+        onViewProfile={() => {
+          logger.debug('View expert profile');
+        }}
+      />
 
-      {/* Stats Section */}
-      <View style={styles.statsSection}>
-        <View style={styles.statsGrid}>
-          {reviewStats.map((stat, index) => (
-            <StatCard
-              key={index}
-              icon={stat.icon}
-              value={stat.value}
-              label={stat.label}
-            />
-          ))}
+      {/* Featured Review Spotlight */}
+      {featuredReviews.length > 0 && (
+        <View style={styles.spotlightSection}>
+          <Text style={styles.sectionTitle}>Featured Review</Text>
+          <ExpertReviewCard
+            review={{
+              ...featuredReviews[0],
+              car_make: featuredReviews[0].carMake,
+              car_model: featuredReviews[0].carModel,
+              car_year: featuredReviews[0].carYear,
+            }}
+            isHeadline={true}
+            onPress={() => {
+              logger.debug('Navigate to featured review:', featuredReviews[0].id);
+            }}
+          />
         </View>
-      </View>
+      )}
 
       {/* Controls */}
       <View style={styles.controlsContainer}>
@@ -466,6 +423,19 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
   // Header
   headerContainer: {
     backgroundColor: colors.background,
+  },
+  
+  // Spotlight Section
+  spotlightSection: {
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    backgroundColor: colors.background,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 16,
   },
   heroSection: {
     paddingHorizontal: Spacing.xl,

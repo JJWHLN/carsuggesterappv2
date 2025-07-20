@@ -1,5 +1,5 @@
 import { BaseService } from './BaseService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { webCompatibleStorage } from './webCompatibleStorage';
 import { UserRole } from '../types/database';
 
 /**
@@ -51,7 +51,7 @@ export class StorageService {
       await this.cleanupExpiredItems();
       await this.loadMemoryCache();
     } catch (error) {
-      console.error('Failed to initialize storage service:', error);
+      logger.error('Failed to initialize storage service:', error);
     }
   }
 
@@ -59,7 +59,7 @@ export class StorageService {
    * Handle errors in a consistent way
    */
   private handleError(error: any, message: string): void {
-    console.error(message, error);
+    logger.error(message, error);
   }
 
   /**
@@ -108,8 +108,8 @@ export class StorageService {
         processedValue = await this.encryptValue(processedValue);
       }
 
-      // Store in AsyncStorage
-      await AsyncStorage.setItem(storageKey, JSON.stringify({
+      // Store in webCompatibleStorage
+      await webCompatibleStorage.setItem(storageKey, JSON.stringify({
         ...item,
         value: processedValue,
       }));
@@ -130,9 +130,9 @@ export class StorageService {
         return cachedItem.value as T;
       }
 
-      // Check AsyncStorage
+      // Check webCompatibleStorage
       const storageKey = this.getStorageKey(key);
-      const stored = await AsyncStorage.getItem(storageKey);
+      const stored = await webCompatibleStorage.getItem(storageKey);
       
       if (!stored) {
         return defaultValue;
@@ -152,7 +152,7 @@ export class StorageService {
         
         return item.value;
       } catch (error) {
-        console.warn('Failed to parse stored value for key:', key);
+        logger.warn('Failed to parse stored value for key:', key);
         return defaultValue;
       }
     }, 'Failed to get value', defaultValue);
@@ -164,7 +164,7 @@ export class StorageService {
   async remove(key: string): Promise<void> {
     return this.executeQuery(async () => {
       const storageKey = this.getStorageKey(key);
-      await AsyncStorage.removeItem(storageKey);
+      await webCompatibleStorage.removeItem(storageKey);
       this.memoryCache.delete(key);
     }, 'Failed to remove value');
   }
@@ -174,9 +174,9 @@ export class StorageService {
    */
   async clear(): Promise<void> {
     return this.executeQuery(async () => {
-      const keys = await AsyncStorage.getAllKeys();
-      const appKeys = keys.filter(key => key.startsWith(this.CACHE_PREFIX));
-      await AsyncStorage.multiRemove(appKeys);
+      const keys = await webCompatibleStorage.getAllKeys();
+      const appKeys = keys.filter((key: string) => key.startsWith(this.CACHE_PREFIX));
+      await webCompatibleStorage.multiRemove(appKeys);
       this.memoryCache.clear();
     }, 'Failed to clear storage');
   }
@@ -194,9 +194,9 @@ export class StorageService {
         }
       }
 
-      // Check AsyncStorage
+      // Check webCompatibleStorage
       const storageKey = this.getStorageKey(key);
-      const value = await AsyncStorage.getItem(storageKey);
+      const value = await webCompatibleStorage.getItem(storageKey);
       
       if (!value) return false;
 
@@ -214,13 +214,13 @@ export class StorageService {
    */
   async getKeys(filter?: string): Promise<string[]> {
     return this.executeQuery(async () => {
-      const keys = await AsyncStorage.getAllKeys();
+      const keys = await webCompatibleStorage.getAllKeys();
       let appKeys = keys
-        .filter(key => key.startsWith(this.CACHE_PREFIX))
-        .map(key => key.replace(this.CACHE_PREFIX, ''));
+        .filter((key: string) => key.startsWith(this.CACHE_PREFIX))
+        .map((key: string) => key.replace(this.CACHE_PREFIX, ''));
 
       if (filter) {
-        appKeys = appKeys.filter(key => key.includes(filter));
+        appKeys = appKeys.filter((key: string) => key.includes(filter));
       }
 
       return appKeys;
@@ -241,7 +241,7 @@ export class StorageService {
       for (const key of keys) {
         try {
           const storageKey = this.getStorageKey(key);
-          const value = await AsyncStorage.getItem(storageKey);
+          const value = await webCompatibleStorage.getItem(storageKey);
           if (value) {
             totalSize += value.length;
             const item: StorageItem = JSON.parse(value);
@@ -401,7 +401,7 @@ export class StorageService {
         }
       }
     } catch (error) {
-      console.warn('Failed to load memory cache:', error);
+      logger.warn('Failed to load memory cache:', error);
     }
   }
 
@@ -411,7 +411,7 @@ export class StorageService {
       const cleanupPromises = keys.map(async (key) => {
         try {
           const storageKey = this.getStorageKey(key);
-          const stored = await AsyncStorage.getItem(storageKey);
+          const stored = await webCompatibleStorage.getItem(storageKey);
           if (stored) {
             const item: StorageItem = JSON.parse(stored);
             if (!this.isItemValid(item)) {
@@ -425,7 +425,7 @@ export class StorageService {
 
       await Promise.all(cleanupPromises);
     } catch (error) {
-      console.warn('Failed to cleanup expired items:', error);
+      logger.warn('Failed to cleanup expired items:', error);
     }
   }
 
@@ -454,7 +454,7 @@ export class StorageService {
       
       return mockUrls;
     } catch (error) {
-      console.error('Error uploading car images:', error);
+      logger.error('Error uploading car images:', error);
       throw new Error('Failed to upload images');
     }
   }

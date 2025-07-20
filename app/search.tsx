@@ -27,11 +27,12 @@ import { transformDatabaseVehicleListingToCar, sanitizeSearchQuery } from '@/uti
 import { Car } from '@/types/database';
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Search, Sparkles, Filter } from '@/utils/icons';
+
 import { router } from 'expo-router';
 // Temporarily disabled for testing
 // import { usePerformanceTracking, useSearchTracking } from '@/hooks/useAnalytics';
 import { trackScreenView } from '@/services/analyticsService';
+import { Search, Sparkles, Filter } from '@/utils/ultra-optimized-icons';
 
 const ITEM_HEIGHT = 380;
 
@@ -114,7 +115,7 @@ const SearchScreen = memo(() => {
       // });
       
     } catch (error) {
-      console.error('AI Search error:', error);
+      logger.error('AI Search error:', error);
       const errorMessage = error instanceof SupabaseError 
         ? `Search failed: ${error.message}`
         : 'AI search is currently unavailable. Please try the regular search.';

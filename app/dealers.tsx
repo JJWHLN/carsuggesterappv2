@@ -9,20 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { 
-  MapPin, 
-  Star, 
-  Shield, 
-  Users, 
-  Car,
-  Clock,
-  Phone,
-  Mail,
-  Building2,
-  Award,
-  Filter,
-  Search,
-} from 'lucide-react-native';
+
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -35,6 +22,7 @@ import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/c
 import { useThemeColors } from '@/hooks/useTheme';
 import { useDebounce } from '@/hooks/useDebounce';
 import { sanitizeSearchQuery } from '@/utils/dataTransformers';
+import { MapPin, Star, Users, Car, Clock, Mail, Building2, Award, Filter, Search } from '@/utils/ultra-optimized-icons';
 
 interface Dealer {
   id: number;
@@ -122,7 +110,7 @@ export default function DealersScreen() {
   ];
 
   const handleDealerPress = useCallback((dealerId: number) => {
-    console.log('Navigate to dealer:', dealerId);
+    logger.debug('Navigate to dealer:', dealerId);
     // TODO: Create dealer detail route
     // router.push(`/dealer/${dealerId}`);
   }, []);

@@ -10,19 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import {
-  Shield,
-  Users,
-  FileText,
-  Car,
-  TrendingUp,
-  UserCheck,
-  UserX,
-  Trash2,
-  CheckCircle,
-  XCircle,
-  ArrowLeft,
-} from 'lucide-react-native';
+
 import { RoleGate } from '@/components/ui/RoleProtection';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -33,6 +21,7 @@ import { SecurityService } from '@/services/securityService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import { Users, Car, TrendingUp, CheckCircle, ArrowLeft } from '@/utils/ultra-optimized-icons';
 
 export default function AdminScreen() {
   const { colors } = useThemeColors();
@@ -59,7 +48,7 @@ export default function AdminScreen() {
       setUsers(usersData);
       setRecentActivity(activityData);
     } catch (err: any) {
-      console.error('Error loading admin data:', err);
+      logger.error('Error loading admin data:', err);
       setError(err.message || 'Failed to load admin data');
     } finally {
       setLoading(false);

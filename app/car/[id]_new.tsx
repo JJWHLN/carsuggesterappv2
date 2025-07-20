@@ -14,27 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
-import { 
-  ArrowLeft, 
-  Heart, 
-  Share as ShareIcon, 
-  MapPin, 
-  Calendar, 
-  Fuel, 
-  Settings,
-  Star,
-  Phone,
-  Mail,
-  Navigation,
-  Shield,
-  Users,
-  Gauge,
-  Camera,
-  MessageCircle,
-  ExternalLink,
-  ChevronRight,
-  CheckCircle,
-} from 'lucide-react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -53,6 +33,7 @@ import {
 import { fetchVehicleListingById, SupabaseError } from '@/services/supabaseService';
 import { useApi } from '@/hooks/useApi';
 import { Car as CarType, DatabaseVehicleListing } from '@/types/database';
+import { ArrowLeft, Heart, MapPin, Calendar, Fuel, Settings, Star, Mail, Users, Gauge, MessageCircle, ChevronRight, CheckCircle } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 const HERO_HEIGHT = height * 0.5;
@@ -92,7 +73,7 @@ export default function CarDetailScreen() {
         url: `https://carsuggester.com/car/${car.id}`,
       });
     } catch (error) {
-      console.error('Error sharing:', error);
+      logger.error('Error sharing:', error);
     }
   }, [car]);
 

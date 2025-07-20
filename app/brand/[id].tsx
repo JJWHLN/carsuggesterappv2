@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
-import { ArrowLeft, Star, Car, Award } from 'lucide-react-native';
+
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { ModelCard } from '@/components/ModelCard'; // Using ModelCard for brand's models
@@ -19,6 +19,7 @@ import { currentColors, Spacing, Typography, BorderRadius } from '@/constants/Co
 import { useApi } from '@/hooks/useApi';
 import { fetchBrandById, fetchCarModels, ApiError } from '@/services/api';
 import { Brand as BrandType, CarModel as CarModelType } from '@/types/database';
+import { ArrowLeft, Star, Car, Award } from '@/utils/ultra-optimized-icons';
 import { getImageUrl } from '@/utils/formatters'; // For brand logo
 
 export default function BrandDetailScreen() {
@@ -138,7 +139,6 @@ export default function BrandDetailScreen() {
   const headquartersLocation = brand.name === 'Toyota' ? 'Toyota City, Japan' : 'Global City, World'; // Example mock
   // Mock popular models based on brand name, not in DB type
   const popularModels = brand.name ? [`${brand.name} Model S`, `${brand.name} Model X`, `${brand.name} Roadster`] : [];
-
 
   return (
     <SafeAreaView style={styles.container}>

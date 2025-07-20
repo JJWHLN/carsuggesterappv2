@@ -88,7 +88,7 @@ const PreferenceStepScreen = memo(() => {
   ];
 
   const handleComplete = async (preferences: Record<string, any>) => {
-    console.log('User preferences:', preferences);
+    logger.debug('User preferences:', preferences);
     // Here you would typically:
     // 1. Save preferences to user profile
     // 2. Generate initial recommendations

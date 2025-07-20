@@ -5,7 +5,7 @@ let SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   if (__DEV__) {
-    console.warn(
+    logger.warn(
       '⚠️ Supabase URL or Anon Key is missing from environment variables. Using fallback for development (Bolt compatibility).'
     );
     SUPABASE_URL = SUPABASE_URL || 'https://jhenughcwmllbgoxrabk.supabase.co';
@@ -13,7 +13,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   } else {
     // In production, if variables are missing, it's a critical error.
     // You might throw an error or use a non-functional placeholder to prevent app crash but indicate failure.
-    console.error('⛔️ CRITICAL: Supabase URL or Anon Key is missing in production environment!');
+    logger.error('⛔️ CRITICAL: Supabase URL or Anon Key is missing in production environment!');
     // To prevent app from running with fallback credentials in prod:
     // SUPABASE_URL = undefined;
     // SUPABASE_ANON_KEY = undefined;
@@ -25,9 +25,9 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 
 // Debug logging for development
 if (__DEV__) {
-  console.log('🔧 Supabase Configuration:');
-  console.log('URL:', SUPABASE_URL);
-  console.log('Anon Key:', SUPABASE_ANON_KEY ? '✅ Present' : '❌ MISSING');
+  logger.debug('🔧 Supabase Configuration:');
+  logger.debug('URL:', SUPABASE_URL);
+  logger.debug('Anon Key:', SUPABASE_ANON_KEY ? '✅ Present' : '❌ MISSING');
 }
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
@@ -35,7 +35,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   // we don't proceed with createClient using undefined values if we chose not to throw an error above.
   // However, createClient itself will error if URL/key are invalid or missing.
   // For a robust app, you might replace `supabase` with a mock/dummy client that always errors.
-  console.error("⛔️ Supabase client cannot be initialized without URL and Key.");
+  logger.error("⛔️ Supabase client cannot be initialized without URL and Key.");
   // A possible strategy: export a non-functional client or throw.
   // export const supabase = { auth: { /* dummy methods */ } /* ... other dummy services */ };
   // For now, let createClient attempt and fail, error will be caught by users of `supabase` object.
@@ -66,14 +66,14 @@ export async function testSupabaseConnection(): Promise<boolean> {
       .limit(1);
     
     if (error) {
-      console.error('❌ Supabase connection test failed:', error.message);
+      logger.error('❌ Supabase connection test failed:', error.message);
       return false;
     }
     
-    console.log('✅ Supabase connection successful');
+    logger.debug('✅ Supabase connection successful');
     return true;
   } catch (error) {
-    console.error('❌ Supabase connection error:', error);
+    logger.error('❌ Supabase connection error:', error);
     return false;
   }
 }
@@ -84,13 +84,13 @@ export async function getCurrentSession() {
     const { data: { session }, error } = await supabase.auth.getSession();
     
     if (error) {
-      console.error('Error getting session:', error);
+      logger.error('Error getting session:', error);
       return null;
     }
     
     return session;
   } catch (error) {
-    console.error('Session error:', error);
+    logger.error('Session error:', error);
     return null;
   }
 }

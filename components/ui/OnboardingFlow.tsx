@@ -7,11 +7,12 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react-native';
+
 import { PreferenceSelector, PreferenceOption } from './PreferenceSelector';
 import { Button } from './Button';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { ChevronLeft, ChevronRight, Check } from '@/utils/ultra-optimized-icons';
 
 export interface OnboardingStep {
   id: string;

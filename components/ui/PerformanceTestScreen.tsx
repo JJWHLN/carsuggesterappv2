@@ -133,7 +133,7 @@ export const PerformanceTestScreen: React.FC = () => {
       setOverallScore(score);
 
     } catch (error) {
-      console.error('Performance test error:', error);
+      logger.error('Performance test error:', error);
       Alert.alert('Test Error', 'Failed to run performance tests');
     } finally {
       setIsRunning(false);
@@ -189,9 +189,9 @@ ${testResults.map(result => `
       'Full performance report has been generated. Check console for details.',
       [{ text: 'OK' }]
     );
-    console.log('=== FULL PERFORMANCE REPORT ===');
-    console.log(report);
-    console.log(testSummary);
+    logger.debug('=== FULL PERFORMANCE REPORT ===');
+    logger.debug(report);
+    logger.debug(testSummary);
   };
 
   return (

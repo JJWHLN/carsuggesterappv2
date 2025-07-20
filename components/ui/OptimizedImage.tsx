@@ -1,5 +1,5 @@
 import React, { useState, memo, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Image, StyleSheet, ViewStyle, ImageStyle, Dimensions, LayoutChangeEvent } from 'react-native';
+import { View, Image, StyleSheet, ViewStyle, ImageStyle, Dimensions, LayoutChangeEvent, PixelRatio } from 'react-native';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -9,6 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { BorderRadius } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { optimizeImageUrl } from '@/utils/imageOptimizer';
+import { useMemoryOptimization } from '@/hooks/useMemoryOptimization';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -125,6 +127,9 @@ const OptimizedImage = memo<OptimizedImageProps>(({
   const [isInView, setIsInView] = useState(false);
   const containerRef = useRef<View>(null);
   
+  // Memory optimization
+  const { addCleanupFunction } = useMemoryOptimization();
+  
   // Animation values
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.95);
@@ -140,28 +145,12 @@ const OptimizedImage = memo<OptimizedImageProps>(({
     opacity: interpolate(blurRadius.value, [0, 10], [1, 0.3]),
   }));
 
-  // Get optimized image URI based on quality and size
+  // Get optimized image URI using the centralized optimization utility
   const getOptimizedUri = useCallback((originalUri: string): string => {
     if (typeof source === 'number') return originalUri;
     
-    try {
-      // For external images, add quality and size parameters
-      const url = new URL(originalUri);
-      
-      // Add quality parameter
-      const qualityMap = { low: 60, medium: 80, high: 95 };
-      url.searchParams.set('q', qualityMap[quality].toString());
-      
-      // Add size parameters based on screen width
-      const maxWidth = Math.floor(screenWidth * (quality === 'high' ? 2 : 1.5));
-      url.searchParams.set('w', maxWidth.toString());
-      url.searchParams.set('auto', 'compress');
-      
-      return url.toString();
-    } catch (error) {
-      // If URL parsing fails, return original URI
-      return originalUri;
-    }
+    // Use the centralized image optimization utility
+    return optimizeImageUrl(originalUri, quality);
   }, [quality, source]);
 
   // Cache management
@@ -227,6 +216,17 @@ const OptimizedImage = memo<OptimizedImageProps>(({
     setHasError(true);
     runOnJS(() => onError?.())();
   }, [onError]);
+
+  // Memory optimization: Add cleanup function
+  useEffect(() => {
+    addCleanupFunction(() => {
+      setIsLoading(true);
+      setHasError(false);
+      opacity.value = 0;
+      scale.value = 0.95;
+      blurRadius.value = blur ? 10 : 0;
+    });
+  }, [addCleanupFunction, opacity, scale, blurRadius, blur]);
 
   // Determine image source with caching and optimization
   const imageSource = useMemo(() => {

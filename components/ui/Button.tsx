@@ -15,7 +15,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useTheme } from '@/theme/ThemeContext';
+import { useTheme } from '@/hooks/useTheme';
 import { Typography, ComponentSizes, BorderRadius, Spacing } from '@/theme/Theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
@@ -121,7 +121,7 @@ export const Button = memo<ButtonProps>(({
       case 'secondary':
         return {
           ...baseStyle,
-          backgroundColor: colors.secondary,
+          backgroundColor: colors.cardBackground,
           borderWidth: 1,
           borderColor: colors.border,
         };
@@ -155,7 +155,7 @@ export const Button = memo<ButtonProps>(({
       case 'primary':
         return {
           ...baseTypography,
-          color: colors.textInverse,
+          color: colors.white,
         };
       case 'secondary':
         return {
@@ -175,7 +175,7 @@ export const Button = memo<ButtonProps>(({
       case 'danger':
         return {
           ...baseTypography,
-          color: colors.textInverse,
+          color: colors.white,
         };
       default:
         return baseTypography;
@@ -189,7 +189,7 @@ export const Button = memo<ButtonProps>(({
         <View style={styles.loadingContainer}>
           <ActivityIndicator 
             size="small" 
-            color={variant === 'primary' || variant === 'danger' ? colors.textInverse : colors.primary}
+            color={variant === 'primary' || variant === 'danger' ? colors.white : colors.primary}
           />
           <Text style={[getTextStyles(), styles.loadingText, textStyle]}>
             {title}
@@ -232,7 +232,7 @@ export const Button = memo<ButtonProps>(({
         accessibilityState={{ disabled: disabled || loading }}
       >
         <LinearGradient
-          colors={[colors.primary, colors.primaryDark]}
+          colors={[colors.primary, colors.primaryHover]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[getButtonStyles(), disabled && styles.disabled]}

@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Shield, Star, Building2, Award, Clock, ChevronRight, Phone, Mail, ExternalLink, List } from '@/utils/icons';
+
 import { Button } from '@/components/ui/Button';
 import { CarCard } from '@/components/CarCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -27,6 +27,7 @@ import { fetchVehicleListings } from '@/services/supabaseService';
 import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
 import { Car as CarType } from '@/types/database';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Star, Building2, Award, Clock, ChevronRight, Mail, List } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -171,7 +172,7 @@ function MarketplaceScreen() {
   }, [loadingMore, hasMore, cars.length]);
 
   const handleCarPress = useCallback((carId: string) => {
-    console.log('Navigate to car details:', carId);
+    logger.debug('Navigate to car details:', carId);
     // TODO: Navigate to car detail screen
     // router.push(`/car/${carId}`);
   }, []);

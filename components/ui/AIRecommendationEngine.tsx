@@ -17,17 +17,7 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import { 
-  Sparkles, 
-  Star, 
-  TrendingUp, 
-  Zap, 
-  Heart,
-  ArrowRight,
-  RefreshCw,
-  Info,
-  ChevronDown,
-} from '@/utils/icons';
+
 import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/Button';
@@ -38,6 +28,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { UnifiedSearchFilter } from '@/components/ui/UnifiedSearchFilter';
 import { useAuth } from '@/contexts/AuthContext';
 import { Car } from '@/types/database';
+import { Sparkles, Star, TrendingUp, Zap, Heart, ArrowRight } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 

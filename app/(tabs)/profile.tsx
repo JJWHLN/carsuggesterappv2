@@ -12,28 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { 
-  User, 
-  Mail,
-  Settings,
-  LogOut,
-  Heart,
-  FileText,
-  Car,
-  Shield,
-  Bell,
-  Moon,
-  ChevronRight,
-  Edit,
-  Phone,
-  MapPin,
-  Crown,
-  Calendar,
-  Award,
-  Sparkles,
-  TrendingUp,
-  MessageCircle,
-} from '@/utils/icons';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button } from '@/components/ui/Button';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -42,6 +21,7 @@ import { BaseFormInput, FloatingLabelInput, FormFieldGroup, useFormValidation } 
 import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useAuth } from '@/contexts/AuthContext';
 import { useThemeColors } from '@/hooks/useTheme';
+import { User, Mail, Settings, Heart, Car, ChevronRight, MapPin, Crown, Calendar, Award, Sparkles, TrendingUp, MessageCircle } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -65,7 +45,7 @@ function ProfileScreen() {
             try {
               await signOut();
             } catch (error) {
-              console.error('Error signing out:', error);
+              logger.error('Error signing out:', error);
               Alert.alert('Error', 'Failed to sign out.');
             }
           }
@@ -81,9 +61,12 @@ function ProfileScreen() {
 
   const handleNavigateToSavedCars = () => {
     if (user) {
-      Alert.alert('Saved Cars', 'Saved Cars feature coming soon!');
+      router.push('/saved-cars');
     } else {
-      Alert.alert('Sign In Required', 'Please sign in to view saved cars');
+      Alert.alert('Sign In Required', 'Please sign in to view saved cars', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign In', onPress: () => router.push('/auth/sign-in') }
+      ]);
     }
   };
 
@@ -107,7 +90,6 @@ function ProfileScreen() {
       default: return colors.textSecondary;
     }
   };
-
 
     const renderMenuItem = (icon: React.ReactNode, title: string, subtitle: string, onPress: () => void) => (
     <TouchableOpacity style={[styles.menuItem, { borderBottomColor: colors.border }]} onPress={onPress}>

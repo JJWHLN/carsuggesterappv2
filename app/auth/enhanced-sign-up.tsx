@@ -19,7 +19,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
 import { EnhancedAuthService } from '@/services/enhancedAuthService';
-import { Car, Mail, Eye, EyeOff, User, Building2 } from '@/utils/icons';
+import { Car, Mail, Eye, EyeOff, User, Building2 } from '@/utils/ultra-optimized-icons';
 
 function EnhancedSignUpScreen() {
   const [formData, setFormData] = useState({
@@ -144,7 +144,7 @@ function EnhancedSignUpScreen() {
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error: any) {
-      console.error(`${provider} sign-up error:`, error);
+      logger.error(`${provider} sign-up error:`, error);
       Alert.alert(
         'Sign Up Failed',
         error.message || `Failed to sign up with ${provider}. Please try again.`

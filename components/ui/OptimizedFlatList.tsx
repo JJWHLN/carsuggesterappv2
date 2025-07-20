@@ -7,6 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useThemeColors } from '../../hooks/useTheme';
+import { useMemoryOptimization } from '../../hooks/useMemoryOptimization';
 
 const { height } = Dimensions.get('window');
 
@@ -27,6 +28,7 @@ export function OptimizedFlatList<T>({
   ...props
 }: OptimizedFlatListProps<T>) {
   const { colors } = useThemeColors();
+  const { addCleanupFunction } = useMemoryOptimization();
 
   // Optimized getItemLayout for better performance
   const getItemLayout = useCallback(

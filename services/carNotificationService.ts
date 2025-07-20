@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { webCompatibleStorage } from './webCompatibleStorage';
 import { supabase } from '@/lib/supabase';
 import { CarUserPreferences } from './enhancedAuthService';
 
@@ -63,7 +63,7 @@ export class CarNotificationService {
       // Set up real-time subscriptions
       this.setupRealtimeSubscriptions(userId);
     } catch (error) {
-      console.error('Error initializing notification service:', error);
+      logger.error('Error initializing notification service:', error);
     }
   }
 
@@ -71,7 +71,7 @@ export class CarNotificationService {
   private async loadNotifications(userId: string): Promise<void> {
     try {
       // Load from local storage first for quick access
-      const localNotifications = await AsyncStorage.getItem(`notifications_${userId}`);
+      const localNotifications = await webCompatibleStorage.getItem(`notifications_${userId}`);
       if (localNotifications) {
         this.notifications = JSON.parse(localNotifications);
         this.notifyListeners();
@@ -91,7 +91,7 @@ export class CarNotificationService {
       await this.saveNotificationsLocally(userId);
       this.notifyListeners();
     } catch (error) {
-      console.error('Error loading notifications:', error);
+      logger.error('Error loading notifications:', error);
     }
   }
 
@@ -108,7 +108,7 @@ export class CarNotificationService {
 
       this.priceAlerts = data || [];
     } catch (error) {
-      console.error('Error loading price alerts:', error);
+      logger.error('Error loading price alerts:', error);
     }
   }
 
@@ -125,7 +125,7 @@ export class CarNotificationService {
 
       this.savedSearches = data || [];
     } catch (error) {
-      console.error('Error loading saved searches:', error);
+      logger.error('Error loading saved searches:', error);
     }
   }
 
@@ -245,7 +245,7 @@ export class CarNotificationService {
 
       this.addNotification(fullNotification);
     } catch (error) {
-      console.error('Error creating notification:', error);
+      logger.error('Error creating notification:', error);
     }
   }
 
@@ -336,7 +336,7 @@ export class CarNotificationService {
 
       return true;
     } catch (error) {
-      console.error('Error creating price alert:', error);
+      logger.error('Error creating price alert:', error);
       return false;
     }
   }
@@ -378,7 +378,7 @@ export class CarNotificationService {
 
       return true;
     } catch (error) {
-      console.error('Error creating saved search:', error);
+      logger.error('Error creating saved search:', error);
       return false;
     }
   }
@@ -439,7 +439,7 @@ export class CarNotificationService {
         }
       }
     } catch (error) {
-      console.error('Error checking saved search matches:', error);
+      logger.error('Error checking saved search matches:', error);
     }
   }
 
@@ -460,7 +460,7 @@ export class CarNotificationService {
         await this.saveNotificationsLocally(notification.id.split('_')[0]);
       }
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      logger.error('Error marking notification as read:', error);
     }
   }
 
@@ -482,7 +482,7 @@ export class CarNotificationService {
       this.notifyListeners();
       await this.saveNotificationsLocally(userId);
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
+      logger.error('Error marking all notifications as read:', error);
     }
   }
 
@@ -500,7 +500,7 @@ export class CarNotificationService {
       this.notifyListeners();
       await this.saveNotificationsLocally(notificationId.split('_')[0]);
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      logger.error('Error deleting notification:', error);
     }
   }
 
@@ -530,12 +530,12 @@ export class CarNotificationService {
   // Save notifications to local storage
   private async saveNotificationsLocally(userId: string): Promise<void> {
     try {
-      await AsyncStorage.setItem(
+      await webCompatibleStorage.setItem(
         `notifications_${userId}`,
         JSON.stringify(this.notifications)
       );
     } catch (error) {
-      console.error('Error saving notifications locally:', error);
+      logger.error('Error saving notifications locally:', error);
     }
   }
 
@@ -605,7 +605,7 @@ export class CarNotificationService {
         );
       }
     } catch (error) {
-      console.error('Error generating smart notifications:', error);
+      logger.error('Error generating smart notifications:', error);
     }
   }
 

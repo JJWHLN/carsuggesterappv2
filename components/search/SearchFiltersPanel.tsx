@@ -11,8 +11,9 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { SlidersHorizontal, X } from 'lucide-react-native';
+
 import { useDesignSystem } from '@/hooks/useDesignSystem';
+import { SlidersHorizontal, X } from '@/utils/ultra-optimized-icons';
 
 export interface SearchFilters {
   priceRange: [number, number];

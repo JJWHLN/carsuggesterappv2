@@ -13,12 +13,13 @@ import {
   Platform,
   useColorScheme,
 } from 'react-native';
-import { Search, Filter, X, ChevronDown, Check, Settings } from '@/utils/icons';
+
 import DesignSystem from '@/constants/DesignSystem';
 import { BaseFormInput, SearchInput } from '@/components/ui/UnifiedFormComponents';
 import { CategoryChip, FilterButton, ViewToggle } from '@/components/ui/SharedComponents';
 import { Button } from '@/components/ui/Button';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Search, Filter, X, Check, Settings } from '@/utils/ultra-optimized-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 

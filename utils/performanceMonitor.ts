@@ -38,7 +38,7 @@ class PerformanceMonitor {
   private initializeMonitoring() {
     // Initialize performance monitoring
     if (__DEV__) {
-      console.log('🔍 Performance monitoring initialized');
+      logger.debug('🔍 Performance monitoring initialized');
     }
   }
 
@@ -51,7 +51,7 @@ class PerformanceMonitor {
   endTiming(operation: string): number {
     const startTime = this.startTimes[operation];
     if (!startTime) {
-      console.warn(`No start time found for operation: ${operation}`);
+      logger.warn(`No start time found for operation: ${operation}`);
       return 0;
     }
 
@@ -67,7 +67,7 @@ class PerformanceMonitor {
   // Record a performance metric
   recordMetric(metric: string, value: number): void {
     if (__DEV__) {
-      console.log(`📊 ${metric}: ${value}ms`);
+      logger.debug(`📊 ${metric}: ${value}ms`);
     }
     
     // Store in appropriate metric category
@@ -88,7 +88,7 @@ class PerformanceMonitor {
         this.metrics.imageLoadTime = value;
         break;
       default:
-        console.log(`Custom metric - ${metric}: ${value}`);
+        logger.debug(`Custom metric - ${metric}: ${value}`);
     }
   }
 
@@ -139,7 +139,7 @@ class PerformanceMonitor {
     this.metrics.memoryUsage = memoryUsage;
     
     if (__DEV__ && memoryUsage > 150) {
-      console.warn(`⚠️  High memory usage detected: ${memoryUsage.toFixed(2)}MB`);
+      logger.warn(`⚠️  High memory usage detected: ${memoryUsage.toFixed(2)}MB`);
     }
   }
 
@@ -153,7 +153,7 @@ class PerformanceMonitor {
     this.metrics.scrollPerformance = scrollPerformance;
     
     if (__DEV__ && scrollPerformance < 50) {
-      console.warn(`⚠️  Poor scroll performance: ${scrollPerformance.toFixed(2)}%`);
+      logger.warn(`⚠️  Poor scroll performance: ${scrollPerformance.toFixed(2)}%`);
     }
   }
 

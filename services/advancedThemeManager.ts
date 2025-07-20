@@ -1,5 +1,6 @@
 import { Appearance, ColorSchemeName } from 'react-native';
 
+
 export interface ThemeColors {
   primary: string;
   secondary: string;
@@ -488,7 +489,7 @@ class AdvancedThemeManager {
         return theme;
       }
     } catch (error) {
-      console.error('Failed to import theme:', error);
+      logger.error('Failed to import theme:', error);
     }
     
     return null;

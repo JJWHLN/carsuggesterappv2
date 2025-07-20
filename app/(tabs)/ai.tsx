@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { SlidersHorizontal, Car, Sparkles, Search, Zap } from 'lucide-react-native';
+
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCanPerformAction } from '@/components/ui/RoleProtection';
@@ -31,6 +31,7 @@ import AdvancedThemeManager from '@/services/advancedThemeManager';
 import PerformanceMonitor, { usePerformanceMonitor } from '@/services/performanceMonitor';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { Car as CarType } from '@/types/database';
+import { SlidersHorizontal, Car, Sparkles, Search, Zap } from '@/utils/ultra-optimized-icons';
 
 interface SearchSuggestion {
   id: string;
@@ -461,7 +462,7 @@ export default function AISearchTab() {
           setLoading(false);
           resultsOpacity.value = withTiming(1, { duration: 300 });
         } catch (error) {
-          console.error('Search error:', error);
+          logger.error('Search error:', error);
           setCars([]);
           setLoading(false);
         }

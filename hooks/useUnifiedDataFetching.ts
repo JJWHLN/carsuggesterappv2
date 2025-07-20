@@ -211,7 +211,7 @@ export function useUnifiedDataFetching<T>(
       }
       
       setError(errorMessage);
-      console.error('Data fetching error:', err);
+      logger.error('Data fetching error:', err);
       
       if (reset && (enablePagination || enableInfiniteScroll)) {
         setData([]);

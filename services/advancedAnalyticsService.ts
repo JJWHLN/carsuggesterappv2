@@ -117,7 +117,7 @@ class AdvancedAnalyticsService {
         });
       }
     } catch (error) {
-      console.error('Failed to load predictive models:', error);
+      logger.error('Failed to load predictive models:', error);
     }
   }
 
@@ -321,7 +321,7 @@ class AdvancedAnalyticsService {
         predictive_insights: predictiveInsightsData,
       };
     } catch (error) {
-      console.error('Failed to generate analytics dashboard:', error);
+      logger.error('Failed to generate analytics dashboard:', error);
       throw error;
     }
   }
@@ -386,7 +386,7 @@ class AdvancedAnalyticsService {
 
       return insights.sort((a, b) => b.confidence_score - a.confidence_score);
     } catch (error) {
-      console.error('Failed to generate market insights:', error);
+      logger.error('Failed to generate market insights:', error);
       return [];
     }
   }
@@ -428,7 +428,7 @@ class AdvancedAnalyticsService {
         engagement_score: engagementScore,
       };
     } catch (error) {
-      console.error('Failed to predict user behavior:', error);
+      logger.error('Failed to predict user behavior:', error);
       return this.getDefaultPrediction();
     }
   }
@@ -484,7 +484,7 @@ class AdvancedAnalyticsService {
         config: selectedVariant.config,
       };
     } catch (error) {
-      console.error('Failed to initialize A/B test:', error);
+      logger.error('Failed to initialize A/B test:', error);
       // Return default variant on error
       return {
         variant: variants[0]?.name || 'control',
@@ -503,7 +503,7 @@ class AdvancedAnalyticsService {
 
       await supabase.from('user_behavior_events').insert(events);
     } catch (error) {
-      console.error('Failed to flush analytics buffer:', error);
+      logger.error('Failed to flush analytics buffer:', error);
       // Re-add events to buffer on failure
       this.analyticsBuffer.unshift(...this.analyticsBuffer);
     }

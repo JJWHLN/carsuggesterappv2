@@ -1,10 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Platform, StyleSheet } from 'react-native';
-import { Home, MessageSquare, ShoppingBag, Sparkles, User } from '@/utils/icons';
+
 import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCanPerformAction } from '@/components/ui/RoleProtection';
+import { Home, Sparkles, User } from '@/utils/ultra-optimized-icons';
 
 export default function TabLayout() {
   const { colors } = useThemeColors();

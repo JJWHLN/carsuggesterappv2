@@ -49,7 +49,7 @@ const isValidDate = _isValidDate;
 export function transformDatabaseVehicleListingToCar(dbListing: DatabaseVehicleListing): Car {
   if (!dbListing || typeof dbListing !== 'object') {
     // Consider throwing a more specific error or returning a default Car object
-    console.warn('Invalid database listing provided to transformer:', dbListing);
+    logger.warn('Invalid database listing provided to transformer:', dbListing);
     // Fallback to a default structure or throw error
     return { /* default/empty Car structure */ } as Car;
   }
@@ -119,7 +119,7 @@ export function transformDatabaseVehicleListingToCar(dbListing: DatabaseVehicleL
 
 export function transformDatabaseReviewToReview(dbReview: DatabaseReview): Review {
   if (!dbReview || typeof dbReview !== 'object') {
-    console.warn('Invalid database review provided to transformer:', dbReview);
+    logger.warn('Invalid database review provided to transformer:', dbReview);
     return { /* default/empty Review structure */ } as Review;
   }
 
@@ -200,7 +200,7 @@ export function transformDatabaseReviewToReview(dbReview: DatabaseReview): Revie
 
 export function transformDatabaseCarModelToCarModel(dbModel: DatabaseCarModel): CarModel {
   if (!dbModel || typeof dbModel !== 'object') {
-     console.warn('Invalid database car model provided to transformer:', dbModel);
+     logger.warn('Invalid database car model provided to transformer:', dbModel);
     return { /* default/empty CarModel structure */ } as CarModel;
   }
 
@@ -231,7 +231,7 @@ export function transformDatabaseCarModelToCarModel(dbModel: DatabaseCarModel): 
 
 export function transformDatabaseBrandToBrand(dbBrand: DatabaseBrand): Brand {
   if (!dbBrand || typeof dbBrand !== 'object') {
-    console.warn('Invalid database brand provided to transformer:', dbBrand);
+    logger.warn('Invalid database brand provided to transformer:', dbBrand);
     return { /* default/empty Brand structure */ } as Brand;
   }
 

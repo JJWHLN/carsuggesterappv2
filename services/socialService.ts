@@ -203,7 +203,7 @@ class SocialService {
 
       return data;
     } catch (error) {
-      console.error('Error creating review:', error);
+      logger.error('Error creating review:', error);
       throw error;
     }
   }
@@ -286,7 +286,7 @@ class SocialService {
       this.setCache(cacheKey, result);
       return result;
     } catch (error) {
-      console.error('Error getting car reviews:', error);
+      logger.error('Error getting car reviews:', error);
       throw error;
     }
   }
@@ -319,7 +319,7 @@ class SocialService {
       // Clear cache
       this.cache.clear();
     } catch (error) {
-      console.error('Error marking review helpful:', error);
+      logger.error('Error marking review helpful:', error);
       throw error;
     }
   }
@@ -358,7 +358,7 @@ class SocialService {
 
       return data;
     } catch (error) {
-      console.error('Error creating car comparison:', error);
+      logger.error('Error creating car comparison:', error);
       throw error;
     }
   }
@@ -408,7 +408,7 @@ class SocialService {
       this.setCache(cacheKey, data || []);
       return data || [];
     } catch (error) {
-      console.error('Error getting popular comparisons:', error);
+      logger.error('Error getting popular comparisons:', error);
       throw error;
     }
   }
@@ -459,7 +459,7 @@ class SocialService {
       // Clear cache
       this.cache.clear();
     } catch (error) {
-      console.error('Error following user:', error);
+      logger.error('Error following user:', error);
       throw error;
     }
   }
@@ -484,7 +484,7 @@ class SocialService {
       // Clear cache
       this.cache.clear();
     } catch (error) {
-      console.error('Error unfollowing user:', error);
+      logger.error('Error unfollowing user:', error);
       throw error;
     }
   }
@@ -509,7 +509,7 @@ class SocialService {
       this.setCache(cacheKey, followers);
       return followers;
     } catch (error) {
-      console.error('Error getting user followers:', error);
+      logger.error('Error getting user followers:', error);
       throw error;
     }
   }
@@ -534,7 +534,7 @@ class SocialService {
       this.setCache(cacheKey, following);
       return following;
     } catch (error) {
-      console.error('Error getting user following:', error);
+      logger.error('Error getting user following:', error);
       throw error;
     }
   }
@@ -567,7 +567,7 @@ class SocialService {
 
       return data;
     } catch (error) {
-      console.error('Error creating discussion:', error);
+      logger.error('Error creating discussion:', error);
       throw error;
     }
   }
@@ -625,7 +625,7 @@ class SocialService {
       this.setCache(cacheKey, data || []);
       return data || [];
     } catch (error) {
-      console.error('Error getting car discussions:', error);
+      logger.error('Error getting car discussions:', error);
       throw error;
     }
   }
@@ -685,7 +685,7 @@ class SocialService {
       this.setCache(cacheKey, data || []);
       return data || [];
     } catch (error) {
-      console.error('Error getting social activity feed:', error);
+      logger.error('Error getting social activity feed:', error);
       throw error;
     }
   }
@@ -712,7 +712,7 @@ class SocialService {
       this.cache.clear();
       return data;
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      logger.error('Error updating user profile:', error);
       throw error;
     }
   }
@@ -737,7 +737,7 @@ class SocialService {
       this.setCache(cacheKey, data);
       return data;
     } catch (error) {
-      console.error('Error getting user profile:', error);
+      logger.error('Error getting user profile:', error);
       throw error;
     }
   }
@@ -756,7 +756,7 @@ class SocialService {
           created_at: new Date().toISOString(),
         });
     } catch (error) {
-      console.error('Error creating social activity:', error);
+      logger.error('Error creating social activity:', error);
       // Don't throw, as this is a background operation
     }
   }
@@ -769,7 +769,7 @@ class SocialService {
         stats_update: statsUpdate,
       });
     } catch (error) {
-      console.error('Error updating user social stats:', error);
+      logger.error('Error updating user social stats:', error);
       // Don't throw, as this is a background operation
     }
   }

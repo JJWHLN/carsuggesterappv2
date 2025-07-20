@@ -82,10 +82,12 @@ class PerformanceMonitor {
     this.isMonitoring = true;
     this.appStartTime = Date.now();
     
-    // Store original error handler before setting new one
+    // Enhanced error tracking for Phase 2 UX improvements
     this.originalErrorHandler = ErrorUtils.getGlobalHandler();
     ErrorUtils.setGlobalHandler((error, isFatal) => {
-      // Just store the error in metrics for now
+      // Enhanced error categorization for modern UI patterns
+      const errorCategory = this.categorizeError(error);
+      
       this.metrics.push({
         name: 'GlobalError',
         startTime: Date.now(),
@@ -94,9 +96,12 @@ class PerformanceMonitor {
         metadata: { 
           error: error.message || 'Unknown error',
           stack: error.stack,
-          isFatal 
+          isFatal,
+          category: errorCategory,
+          context: 'Phase2_ModernUI'
         }
       });
+      
       // Call original handler if it exists
       if (this.originalErrorHandler) {
         this.originalErrorHandler(error, isFatal);
@@ -106,10 +111,42 @@ class PerformanceMonitor {
     // Start memory monitoring
     this.startMemoryMonitoring();
     
-    // Monitor JavaScript performance
+    // Monitor JavaScript performance with enhanced tracking
     this.monitorJavaScriptPerformance();
     
-    console.log('Performance monitoring started');
+    // Monitor modern UI performance patterns (Instagram, TikTok, Zillow-style)
+    this.monitorModernUIPatterns();
+    
+    logger.debug('📱 Enhanced Performance monitoring started for Phase 2 UX');
+  }
+
+  private categorizeError(error: any): string {
+    const message = error.message || '';
+    
+    if (message.includes('Network') || message.includes('fetch')) {
+      return 'network';
+    } else if (message.includes('Component') || message.includes('render')) {
+      return 'ui_component';
+    } else if (message.includes('ModernCarCard') || message.includes('ZillowStyle')) {
+      return 'phase2_component';
+    } else if (message.includes('TouchableOpacity') || message.includes('Animated')) {
+      return 'interaction';
+    } else {
+      return 'general';
+    }
+  }
+
+  private monitorModernUIPatterns(): void {
+    // Track Instagram-style stories performance
+    this.startTimer('InstagramStoriesLoad');
+    
+    // Track TikTok-style infinite scroll
+    this.startTimer('TikTokScrollPerformance');
+    
+    // Track Zillow-style search and filters
+    this.startTimer('ZillowSearchExperience');
+    
+    logger.debug('🎨 Modern UI pattern monitoring initialized');
   }
 
   stopMonitoring(): void {
@@ -129,7 +166,7 @@ class PerformanceMonitor {
       this.originalErrorHandler = undefined;
     }
     
-    console.log('Performance monitoring stopped');
+    logger.debug('Performance monitoring stopped');
   }
 
   // Performance Timing
@@ -324,7 +361,7 @@ class PerformanceMonitor {
     
     // Log memory warnings
     if (memoryData.used > 150) {
-      console.warn('High memory usage detected:', memoryData.used, 'MB');
+      logger.warn('High memory usage detected:', memoryData.used, 'MB');
     }
   }
 
@@ -354,12 +391,12 @@ class PerformanceMonitor {
     }
   }
 
-  // Performance Analysis
+  // Enhanced Performance Analysis for Modern UI Patterns
   generateReport(): PerformanceReport {
     const completedMetrics = this.metrics.filter(m => m.duration !== undefined);
     const averageRenderTime = this.calculateAverageRenderTime();
     const slowestOperations = this.getSlowestOperations(10);
-    const recommendations = this.generateRecommendations();
+    const recommendations = this.generateModernUIRecommendations();
     
     return {
       appStartTime: this.appStartTime,
@@ -371,6 +408,124 @@ class PerformanceMonitor {
       renderMetrics: Array.from(this.renderMetrics.values()),
       recommendations,
     };
+  }
+
+  private generateModernUIRecommendations(): string[] {
+    const recommendations: string[] = [];
+    
+    // Check for Instagram-style stories performance
+    const storiesMetrics = this.getMetricsByName('InstagramStoriesLoad');
+    if (storiesMetrics.length > 0) {
+      const avgStoriesTime = this.getAverageTimeByName('InstagramStoriesLoad');
+      if (avgStoriesTime > 500) {
+        recommendations.push(
+          `📸 Instagram-style stories loading slowly (${avgStoriesTime}ms) - consider lazy loading or image optimization`
+        );
+      }
+    }
+    
+    // Check for TikTok-style scroll performance
+    const scrollMetrics = this.getMetricsByName('TikTokScrollPerformance');
+    if (scrollMetrics.length > 0) {
+      const avgScrollTime = this.getAverageTimeByName('TikTokScrollPerformance');
+      if (avgScrollTime > 50) {
+        recommendations.push(
+          `📱 TikTok-style scroll lagging (${avgScrollTime}ms) - optimize FlatList or implement windowing`
+        );
+      }
+    }
+    
+    // Check for Zillow-style search performance
+    const searchMetrics = this.getMetricsByName('ZillowSearchExperience');
+    if (searchMetrics.length > 0) {
+      const avgSearchTime = this.getAverageTimeByName('ZillowSearchExperience');
+      if (avgSearchTime > 1000) {
+        recommendations.push(
+          `🏠 Zillow-style search taking too long (${avgSearchTime}ms) - implement search debouncing or caching`
+        );
+      }
+    }
+    
+    // Check for ModernCarCard rendering performance
+    const modernCardRenders = Array.from(this.renderMetrics.values())
+      .filter(metric => metric.componentName.includes('ModernCarCard'))
+      .filter(metric => metric.renderTime > 30); // More than 30ms
+    
+    if (modernCardRenders.length > 0) {
+      recommendations.push(
+        `🚗 ModernCarCard rendering slowly - consider memoization or image optimization`
+      );
+    }
+    
+    // Check Phase 2 component errors
+    const phase2Errors = this.metrics.filter(m => 
+      m.metadata && m.metadata.category === 'phase2_component'
+    );
+    
+    if (phase2Errors.length > 0) {
+      recommendations.push(
+        `⚠️  ${phase2Errors.length} Phase 2 component errors detected - review ModernCarCard and ZillowStyleSearch implementations`
+      );
+    }
+    
+    // General performance recommendations from base class
+    const baseRecommendations = this.generateBaseRecommendations();
+    
+    return [...recommendations, ...baseRecommendations];
+  }
+
+  private generateBaseRecommendations(): string[] {
+    const recommendations: string[] = [];
+    
+    // Check for slow renders
+    const slowRenders = Array.from(this.renderMetrics.values())
+      .filter(metric => metric.renderTime > 16) // More than 16ms render time
+      .sort((a, b) => b.renderTime - a.renderTime);
+    
+    if (slowRenders.length > 0) {
+      recommendations.push(
+        `Consider optimizing ${slowRenders[0].componentName} - render time: ${slowRenders[0].renderTime}ms`
+      );
+    }
+    
+    // Check for frequent re-renders
+    const frequentRenders = Array.from(this.renderMetrics.values())
+      .filter(metric => metric.renderCount > 50)
+      .sort((a, b) => b.renderCount - a.renderCount);
+    
+    if (frequentRenders.length > 0) {
+      recommendations.push(
+        `${frequentRenders[0].componentName} re-rendered ${frequentRenders[0].renderCount} times - consider memoization`
+      );
+    }
+    
+    // Check for slow network requests
+    const slowNetworkRequests = this.networkMetrics
+      .filter(metric => metric.duration && metric.duration > 5000)
+      .sort((a, b) => (b.duration || 0) - (a.duration || 0));
+    
+    if (slowNetworkRequests.length > 0) {
+      recommendations.push(
+        `Slow network request detected: ${slowNetworkRequests[0].url} (${slowNetworkRequests[0].duration}ms)`
+      );
+    }
+    
+    // Check memory usage
+    const latestMemory = this.memoryUsage[this.memoryUsage.length - 1];
+    if (latestMemory && latestMemory.used > 150) {
+      recommendations.push(`High memory usage: ${latestMemory.used}MB - consider optimizing data structures`);
+    }
+    
+    // Check for errors
+    const errorCount = this.metrics.filter(m => 
+      m.metadata && m.metadata.error
+    ).length;
+    
+    if (errorCount > 0) {
+      recommendations.push(`${errorCount} errors detected - check error logs`);
+    }
+    
+    return recommendations;
   }
 
   private calculateAverageRenderTime(): number {
@@ -460,31 +615,31 @@ class PerformanceMonitor {
     this.networkMetrics = [];
     this.renderMetrics.clear();
     this.memoryUsage = [];
-    console.log('Performance metrics cleared');
+    logger.debug('Performance metrics cleared');
   }
 
   // Debug Logging
   logPerformanceSummary(): void {
-    console.log('=== Performance Summary ===');
-    console.log(`App running for: ${Date.now() - this.appStartTime}ms`);
-    console.log(`Total metrics: ${this.metrics.length}`);
-    console.log(`Network requests: ${this.networkMetrics.length}`);
-    console.log(`Tracked components: ${this.renderMetrics.size}`);
-    console.log(`Memory readings: ${this.memoryUsage.length}`);
+    logger.debug('=== Performance Summary ===');
+    logger.debug(`App running for: ${Date.now() - this.appStartTime}ms`);
+    logger.debug(`Total metrics: ${this.metrics.length}`);
+    logger.debug(`Network requests: ${this.networkMetrics.length}`);
+    logger.debug(`Tracked components: ${this.renderMetrics.size}`);
+    logger.debug(`Memory readings: ${this.memoryUsage.length}`);
     
     const slowestOps = this.getSlowestOperations(5);
     if (slowestOps.length > 0) {
-      console.log('\nSlowest operations:');
+      logger.debug('\nSlowest operations:');
       slowestOps.forEach((op, index) => {
-        console.log(`${index + 1}. ${op.name}: ${op.duration}ms`);
+        logger.debug(`${index + 1}. ${op.name}: ${op.duration}ms`);
       });
     }
     
     const recommendations = this.generateRecommendations();
     if (recommendations.length > 0) {
-      console.log('\nRecommendations:');
+      logger.debug('\nRecommendations:');
       recommendations.forEach((rec, index) => {
-        console.log(`${index + 1}. ${rec}`);
+        logger.debug(`${index + 1}. ${rec}`);
       });
     }
   }

@@ -191,9 +191,9 @@ class AdvancedMLService {
       await this.startModelUpdates();
       
       this.isInitialized = true;
-      console.log('Advanced ML Service initialized successfully');
+      logger.debug('Advanced ML Service initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize ML Service:', error);
+      logger.error('Failed to initialize ML Service:', error);
       throw error;
     }
   }
@@ -246,7 +246,7 @@ class AdvancedMLService {
 
       return behaviorPattern;
     } catch (error) {
-      console.error('Error analyzing user behavior:', error);
+      logger.error('Error analyzing user behavior:', error);
       throw error;
     }
   }
@@ -395,7 +395,7 @@ class AdvancedMLService {
 
       return analysis;
     } catch (error) {
-      console.error('Error processing natural language search:', error);
+      logger.error('Error processing natural language search:', error);
       throw error;
     }
   }
@@ -521,7 +521,7 @@ class AdvancedMLService {
 
       return mockAnalysis;
     } catch (error) {
-      console.error('Error analyzing car image:', error);
+      logger.error('Error analyzing car image:', error);
       throw error;
     }
   }
@@ -629,12 +629,12 @@ class AdvancedMLService {
 
   private async initializeComputerVision(): Promise<void> {
     // Initialize computer vision capabilities
-    console.log('Computer vision initialized');
+    logger.debug('Computer vision initialized');
   }
 
   private async initializeNLP(): Promise<void> {
     // Initialize natural language processing
-    console.log('NLP initialized');
+    logger.debug('NLP initialized');
   }
 
   private async startModelUpdates(): Promise<void> {

@@ -1,13 +1,14 @@
 import { Link, Stack } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Home, AlertTriangle } from 'lucide-react-native';
+
 import { useColorScheme } from 'react-native';
 import DesignSystem from '@/constants/DesignSystem';
 import { useCommonThemedStyles } from '@/hooks/useThemedStyles';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { Home, AlertTriangle } from '@/utils/ultra-optimized-icons';
 
 export default function NotFoundScreen() {
   const colorScheme = useColorScheme();
@@ -37,5 +38,4 @@ export default function NotFoundScreen() {
     </ErrorBoundary>
   );
 }
-
 

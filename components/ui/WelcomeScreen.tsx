@@ -10,11 +10,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Car, Zap, TrendingUp, ChevronRight } from 'lucide-react-native';
+
 import { Button } from './Button';
 import { OptimizedImage } from './OptimizedImage';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { Car, Zap, TrendingUp, ChevronRight } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 

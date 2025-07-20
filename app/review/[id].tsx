@@ -9,18 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
-import { 
-  ArrowLeft, 
-  Star, 
-  Calendar, 
-  User,
-  Award,
-  TrendingUp,
-  Gauge,
-  Palette,
-  Smartphone,
-  Package
-} from 'lucide-react-native';
+
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { currentColors, Spacing, Typography, BorderRadius } from '@/constants/Colors';
@@ -29,7 +18,7 @@ import { useApi } from '@/hooks/useApi';
 import { fetchReviewById, SupabaseError } from '@/services/supabaseService';
 import { Review as ReviewType, DatabaseReview } from '@/types/database'; // Import Review type
 import { getImageUrl } from '@/utils/formatters';
-
+import { ArrowLeft, Star, Calendar, User, Award, TrendingUp, Gauge } from '@/utils/ultra-optimized-icons';
 
 export default function ReviewDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

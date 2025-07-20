@@ -20,7 +20,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
 import { EnhancedAuthService } from '@/services/enhancedAuthService';
-import { Car, Mail, Eye, EyeOff } from '@/utils/icons';
+import { Car, Mail, Eye, EyeOff } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -82,7 +82,7 @@ function EnhancedSignInScreen() {
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error: any) {
-      console.error(`${provider} sign-in error:`, error);
+      logger.error(`${provider} sign-in error:`, error);
       Alert.alert(
         'Sign In Failed',
         error.message || `Failed to sign in with ${provider}. Please try again.`

@@ -1,17 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { 
-  Zap, 
-  Crown, 
-  Shield, 
-  Rocket, 
-  Truck, 
-  Car,
-  ChevronRight,
-  ArrowRight
-} from 'lucide-react-native';
+
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { Zap, Crown, Truck, Car, ChevronRight, ArrowRight } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 

@@ -118,7 +118,7 @@ class AICarRecommendationEngine {
         this.warmupRecommendationModels(),
       ]);
     } catch (error) {
-      console.error('Failed to initialize recommendation engine:', error);
+      logger.error('Failed to initialize recommendation engine:', error);
     }
   }
 
@@ -193,7 +193,7 @@ class AICarRecommendationEngine {
 
       return enhancedRecommendations;
     } catch (error) {
-      console.error('Failed to generate recommendations:', error);
+      logger.error('Failed to generate recommendations:', error);
       return this.getFallbackRecommendations(context);
     }
   }
@@ -237,7 +237,7 @@ class AICarRecommendationEngine {
 
       return profile;
     } catch (error) {
-      console.error('Failed to build user preference profile:', error);
+      logger.error('Failed to build user preference profile:', error);
       return this.getDefaultProfile(userId);
     }
   }
@@ -303,7 +303,7 @@ class AICarRecommendationEngine {
         recommendation,
       };
     } catch (error) {
-      console.error('Failed to generate intelligent comparison:', error);
+      logger.error('Failed to generate intelligent comparison:', error);
       throw error;
     }
   }
@@ -340,7 +340,7 @@ class AICarRecommendationEngine {
         profile_updates: 'processed',
       });
     } catch (error) {
-      console.error('Failed to refine recommendations:', error);
+      logger.error('Failed to refine recommendations:', error);
     }
   }
 
@@ -379,7 +379,7 @@ class AICarRecommendationEngine {
 
       return adjustedRecommendations.sort((a, b) => b.recommendation_score - a.recommendation_score);
     } catch (error) {
-      console.error('Failed to get seasonal recommendations:', error);
+      logger.error('Failed to get seasonal recommendations:', error);
       return [];
     }
   }
@@ -715,7 +715,7 @@ class AICarRecommendationEngine {
         .from('user_preference_profiles')
         .upsert(profile);
     } catch (error) {
-      console.error('Failed to persist user profile:', error);
+      logger.error('Failed to persist user profile:', error);
     }
   }
 

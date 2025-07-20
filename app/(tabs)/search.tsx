@@ -18,19 +18,8 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import { 
-  MapPin, 
-  SlidersHorizontal, 
-  Star, 
-  Zap, 
-  TrendingUp,
-  Calendar,
-  DollarSign,
-  Fuel,
-  Gauge,
-  Car,
-  Building2
-} from 'lucide-react-native';
+import { MapPin, Star, Calendar, DollarSign, Car } from '@/utils/ultra-optimized-icons';
+import { SlidersHorizontal, Zap, TrendingUp, Fuel, Gauge, Building2 } from '@/utils/ultra-optimized-icons';
 
 import { CarCard } from '@/components/CarCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -475,7 +464,7 @@ export default function SearchScreen() {
           setLoading(false);
           resultsOpacity.value = withTiming(1, { duration: 300 });
         } catch (error) {
-          console.error('Search error:', error);
+          logger.error('Search error:', error);
           setCars([]);
           setLoading(false);
         }
@@ -855,7 +844,7 @@ export default function SearchScreen() {
                 style={[styles.performanceStatsButton, { backgroundColor: colors.background, borderColor: colors.border }]}
                 onPress={() => {
                   const report = generateReport();
-                  console.log('Performance Report:', report);
+                  logger.debug('Performance Report:', report);
                   // TODO: Show performance report in modal
                 }}
               >

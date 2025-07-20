@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { ChevronRight, Check, Minus, Plus } from 'lucide-react-native';
+
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import { ChevronRight, Check, Minus, Plus } from '@/utils/ultra-optimized-icons';
 
 export interface PreferenceOption {
   id: string;

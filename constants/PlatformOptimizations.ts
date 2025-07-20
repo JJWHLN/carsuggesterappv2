@@ -109,6 +109,6 @@ export const getTouchableProps = () => ({
 });
 
 // Migration notice
-console.warn(
+logger.warn(
   'PlatformOptimizations is deprecated. Please use DesignSystem instead for new code.'
 );

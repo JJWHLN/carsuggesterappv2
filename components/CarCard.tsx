@@ -1,6 +1,7 @@
 import React, { memo, useState, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { MapPin, Clock, Heart, Star, Fuel, Settings } from '@/utils/icons';
+import { MapPin, Heart, Star, Settings } from '@/utils/ultra-optimized-icons';
+import { Clock, Fuel } from '@/utils/ultra-optimized-icons';
 import { OptimizedImage } from './ui/OptimizedImage';
 import { AnimatedPressable } from './ui/AnimatedPressable';
 import { Card } from './ui/Card'; // Card is now memoized and themed
@@ -12,6 +13,7 @@ import { useCanPerformAction } from './ui/RoleProtection';
 import { BookmarkService } from '@/services/featureServices';
 import { Car } from '@/types/database';
 import { formatPrice, formatMileage, formatDate, formatCondition, formatFuelType } from '@/utils/dataTransformers';
+import { useMemoryOptimization } from '@/hooks/useMemoryOptimization';
 
 interface CarCardProps {
   car: Car;
@@ -41,6 +43,7 @@ const CarCard = memo<CarCardProps>(({
   const canBookmark = useCanPerformAction('bookmarkCars');
   const styles = getThemedCarCardStyles(colors);
   const { announceForAccessibility } = useAccessibility();
+  const { addCleanupFunction } = useMemoryOptimization();
   const [isBookmarked, setIsBookmarked] = useState(isSaved);
   const [loading, setLoading] = useState(false);
 
@@ -76,7 +79,7 @@ const CarCard = memo<CarCardProps>(({
       
       onSave?.();
     } catch (error) {
-      console.error('Error toggling bookmark:', error);
+      logger.error('Error toggling bookmark:', error);
       announceForAccessibility('Failed to update bookmark');
     } finally {
       setLoading(false);
@@ -145,6 +148,10 @@ const CarCard = memo<CarCardProps>(({
             style={styles.image}
             accessibilityLabel={`Photo of ${car.year} ${car.make} ${car.model}`}
             fallbackSource={require('@/assets/images/icon.png')} // Use local fallback
+            quality="medium" // Optimize for balance between quality and performance
+            lazy={true} // Enable lazy loading for better performance
+            priority="normal" // Normal loading priority for list items
+            cacheKey={`car_${car.id || car.year}_${car.make}_${car.model}`} // Unique cache key
           />
           
           {showSaveButton && canBookmark && (

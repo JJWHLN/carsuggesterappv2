@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .single();
 
       if (error && status !== 406) {
-        console.error('Error fetching user role:', error);
+        logger.error('Error fetching user role:', error);
         return { role: 'user', isNew: true };
       }
       
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       return { role: userRole, isNew: !hasCompletedOnboarding };
     } catch (error) {
-      console.error('Exception fetching user role:', error);
+      logger.error('Exception fetching user role:', error);
       return { role: 'user', isNew: true };
     }
   };
@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
       setIsNewUser(false);
     } catch (error) {
-      console.error('Error marking onboarding complete:', error);
+      logger.error('Error marking onboarding complete:', error);
     }
   };
 

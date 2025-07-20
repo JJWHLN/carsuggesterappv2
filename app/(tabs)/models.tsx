@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Car, Search, TrendingUp, Star, Calendar, ChevronRight } from 'lucide-react-native';
+
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -25,6 +25,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { fetchCarModels, fetchPopularBrands, FetchCarModelsOptions } from '@/services/api';
 import { CarModel, Brand } from '@/types/database';
 import { trackScreenView, trackCarInteraction } from '@/services/analyticsService';
+import { Car, Search, TrendingUp, Star, Calendar, ChevronRight } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 

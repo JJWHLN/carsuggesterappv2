@@ -11,17 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, useNavigation } from 'expo-router'; // Import useNavigation
-import { 
-  ArrowLeft, 
-  Star, 
-  Award,
-  TrendingUp,
-  Heart, // Keep for bookmarking icon
-  Share,
-  Car,
-  Fuel,
-  Settings
-} from 'lucide-react-native';
+
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
@@ -30,6 +20,7 @@ import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
 import { OptimizedImage } from '@/components/ui/OptimizedImage'; // Import OptimizedImage
 import { fetchCarModelById } from '@/services/api';
 import { useApi } from '@/hooks/useApi';
+import { ArrowLeft, Star, Award, TrendingUp, Heart, Car, Fuel, Settings } from '@/utils/ultra-optimized-icons';
 // import { getImageUrl } from '@/utils/formatters'; // No longer needed if OptimizedImage handles fallbacks
 
 const { width } = Dimensions.get('window');
@@ -49,12 +40,12 @@ export default function ModelDetailScreen() {
 
   const handleSave = () => {
     setIsSaved(!isSaved);
-    console.log('Save toggled for model:', id, !isSaved);
+    logger.debug('Save toggled for model:', id, !isSaved);
     // TODO: API call for bookmarking
   };
 
   const handleShare = () => {
-    console.log('Share model:', id);
+    logger.debug('Share model:', id);
     // TODO: Implement React Native Share API
   };
 
@@ -88,7 +79,6 @@ export default function ModelDetailScreen() {
       ),
     });
   }, [navigation, model, isSaved, handleSave, handleShare, colors, styles.headerActionsContainer, styles.headerActionButtonWithPadding]); // Added colors and specific styles to dependency array
-
 
   if (loading) {
     return (

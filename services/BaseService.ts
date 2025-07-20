@@ -9,11 +9,11 @@ export abstract class BaseService {
    * Standard error handler for all services
    */
   protected static handleError(error: any, operation: string, context?: any): never {
-    console.error(`Error in ${operation}:`, error);
+    logger.error(`Error in ${operation}:`, error);
     
     // Log additional context if provided
     if (context) {
-      console.error('Context:', context);
+      logger.error('Context:', context);
     }
     
     // Standardize error messages for common cases

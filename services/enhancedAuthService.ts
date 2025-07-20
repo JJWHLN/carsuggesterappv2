@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { webCompatibleStorage } from './webCompatibleStorage';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { makeRedirectUri, AuthRequest, ResponseType, CodeChallengeMethod } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -107,7 +107,7 @@ export class EnhancedAuthService {
 
       return { user: data.user, error: null };
     } catch (error: any) {
-      console.error('Enhanced signup error:', error);
+      logger.error('Enhanced signup error:', error);
       return { user: null, error };
     }
   }
@@ -148,7 +148,7 @@ export class EnhancedAuthService {
 
       throw new Error('No identity token received');
     } catch (error: any) {
-      console.error('Apple sign-in error:', error);
+      logger.error('Apple sign-in error:', error);
       return { user: null, error };
     }
   }
@@ -203,7 +203,7 @@ export class EnhancedAuthService {
 
       throw new Error('Google sign-in was cancelled or failed');
     } catch (error: any) {
-      console.error('Google sign-in error:', error);
+      logger.error('Google sign-in error:', error);
       return { user: null, error };
     }
   }
@@ -263,7 +263,7 @@ export class EnhancedAuthService {
       });
 
     if (error) {
-      console.error('Error creating user profile:', error);
+      logger.error('Error creating user profile:', error);
       throw error;
     }
 
@@ -289,14 +289,14 @@ export class EnhancedAuthService {
         .single();
 
       if (error) {
-        console.error('Error fetching user profile:', error);
+        logger.error('Error fetching user profile:', error);
         return null;
       }
 
       this.userProfile = data;
       return data;
     } catch (error) {
-      console.error('Exception fetching user profile:', error);
+      logger.error('Exception fetching user profile:', error);
       return null;
     }
   }
@@ -327,7 +327,7 @@ export class EnhancedAuthService {
 
       return true;
     } catch (error) {
-      console.error('Error updating user preferences:', error);
+      logger.error('Error updating user preferences:', error);
       return false;
     }
   }
@@ -368,11 +368,11 @@ export class EnhancedAuthService {
       }
 
       // Store onboarding completion locally
-      await AsyncStorage.setItem('onboarding_completed', 'true');
+      await webCompatibleStorage.setItem('onboarding_completed', 'true');
 
       return true;
     } catch (error) {
-      console.error('Error completing onboarding:', error);
+      logger.error('Error completing onboarding:', error);
       return false;
     }
   }
@@ -418,7 +418,7 @@ export class EnhancedAuthService {
         this.userProfile.lastLoginAt = new Date().toISOString();
       }
     } catch (error) {
-      console.error('Error tracking user activity:', error);
+      logger.error('Error tracking user activity:', error);
     }
   }
 
@@ -457,7 +457,7 @@ export class EnhancedAuthService {
 
       return data || [];
     } catch (error) {
-      console.error('Error getting personalized recommendations:', error);
+      logger.error('Error getting personalized recommendations:', error);
       return [];
     }
   }
@@ -467,19 +467,19 @@ export class EnhancedAuthService {
     try {
       await supabase.auth.signOut();
       this.userProfile = null;
-      await AsyncStorage.multiRemove([
+      await webCompatibleStorage.multiRemove([
         'onboarding_completed',
         'user_preferences',
         'saved_searches',
       ]);
     } catch (error) {
-      console.error('Error during logout:', error);
+      logger.error('Error during logout:', error);
     }
   }
 
   // Check if user needs onboarding
   async needsOnboarding(userId: string): Promise<boolean> {
-    const localOnboarding = await AsyncStorage.getItem('onboarding_completed');
+    const localOnboarding = await webCompatibleStorage.getItem('onboarding_completed');
     if (localOnboarding === 'true') return false;
 
     const profile = await this.getUserProfile(userId);

@@ -27,13 +27,13 @@ export class SecurityService {
         .single();
       
       if (error || !data) {
-        console.warn('Could not fetch user role, defaulting to user');
+        logger.warn('Could not fetch user role, defaulting to user');
         return 'user';
       }
       
       return data.role as UserRole || 'user';
     } catch (error) {
-      console.error('Error fetching user role:', error);
+      logger.error('Error fetching user role:', error);
       return 'user';
     }
   }
@@ -148,11 +148,11 @@ export class SecurityService {
         });
       
       if (error) {
-        console.error('Error creating user profile:', error);
+        logger.error('Error creating user profile:', error);
         throw error;
       }
     } catch (error) {
-      console.error('Failed to create user profile:', error);
+      logger.error('Failed to create user profile:', error);
       throw error;
     }
   }
@@ -177,11 +177,11 @@ export class SecurityService {
         .eq('id', targetUserId);
       
       if (error) {
-        console.error('Error updating user role:', error);
+        logger.error('Error updating user role:', error);
         throw error;
       }
     } catch (error) {
-      console.error('Failed to update user role:', error);
+      logger.error('Failed to update user role:', error);
       throw error;
     }
   }

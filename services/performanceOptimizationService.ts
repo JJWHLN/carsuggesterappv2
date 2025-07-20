@@ -132,9 +132,9 @@ class PerformanceOptimizationService {
       this.setupNetworkMonitoring();
       this.setupBatteryMonitoring();
       
-      console.log('Performance monitoring started');
+      logger.debug('Performance monitoring started');
     } catch (error) {
-      console.error('Error starting performance monitoring:', error);
+      logger.error('Error starting performance monitoring:', error);
     }
   }
 
@@ -198,7 +198,7 @@ class PerformanceOptimizationService {
 
   async applyOptimizations(): Promise<void> {
     try {
-      console.log('Applying performance optimizations...');
+      logger.debug('Applying performance optimizations...');
       
       // Analyze current performance
       const currentMetrics = await this.getCurrentMetrics();
@@ -208,9 +208,9 @@ class PerformanceOptimizationService {
         if (strategy.enabled && strategy.conditions(currentMetrics)) {
           try {
             await strategy.implementation();
-            console.log(`Applied optimization: ${strategy.name}`);
+            logger.debug(`Applied optimization: ${strategy.name}`);
           } catch (error) {
-            console.error(`Failed to apply optimization ${strategy.name}:`, error);
+            logger.error(`Failed to apply optimization ${strategy.name}:`, error);
           }
         }
       }
@@ -219,7 +219,7 @@ class PerformanceOptimizationService {
       await this.generateOptimizationInsights(currentMetrics);
       
     } catch (error) {
-      console.error('Error applying optimizations:', error);
+      logger.error('Error applying optimizations:', error);
     }
   }
 
@@ -243,7 +243,7 @@ class PerformanceOptimizationService {
       await this.trackMetric('cache_hit_rate', hitRate);
       
     } catch (error) {
-      console.error('Error optimizing cache:', error);
+      logger.error('Error optimizing cache:', error);
     }
   }
 
@@ -264,7 +264,7 @@ class PerformanceOptimizationService {
         }
       }
     } catch (error) {
-      console.error('Error clearing expired cache:', error);
+      logger.error('Error clearing expired cache:', error);
     }
   }
 
@@ -308,7 +308,7 @@ class PerformanceOptimizationService {
         }
       }
     } catch (error) {
-      console.error('Error optimizing cache size:', error);
+      logger.error('Error optimizing cache size:', error);
     }
   }
 
@@ -321,9 +321,9 @@ class PerformanceOptimizationService {
       await this.optimizeImageFormats();
       await this.preloadCriticalImages();
       
-      console.log('Image optimization applied');
+      logger.debug('Image optimization applied');
     } catch (error) {
-      console.error('Error optimizing images:', error);
+      logger.error('Error optimizing images:', error);
     }
   }
 
@@ -359,9 +359,9 @@ class PerformanceOptimizationService {
       await this.optimizeRequestPriority();
       await this.enableResponseCompression();
       
-      console.log('Network optimization applied');
+      logger.debug('Network optimization applied');
     } catch (error) {
-      console.error('Error optimizing network requests:', error);
+      logger.error('Error optimizing network requests:', error);
     }
   }
 
@@ -394,9 +394,9 @@ class PerformanceOptimizationService {
       
       await this.trackMetric('memory_usage', memoryUsage);
       
-      console.log('Memory optimization applied');
+      logger.debug('Memory optimization applied');
     } catch (error) {
-      console.error('Error optimizing memory usage:', error);
+      logger.error('Error optimizing memory usage:', error);
     }
   }
 
@@ -426,9 +426,9 @@ class PerformanceOptimizationService {
       await this.optimizeLocationServices();
       await this.reduceNetworkRequests();
       
-      console.log('Battery optimization applied');
+      logger.debug('Battery optimization applied');
     } catch (error) {
-      console.error('Error optimizing battery usage:', error);
+      logger.error('Error optimizing battery usage:', error);
     }
   }
 
@@ -508,7 +508,7 @@ class PerformanceOptimizationService {
       
       return insights.sort((a, b) => b.priority - a.priority);
     } catch (error) {
-      console.error('Error generating performance report:', error);
+      logger.error('Error generating performance report:', error);
       return [];
     }
   }
@@ -628,7 +628,7 @@ class PerformanceOptimizationService {
     try {
       await this.startPerformanceMonitoring();
     } catch (error) {
-      console.error('Error initializing performance monitoring:', error);
+      logger.error('Error initializing performance monitoring:', error);
     }
   }
 
@@ -669,7 +669,7 @@ class PerformanceOptimizationService {
         ...metadata
       });
     } catch (error) {
-      console.error('Error tracking metric:', error);
+      logger.error('Error tracking metric:', error);
     }
   }
 
@@ -715,7 +715,7 @@ class PerformanceOptimizationService {
         // Preload data (implementation would make actual requests)
         await this.trackMetric('critical_data_preloaded', 1, { endpoint });
       } catch (error) {
-        console.error(`Error preloading ${endpoint}:`, error);
+        logger.error(`Error preloading ${endpoint}:`, error);
       }
     }
   }

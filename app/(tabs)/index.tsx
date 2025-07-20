@@ -13,11 +13,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { Search, Sparkles, ArrowRight, Car, Users, Award } from '@/utils/icons';
+import { Search, Sparkles, ArrowRight, Car, Award } from '@/utils/ultra-optimized-icons';
+import { Users, Zap, Crown, TrendingUp } from '@/utils/ultra-optimized-icons';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
+import { SearchBar } from '@/components/ui/SearchBar';
 import { CarCard } from '@/components/CarCard';
+import { ModernCarCard } from '@/components/ModernCarCard';
+import { UltraPremiumCarCard } from '@/components/UltraPremiumCarCard';
+import { PremiumHeroSection } from '@/components/PremiumHeroSection';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
@@ -101,74 +106,12 @@ function HomeScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-        {/* Hero Section */}
-        <View style={styles.heroSection}>
-          <LinearGradient
-            colors={[colors.primary, '#16A34A', '#15803D']}
-            style={styles.heroGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <View style={styles.heroContent}>
-              {/* Trust Badge */}
-              <View style={styles.trustBadge}>
-                <Sparkles color={colors.primary} size={14} />
-                <Text style={[styles.trustBadgeText, { color: colors.primary }]}>Expert Car Recommendations</Text>
-              </View>
-
-              {/* Main Headlines */}
-              <Text style={styles.heroTitle}>Find Your Perfect Car</Text>
-              <Text style={styles.heroSubtitle}>
-                Search thousands of verified listings from trusted dealers.{'\n'}
-                Get AI-powered recommendations tailored just for you.
-              </Text>
-
-              {/* Enhanced Search Bar */}
-              <View style={{ marginBottom: 24 }}>
-                <UnifiedSearchFilter
-                  searchPlaceholder="Try 'BMW under $30k' or 'Family SUV'"
-                  searchValue={searchTerm}
-                  onSearchChange={(value) => {
-                    setSearchTerm(value);
-                    if (value.length > 0) {
-                      // Navigate to search page with query
-                      router.push(`/search?q=${encodeURIComponent(value)}`);
-                    }
-                  }}
-                  enableSearch={true}
-                  
-                  enableFilters={false}
-                  enableSort={false}
-                  enableViewToggle={false}
-                  enableQuickFilters={false}
-                  
-                  showResultsCount={false}
-                  variant="compact"
-                  showClearAll={searchTerm.length > 0}
-                  onClearAll={clearFilters}
-                />
-              </View>
-
-              {/* Action Buttons */}
-              <View style={styles.actionButtons}>
-                <Button
-                  title="Get AI Recommendations"
-                  onPress={handleGetRecommendations}
-                  variant="secondary"
-                  style={styles.primaryButton}
-                  icon={<Sparkles color={colors.background} size={18} />}
-                />
-                <Button
-                  title="Browse All Cars"
-                  onPress={handleBrowseAllCars}
-                  variant="outline"
-                  style={styles.secondaryButton}
-                  icon={<ArrowRight color={colors.background} size={18} />}
-                />
-              </View>
-            </View>
-          </LinearGradient>
-        </View>
+        {/* Premium Hero Section */}
+        <PremiumHeroSection
+          onSearchPress={handleSearchPress}
+          onExplorePress={handleBrowseAllCars}
+          onGetRecommendations={handleGetRecommendations}
+        />
 
         {/* Stats Section */}
         <View style={[styles.statsSection, { backgroundColor: colors.cardBackground }]}>
@@ -198,50 +141,102 @@ function HomeScreen() {
           </View>
         </View>
 
-        {/* Categories Section */}
-        <View style={styles.categoriesSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Browse by Category</Text>
-          <View style={styles.categoriesGrid}>
-            <TouchableOpacity 
-              style={[styles.categoryCard, { backgroundColor: colors.cardBackground }]} 
-              onPress={() => handleCategoryPress('electric')}
-            >
-              <View>
-                <Text style={[styles.categoryTitle, { color: colors.text }]}>🔋 Electric</Text>
-                <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>Zero emissions</Text>
-              </View>
+        {/* Instagram-Style Stories Section */}
+        <View style={styles.storiesSection}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Popular Right Now</Text>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.storiesContainer}
+          >
+            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('new-arrivals')}>
+              <LinearGradient
+                colors={['#FF6B6B', '#4ECDC4']}
+                style={styles.storyGradient}
+              >
+                <Car color="white" size={28} />
+              </LinearGradient>
+              <Text style={[styles.storyText, { color: colors.text }]}>New</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.categoryCard, { backgroundColor: colors.cardBackground }]} 
-              onPress={() => handleCategoryPress('luxury')}
-            >
-              <View>
-                <Text style={[styles.categoryTitle, { color: colors.text }]}>👑 Luxury</Text>
-                <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>Premium comfort</Text>
-              </View>
+            
+            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('electric')}>
+              <LinearGradient
+                colors={['#A8E6CF', '#56CC9D']}
+                style={styles.storyGradient}
+              >
+                <Zap color="white" size={28} />
+              </LinearGradient>
+              <Text style={[styles.storyText, { color: colors.text }]}>Electric</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.categoryCard, { backgroundColor: colors.cardBackground }]} 
-              onPress={() => handleCategoryPress('family')}
-            >
-              <View>
-                <Text style={[styles.categoryTitle, { color: colors.text }]}>🛡️ Family SUV</Text>
-                <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>Safe & spacious</Text>
-              </View>
+            
+            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('luxury')}>
+              <LinearGradient
+                colors={['#FFD93D', '#FF6B35']}
+                style={styles.storyGradient}
+              >
+                <Crown color="white" size={28} />
+              </LinearGradient>
+              <Text style={[styles.storyText, { color: colors.text }]}>Luxury</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.categoryCard, { backgroundColor: colors.cardBackground }]} 
-              onPress={() => handleCategoryPress('sports')}
-            >
-              <View>
-                <Text style={[styles.categoryTitle, { color: colors.text }]}>🚀 Sports Car</Text>
-                <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>Pure performance</Text>
-              </View>
+            
+            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('sports')}>
+              <LinearGradient
+                colors={['#FF8E53', '#FF6B6B']}
+                style={styles.storyGradient}
+              >
+                <TrendingUp color="white" size={28} />
+              </LinearGradient>
+              <Text style={[styles.storyText, { color: colors.text }]}>Sports</Text>
             </TouchableOpacity>
-          </View>
+            
+            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('family')}>
+              <LinearGradient
+                colors={['#667eea', '#764ba2']}
+                style={styles.storyGradient}
+              >
+                <Users color="white" size={28} />
+              </LinearGradient>
+              <Text style={[styles.storyText, { color: colors.text }]}>Family</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('deals')}>
+              <LinearGradient
+                colors={['#f093fb', '#f5576c']}
+                style={styles.storyGradient}
+              >
+                <Award color="white" size={28} />
+              </LinearGradient>
+              <Text style={[styles.storyText, { color: colors.text }]}>Deals</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
 
-        {/* Featured Cars Section */}
+        {/* Zillow-Inspired Quick Filters */}
+        <View style={styles.quickFiltersSection}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filtersContainer}
+          >
+            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.primary }]}>
+              <Text style={[styles.filterChipText, { color: colors.white }]}>Under $30k</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+              <Text style={[styles.filterChipText, { color: colors.text }]}>Electric</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+              <Text style={[styles.filterChipText, { color: colors.text }]}>Low Mileage</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+              <Text style={[styles.filterChipText, { color: colors.text }]}>Certified</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+              <Text style={[styles.filterChipText, { color: colors.text }]}>Near Me</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+
+        {/* TikTok-Style Featured Cars Feed */}
         {featuredCarsError ? (
           <View style={styles.section}>
             <ErrorState 
@@ -255,23 +250,32 @@ function HomeScreen() {
           <View style={styles.featuredSection}>
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>Featured Cars</Text>
-              <TouchableOpacity onPress={handleBrowseAllCars}>
-                <Text style={[styles.viewAllText, { color: colors.primary }]}>View All</Text>
+              <TouchableOpacity 
+                onPress={handleBrowseAllCars}
+                style={styles.seeAllButton}
+              >
+                <Text style={[styles.seeAllText, { color: colors.primary }]}>See All</Text>
+                <ArrowRight color={colors.primary} size={16} />
               </TouchableOpacity>
             </View>
             
             {featuredCarsLoading ? (
               <LoadingState />
             ) : featuredCars && featuredCars.length > 0 ? (
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {featuredCars.map((car) => (
-                  <CarCard
+              <View style={styles.premiumCardsGrid}>
+                {featuredCars.slice(0, 6).map((car, index) => (
+                  <UltraPremiumCarCard
                     key={car.id}
                     car={car as any} // Type conversion - CarModel to Car
                     onPress={() => router.push(`/car/${car.id}`)}
+                    onSave={() => console.log('Car saved:', car.id)}
+                    isFeatured={index < 2} // First two are featured
+                    isPremiumListing={Math.random() > 0.7} // Random premium listings
+                    variant={index === 0 ? 'featured' : 'standard'}
+                    style={index === 0 ? styles.featuredCard : styles.standardCard}
                   />
                 ))}
-              </ScrollView>
+              </View>
             ) : (
               <EmptyState
                 title="No Featured Cars"
@@ -463,6 +467,17 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  categoryIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  categoryContent: {
+    flex: 1,
+  },
   categoryTitle: {
     fontSize: 16,
     fontWeight: '600',
@@ -470,6 +485,67 @@ const styles = StyleSheet.create({
   },
   categoryDescription: {
     fontSize: 14,
+  },
+  categoryCount: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginLeft: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+
+  // Instagram-Style Stories Section
+  storiesSection: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  storiesContainer: {
+    paddingRight: 20,
+    gap: 16,
+  },
+  storyItem: {
+    alignItems: 'center',
+    width: 70,
+  },
+  storyGradient: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  storyText: {
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+
+  // Zillow-Inspired Quick Filters
+  quickFiltersSection: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  filtersContainer: {
+    paddingRight: 20,
+    gap: 12,
+  },
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  filterChipText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 
   // Featured Section
@@ -524,6 +600,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 16,
+  },
+  seeAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  seeAllText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  carsContainer: {
+    paddingBottom: 20,
+  },
+  
+  // Premium cards layout
+  premiumCardsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 16,
+    paddingVertical: 8,
+  },
+  featuredCard: {
+    width: '100%',
+    marginBottom: 16,
+  },
+  standardCard: {
+    width: '48%',
     marginBottom: 16,
   },
 });

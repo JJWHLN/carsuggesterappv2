@@ -71,7 +71,7 @@ export function useAccessibility() {
         isInvertColorsEnabled: invertColors,
       });
     } catch (error) {
-      console.warn('Error getting accessibility settings:', error);
+      logger.warn('Error getting accessibility settings:', error);
     }
   }, []);
 

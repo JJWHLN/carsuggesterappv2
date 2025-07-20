@@ -17,10 +17,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { Heart, MapPin, Calendar, Gauge, Star, Verified } from 'lucide-react-native';
+
 import { useThemeColors } from '../../hooks/useTheme';
 import { Spacing, Typography, BorderRadius } from '../../constants/Colors';
 import { getPlatformShadow } from '../../constants/PlatformOptimizations';
+import { Heart, MapPin, Calendar, Gauge, Star } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - Spacing.lg * 3) / 2; // For grid layout

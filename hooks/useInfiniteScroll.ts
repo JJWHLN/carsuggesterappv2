@@ -93,7 +93,7 @@ export function useInfiniteScroll<T>({
       
       const errorMessage = err instanceof Error ? err.message : 'An error occurred while loading data';
       setError(errorMessage);
-      console.error('Infinite scroll error:', err);
+      logger.error('Infinite scroll error:', err);
     } finally {
       setLoading(false);
       setIsRefreshing(false);

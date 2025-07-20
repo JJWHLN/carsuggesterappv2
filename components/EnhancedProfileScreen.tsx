@@ -18,34 +18,10 @@ import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { socialService, UserProfile, SocialActivity, CarReview } from '@/services/socialService';
 import { realTimeChatService } from '@/services/realTimeChatService';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
-import { 
-  MessageCircle, 
-  Star, 
-  Heart, 
-  Users, 
-  Car, 
-  MapPin, 
-  Calendar, 
-  Award, 
-  TrendingUp, 
-  ThumbsUp,
-  UserPlus,
-  UserMinus,
-  MoreHorizontal,
-  Settings,
-  Edit3,
-  Share2,
-  Phone,
-  Mail,
-  Globe,
-  CheckCircle,
-  Badge,
-  Eye,
-  Clock,
-  Filter,
-} from 'lucide-react-native';
+
 import { useAuth } from '@/contexts/AuthContext';
 import { SocialFeed } from './SocialFeed';
+import { MessageCircle, Star, Heart, Users, Car, MapPin, Calendar, Award, TrendingUp, Settings, Mail, CheckCircle, Eye, Clock, Filter } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -240,7 +216,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             style={[styles.actionButton, styles.primaryButton, { backgroundColor: colors.primary }]}
             onPress={onEditPress}
           >
-            <Edit3 size={16} color={colors.white} />
+            <Edit size={16} color={colors.white} />
             <Text style={[styles.actionButtonText, { color: colors.white }]}>
               Edit Profile
             </Text>
@@ -386,7 +362,7 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
         setIsFollowing(false);
       }
     } catch (error) {
-      console.error('Error loading user profile:', error);
+      logger.error('Error loading user profile:', error);
       Alert.alert('Error', 'Failed to load user profile');
     }
   }, [targetUserId, isOwnProfile]);
@@ -398,7 +374,7 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
       setReviews([]);
       setActivities([]);
     } catch (error) {
-      console.error('Error loading user content:', error);
+      logger.error('Error loading user content:', error);
     }
   }, [targetUserId]);
 
@@ -430,7 +406,7 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
       // Refresh profile to update follower counts
       loadUserProfile();
     } catch (error) {
-      console.error('Error toggling follow:', error);
+      logger.error('Error toggling follow:', error);
       Alert.alert('Error', error instanceof Error ? error.message : 'Failed to update follow status');
     }
   }, [isFollowing, targetUserId, loadUserProfile]);
@@ -450,14 +426,14 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
 
       onMessageUser?.(targetUserId);
     } catch (error) {
-      console.error('Error creating conversation:', error);
+      logger.error('Error creating conversation:', error);
       Alert.alert('Error', 'Failed to start conversation');
     }
   }, [userProfile, targetUserId, onMessageUser]);
 
   const handleEditPress = useCallback(() => {
     // TODO: Navigate to edit profile screen
-    console.log('Edit profile');
+    logger.debug('Edit profile');
   }, []);
 
   const handleSharePress = useCallback(async () => {
@@ -469,18 +445,18 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
         url: `https://carsuggester.app/profile/${targetUserId}`,
       });
     } catch (error) {
-      console.error('Error sharing profile:', error);
+      logger.error('Error sharing profile:', error);
     }
   }, [userProfile, targetUserId]);
 
   const handleFollowersPress = useCallback(() => {
     // TODO: Navigate to followers screen
-    console.log('Show followers');
+    logger.debug('Show followers');
   }, []);
 
   const handleFollowingPress = useCallback(() => {
     // TODO: Navigate to following screen
-    console.log('Show following');
+    logger.debug('Show following');
   }, []);
 
   const renderTabContent = () => {

@@ -32,15 +32,15 @@ function setCache<T>(key: string, data: T, ttl: number = 5 * 60 * 1000): void {
 }
 
 function handleSupabaseError(error: any): never {
-  console.error('🔥 Supabase error details:', error);
+  logger.error('🔥 Supabase error details:', error);
   
   // Check if this is a network/fetch error
   if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-    console.error('❌ Network Error - Possible causes:');
-    console.error('1. Incorrect Supabase URL or API key');
-    console.error('2. CORS configuration issues in Supabase dashboard');
-    console.error('3. Network connectivity problems');
-    console.error('4. Supabase service temporarily unavailable');
+    logger.error('❌ Network Error - Possible causes:');
+    logger.error('1. Incorrect Supabase URL or API key');
+    logger.error('2. CORS configuration issues in Supabase dashboard');
+    logger.error('3. Network connectivity problems');
+    logger.error('4. Supabase service temporarily unavailable');
     
     throw new SupabaseError(
       'Unable to connect to Supabase. Please check your configuration and try again.',
@@ -95,7 +95,7 @@ export async function fetchVehicleListings(
     const cached = getFromCache(cacheKey);
     if (cached) return cached;
 
-    console.log('🔍 Fetching vehicle listings from Supabase...', { page, limit, searchQuery });
+    logger.debug('🔍 Fetching vehicle listings from Supabase...', { page, limit, searchQuery });
 
     // Test connection first
     const isConnected = await testSupabaseConnection();
@@ -129,20 +129,20 @@ export async function fetchVehicleListings(
       }
     }
 
-    console.log('📡 Executing Supabase query for vehicle listings...');
+    logger.debug('📡 Executing Supabase query for vehicle listings...');
     const { data, error } = await query;
 
     if (error) {
-      console.error('❌ Supabase query error:', error);
+      logger.error('❌ Supabase query error:', error);
       handleSupabaseError(error);
     }
 
-    console.log('✅ Successfully fetched vehicle listings:', data?.length || 0);
+    logger.debug('✅ Successfully fetched vehicle listings:', data?.length || 0);
     const result = data || [];
     setCache(cacheKey, result, 2 * 60 * 1000); // Cache for 2 minutes
     return result;
   } catch (error) {
-    console.error('🔥 Error in fetchVehicleListings:', error);
+    logger.error('🔥 Error in fetchVehicleListings:', error);
     if (error instanceof SupabaseError) {
       throw error;
     }
@@ -164,7 +164,7 @@ export async function fetchCarReviews(
     const cached = getFromCache(cacheKey);
     if (cached) return cached;
 
-    console.log('🔍 Fetching car reviews from Supabase...', { page, limit, searchQuery, sortBy });
+    logger.debug('🔍 Fetching car reviews from Supabase...', { page, limit, searchQuery, sortBy });
 
     // Test connection first
     const isConnected = await testSupabaseConnection();
@@ -218,20 +218,20 @@ export async function fetchCarReviews(
       }
     }
 
-    console.log('📡 Executing Supabase query for reviews...');
+    logger.debug('📡 Executing Supabase query for reviews...');
     const { data, error } = await query;
 
     if (error) {
-      console.error('❌ Supabase query error:', error);
+      logger.error('❌ Supabase query error:', error);
       handleSupabaseError(error);
     }
 
-    console.log('✅ Successfully fetched reviews:', data?.length || 0);
+    logger.debug('✅ Successfully fetched reviews:', data?.length || 0);
     const result = data || [];
     setCache(cacheKey, result, 5 * 60 * 1000); // Cache for 5 minutes
     return result;
   } catch (error) {
-    console.error('🔥 Error in fetchCarReviews:', error);
+    logger.error('🔥 Error in fetchCarReviews:', error);
     if (error instanceof SupabaseError) {
       throw error;
     }
@@ -246,7 +246,7 @@ export async function fetchFeaturedCars() {
     const cached = getFromCache(cacheKey);
     if (cached) return cached;
 
-    console.log('🔍 Fetching featured cars from Supabase...');
+    logger.debug('🔍 Fetching featured cars from Supabase...');
 
     const { data, error } = await supabase
       .from('featured_cars')
@@ -264,16 +264,16 @@ export async function fetchFeaturedCars() {
       .limit(10);
 
     if (error) {
-      console.error('❌ Featured cars query error:', error);
+      logger.error('❌ Featured cars query error:', error);
       handleSupabaseError(error);
     }
 
-    console.log('✅ Successfully fetched featured cars:', data?.length || 0);
+    logger.debug('✅ Successfully fetched featured cars:', data?.length || 0);
     const result = data || [];
     setCache(cacheKey, result, 10 * 60 * 1000); // Cache for 10 minutes
     return result;
   } catch (error) {
-    console.error('🔥 Error in fetchFeaturedCars:', error);
+    logger.error('🔥 Error in fetchFeaturedCars:', error);
     if (error instanceof SupabaseError) {
       throw error;
     }
@@ -288,7 +288,7 @@ export async function fetchRecommendedCars() {
     const cached = getFromCache(cacheKey);
     if (cached) return cached;
 
-    console.log('🔍 Fetching recommended cars from Supabase...');
+    logger.debug('🔍 Fetching recommended cars from Supabase...');
 
     const { data, error } = await supabase
       .from('recommended_cars')
@@ -306,16 +306,16 @@ export async function fetchRecommendedCars() {
       .limit(10);
 
     if (error) {
-      console.error('❌ Recommended cars query error:', error);
+      logger.error('❌ Recommended cars query error:', error);
       handleSupabaseError(error);
     }
 
-    console.log('✅ Successfully fetched recommended cars:', data?.length || 0);
+    logger.debug('✅ Successfully fetched recommended cars:', data?.length || 0);
     const result = data || [];
     setCache(cacheKey, result, 10 * 60 * 1000); // Cache for 10 minutes
     return result;
   } catch (error) {
-    console.error('🔥 Error in fetchRecommendedCars:', error);
+    logger.error('🔥 Error in fetchRecommendedCars:', error);
     if (error instanceof SupabaseError) {
       throw error;
     }
@@ -357,7 +357,7 @@ export async function searchVehiclesWithFilters(searchParams: {
     const cached = getFromCache(cacheKey);
     if (cached) return cached;
 
-    console.log('🔍 Searching vehicles with filters:', searchParams);
+    logger.debug('🔍 Searching vehicles with filters:', searchParams);
 
     let query = supabase
       .from('vehicle_listings')
@@ -404,16 +404,16 @@ export async function searchVehiclesWithFilters(searchParams: {
       .limit(50);
 
     if (error) {
-      console.error('❌ Search vehicles query error:', error);
+      logger.error('❌ Search vehicles query error:', error);
       handleSupabaseError(error);
     }
 
-    console.log('✅ Successfully searched vehicles:', data?.length || 0);
+    logger.debug('✅ Successfully searched vehicles:', data?.length || 0);
     const result = data || [];
     setCache(cacheKey, result, 1 * 60 * 1000); // Cache for 1 minute (shorter for search results)
     return result;
   } catch (error) {
-    console.error('🔥 Error in searchVehiclesWithFilters:', error);
+    logger.error('🔥 Error in searchVehiclesWithFilters:', error);
     if (error instanceof SupabaseError) {
       throw error;
     }
@@ -431,7 +431,7 @@ export async function fetchReviewById(id: string): Promise<DatabaseReview | null
     const cached = getFromCache<DatabaseReview>(cacheKey);
     if (cached) return cached;
 
-    console.log(`🔍 Fetching review by ID: ${id} from Supabase...`);
+    logger.debug(`🔍 Fetching review by ID: ${id} from Supabase...`);
 
     const isConnected = await testSupabaseConnection();
     if (!isConnected) {
@@ -459,24 +459,24 @@ export async function fetchReviewById(id: string): Promise<DatabaseReview | null
 
     if (error) {
       if (error.code === 'PGRST116') { // Resource not found
-        console.warn(`⚠️ Review with ID ${id} not found.`);
+        logger.warn(`⚠️ Review with ID ${id} not found.`);
         return null;
       }
-      console.error(`❌ Supabase query error fetching review ID ${id}:`, error);
+      logger.error(`❌ Supabase query error fetching review ID ${id}:`, error);
       handleSupabaseError(error);
     }
 
     if (!data) {
-      console.warn(`⚠️ No data returned for review ID ${id}, though no explicit error.`);
+      logger.warn(`⚠️ No data returned for review ID ${id}, though no explicit error.`);
       return null;
     }
 
-    console.log(`✅ Successfully fetched review ID ${id}`);
+    logger.debug(`✅ Successfully fetched review ID ${id}`);
     setCache(cacheKey, data, 5 * 60 * 1000); // Cache for 5 minutes
     return data;
 
   } catch (error) {
-    console.error(`🔥 Error in fetchReviewById for ID ${id}:`, error);
+    logger.error(`🔥 Error in fetchReviewById for ID ${id}:`, error);
     if (error instanceof SupabaseError) {
       throw error;
     }
@@ -495,7 +495,7 @@ export async function fetchVehicleListingById(id: string): Promise<DatabaseVehic
     const cached = getFromCache<DatabaseVehicleListing>(cacheKey);
     if (cached) return cached;
 
-    console.log(`🔍 Fetching vehicle listing by ID: ${id} from Supabase...`);
+    logger.debug(`🔍 Fetching vehicle listing by ID: ${id} from Supabase...`);
 
     const isConnected = await testSupabaseConnection();
     if (!isConnected) {
@@ -518,24 +518,24 @@ export async function fetchVehicleListingById(id: string): Promise<DatabaseVehic
 
     if (error) {
       if (error.code === 'PGRST116') { // Resource not found
-        console.warn(`⚠️ Vehicle listing with ID ${id} not found or not active.`);
+        logger.warn(`⚠️ Vehicle listing with ID ${id} not found or not active.`);
         return null; // Explicitly return null if not found
       }
-      console.error(`❌ Supabase query error fetching vehicle ID ${id}:`, error);
+      logger.error(`❌ Supabase query error fetching vehicle ID ${id}:`, error);
       handleSupabaseError(error);
     }
 
     if (!data) {
-      console.warn(`⚠️ No data returned for vehicle listing ID ${id}, though no explicit error.`);
+      logger.warn(`⚠️ No data returned for vehicle listing ID ${id}, though no explicit error.`);
       return null;
     }
 
-    console.log(`✅ Successfully fetched vehicle listing ID ${id}`);
+    logger.debug(`✅ Successfully fetched vehicle listing ID ${id}`);
     setCache(cacheKey, data, 5 * 60 * 1000); // Cache for 5 minutes
     return data;
 
   } catch (error) {
-    console.error(`🔥 Error in fetchVehicleListingById for ID ${id}:`, error);
+    logger.error(`🔥 Error in fetchVehicleListingById for ID ${id}:`, error);
     if (error instanceof SupabaseError) {
       throw error;
     }
@@ -720,6 +720,131 @@ export async function getUserBookmarks(targetType?: 'listing' | 'review' | 'mode
       throw error;
     }
     handleSupabaseError(error);
+  }
+}
+
+// Saved Cars functionality
+export async function fetchSavedCars(userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('saved_cars')
+      .select(`
+        id,
+        created_at,
+        vehicle_listing:vehicle_listings (
+          id,
+          make,
+          model,
+          year,
+          price,
+          mileage,
+          fuel_type,
+          transmission,
+          exterior_color,
+          interior_color,
+          engine,
+          drivetrain,
+          features,
+          description,
+          images,
+          location,
+          dealer_name,
+          contact_phone,
+          contact_email,
+          is_featured,
+          status,
+          created_at,
+          updated_at
+        )
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      logger.error('Error fetching saved cars:', error);
+      throw new SupabaseError('Failed to fetch saved cars', error.code, error.message);
+    }
+
+    return data || [];
+  } catch (error: any) {
+    logger.error('Error in fetchSavedCars:', error);
+    if (error instanceof SupabaseError) {
+      throw error;
+    }
+    handleSupabaseError(error);
+  }
+}
+
+export async function addSavedCar(userId: string, vehicleListingId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('saved_cars')
+      .insert({
+        user_id: userId,
+        vehicle_listing_id: vehicleListingId,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      logger.error('Error adding saved car:', error);
+      throw new SupabaseError('Failed to save car', error.code, error.message);
+    }
+
+    return data;
+  } catch (error: any) {
+    logger.error('Error in addSavedCar:', error);
+    if (error instanceof SupabaseError) {
+      throw error;
+    }
+    handleSupabaseError(error);
+  }
+}
+
+export async function removeSavedCar(userId: string, vehicleListingId: string) {
+  try {
+    const { error } = await supabase
+      .from('saved_cars')
+      .delete()
+      .eq('user_id', userId)
+      .eq('vehicle_listing_id', vehicleListingId);
+
+    if (error) {
+      logger.error('Error removing saved car:', error);
+      throw new SupabaseError('Failed to remove saved car', error.code, error.message);
+    }
+
+    return true;
+  } catch (error: any) {
+    logger.error('Error in removeSavedCar:', error);
+    if (error instanceof SupabaseError) {
+      throw error;
+    }
+    handleSupabaseError(error);
+  }
+}
+
+export async function checkIfCarSaved(userId: string, vehicleListingId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('saved_cars')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('vehicle_listing_id', vehicleListingId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" which is expected
+      logger.error('Error checking if car is saved:', error);
+      throw new SupabaseError('Failed to check saved status', error.code, error.message);
+    }
+
+    return !!data;
+  } catch (error: any) {
+    logger.error('Error in checkIfCarSaved:', error);
+    if (error instanceof SupabaseError) {
+      throw error;
+    }
+    return false; // Default to not saved if there's an error
   }
 }
 

@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Search, Sparkles, ArrowRight, MapPin, Filter } from 'lucide-react-native';
+
 import { Button } from '@/components/ui/Button';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { Search, Sparkles, ArrowRight, MapPin, Filter } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 

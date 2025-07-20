@@ -20,18 +20,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
 import { CarUserPreferences } from '@/services/enhancedAuthService';
-import { 
-  Car, 
-  MapPin, 
-  DollarSign, 
-  Fuel, 
-  Settings, 
-  Bell,
-  CheckCircle,
-  ArrowRight,
-  Zap,
-  Truck
-} from '@/utils/icons';
+import { Car, MapPin, DollarSign, Fuel, Settings, CheckCircle, ArrowRight, Zap, Truck } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
