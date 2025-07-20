@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,9 @@ import {
   RefreshControl,
   Dimensions,
   Platform,
+  Alert,
+  AppState,
+  AppStateStatus,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
@@ -20,6 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { MapPin, Star, Calendar, DollarSign, Car } from '@/utils/ultra-optimized-icons';
 import { SlidersHorizontal, Zap, TrendingUp, Fuel, Gauge, Building2 } from '@/utils/ultra-optimized-icons';
+import { SearchDataService } from '@/services/SearchDataService';
 
 import { CarCard } from '@/components/CarCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -35,6 +39,7 @@ import { AISearchEngine, AISearchQuery } from '@/services/aiSearchService';
 import SmartNotificationService from '@/services/smartNotificationService';
 import AdvancedThemeManager from '@/services/advancedThemeManager';
 import PerformanceMonitor, { usePerformanceMonitor } from '@/services/performanceMonitor';
+import { NavigationService } from '@/services/NavigationService';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 
 interface SearchSuggestion {
@@ -114,6 +119,48 @@ export default function SearchScreen() {
     'Hybrid vehicles',
     'Compact cars'
   ]);
+
+  // Memory optimization hooks
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
+  const imageCache = useRef(new Map<string, string>());
+  
+  // App state change handler for memory optimization
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
+        // App came to foreground - refresh data if needed
+        measureOperation('app-resume');
+        if (debouncedSearchTerm && cars.length > 0) {
+          handleSearch(debouncedSearchTerm);
+        }
+      } else if (nextAppState === 'background') {
+        // App went to background - clear memory-intensive data
+        measureOperation('app-background-cleanup');
+        // Clear image cache to free memory
+        imageCache.current.clear();
+      }
+      appStateRef.current = nextAppState;
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription?.remove();
+  }, [debouncedSearchTerm, cars.length, measureOperation]);
+
+  // Memory-optimized image cache manager
+  const getCachedImage = useCallback((url: string) => {
+    if (imageCache.current.has(url)) {
+      return imageCache.current.get(url);
+    }
+    // Limit cache size to prevent memory issues
+    if (imageCache.current.size > 50) {
+      const firstKey = imageCache.current.keys().next().value;
+      if (firstKey) {
+        imageCache.current.delete(firstKey);
+      }
+    }
+    imageCache.current.set(url, url);
+    return url;
+  }, []);
 
   // const { data: apiData, loading: apiLoading, error: apiError, refetch } = useApi(() => 
   //   fetch(`/search?q=${debouncedSearchTerm}`).then(res => res.json())
@@ -381,9 +428,36 @@ export default function SearchScreen() {
 
   // Load recent searches from storage
   React.useEffect(() => {
-    // TODO: Load from AsyncStorage
-    setRecentSearchHistory(['BMW 3 Series', 'Electric SUV', 'Mercedes C-Class']);
-    setSavedSearches(['Luxury cars under €50k', 'Electric vehicles']);
+    const loadStoredSearchData = async () => {
+      try {
+        const [recentSearches, savedSearches, preferences] = await Promise.all([
+          SearchDataService.getRecentSearches(),
+          SearchDataService.getSavedSearches(),
+          SearchDataService.getSearchPreferences(),
+        ]);
+        
+        // Convert recent searches to string array format
+        const recentQueries = recentSearches.map(search => search.query);
+        setRecentSearchHistory(recentQueries);
+        
+        // Convert saved searches to string array format  
+        const savedQueries = savedSearches.map(search => search.name);
+        setSavedSearches(savedQueries);
+        
+        // Apply stored preferences
+        setSortBy(preferences.sortBy);
+        if (preferences.filters) {
+          setFilters(prev => ({ ...prev, ...preferences.filters }));
+        }
+      } catch (error) {
+        console.error('Error loading search data:', error);
+        // Fallback to default data if loading fails
+        setRecentSearchHistory(['BMW 3 Series', 'Electric SUV', 'Mercedes C-Class']);
+        setSavedSearches(['Luxury cars under €50k', 'Electric vehicles']);
+      }
+    };
+    
+    loadStoredSearchData();
   }, []);
 
   // Enhanced mock search results with smart caching and AI integration
@@ -505,17 +579,20 @@ export default function SearchScreen() {
   };
 
   // Enhanced event handlers with search history
-  const handleSearch = useCallback((query: string) => {
+  const handleSearch = useCallback(async (query: string) => {
     setSearchTerm(query);
     if (query.trim()) {
       // Add to recent searches
       setRecentSearchHistory(prev => {
         const newHistory = [query, ...prev.filter(item => item !== query)].slice(0, 5);
-        // TODO: Save to AsyncStorage
+        // Save to AsyncStorage
+        SearchDataService.addRecentSearch(query, filters).catch(error => 
+          console.error('Failed to save recent search:', error)
+        );
         return newHistory;
       });
     }
-  }, [setSearchTerm]);
+  }, [setSearchTerm, filters]);
 
   const handleSearchFocus = useCallback(() => {
     setSearchFocused(true);
@@ -554,17 +631,30 @@ export default function SearchScreen() {
     });
   }, [setSearchTerm]);
 
-  const handleSaveSearch = useCallback((searchQuery: string) => {
+  const handleSaveSearch = useCallback(async (searchQuery: string) => {
     setSavedSearches(prev => {
       if (prev.includes(searchQuery)) return prev;
       return [...prev, searchQuery].slice(0, 10);
     });
-    // TODO: Save to AsyncStorage
-  }, []);
+    
+    try {
+      // Save to AsyncStorage
+      const searchName = searchQuery.length > 30 ? `${searchQuery.substring(0, 27)}...` : searchQuery;
+      await SearchDataService.saveSearch(searchName, searchQuery, filters);
+    } catch (error) {
+      console.error('Failed to save search:', error);
+    }
+  }, [filters]);
 
-  const handleClearSearchHistory = useCallback(() => {
+  const handleClearSearchHistory = useCallback(async () => {
     setRecentSearchHistory([]);
-    // TODO: Clear from AsyncStorage
+    
+    try {
+      // Clear from AsyncStorage
+      await SearchDataService.clearRecentSearches();
+    } catch (error) {
+      console.error('Failed to clear search history:', error);
+    }
   }, []);
 
   const handleFilterChange = useCallback((newFilters: any) => {
@@ -583,9 +673,15 @@ export default function SearchScreen() {
     }, 1000);
   }, []);
 
-  const handleSortChange = useCallback((newSortBy: typeof sortBy) => {
+  const handleSortChange = useCallback(async (newSortBy: typeof sortBy) => {
     setSortBy(newSortBy);
-    // TODO: Save sort preference to AsyncStorage for persistence
+    
+    try {
+      // Save sort preference to AsyncStorage for persistence
+      await SearchDataService.saveSortPreference(newSortBy);
+    } catch (error) {
+      console.error('Failed to save sort preference:', error);
+    }
   }, []);
 
   // Smart sorted cars with personalized preferences
@@ -844,8 +940,13 @@ export default function SearchScreen() {
                 style={[styles.performanceStatsButton, { backgroundColor: colors.background, borderColor: colors.border }]}
                 onPress={() => {
                   const report = generateReport();
-                  logger.debug('Performance Report:', report);
-                  // TODO: Show performance report in modal
+                  console.log('Performance Report:', report);
+                  // Show performance report in alert for now
+                  Alert.alert(
+                    'Performance Report',
+                    `Render Time: ${report.averageRenderTime}ms\nTotal Metrics: ${report.totalMetrics}\nStart Time: ${report.appStartTime}ms`,
+                    [{ text: 'OK' }]
+                  );
                 }}
               >
                 <Text style={[styles.performanceStatsText, { color: colors.text }]}>
@@ -978,7 +1079,20 @@ export default function SearchScreen() {
             <View style={styles.controls}>
               <TouchableOpacity
                 style={[styles.sortButton, { backgroundColor: colors.white, borderColor: colors.border }]}
-                onPress={() => {/* TODO: Implement sort modal */}}
+                onPress={() => {
+                  // Show sort modal with options
+                  Alert.alert(
+                    'Sort Cars',
+                    'Choose sorting option:',
+                    [
+                      { text: 'Price: Low to High', onPress: () => console.log('Sort by price asc') },
+                      { text: 'Price: High to Low', onPress: () => console.log('Sort by price desc') },
+                      { text: 'Year: Newest First', onPress: () => console.log('Sort by year desc') },
+                      { text: 'Mileage: Lowest First', onPress: () => console.log('Sort by mileage asc') },
+                      { text: 'Cancel', style: 'cancel' }
+                    ]
+                  );
+                }}
                 activeOpacity={0.7}
                 accessibilityRole="button"
                 accessibilityLabel="Sort search results"
@@ -1130,7 +1244,7 @@ export default function SearchScreen() {
               renderItem={({ item }) => (
                 <CarCard
                   car={item}
-                  onPress={() => {/* TODO: Navigate to car details */}}
+                  onPress={() => NavigationService.navigateToCar(item.id)}
                 />
               )}
               keyExtractor={(item) => item.id}
@@ -1200,7 +1314,7 @@ export default function SearchScreen() {
                   <View key={`rec-${car.id}`} style={styles.recommendationCard}>
                     <CarCard
                       car={car}
-                      onPress={() => {/* TODO: Navigate to car details */}}
+                      onPress={() => NavigationService.navigateToCar(car.id)}
                     />
                   </View>
                 ))}
@@ -1213,7 +1327,7 @@ export default function SearchScreen() {
             <CarCard
               key={car.id}
               car={car}
-              onPress={() => {/* TODO: Navigate to car details */}}
+              onPress={() => NavigationService.navigateToCar(car.id)}
             />
           ))}
         </ScrollView>

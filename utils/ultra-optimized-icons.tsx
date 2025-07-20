@@ -97,6 +97,18 @@ export const MapPin = createIcon(
   </>
 );
 
+export const Phone = createIcon(
+  <Path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+);
+
+export const ExternalLink = createIcon(
+  <>
+    <Path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <Polyline points="15,3 21,3 21,9" />
+    <Line x1="10" y1="14" x2="21" y2="3" />
+  </>
+);
+
 export const DollarSign = createIcon(
   <Path d="M12 1v22m5-18H9a4 4 0 0 0 0 8h6a4 4 0 0 1 0 8H8" />
 );
@@ -390,6 +402,27 @@ export const Info = createIcon(
   </>
 );
 
+// Voice and microphone icons for advanced search
+export const Mic = createIcon(
+  <>
+    <Path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+    <Path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+    <Line x1="12" y1="19" x2="12" y2="23" />
+    <Line x1="8" y1="23" x2="16" y2="23" />
+  </>
+);
+
+export const MicOff = createIcon(
+  <>
+    <Line x1="1" y1="1" x2="23" y2="23" />
+    <Path d="M9 9v3a3 3 0 0 0 5.12 2.12l1.78-1.78" />
+    <Path d="M12 2a3 3 0 0 1 3 3v6c0 .34-.06.67-.14.98" />
+    <Path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+    <Line x1="12" y1="19" x2="12" y2="23" />
+    <Line x1="8" y1="23" x2="16" y2="23" />
+  </>
+);
+
 // Export icon map for dynamic usage
 export const IconMap = {
   Search,
@@ -446,6 +479,9 @@ export const IconMap = {
   Upload,
   Camera,
   Info,
+  // Voice and search icons
+  Mic,
+  MicOff,
 };
 
 /**

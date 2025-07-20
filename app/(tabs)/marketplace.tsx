@@ -8,6 +8,7 @@ import {
   FlatList,
   RefreshControl,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -27,7 +28,14 @@ import { fetchVehicleListings } from '@/services/supabaseService';
 import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
 import { Car as CarType } from '@/types/database';
 import { useDebounce } from '@/hooks/useDebounce';
-import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Star, Building2, Award, Clock, ChevronRight, Mail, List } from '@/utils/ultra-optimized-icons';
+import { NavigationService } from '@/services/NavigationService';
+import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Star, Building2, Award, Clock, ChevronRight, Mail, List, Shield } from '@/utils/ultra-optimized-icons';
+
+// Lazy loaded components for performance optimization
+// Note: Commented out for compatibility - can be re-enabled when module resolution is fixed
+// const LazyFeaturedSection = lazy(() => import('@/components/marketplace/FeaturedSection'));
+// const LazyDealerSection = lazy(() => import('@/components/marketplace/DealerSection'));
+// const LazyStatsSection = lazy(() => import('@/components/marketplace/StatsSection'));
 
 const { width } = Dimensions.get('window');
 
@@ -172,9 +180,8 @@ function MarketplaceScreen() {
   }, [loadingMore, hasMore, cars.length]);
 
   const handleCarPress = useCallback((carId: string) => {
-    logger.debug('Navigate to car details:', carId);
-    // TODO: Navigate to car detail screen
-    // router.push(`/car/${carId}`);
+    console.log('Navigate to car details:', carId);
+    NavigationService.navigateToCar(carId);
   }, []);
 
   const renderListing = ({ item }: { item: CarType }) => (
@@ -231,6 +238,15 @@ function MarketplaceScreen() {
           />
         </View>
       </View>
+
+      {/* Lazy Loaded Stats Section */}
+      {/* Note: Lazy loading disabled for compatibility */}
+      
+      {/* Lazy Loaded Featured Section */}
+      {/* Note: Lazy loading disabled for compatibility */}
+      
+      {/* Lazy Loaded Dealer Section */}
+      {/* Note: Lazy loading disabled for compatibility */}
 
       {/* Stats */}
       <View style={styles.statsSection}>

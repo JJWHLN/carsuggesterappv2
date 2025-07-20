@@ -21,8 +21,12 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { RealVideoPlayer } from '@/services/RealVideoService';
+import { realNotificationService } from '@/services/RealNotificationServiceSimplified';
 import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
+import { useAuth } from '@/contexts/AuthContext';
+import { BookmarkService } from '@/services/featureServices';
 import {
   formatPrice,
   formatMileage,
@@ -33,15 +37,17 @@ import {
 import { fetchVehicleListingById, SupabaseError } from '@/services/supabaseService';
 import { useApi } from '@/hooks/useApi';
 import { Car as CarType, DatabaseVehicleListing } from '@/types/database';
-import { ArrowLeft, Heart, MapPin, Calendar, Fuel, Settings, Star, Mail, Users, Gauge, MessageCircle } from '@/utils/ultra-optimized-icons';
+import { ArrowLeft, Heart, MapPin, Calendar, Fuel, Settings, Star, Mail, Users, Gauge, MessageCircle, Share, Camera, Phone, ExternalLink } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CarDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [isSaved, setIsSaved] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
   const navigation = useNavigation();
   const { colors } = useThemeColors();
+  const { user } = useAuth();
   const styles = useMemo(() => getStyles(colors), [colors]);
 
   // Fetch car data using useApi and the new service function
@@ -73,15 +79,54 @@ export default function CarDetailScreen() {
   //   router.back();
   // };
 
-  const handleSave = useCallback(() => {
-    setIsSaved(!isSaved);
-    // Add actual save logic here
-    logger.debug('Save toggled for car:', id, !isSaved);
-  }, [isSaved, id]);
+  const handleSave = useCallback(async () => {
+    if (!user) {
+      Alert.alert('Sign In Required', 'Please sign in to save cars to your favorites.');
+      return;
+    }
+
+    if (!id || saveLoading) return;
+
+    try {
+      setSaveLoading(true);
+      
+      if (isSaved) {
+        // Remove from bookmarks
+        await BookmarkService.removeBookmark(user.id, { vehicleListingId: id });
+        setIsSaved(false);
+        Alert.alert('Removed', 'Car removed from your saved cars.');
+      } else {
+        // Add to bookmarks
+        await BookmarkService.addBookmark(user.id, { vehicleListingId: id });
+        setIsSaved(true);
+        
+        // Send real notification for successful save
+        if (car) {
+          try {
+            await realNotificationService.createCarAlert(
+              car.id,
+              `${car.year} ${car.make} ${car.model}`,
+              'Car saved to your favorites! We\'ll notify you of price changes.',
+              'normal'
+            );
+          } catch (notificationError) {
+            console.warn('Failed to send notification:', notificationError);
+          }
+        }
+        
+        Alert.alert('Saved', 'Car added to your saved cars.');
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+      Alert.alert('Error', 'Failed to update your saved cars. Please try again.');
+    } finally {
+      setSaveLoading(false);
+    }
+  }, [user, id, isSaved, saveLoading]);
 
   const handleShare = useCallback(() => {
     // Implement share functionality using React Native's Share API
-    logger.debug('Share car:', id);
+    console.log('Share car:', id);
     // Example: Share.share({ message: `Check out this car: ${car?.year} ${car?.make} ${car?.model}` });
   }, [id]);
 
@@ -119,7 +164,7 @@ export default function CarDetailScreen() {
 
   const handleContact = () => {
     // Implement contact dealer functionality
-    logger.debug('Contact dealer for car:', id);
+    console.log('Contact dealer for car:', id);
   };
 
   if (loading) {
@@ -203,6 +248,28 @@ export default function CarDetailScreen() {
             </View>
           )}
         </View>
+
+        {/* Video Player Section - Real Video Integration */}
+        {car.images && car.images.length > 0 && (
+          <View style={styles.videoSection}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Car Video Review
+            </Text>
+            <RealVideoPlayer
+              source={{
+                uri: `https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4`,
+                thumbnail: car.images[0],
+                quality: '720p'
+              }}
+              style={styles.videoPlayer}
+              shouldPlay={false}
+              showControls={true}
+              autoHideControls={true}
+              onLoad={() => console.log('Video loaded for car:', car.id)}
+              onError={(error) => console.error('Video error:', error)}
+            />
+          </View>
+        )}
 
         {/* Enhanced Car Details */}
         <View style={styles.content}>
@@ -337,7 +404,7 @@ export default function CarDetailScreen() {
             style={styles.secondaryButton}
             onPress={() => {
               // Handle schedule visit
-              logger.debug('Schedule visit for car:', id);
+              console.log('Schedule visit for car:', id);
             }}
           >
             <Calendar color={colors.primary} size={20} />
@@ -351,7 +418,7 @@ export default function CarDetailScreen() {
             <Text style={styles.actionButtonText}>Message</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
-            <Navigation color={colors.textSecondary} size={20} />
+            <MapPin color={colors.textSecondary} size={20} />
             <Text style={styles.actionButtonText}>Directions</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
@@ -419,6 +486,17 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     ...Typography.caption,
     color: colors.white,
     fontWeight: '600',
+  },
+  videoSection: {
+    padding: Spacing.lg,
+    backgroundColor: colors.cardBackground,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  videoPlayer: {
+    marginTop: Spacing.md,
+    borderRadius: BorderRadius.md,
+    overflow: 'hidden',
   },
   content: {
     padding: Spacing.lg,

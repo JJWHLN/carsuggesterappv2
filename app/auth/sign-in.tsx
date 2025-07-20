@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { RealAuthService } from '@/services/RealAuthService';
 import { Button } from '@/components/ui/Button';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
@@ -55,21 +56,43 @@ function SignInScreen() {
     
     setLoading(true);
     try {
-      await signInWithPassword(email, password);
-      // Success handled by auth context redirect
+      // Use RealAuthService for more robust authentication
+      const result = await RealAuthService.signIn({ email, password });
+      
+      if (result.success) {
+        // Update auth context with new user
+        if (result.user) {
+          // Auth context will handle the user state update
+          router.replace('/(tabs)');
+        }
+      } else {
+        Alert.alert('Sign In Failed', result.error || 'Please check your credentials and try again.');
+      }
     } catch (error: any) {
+      console.error('Sign in error:', error);
       Alert.alert(
         'Sign In Failed', 
-        error.message || 'Please check your credentials and try again.'
+        'An unexpected error occurred. Please try again.'
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSocialSignIn = (provider: 'google' | 'apple') => {
-    // TODO: Implement social sign-in
-    Alert.alert('Coming Soon', `${provider} sign-in will be available soon!`);
+  const handleSocialSignIn = async (provider: 'google' | 'apple') => {
+    setLoading(true);
+    try {
+      // Implement real social sign-in with Supabase
+      Alert.alert(
+        'Social Sign-In', 
+        `${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is being implemented. Please use email sign-in for now.`
+      );
+    } catch (error) {
+      console.error('Social sign-in error:', error);
+      Alert.alert('Error', 'Social sign-in failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

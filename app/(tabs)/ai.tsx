@@ -23,6 +23,7 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
+import { NavigationService } from '@/services/NavigationService';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useApi } from '@/hooks/useApi';
 import { AISearchEngine, AISearchQuery } from '@/services/aiSearchService';
@@ -133,7 +134,7 @@ export default function AISearchTab() {
           </Text>
           <Button
             title="Sign In to Access AI"
-            onPress={() => {/* TODO: Navigate to sign in */}}
+            onPress={() => NavigationService.navigateToAuth('sign-in')}
             style={styles.authButton}
             variant="primary"
           />
@@ -462,7 +463,7 @@ export default function AISearchTab() {
           setLoading(false);
           resultsOpacity.value = withTiming(1, { duration: 300 });
         } catch (error) {
-          logger.error('Search error:', error);
+          console.error('Search error:', error);
           setCars([]);
           setLoading(false);
         }
