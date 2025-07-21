@@ -1,12 +1,18 @@
-interface PerformanceMetric {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Enhanced Performance Metrics Types
+export interface PerformanceMetric {
+  id: string;
   name: string;
   startTime: number;
   endTime?: number;
   duration?: number;
+  value?: number;
   metadata?: Record<string, any>;
+  tags?: Record<string, string>;
 }
 
-interface MemoryUsage {
+export interface MemoryUsage {
   used: number;
   total: number;
   free: number;

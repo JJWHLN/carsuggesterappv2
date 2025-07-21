@@ -23,6 +23,7 @@ import { CarCard } from '@/components/CarCard';
 import { ModernCarCard } from '@/components/ModernCarCard';
 import { UltraPremiumCarCard } from '@/components/UltraPremiumCarCard';
 import { PremiumHeroSection } from '@/components/PremiumHeroSection';
+import { ModernHeroSection } from '@/components/ModernHeroSection';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
@@ -106,10 +107,9 @@ function HomeScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-        {/* Premium Hero Section */}
-        <PremiumHeroSection
+        {/* Modern Hero Section */}
+        <ModernHeroSection
           onSearchPress={handleSearchPress}
-          onExplorePress={handleBrowseAllCars}
           onGetRecommendations={handleGetRecommendations}
         />
 

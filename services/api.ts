@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { CarModel, Brand, Car } from '@/types/database'; // Added Brand and Car
+import { CarModel, Brand, VehicleListing, Review, Dealer, FeaturedCar, RecommendedCar, UserProfile, Bookmark } from '@/types/database-updated';
 
 export interface ApiResponse<T> {
   data: T | null;
@@ -37,7 +37,7 @@ export class ApiError extends Error {
     }
 
     // It's good practice to log the original error for debugging
-    logger.error(`ApiError: Code: ${this.code}, Message: ${this.message}`);
+    console.error(`ApiError: Code: ${this.code}, Message: ${this.message}`);
   }
 }
 
@@ -111,7 +111,7 @@ export async function fetchCarModels(options: FetchCarModelsOptions = {}): Promi
 
 export async function fetchBrandById(id: string): Promise<Brand | null> {
   if (!id || isNaN(parseInt(id))) { // Ensure id is a valid number string
-    logger.error('Invalid brand ID provided to fetchBrandById:', id);
+    console.error('Invalid brand ID provided to fetchBrandById:', id);
     throw new ApiError('Invalid brand ID.', 'VALIDATION_ERROR', 'A valid brand identifier is required.');
   }
   try {
@@ -143,7 +143,7 @@ export async function fetchBrandById(id: string): Promise<Brand | null> {
 
 export async function fetchCarModelById(id: string): Promise<CarModel | null> {
   if (!id || isNaN(parseInt(id))) { // Ensure id is a valid number string
-    logger.error('Invalid car model ID provided to fetchCarModelById:', id);
+    console.error('Invalid car model ID provided to fetchCarModelById:', id);
     // Return null or throw error based on how you want to handle this in useApi
     // For useApi, throwing an error that it can catch is better.
     throw new ApiError('Invalid car model ID.', 'VALIDATION_ERROR', 'A valid car model identifier is required.');
@@ -219,7 +219,7 @@ export async function fetchPopularBrands(limit: number = 6): Promise<Brand[]> {
 // REAL SUPABASE IMPLEMENTATION: Replace mock functions with actual database queries
 export const fetchCarById = async (id: string): Promise<Car | null> => {
   if (!id) {
-    logger.error('Invalid car ID provided to fetchCarById:', id);
+    console.error('Invalid car ID provided to fetchCarById:', id);
     return null;
   }
   
@@ -272,7 +272,7 @@ export const fetchCarById = async (id: string): Promise<Car | null> => {
       } : undefined,
     };
   } catch (error) {
-    logger.error('Error fetching car by ID:', error);
+    console.error('Error fetching car by ID:', error);
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       error instanceof Error ? error.message : 'Unknown error', 
@@ -347,7 +347,7 @@ export const fetchCarComparison = async (carIds: string[]): Promise<ComparisonDa
 
     return comparisons;
   } catch (error) {
-    logger.error('Error fetching car comparison:', error);
+    console.error('Error fetching car comparison:', error);
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       error instanceof Error ? error.message : 'Unknown error', 
@@ -423,7 +423,7 @@ export const fetchSimilarCars = async (carId: string): Promise<Car[]> => {
       } : undefined,
     }));
   } catch (error) {
-    logger.error('Error fetching similar cars:', error);
+    console.error('Error fetching similar cars:', error);
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       error instanceof Error ? error.message : 'Unknown error', 
@@ -490,7 +490,7 @@ export const fetchCarReviews = async (carId: string): Promise<Review[]> => {
       photos: review.car_models?.image_url ? [review.car_models.image_url] : [],
     }));
   } catch (error) {
-    logger.error('Error fetching car reviews:', error);
+    console.error('Error fetching car reviews:', error);
     if (error instanceof ApiError) throw error;
     throw new ApiError(
       error instanceof Error ? error.message : 'Unknown error', 
@@ -499,6 +499,190 @@ export const fetchCarReviews = async (carId: string): Promise<Review[]> => {
     );
   }
 };
+
+// ===== CONTENT MANAGEMENT API METHODS =====
+// These methods integrate your content-first strategy with the existing API
+
+/**
+ * Get car reviews with content management integration
+ */
+export async function getCarReviews(options: {
+  carId?: string;
+  limit?: number;
+  sortBy?: 'latest' | 'popular' | 'rating';
+} = {}): Promise<CarReview[]> {
+  try {
+    const contentService = ContentManagementService.getInstance();
+    
+    if (options.carId) {
+      // Get reviews for specific car
+      const review = await contentService.getReviewById(options.carId);
+      return review ? [review] : [];
+    } else {
+      // Get published reviews with sorting
+      return await contentService.getPublishedReviews({
+        limit: options.limit || 20,
+        sortBy: options.sortBy || 'latest'
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching car reviews:', error);
+    throw new ApiError('Failed to fetch reviews', 'REVIEW_FETCH_ERROR');
+  }
+}
+
+/**
+ * Get car models with review integration for content strategy
+ */
+export async function getCarModelsWithReviews(options: FetchCarModelsOptions = {}): Promise<CarListingForReview[]> {
+  try {
+    const contentService = ContentManagementService.getInstance();
+    
+    return await contentService.getCarListings({
+      limit: options.limit || 20,
+      make: options.brandName,
+      hasReviews: true, // Focus on cars with reviews for traffic
+      sortBy: 'popular'
+    });
+  } catch (error) {
+    console.error('Error fetching car models with reviews:', error);
+    throw new ApiError('Failed to fetch car models with reviews', 'CAR_MODELS_REVIEW_ERROR');
+  }
+}
+
+/**
+ * Search across reviews and cars for content discovery
+ */
+export async function searchContentAndCars(searchTerm: string): Promise<{
+  reviews: CarReview[];
+  cars: CarListingForReview[];
+}> {
+  try {
+    const contentService = ContentManagementService.getInstance();
+    
+    const [reviews, cars] = await Promise.all([
+      contentService.searchReviews(searchTerm, 10),
+      contentService.getCarListings({
+        // Simulated search by filtering popular cars
+        limit: 10,
+        sortBy: 'popular'
+      })
+    ]);
+
+    // Filter cars by search term in make/model
+    const filteredCars = cars.filter(car => 
+      car.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      car.model.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return {
+      reviews,
+      cars: filteredCars
+    };
+  } catch (error) {
+    console.error('Error searching content and cars:', error);
+    throw new ApiError('Failed to search content', 'CONTENT_SEARCH_ERROR');
+  }
+}
+
+/**
+ * Get featured content for homepage (supports content-first strategy)
+ */
+export async function getFeaturedContent(): Promise<{
+  featuredReviews: CarReview[];
+  popularCars: CarListingForReview[];
+  recentReviews: CarReview[];
+}> {
+  try {
+    const contentService = ContentManagementService.getInstance();
+    
+    const [featuredReviews, popularCars, recentReviews] = await Promise.all([
+      contentService.getFeaturedReviews(3),
+      contentService.getCarListings({ limit: 6, sortBy: 'popular' }),
+      contentService.getRecentReviews(5)
+    ]);
+
+    return {
+      featuredReviews,
+      popularCars,
+      recentReviews
+    };
+  } catch (error) {
+    console.error('Error fetching featured content:', error);
+    throw new ApiError('Failed to fetch featured content', 'FEATURED_CONTENT_ERROR');
+  }
+}
+
+/**
+ * Get analytics data for business insights
+ */
+export async function getContentAnalytics(): Promise<{
+  totalReviews: number;
+  totalViews: number;
+  totalLikes: number;
+  averageRating: number;
+  popularCars: string[];
+  trafficGrowth: number; // Percentage growth indicator
+}> {
+  try {
+    const contentService = ContentManagementService.getInstance();
+    const analytics = await contentService.getContentAnalytics();
+
+    // Calculate traffic growth (mock calculation for demo)
+    const trafficGrowth = analytics.totalViews > 0 ? 
+      Math.min(100, Math.round((analytics.totalViews / 100) * 10)) : 0;
+
+    return {
+      ...analytics,
+      trafficGrowth
+    };
+  } catch (error) {
+    console.error('Error fetching content analytics:', error);
+    throw new ApiError('Failed to fetch analytics', 'ANALYTICS_ERROR');
+  }
+}
+
+/**
+ * Create a new review (for your content strategy)
+ */
+export async function createCarReview(reviewData: {
+  carMake: string;
+  carModel: string;
+  carYear: number;
+  reviewerName: string;
+  rating: number;
+  title: string;
+  content: string;
+  pros: string[];
+  cons: string[];
+  finalVerdict: string;
+  isFeatured?: boolean;
+}): Promise<CarReview> {
+  try {
+    const contentService = ContentManagementService.getInstance();
+    
+    return await contentService.createReview({
+      car_make: reviewData.carMake,
+      car_model: reviewData.carModel,
+      car_year: reviewData.carYear,
+      reviewer_name: reviewData.reviewerName,
+      reviewer_title: 'Car Enthusiast',
+      rating: reviewData.rating,
+      title: reviewData.title,
+      content: reviewData.content,
+      pros: reviewData.pros,
+      cons: reviewData.cons,
+      final_verdict: reviewData.finalVerdict,
+      is_featured: reviewData.isFeatured || false,
+      is_published: true,
+      tags: [],
+      publish_date: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error creating car review:', error);
+    throw new ApiError('Failed to create review', 'REVIEW_CREATE_ERROR');
+  }
+}
 
 // Add types for the new functions
 interface ComparisonData {

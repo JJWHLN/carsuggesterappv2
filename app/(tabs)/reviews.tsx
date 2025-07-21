@@ -15,6 +15,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { RealtimeService, RealtimeSubscription } from '@/services/realtimeService';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
+import { ModernButton } from '@/components/ui/ModernButton';
 import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';

@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { RealAuthService } from '@/services/RealAuthService';
 import { Button } from '@/components/ui/Button';
+import { ModernButton } from '@/components/ui/ModernButton';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors';

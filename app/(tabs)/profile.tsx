@@ -15,6 +15,7 @@ import { router } from 'expo-router';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button } from '@/components/ui/Button';
+import { ModernButton } from '@/components/ui/ModernButton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { BaseFormInput, FloatingLabelInput, FormFieldGroup, useFormValidation } from '@/components/ui/UnifiedFormComponents';

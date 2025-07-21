@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, Alert, SafeAreaView, ScrollView } fr
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/Button';
+import { ModernButton } from '@/components/ui/ModernButton';
 import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
   },
   title: {
-    ...Typography.h1,
+    ...Typography.heading,
     textAlign: 'center',
     marginBottom: Spacing.xl,
   },

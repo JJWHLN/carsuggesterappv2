@@ -19,6 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
+import { ModernButton } from '@/components/ui/ModernButton';
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { RealVideoPlayer } from '@/services/RealVideoService';
@@ -511,7 +512,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     marginBottom: Spacing.sm,
   },
   carTitle: {
-    ...Typography.h1,
+    ...Typography.heading,
     color: colors.text,
     flex: 1,
     marginRight: Spacing.md,
@@ -528,7 +529,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     textTransform: 'uppercase',
   },
   carPrice: {
-    ...Typography.h2,
+    ...Typography.title,
     color: colors.primary,
     fontWeight: '700',
     marginBottom: Spacing.md,
@@ -544,7 +545,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     gap: Spacing.xs,
   },
   quickStatText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.textSecondary,
     fontWeight: '500',
   },
@@ -569,7 +570,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     marginBottom: Spacing.xs,
   },
   detailValue: {
-    ...Typography.bodySmall,
+    ...Typography.body,
     color: colors.text,
     fontWeight: '600',
   },
@@ -577,7 +578,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     marginBottom: Spacing.xl,
   },
   sectionTitle: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     color: colors.text,
     marginBottom: Spacing.md,
   },
@@ -598,7 +599,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     borderRadius: BorderRadius.full,
   },
   featureText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.primary,
     fontWeight: '500',
   },
@@ -614,7 +615,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     marginBottom: Spacing.md,
   },
   dealerName: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     color: colors.text,
   },
   verifiedBadge: {
@@ -649,7 +650,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    ...ColorsShadows.large,
+    ...ColorsShadows.lg,
   },
   bottomButtons: {
     flexDirection: 'row',
@@ -673,7 +674,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     gap: Spacing.sm,
   },
   secondaryButtonText: {
-    ...Typography.bodySmall,
+    ...Typography.body,
     color: colors.primary,
     fontWeight: '600',
   },

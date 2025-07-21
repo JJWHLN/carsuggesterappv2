@@ -26,11 +26,13 @@ import { SlidersHorizontal, Zap, TrendingUp, Fuel, Gauge, Building2 } from '@/ut
 import { SearchDataService } from '@/services/SearchDataService';
 
 import { CarCard } from '@/components/CarCard';
+import AdvancedSearchFilters, { AdvancedSearchFiltersData } from '@/components/AdvancedSearchFilters';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
+import { ModernSearchBar } from '@/components/ui/ModernSearchBar';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -97,6 +99,7 @@ export default function SearchScreen() {
   const [showAIInsights, setShowAIInsights] = useState(false);
   const [naturalLanguageSearch, setNaturalLanguageSearch] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [performanceMode, setPerformanceMode] = useState<'auto' | 'performance' | 'quality'>('auto');
   
@@ -722,13 +725,35 @@ export default function SearchScreen() {
         </Text>
       </View>
 
-      {/* Unified Search & Filter Section */}
+      {/* Modern Search & Filter Section */}
       <View style={styles.searchSection}>
+        {/* Modern Search Bar */}
+        <ModernSearchBar
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          onSubmit={(query) => setSearchTerm(query)}
+          placeholder="Search cars, brands, models..."
+          suggestions={[
+            'Toyota Camry',
+            'Honda Civic', 
+            'BMW X5',
+            'Mercedes C-Class',
+          ]}
+          recentSearches={[]}
+          popularSearches={[
+            'SUV under 30k',
+            'Electric cars',
+            'Luxury sedans',
+            'Fuel efficient',
+          ]}
+        />
+        
+        {/* Filter Controls */}
         <UnifiedSearchFilter
-          searchPlaceholder="Search cars, brands, models..."
-          searchValue={searchTerm}
-          onSearchChange={setSearchTerm}
-          enableSearch={true}
+          searchPlaceholder=""
+          searchValue=""
+          onSearchChange={() => {}}
+          enableSearch={false}
           
           filterCategories={filterCategories}
           activeFilters={filters}
@@ -749,10 +774,21 @@ export default function SearchScreen() {
           resultsLabel="cars"
           showResultsCount={searchTerm.length > 0}
           
-          variant="expanded"
+          variant="compact"
           showClearAll={true}
           onClearAll={clearFilters}
         />
+        
+        {/* Advanced Filters Button */}
+        <TouchableOpacity
+          style={[styles.advancedFiltersButton, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}
+          onPress={() => setShowAdvancedFilters(true)}
+        >
+          <SlidersHorizontal size={20} color={colors.primary} />
+          <Text style={[styles.advancedFiltersText, { color: colors.text }]}>
+            Advanced Filters
+          </Text>
+        </TouchableOpacity>
         
         {/* AI Search Toggle */}
         <View style={[styles.aiToggleContainer, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
@@ -1332,6 +1368,25 @@ export default function SearchScreen() {
           ))}
         </ScrollView>
       )}
+
+      {/* Advanced Search Filters Modal */}
+      <AdvancedSearchFilters
+        visible={showAdvancedFilters}
+        onClose={() => setShowAdvancedFilters(false)}
+        onApplyFilters={(appliedFilters: AdvancedSearchFiltersData) => {
+          // Apply the filters to the search
+          // For now, we'll just trigger a search with the search term
+          // The actual filtering logic should be implemented in the API service
+          console.log('Applied advanced filters:', appliedFilters);
+          
+          // Trigger a new search with the current search term to refresh results
+          if (searchTerm) {
+            handleSearch(searchTerm);
+          }
+          
+          setShowAdvancedFilters(false);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -1357,6 +1412,21 @@ const styles = StyleSheet.create({
   searchSection: {
     paddingHorizontal: Spacing.lg,
     marginBottom: Spacing.lg,
+  },
+  advancedFiltersButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    gap: 8,
+  },
+  advancedFiltersText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   quickFiltersSection: {
     marginBottom: Spacing.lg,

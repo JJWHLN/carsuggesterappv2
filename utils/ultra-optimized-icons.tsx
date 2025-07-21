@@ -158,6 +158,25 @@ export const ChevronLeft = createIcon(
   <Polyline points="15,18 9,12 15,6" />
 );
 
+export const Edit3 = createIcon(
+  <>
+    <Path d="M12 20h9" />
+    <Path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+  </>
+);
+
+export const MessageSquare = createIcon(
+  <Path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+);
+
+export const ShoppingBag = createIcon(
+  <>
+    <Path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+    <Path d="M3 6h18" />
+    <Path d="M16 10a4 4 0 0 1-8 0" />
+  </>
+);
+
 export const Menu = createIcon(
   <>
     <Line x1="3" y1="6" x2="21" y2="6" />

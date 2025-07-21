@@ -1,19 +1,28 @@
 import React, { memo, useState, useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { MapPin, Heart, Star, Settings } from '@/utils/ultra-optimized-icons';
-import { Clock, Fuel } from '@/utils/ultra-optimized-icons';
+import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { MapPin, Heart, Star, Settings, Calendar, Fuel, Gauge } from '@/utils/ultra-optimized-icons';
 import { OptimizedImage } from './ui/OptimizedImage';
-import { AnimatedPressable } from './ui/AnimatedPressable';
-import { Card } from './ui/Card'; // Card is now memoized and themed
 import { createSemanticProps, createListItemProps, useAccessibility } from '@/hooks/useAccessibility';
-import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors
-import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
+import { Colors, Spacing, BorderRadius, Typography, Shadows } from '@/constants/Colors';
+import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCanPerformAction } from './ui/RoleProtection';
 import { BookmarkService } from '@/services/featureServices';
 import { Car } from '@/types/database';
 import { formatPrice, formatMileage, formatDate, formatCondition, formatFuelType } from '@/utils/dataTransformers';
 import { useMemoryOptimization } from '@/hooks/useMemoryOptimization';
+
+const { width } = Dimensions.get('window');
+const CARD_WIDTH = width - (Spacing.lg * 2); // Full width with margins
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface CarCardProps {
   car: Car;
@@ -41,18 +50,44 @@ const CarCard = memo<CarCardProps>(({
   const { colors } = useThemeColors();
   const { user } = useAuth();
   const canBookmark = useCanPerformAction('bookmarkCars');
-  const styles = getThemedCarCardStyles(colors);
   const { announceForAccessibility } = useAccessibility();
   const { addCleanupFunction } = useMemoryOptimization();
   const [isBookmarked, setIsBookmarked] = useState(isSaved);
   const [loading, setLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  const handlePress = () => {
+  // Animation values
+  const scale = useSharedValue(1);
+  const heartScale = useSharedValue(1);
+  const imageOpacity = useSharedValue(0);
+
+  // Animated styles
+  const cardAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const heartAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: heartScale.value }],
+  }));
+
+  const imageAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: imageOpacity.value,
+  }));
+
+  const handlePressIn = useCallback(() => {
+    scale.value = withSpring(0.97, { damping: 20, stiffness: 300 });
+  }, []);
+
+  const handlePressOut = useCallback(() => {
+    scale.value = withSpring(1, { damping: 20, stiffness: 300 });
+  }, []);
+
+  const handlePress = useCallback(() => {
     announceForAccessibility(
       `Selected ${car.year} ${car.make} ${car.model} for ${formatPrice(car.price)}`
     );
     onPress();
-  };
+  }, [car, onPress]);
 
   const handleBookmark = useCallback(async () => {
     if (!user || !canBookmark) {
@@ -64,6 +99,11 @@ const CarCard = memo<CarCardProps>(({
 
     try {
       setLoading(true);
+      
+      // Animate heart
+      heartScale.value = withSpring(1.3, { damping: 10, stiffness: 300 }, () => {
+        heartScale.value = withSpring(1, { damping: 15, stiffness: 300 });
+      });
       
       const target = carModelId ? { carModelId } : { vehicleListingId };
       
@@ -79,17 +119,39 @@ const CarCard = memo<CarCardProps>(({
       
       onSave?.();
     } catch (error) {
-      logger.error('Error toggling bookmark:', error);
+      console.error('Error toggling bookmark:', error);
       announceForAccessibility('Failed to update bookmark');
     } finally {
       setLoading(false);
     }
   }, [user, canBookmark, isBookmarked, carModelId, vehicleListingId, onSave, loading]);
 
+  const onImageLoad = useCallback(() => {
+    setImageLoaded(true);
+    imageOpacity.value = withTiming(1, { duration: 300 });
+  }, []);
+
+  // Calculate condition color
+  const getConditionColor = (condition: string) => {
+    switch (condition?.toLowerCase()) {
+      case 'new': return colors.success;
+      case 'excellent': return colors.primary;
+      case 'good': return colors.info;
+      case 'fair': return colors.warning;
+      default: return colors.textMuted;
+    }
+  };
+
+  // Format car age
+  const getCarAge = () => {
+    const currentYear = new Date().getFullYear();
+    const age = currentYear - car.year;
+    return age === 0 ? 'New' : `${age}y`;
+  };
+
   const accessibilityLabel = `${car.year} ${car.make} ${car.model}, ${formatPrice(car.price)}, ${formatMileage(car.mileage)} miles, located in ${car.location}`;
   const accessibilityHint = `Double tap to view detailed information and photos for this ${car.year} ${car.make} ${car.model}`;
   
-  // Build descriptive value for screen readers
   const accessibilityValue = [
     `Price: ${formatPrice(car.price)}`,
     `Mileage: ${formatMileage(car.mileage)} miles`,
@@ -101,9 +163,8 @@ const CarCard = memo<CarCardProps>(({
 
   const imageSource = car.images?.[0] 
     ? { uri: car.images[0] }
-    : { uri: 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=800' };
+    : { uri: 'https://via.placeholder.com/400x250/e8f7ed/48cc6c?text=Car+Image' };
 
-  // Create appropriate accessibility props based on whether position is provided
   const cardAccessibilityProps = position 
     ? createListItemProps(accessibilityLabel, position, {
         hint: accessibilityHint,
@@ -115,10 +176,12 @@ const CarCard = memo<CarCardProps>(({
 
   return (
     <AnimatedPressable 
+      style={[styles.container, cardAnimatedStyle]}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       onPress={handlePress}
       testID={testID}
       {...cardAccessibilityProps}
-      // Additional accessibility enhancements
       accessibilityActions={[
         { name: 'activate', label: 'View car details' },
         ...(showSaveButton && canBookmark ? [
@@ -141,22 +204,34 @@ const CarCard = memo<CarCardProps>(({
         }
       }}
     >
-      <Card style={styles.card}>
+      {/* Modern Card Container */}
+      <View style={[styles.card, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+        
+        {/* Image Container */}
         <View style={styles.imageContainer}>
           <OptimizedImage
             source={imageSource}
             style={styles.image}
+            onLoad={onImageLoad}
             accessibilityLabel={`Photo of ${car.year} ${car.make} ${car.model}`}
-            fallbackSource={require('@/assets/images/icon.png')} // Use local fallback
-            quality="medium" // Optimize for balance between quality and performance
-            lazy={true} // Enable lazy loading for better performance
-            priority="normal" // Normal loading priority for list items
-            cacheKey={`car_${car.id || car.year}_${car.make}_${car.model}`} // Unique cache key
+            fallbackSource={require('@/assets/images/icon.png')}
+            quality="medium"
+            lazy={true}
+            priority="normal"
+            cacheKey={`car_${car.id || car.year}_${car.make}_${car.model}`}
           />
           
+          {/* Condition Badge */}
+          {car.condition && (
+            <View style={[styles.conditionBadge, { backgroundColor: getConditionColor(car.condition) }]}>
+              <Text style={styles.conditionBadgeText}>{formatCondition(car.condition)}</Text>
+            </View>
+          )}
+
+          {/* Save Button */}
           {showSaveButton && canBookmark && (
-            <AnimatedPressable 
-              style={[styles.saveButton, loading && styles.saveButtonDisabled]}
+            <AnimatedPressable
+              style={[styles.saveButton, heartAnimatedStyle, loading && styles.saveButtonDisabled]}
               onPress={handleBookmark}
               disabled={loading}
               testID={testID ? `${testID}-bookmark` : undefined}
@@ -172,68 +247,89 @@ const CarCard = memo<CarCardProps>(({
                 }
               )}
             >
-              <Heart 
-                color={isBookmarked ? colors.error : colors.white} // Use themed error, themed white
-                size={20}
-                fill={isBookmarked ? colors.error : 'transparent'} // Use themed error
-              />
+              <View style={[styles.saveButtonInner, { backgroundColor: colors.white }]}>
+                <Heart 
+                  size={16} 
+                  color={isBookmarked ? colors.error : colors.textMuted}
+                  fill={isBookmarked ? colors.error : 'transparent'}
+                />
+              </View>
             </AnimatedPressable>
           )}
-          
+
+          {/* Verified Badge */}
           {car.dealer?.verified && (
             <View style={[styles.verifiedBadge, { backgroundColor: colors.success }]}>
               <Star color={colors.white} size={12} fill={colors.white} />
               <Text style={[styles.verifiedText, { color: colors.white }]}>Verified</Text>
             </View>
           )}
+
+          {/* Image Loading Gradient */}
+          {!imageLoaded && (
+            <LinearGradient
+              colors={['rgba(232, 247, 237, 0.8)', 'rgba(232, 247, 237, 0.4)']}
+              style={styles.imageOverlay}
+            />
+          )}
         </View>
-        
+
+        {/* Content */}
         <View style={styles.content}>
+          
+          {/* Header - Title and Price */}
           <View style={styles.header}>
-            <View style={styles.titleContainer}>
-              <Text 
-                style={[styles.title, { color: colors.text }]} 
-                numberOfLines={1}
-                accessibilityRole="header"
-              >
-                {car.year} {car.make} {car.model}
-              </Text>
-              {car.condition && (
-                <View 
-                  style={[styles.conditionBadge, { backgroundColor: colors.primaryLight }]}
-                  accessibilityLabel={`Condition: ${formatCondition(car.condition)}`}
-                  accessibilityRole="text"
-                >
-                  <Text style={[styles.conditionText, { color: colors.primary }]}>{formatCondition(car.condition)}</Text>
-                </View>
-              )}
-            </View>
             <Text 
-              style={[styles.price, { color: colors.primary }]}
+              style={[styles.title, { color: colors.text }]} 
+              numberOfLines={1}
+              accessibilityRole="header"
+            >
+              {car.year} {car.make} {car.model}
+            </Text>
+            <Text 
+              style={[styles.price, { color: colors.text }]}
               accessibilityLabel={`Price: ${formatPrice(car.price)}`}
-              accessibilityRole="text"
             >
               {formatPrice(car.price)}
             </Text>
           </View>
-          
-          <View style={styles.details}>
-            <View style={styles.detailItem}>
-              <Settings color={colors.textSecondary} size={14} />
-              <Text style={[styles.detailText, { color: colors.textSecondary }]}>{formatMileage(car.mileage)} mi</Text>
+
+          {/* Subtitle */}
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]} numberOfLines={1}>
+            {car.description || `${car.make} ${car.model}`}
+          </Text>
+
+          {/* Specs Row */}
+          <View style={styles.specsRow}>
+            <View style={styles.specItem}>
+              <Gauge size={12} color={colors.textMuted} />
+              <Text style={[styles.specText, { color: colors.textMuted }]}>
+                {formatMileage(car.mileage)}
+              </Text>
             </View>
+            
+            <View style={styles.specItem}>
+              <Calendar size={12} color={colors.textMuted} />
+              <Text style={[styles.specText, { color: colors.textMuted }]}>
+                {getCarAge()}
+              </Text>
+            </View>
+            
             {car.fuel_type && (
-              <View style={styles.detailItem}>
-                <Fuel color={colors.textSecondary} size={14} />
-                <Text style={[styles.detailText, { color: colors.textSecondary }]}>{formatFuelType(car.fuel_type)}</Text>
+              <View style={styles.specItem}>
+                <Fuel size={12} color={colors.textMuted} />
+                <Text style={[styles.specText, { color: colors.textMuted }]}>
+                  {formatFuelType(car.fuel_type)}
+                </Text>
               </View>
             )}
           </View>
 
+          {/* Features */}
           {car.features && car.features.length > 0 && (
             <View style={styles.features}>
               {car.features.slice(0, 3).map((feature, index) => (
-                <View key={index} style={[styles.featureTag, { backgroundColor: colors.surfaceDark }]}>
+                <View key={index} style={[styles.featureTag, { backgroundColor: colors.neutral100 }]}>
                   <Text style={[styles.featureText, { color: colors.textSecondary }]}>{feature}</Text>
                 </View>
               ))}
@@ -243,19 +339,27 @@ const CarCard = memo<CarCardProps>(({
             </View>
           )}
           
+          {/* Footer - Location and Date */}
           <View style={styles.footer}>
             <View style={styles.location}>
-              <MapPin color={colors.textSecondary} size={14} />
-              <Text style={[styles.locationText, { color: colors.textSecondary }]} numberOfLines={1}>
+              <MapPin color={colors.textMuted} size={12} />
+              <Text style={[styles.locationText, { color: colors.textMuted }]} numberOfLines={1}>
                 {car.location}
               </Text>
             </View>
-            <View style={styles.date}>
-              <Clock color={colors.textSecondary} size={14} />
-              <Text style={[styles.dateText, { color: colors.textSecondary }]}>{formatDate(car.created_at)}</Text>
-            </View>
+            
+            {/* Rating if available */}
+            {car.rating && (
+              <View style={styles.ratingContainer}>
+                <Star size={12} color={colors.warning} fill={colors.warning} />
+                <Text style={[styles.ratingText, { color: colors.textSecondary }]}>
+                  {car.rating.toFixed(1)}
+                </Text>
+              </View>
+            )}
           </View>
 
+          {/* Dealer Info */}
           {car.dealer && (
             <View style={[styles.dealerInfo, { borderTopColor: colors.border }]}>
               <Text style={[styles.dealerName, { color: colors.text }]}>{car.dealer.name}</Text>
@@ -265,41 +369,75 @@ const CarCard = memo<CarCardProps>(({
             </View>
           )}
         </View>
-      </Card>
+      </View>
     </AnimatedPressable>
   );
 });
 
 CarCard.displayName = 'CarCard';
 
-const getThemedCarCardStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
-  card: {
+const styles = StyleSheet.create({
+  container: {
+    width: CARD_WIDTH,
+    marginHorizontal: Spacing.lg,
     marginBottom: Spacing.md,
-    padding: 0,
+  },
+  card: {
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    ...ColorsShadows.medium, // Shadows might need theme adjustment if they use hardcoded colors
+    borderWidth: 1,
+    ...Shadows.card,
   },
   imageContainer: {
     position: 'relative',
+    height: 200,
+    backgroundColor: Colors.light.primaryLight,
   },
-  image: { // backgroundColor applied inline
+  image: {
     width: '100%',
-    height: 220,
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imageOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  conditionBadge: {
+    position: 'absolute',
+    top: Spacing.sm,
+    left: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.sm,
+  },
+  conditionBadgeText: {
+    ...Typography.xs,
+    color: Colors.light.white,
+    fontWeight: '600',
+    textTransform: 'uppercase',
   },
   saveButton: {
     position: 'absolute',
     top: Spacing.sm,
     right: Spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // This could be themed if needed
+  },
+  saveButtonInner: {
+    width: 32,
+    height: 32,
     borderRadius: BorderRadius.full,
-    padding: Spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Shadows.sm,
   },
   saveButtonDisabled: {
     opacity: 0.6,
   },
-  verifiedBadge: { // backgroundColor applied inline
+  verifiedBadge: {
     position: 'absolute',
-    top: Spacing.sm,
+    bottom: Spacing.sm,
     left: Spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
@@ -307,55 +445,47 @@ const getThemedCarCardStyles = (colors: typeof import('@/constants/Colors').Colo
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
   },
-  verifiedText: { // color applied inline
-    ...Typography.caption,
+  verifiedText: {
+    ...Typography.xs,
     fontWeight: '600',
-    marginLeft: Spacing.xs,
+    marginLeft: 4,
   },
   content: {
     padding: Spacing.md,
   },
   header: {
-    marginBottom: Spacing.sm,
-  },
-  titleContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.xs,
+    alignItems: 'flex-start',
+    marginBottom: 4,
   },
-  title: { // color applied inline
-    ...Typography.h3,
+  title: {
+    ...Typography.subtitle,
     flex: 1,
     marginRight: Spacing.sm,
   },
-  conditionBadge: { // backgroundColor applied inline
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-  },
-  conditionText: { // color applied inline
-    ...Typography.caption,
-    fontWeight: '600',
-  },
-  price: { // color applied inline
-    ...Typography.h2,
+  price: {
+    ...Typography.lg,
     fontWeight: '700',
   },
-  details: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  subtitle: {
+    ...Typography.sm,
     marginBottom: Spacing.sm,
-    gap: Spacing.md,
   },
-  detailItem: {
+  specsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+  },
+  specItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
-  detailText: { // color applied inline
-    ...Typography.bodySmall,
-    marginLeft: Spacing.xs,
-    fontWeight: '500',
+  specText: {
+    ...Typography.xs,
+    marginLeft: 4,
+    flex: 1,
   },
   features: {
     flexDirection: 'row',
@@ -363,17 +493,17 @@ const getThemedCarCardStyles = (colors: typeof import('@/constants/Colors').Colo
     marginBottom: Spacing.sm,
     gap: Spacing.xs,
   },
-  featureTag: { // backgroundColor applied inline
+  featureTag: {
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.sm,
   },
-  featureText: { // color applied inline
-    ...Typography.caption,
+  featureText: {
+    ...Typography.xs,
     fontWeight: '500',
   },
-  moreFeatures: { // color applied inline
-    ...Typography.caption,
+  moreFeatures: {
+    ...Typography.xs,
     fontWeight: '600',
     alignSelf: 'center',
   },
@@ -389,32 +519,33 @@ const getThemedCarCardStyles = (colors: typeof import('@/constants/Colors').Colo
     flex: 1,
     marginRight: Spacing.sm,
   },
-  locationText: { // color applied inline
-    ...Typography.caption,
-    marginLeft: Spacing.xs,
+  locationText: {
+    ...Typography.xs,
+    marginLeft: 4,
     flex: 1,
   },
-  date: {
+  ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  dateText: { // color applied inline
-    ...Typography.caption,
-    marginLeft: Spacing.xs,
+  ratingText: {
+    ...Typography.xs,
+    marginLeft: 2,
+    fontWeight: '500',
   },
-  dealerInfo: { // borderTopColor applied inline
+  dealerInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
   },
-  dealerName: { // color applied inline
-    ...Typography.bodySmall,
+  dealerName: {
+    ...Typography.sm,
     fontWeight: '600',
   },
-  dealerVerified: { // color applied inline
-    ...Typography.caption,
+  dealerVerified: {
+    ...Typography.xs,
     fontWeight: '600',
   },
 });

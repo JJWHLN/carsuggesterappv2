@@ -1,37 +1,91 @@
-// Complete and consistent database types for the CarSuggester app
-export interface CarModel {
-  id: number;
-  name: string;
-  year?: number;
-  image_url?: string;
-  description?: string;
-  category?: string[];
-  brand_id: number;
-  is_active?: boolean;
+// Database types matching your actual Supabase schema
+export interface UserProfile {
+  id: string; // UUID references auth.users
+  username?: string;
+  full_name?: string;
+  bio?: string;
+  phone?: string;
+  location?: string;
+  avatar_url?: string;
+  twitter_url?: string;
+  linkedin_url?: string;
+  instagram_url?: string;
+  email_confirmed?: boolean;
+  deletion_requested_at?: string;
+  deletion_reason?: string;
+  gdpr_consent_date?: string;
+  county?: string;
   created_at?: string;
   updated_at?: string;
-  brands?: {
-    id: number;
-    name: string;
-    logo_url?: string;
-  };
+}
+
+export interface UserRole {
+  id: string;
+  user_id: string;
+  role: 'admin' | 'dealer' | 'user';
+  created_at: string;
 }
 
 export interface Brand {
   id: number;
   name: string;
-  logo_url?: string;
   description?: string;
+  logo_url?: string;
   category?: string[];
   is_active?: boolean;
   created_at?: string;
   updated_at?: string;
 }
 
+export interface CarModel {
+  id: number;
+  brand_id: number;
+  name: string;
+  model: string;
+  year: number;
+  description?: string;
+  image_url?: string;
+  category?: string[];
+  
+  // Engine specifications
+  engine_size?: string;
+  fuel_type?: string;
+  transmission?: string;
+  drivetrain?: string;
+  
+  // Performance metrics
+  power_hp?: number;
+  torque_nm?: number;
+  acceleration_0_60?: number;
+  top_speed_kmh?: number;
+  
+  // Economics
+  fuel_economy_combined?: number;
+  co2_emissions?: number;
+  price_from?: number;
+  price_to?: number;
+  
+  // Safety and warranty
+  safety_rating?: number;
+  warranty_years?: number;
+  
+  // Features
+  standard_features?: string[];
+  optional_features?: string[];
+  
+  // Metadata
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  
+  // Relations
+  brands?: Brand;
+}
+
 export interface Review {
-  id: number | string;
-  model_id?: number;
-  cs_score?: number;
+  id: number;
+  model_id: number;
+  cs_score?: number; // 1-10 rating
   summary?: string;
   performance?: string;
   exterior?: string;
@@ -39,38 +93,61 @@ export interface Review {
   practicality?: string;
   tech?: string;
   verdict?: string;
-  title: string;
-  content: string;
-  rating: number;
-  author: string;
-  car_make: string;
-  car_model: string;
-  car_year: number;
-  images?: string[];
-  tags?: string[];
-  created_at: string;
-  sections?: {
-    performance?: string;
-    exterior?: string;
-    interior?: string;
-    practicality?: string;
-    tech?: string;
-    verdict?: string;
-  };
-  // Expert verification fields
-  expert_id?: string;
-  expert_name?: string;
-  expert_credentials?: string[];
-  verification_level?: 'verified' | 'expert' | 'master';
-  review_methodology?: string;
-  testing_duration?: number; // days
-  testing_conditions?: string[];
-  photo_evidence?: string[];
-  video_evidence?: string[];
-  quality_score?: number;
-  editorial_approval?: boolean;
-  fact_checked?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  
+  // Relations
   car_models?: CarModel;
+}
+
+export interface ReviewSection {
+  id: string;
+  review_id: number;
+  section_type: string;
+  content: string;
+  rating?: number; // 1-10 rating
+  created_at?: string;
+}
+
+export interface Bookmark {
+  id: string;
+  user_id: string;
+  target_type: string; // 'car_model', 'vehicle_listing', etc.
+  target_id: string;
+  created_at: string;
+}
+
+export interface SearchHistory {
+  id: string;
+  user_id: string;
+  search_query: string;
+  filters?: Record<string, any>; // JSONB
+  results_count: number;
+  created_at: string;
+}
+
+export interface Dealer {
+  id: string;
+  user_id: string;
+  business_name: string;
+  contact_name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  website?: string;
+  description?: string;
+  logo_url?: string;
+  specialties?: string[];
+  verified?: boolean;
+  rating?: number;
+  total_reviews?: number;
+  social_media?: Record<string, any>; // JSONB
+  business_hours?: Record<string, any>; // JSONB
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface VehicleListing {
@@ -82,40 +159,72 @@ export interface VehicleListing {
   year: number;
   price: number;
   mileage?: number;
-  location_city?: string;
-  location_state?: string;
   condition?: string;
   fuel_type?: string;
   transmission?: string;
+  drivetrain?: string;
   exterior_color?: string;
   interior_color?: string;
+  vin?: string;
   description?: string;
   features?: string[];
   images?: string[];
+  location_city?: string;
+  location_state?: string;
+  county?: string;
   status?: string;
-  created_at: string;
-  updated_at: string;
-  dealers?: {
-    business_name: string;
-    verified: boolean;
-    rating?: number;
-  };
+  featured?: boolean;
+  sold_at?: string;
+  view_count?: number;
+  rating?: number;
+  total_reviews?: number;
+  created_at?: string;
+  updated_at?: string;
+  
+  // Relations
+  dealers?: Dealer;
 }
 
-export interface Dealer {
+export interface DealerLead {
   id: string;
   user_id: string;
-  business_name: string;
-  contact_name: string;
-  email: string;
-  phone?: string;
-  city?: string;
-  state?: string;
-  verified?: boolean;
-  rating?: number;
-  specialties?: string[];
-  created_at: string;
-  updated_at: string;
+  dealer_id: string;
+  lead_type: 'inquiry' | 'phone_call' | 'email' | 'visit';
+  lead_source: 'search' | 'featured' | 'ai_recommendation' | 'browse';
+  vehicle_id?: string;
+  contact_info?: Record<string, any>; // JSONB
+  status?: string;
+  commission_rate?: number;
+  commission_amount?: number;
+  conversion_date?: string;
+  created_at?: string;
+}
+
+export interface FeaturedCar {
+  id: number;
+  model_id: number;
+  priority: number;
+  featured_text?: string;
+  created_at?: string;
+  
+  // Relations
+  car_models?: CarModel;
+}
+
+export interface RecommendedCar {
+  id: number;
+  model_id: number;
+  priority: number;
+  recommendation_reason?: string;
+  created_at?: string;
+  
+  // Relations
+  car_models?: CarModel;
+}
+
+// Legacy interface for backward compatibility
+export interface CarModelLegacy extends CarModel {
+  // Alias for CarModel to maintain compatibility
 }
 
 // Dealership Review System
@@ -185,6 +294,7 @@ export interface Car {
   transmission?: string;
   exterior_color?: string;
   interior_color?: string;
+  rating?: number;
   dealer?: {
     name: string;
     verified: boolean;
@@ -274,12 +384,12 @@ export interface DatabaseBrand {
   updated_at?: string;
 }
 
-export type UserRole = 'user' | 'dealer' | 'admin' | 'expert' | 'editor';
+export type UserRoleType = 'user' | 'dealer' | 'admin' | 'expert' | 'editor';
 
 export interface Profile {
   id: string;
   email?: string;
-  role: UserRole;
+  role: UserRoleType;
   onboarding_completed?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -366,6 +476,35 @@ export interface AuthorityMetric {
   measurement_period: string;
   recorded_at: string;
   created_at: string;
+}
+
+// User preferences and behavior tracking types
+export interface UserPreferences {
+  id?: string;
+  userId?: string;
+  budget?: {
+    min: number;
+    max: number;
+  };
+  preferredMakes?: string[];
+  enableRecommendations?: boolean;
+  enableBehaviorTracking?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BehaviorEvent {
+  id?: string;
+  type: 'view' | 'save' | 'unsave' | 'search' | 'contact_dealer' | 'share';
+  carId: string;
+  make: string;
+  model?: string;
+  priceRange?: {
+    min: number;
+    max: number;
+  };
+  timestamp: number;
+  userId?: string;
 }
 
 // API Response types

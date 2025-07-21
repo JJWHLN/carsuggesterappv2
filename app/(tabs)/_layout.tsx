@@ -5,7 +5,7 @@ import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCanPerformAction } from '@/components/ui/RoleProtection';
-import { Home, Sparkles, User } from '@/utils/ultra-optimized-icons';
+import { Home, Sparkles, User, Settings, Edit3, MessageSquare, ShoppingBag } from '@/utils/ultra-optimized-icons';
 
 export default function TabLayout() {
   const { colors } = useThemeColors();
@@ -87,6 +87,19 @@ export default function TabLayout() {
           title: 'AI Search',
           tabBarIcon: ({ color, focused }) => (
             <Sparkles 
+              color={focused ? colors.primary : color} 
+              size={focused ? 26 : 24} 
+              strokeWidth={focused ? 2.5 : 2} 
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="admin"
+        options={{
+          title: 'Admin',
+          tabBarIcon: ({ color, focused }) => (
+            <Settings 
               color={focused ? colors.primary : color} 
               size={focused ? 26 : 24} 
               strokeWidth={focused ? 2.5 : 2} 
