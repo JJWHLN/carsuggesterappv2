@@ -279,6 +279,10 @@ export const Clock = createIcon(
   </>
 );
 
+export const Bookmark = createIcon(
+  <Path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+);
+
 // Additional missing icons for complete coverage
 export const AlertTriangle = createIcon(
   <>
@@ -477,6 +481,7 @@ export const IconMap = {
   Gauge,
   Building2,
   Clock,
+  Bookmark,
   // Auth & UI
   AlertTriangle,
   Mail,

@@ -33,6 +33,8 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
 import { ModernSearchBar } from '@/components/ui/ModernSearchBar';
+import { AnimatedBadge, QuickFilters } from '@/components/ui/AnimatedBadge';
+import { SearchHistoryManager, useSearchHistory } from '@/components/ui/SearchHistoryManager';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useDebounce } from '@/hooks/useDebounce';
