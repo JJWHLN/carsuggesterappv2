@@ -531,3 +531,99 @@ export const IconMap = {
  * - Better tree-shaking compatibility
  * - Same visual quality as Lucide icons
  */
+
+// Additional icons for Smart Bookmarks System
+export const Bell = createIcon(
+  <Path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+);
+
+export const Tag = createIcon(
+  <Path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+);
+
+export const ArrowDown = createIcon(
+  <Path d="m6 9 6 6 6-6" />
+);
+
+export const Eye = createIcon(
+  <>
+    <Path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <Circle cx="12" cy="12" r="3" />
+  </>
+);
+
+export const Clock = createIcon(
+  <>
+    <Circle cx="12" cy="12" r="10" />
+    <Path d="M12 6v6l4 2" />
+  </>
+);
+
+export const TrendingUp = createIcon(
+  <>
+    <Path d="m22 7-8.5 8.5-5-5L2 17" />
+    <Path d="m16 7 6 0 0 6" />
+  </>
+);
+
+export const Grid = createIcon(
+  <>
+    <Rect x="3" y="3" width="7" height="7" />
+    <Rect x="14" y="3" width="7" height="7" />
+    <Rect x="14" y="14" width="7" height="7" />
+    <Rect x="3" y="14" width="7" height="7" />
+  </>
+);
+
+export const List = createIcon(
+  <>
+    <Path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+  </>
+);
+
+export const Menu = createIcon(
+  <>
+    <Path d="M3 12h18" />
+    <Path d="M3 6h18" />
+    <Path d="M3 18h18" />
+  </>
+);
+
+export const Trash = createIcon(
+  <>
+    <Path d="M3 6h18" />
+    <Path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+    <Path d="M8 6V4c0-1 1-2 2-2h4c0-1 1-2 2-2v2" />
+  </>
+);
+
+export const Edit3 = createIcon(
+  <Path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+);
+
+export const Info = createIcon(
+  <>
+    <Circle cx="12" cy="12" r="10" />
+    <Path d="M12 16v-4" />
+    <Path d="M12 8h.01" />
+  </>
+);
+
+export const Share = createIcon(
+  <>
+    <Path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+    <Path d="M16 6l-4-4-4 4" />
+    <Path d="M12 2v13" />
+  </>
+);
+
+export const Settings = createIcon(
+  <>
+    <Circle cx="12" cy="12" r="3" />
+    <Path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24" />
+  </>
+);
+
+export const Bookmark = createIcon(
+  <Path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+);
