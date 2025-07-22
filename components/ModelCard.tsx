@@ -1,10 +1,10 @@
-import React, { memo } from 'react'; // Import memo
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
-import { Card } from './ui/Card'; // Card is now memoized and themed
 import { OptimizedImage } from './ui/OptimizedImage';
-import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors
-import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
+import { Spacing, Typography, BorderRadius, Shadows, Colors } from '@/constants/Colors';
+import { useThemeColors } from '@/hooks/useTheme';
 import { CarModel } from '@/types/database';
 import { ChevronRight } from '@/utils/ultra-optimized-icons';
 
@@ -13,16 +13,48 @@ interface ModelCardProps {
   onPress: () => void;
 }
 
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
 const ModelCardComponent: React.FC<ModelCardProps> = ({ model, onPress }) => {
   const { colors } = useThemeColors();
   const styles = getThemedModelCardStyles(colors);
+  
+  const scale = useSharedValue(1);
+  
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+  
+  const handlePressIn = () => {
+    scale.value = withSpring(0.98, {
+      damping: 15,
+      stiffness: 200,
+    });
+  };
+  
+  const handlePressOut = () => {
+    scale.value = withSpring(1, {
+      damping: 15,
+      stiffness: 200,
+    });
+  };
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={`View details for ${model.brands?.name} ${model.name}`}>
-      <Card style={styles.card}>
+    <AnimatedTouchableOpacity 
+      onPress={onPress} 
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      activeOpacity={0.9} 
+      style={[styles.container, animatedStyle]}
+      accessibilityRole="button" 
+      accessibilityLabel={`View details for ${model.brands?.name} ${model.name}`}
+    >
+      <View style={styles.card}>
         <OptimizedImage
           source={{ uri: model.image_url || '' }}
-          style={{ ...styles.image, backgroundColor: colors.surfaceDark }}
+          style={styles.image}
           resizeMode="cover"
           fallbackSource={require('@/assets/images/icon.png')}
           accessibilityLabel={`${model.brands?.name} ${model.name} image`}
@@ -30,15 +62,17 @@ const ModelCardComponent: React.FC<ModelCardProps> = ({ model, onPress }) => {
         <View style={styles.content}>
           <View style={styles.header}>
             <View style={styles.info}>
-              <Text style={[styles.brandName, { color: colors.primary }]}>{model.brands?.name || 'Unknown Brand'}</Text>
-              <Text style={[styles.modelName, { color: colors.text }]}>{model.name}</Text>
-              {model.year && <Text style={[styles.modelYear, { color: colors.textSecondary }]}>{model.year}</Text>}
+              <Text style={styles.brandName}>{model.brands?.name || 'Unknown Brand'}</Text>
+              <Text style={styles.modelName}>{model.name}</Text>
+              {model.year && <Text style={styles.modelYear}>{model.year}</Text>}
             </View>
-            <ChevronRight color={colors.textSecondary} size={20} />
+            <View style={styles.chevronContainer}>
+              <ChevronRight color={colors.neutral400} size={20} />
+            </View>
           </View>
           
           {model.description && (
-            <Text style={[styles.description, { color: colors.textSecondary }]} numberOfLines={2}>
+            <Text style={styles.description} numberOfLines={2}>
               {model.description}
             </Text>
           )}
@@ -46,8 +80,17 @@ const ModelCardComponent: React.FC<ModelCardProps> = ({ model, onPress }) => {
           {model.category && model.category.length > 0 && (
             <View style={styles.categories}>
               {model.category.slice(0, 3).map((category, index) => (
-                <View key={index} style={[styles.categoryTag, { backgroundColor: colors.primaryLight }]}>
-                  <Text style={[styles.categoryText, { color: colors.primary }]}>{category}</Text>
+                <View key={index} style={styles.categoryTag}>
+                  <Text style={styles.categoryText}>{category}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      </View>
+    </AnimatedTouchableOpacity>
+  );
+};
                 </View>
               ))}
             </View>
@@ -59,16 +102,19 @@ const ModelCardComponent: React.FC<ModelCardProps> = ({ model, onPress }) => {
 };
 
 const getThemedModelCardStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
-  card: {
+  container: {
     marginBottom: Spacing.md,
-    padding: 0, // Card handles its own padding, ensure this is intended. ModelCard content adds padding.
+  },
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    // Card component itself will get its theme from useThemeColors now
+    ...Shadows.card,
   },
   image: {
     width: '100%',
     height: 180,
-    // backgroundColor applied inline with themed color
+    backgroundColor: colors.neutral200,
   },
   content: {
     padding: Spacing.lg,
@@ -82,20 +128,33 @@ const getThemedModelCardStyles = (colors: typeof import('@/constants/Colors').Co
   info: {
     flex: 1,
   },
-  brandName: { // color applied inline
-    ...Typography.bodySmall,
+  brandName: {
+    ...Typography.caption,
+    color: colors.primary,
     fontWeight: '600',
+    marginBottom: Spacing.xs / 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  modelName: {
+    ...Typography.title,
+    color: colors.text,
     marginBottom: Spacing.xs,
+    fontWeight: '700',
   },
-  modelName: { // color applied inline
-    ...Typography.h3,
-    marginBottom: Spacing.xs,
+  modelYear: {
+    ...Typography.caption,
+    color: colors.neutral400,
+    fontWeight: '500',
   },
-  modelYear: { // color applied inline
-    ...Typography.bodySmall,
+  chevronContainer: {
+    padding: Spacing.xs,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  description: { // color applied inline
-    ...Typography.bodySmall,
+  description: {
+    ...Typography.body,
+    color: colors.neutral500,
     lineHeight: 20,
     marginBottom: Spacing.md,
   },
@@ -104,14 +163,19 @@ const getThemedModelCardStyles = (colors: typeof import('@/constants/Colors').Co
     flexWrap: 'wrap',
     gap: Spacing.xs,
   },
-  categoryTag: { // backgroundColor applied inline
+  categoryTag: {
+    backgroundColor: `${colors.primary}15`,
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    borderColor: `${colors.primary}30`,
   },
-  categoryText: { // color applied inline
+  categoryText: {
     ...Typography.caption,
-    fontWeight: '500',
+    color: colors.primary,
+    fontWeight: '600',
+    fontSize: 11,
   },
 });
 

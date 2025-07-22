@@ -462,7 +462,7 @@ const getThemedStyles = (colors: any) => {
       marginRight: Spacing.xs,
     },
     reviewCount: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
     },
     hoursRow: {
       flexDirection: 'row',

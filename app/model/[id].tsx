@@ -235,7 +235,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginBottom: Spacing.xl,
   },
   sectionTitle: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     color: colors.text,
     marginBottom: Spacing.md,
   },
@@ -262,7 +262,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     gap: Spacing.xs,
   },
   categoryText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.primary, // Or a contrast text color for primaryLight
     fontWeight: '500',
   },
@@ -278,7 +278,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
-    ...ColorsShadows.small, // Consider if Shadows need theming
+    ...ColorsShadows.sm, // Consider if Shadows need theming
   },
   featureLabel: {
     ...Typography.caption,
@@ -287,7 +287,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginBottom: Spacing.xs,
   },
   featureValue: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     fontWeight: '600',
   },

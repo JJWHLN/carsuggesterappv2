@@ -325,7 +325,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginRight: Spacing.md,
   },
   dealerName: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     color: colors.text,
     marginBottom: Spacing.xs,
   },
@@ -350,7 +350,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     gap: Spacing.xs,
   },
   ratingText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     fontWeight: '600',
   },
@@ -370,11 +370,11 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     gap: Spacing.sm,
   },
   dealerLocationText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.textSecondary,
   },
   dealerDetailText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.textSecondary,
   },
   dealerSpecialties: {

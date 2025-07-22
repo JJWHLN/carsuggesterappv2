@@ -101,7 +101,7 @@ function AppContent() {
       backgroundColor: colors.background,
     },
     headerTitleStyle: {
-      ...Typography.h3,
+      ...Typography.subtitle,
       color: colors.text,
     },
     headerTitleAlign: 'center' as 'center' | 'left',

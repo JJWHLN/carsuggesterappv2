@@ -1,33 +1,63 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, AccessibilityInfo } from 'react-native';
+import React, { memo } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, AccessibilityInfo } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
-import { Card } from './ui/Card';
-import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import { OptimizedImage } from './ui/OptimizedImage';
+import { Spacing, Typography, BorderRadius, Shadows, Colors } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Review } from '@/types/database';
 import { formatFullDate } from '@/utils/dataTransformers';
-import { Star, Calendar } from '@/utils/ultra-optimized-icons';
+import { Star, Calendar, User } from '@/utils/ultra-optimized-icons';
 
 interface ReviewCardProps {
   review: Review;
   onPress: () => void;
 }
 
-export function ReviewCard({ review, onPress }: ReviewCardProps) {
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
+const ReviewCardComponent: React.FC<ReviewCardProps> = ({ review, onPress }) => {
+  const { colors } = useThemeColors();
+  const styles = getThemedReviewCardStyles(colors);
+  
+  const scale = useSharedValue(1);
+  
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+  
+  const handlePressIn = () => {
+    scale.value = withSpring(0.98, {
+      damping: 15,
+      stiffness: 200,
+    });
+  };
+  
+  const handlePressOut = () => {
+    scale.value = withSpring(1, {
+      damping: 15,
+      stiffness: 200,
+    });
+  };
+
   const handlePress = () => {
     AccessibilityInfo.announceForAccessibility(
-      `Selected review: ${review.title}, rated ${review.rating} out of 5 stars`
+      `Selected review: ${review.summary || 'Review'}, scored ${review.cs_score} out of 10`
     );
     onPress();
   };
 
   const renderStars = (rating: number) => {
+    // Convert 10-point scale to 5-point scale for stars
+    const starRating = Math.round((rating / 10) * 5);
     return Array.from({ length: 5 }, (_, index) => (
       <Star
         key={index}
         size={16}
-        color={index < rating ? currentColors.accentGreen : currentColors.border}
-        fill={index < rating ? currentColors.accentGreen : 'transparent'}
+        color={index < starRating ? colors.primary : colors.neutral300}
+        fill={index < starRating ? colors.primary : 'transparent'}
       />
     ));
   };
@@ -37,141 +67,140 @@ export function ReviewCard({ review, onPress }: ReviewCardProps) {
     return content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
   };
 
-  const accessibilityLabel = `Review: ${review.title}, ${review.rating} out of 5 stars, for ${review.car_year} ${review.car_make} ${review.car_model}`;
+  const accessibilityLabel = `Review: ${review.summary || 'Car Review'}, ${review.cs_score} out of 10 score, for ${review.car_models?.brands?.name} ${review.car_models?.name}`;
 
   return (
-    <TouchableOpacity 
+    <AnimatedTouchableOpacity 
       onPress={handlePress} 
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       activeOpacity={0.9}
+      style={[styles.container, animatedStyle]}
       accessible={true}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint="Double tap to read full review"
     >
-      <Card style={styles.card}>
-        {review.images && review.images.length > 0 && review.images[0] && (
-          <Image
-            source={{ uri: review.images[0] }}
+      <View style={styles.card}>
+        {review.car_models?.image_url && (
+          <OptimizedImage
+            source={{ uri: review.car_models.image_url }}
             style={styles.image}
             resizeMode="cover"
-            accessible={true}
-            accessibilityLabel={`Review image for ${review.car_year} ${review.car_make} ${review.car_model}`}
+            fallbackSource={require('@/assets/images/icon.png')}
+            accessibilityLabel={`Review image for ${review.car_models?.brands?.name} ${review.car_models?.name}`}
           />
         )}
         <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.title} numberOfLines={2}>
-              {review.title}
+              {review.summary || 'Car Review'}
             </Text>
             <View 
               style={styles.rating}
               accessible={true}
-              accessibilityLabel={`Rating: ${review.rating} out of 5 stars`}
+              accessibilityLabel={`Score: ${review.cs_score} out of 10`}
             >
-              {renderStars(review.rating)}
+              {renderStars(review.cs_score || 0)}
+              <Text style={styles.scoreText}>{review.cs_score}/10</Text>
             </View>
           </View>
           
           <Text style={styles.carInfo} numberOfLines={1}>
-            {review.car_year} {review.car_make} {review.car_model}
+            {review.car_models?.year} {review.car_models?.brands?.name} {review.car_models?.name}
           </Text>
           
-          <Text style={styles.content_text} numberOfLines={4}>
-            {truncateContent(review.content)}
+          <Text style={styles.contentText} numberOfLines={4}>
+            {truncateContent(review.verdict || review.summary || 'No review content available')}
           </Text>
-          
-          {review.tags && review.tags.length > 0 && (
-            <View style={styles.tags}>
-              {review.tags.slice(0, 3).map((tag, index) => (
-                <View key={index} style={styles.tag}>
-                  <Text style={styles.tagText}>{tag}</Text>
-                </View>
-              ))}
-            </View>
-          )}
           
           <View style={styles.footer}>
-            <Text style={styles.author} numberOfLines={1}>
-              By {review.author}
-            </Text>
+            <View style={styles.authorContainer}>
+              <User color={colors.neutral400} size={14} />
+              <Text style={styles.author} numberOfLines={1}>
+                CarSuggester Review
+              </Text>
+            </View>
             <View style={styles.date}>
-              <Calendar color={currentColors.textSecondary} size={14} />
+              <Calendar color={colors.neutral400} size={14} />
               <Text style={styles.dateText}>{formatFullDate(review.created_at)}</Text>
             </View>
           </View>
         </View>
-      </Card>
-    </TouchableOpacity>
+      </View>
+    </AnimatedTouchableOpacity>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  card: {
+const getThemedReviewCardStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
+  container: {
     marginBottom: Spacing.md,
-    padding: 0,
+  },
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
+    ...Shadows.card,
   },
   image: {
     width: '100%',
-    height: 180,
-    backgroundColor: currentColors.surfaceDark,
+    height: 160,
+    backgroundColor: colors.neutral200,
   },
   content: {
-    padding: Spacing.md,
+    padding: Spacing.lg,
   },
   header: {
     marginBottom: Spacing.sm,
   },
   title: {
-    ...Typography.h3,
-    color: currentColors.text,
-    marginBottom: Spacing.xs,
+    ...Typography.title,
+    color: colors.text,
+    marginBottom: Spacing.sm,
+    fontWeight: '600',
+    lineHeight: 24,
   },
   rating: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  scoreText: {
+    ...Typography.caption,
+    color: colors.primary,
+    fontWeight: '700',
+    marginLeft: Spacing.xs,
   },
   carInfo: {
-    ...Typography.bodySmall,
-    color: currentColors.primary,
+    ...Typography.caption,
+    color: colors.primary,
     fontWeight: '600',
     marginBottom: Spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  content_text: {
+  contentText: {
     ...Typography.body,
-    color: currentColors.textSecondary,
+    color: colors.neutral600,
     lineHeight: 22,
-    marginBottom: Spacing.md,
-  },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: Spacing.md,
-  },
-  tag: {
-    backgroundColor: currentColors.primaryLight,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.full,
-    marginRight: Spacing.xs,
-    marginBottom: Spacing.xs,
-  },
-  tagText: {
-    ...Typography.caption,
-    color: currentColors.primary,
-    fontWeight: '500',
+    marginBottom: Spacing.lg,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  author: {
-    ...Typography.bodySmall,
-    color: currentColors.textSecondary,
-    fontWeight: '500',
+  authorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
     marginRight: Spacing.sm,
+  },
+  author: {
+    ...Typography.caption,
+    color: colors.neutral500,
+    fontWeight: '500',
+    marginLeft: Spacing.xs,
   },
   date: {
     flexDirection: 'row',
@@ -179,7 +208,10 @@ const styles = StyleSheet.create({
   },
   dateText: {
     ...Typography.caption,
-    color: currentColors.textSecondary,
+    color: colors.neutral400,
     marginLeft: Spacing.xs,
   },
 });
+
+export const ReviewCard = memo(ReviewCardComponent);
+ReviewCard.displayName = 'ReviewCard';

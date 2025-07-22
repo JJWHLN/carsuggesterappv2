@@ -542,7 +542,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginTop: Spacing.md,
   },
   aiErrorText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.white,
     textAlign: 'center',
   },
@@ -570,7 +570,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginBottom: Spacing.sm,
   },
   exampleText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: Typography.caption.fontWeight,
     color: colors.text,
   },
@@ -612,7 +612,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginBottom: Spacing.md,
   },
   filterTitle: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     fontSize: 18,
     margin: 0,
   },
@@ -651,7 +651,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     flex: 1,
   },
   optionText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     textAlign: 'center',
   },
   filterActions: {

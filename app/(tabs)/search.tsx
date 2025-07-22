@@ -1449,14 +1449,14 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     borderWidth: 1,
     marginRight: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   quickFilterEmoji: {
     fontSize: 16,
     marginRight: Spacing.xs,
   },
   quickFilterText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   resultsSection: {
@@ -1479,7 +1479,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs / 2,
   },
   searchQuery: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontStyle: 'italic',
   },
   activeFiltersContainer: {
@@ -1511,7 +1511,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   activeFilterText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
     marginRight: Spacing.xs / 2,
   },
@@ -1534,7 +1534,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   clearAllText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
@@ -1563,10 +1563,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginRight: Spacing.sm,
     marginBottom: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   suggestionText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   categoriesContainer: {
@@ -1587,10 +1587,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     marginRight: Spacing.sm,
     marginBottom: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   categoryText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   skeletonContainer: {
@@ -1642,10 +1642,10 @@ const styles = StyleSheet.create({
     minHeight: 44, // Accessibility touch target
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   sortText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginLeft: Spacing.xs,
     fontWeight: '500',
   },
@@ -1715,7 +1715,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   clearHistoryText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   suggestionItem: {
@@ -1749,7 +1749,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   suggestionSubText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginTop: 2,
   },
   saveSearchButton: {
@@ -1810,7 +1810,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   aiToggleSubtitle: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     lineHeight: 18,
   },
   aiToggleSwitch: {
@@ -1824,14 +1824,14 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   aiInsightsContainer: {
     marginTop: Spacing.md,
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   aiInsightsHeader: {
     flexDirection: 'row',
@@ -1871,7 +1871,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   aiSuggestionText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   // Phase 4: Advanced Settings Styles
@@ -1884,10 +1884,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     marginTop: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   advancedSettingsToggleText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   advancedSettingsPanel: {
@@ -1930,7 +1930,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   settingDescription: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     lineHeight: 18,
   },
   performanceModeButtons: {
@@ -1946,7 +1946,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   performanceModeText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   toggleSwitch: {
@@ -1960,7 +1960,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   themeSelector: {
     marginTop: Spacing.xs,
@@ -1984,10 +1984,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     alignItems: 'center',
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   performanceStatsText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
 });

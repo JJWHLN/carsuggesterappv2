@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   carInfo: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: currentColors.primary,
     fontWeight: '600',
     marginBottom: Spacing.sm,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ratingText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: currentColors.textSecondary,
     marginLeft: Spacing.sm,
     fontWeight: '600',
@@ -275,8 +275,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   csScoreText: {
-    ...Typography.bodySmall,
-    color: currentColors.accentGreen,
+    ...Typography.caption,
+    color: currentColors.primary,
     marginLeft: Spacing.xs,
     fontWeight: '600',
   },
@@ -286,11 +286,11 @@ const styles = StyleSheet.create({
     // gap: Spacing.sm, // Removed unsupported property
   },
   authorText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: currentColors.textSecondary,
   },
   dateText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: currentColors.textSecondary,
   },
   tagsSection: {
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   sectionTitle: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     color: currentColors.text,
     marginLeft: Spacing.sm,
   },
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
   },
   summaryTitle: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     color: currentColors.primary,
     marginBottom: Spacing.md,
   },
