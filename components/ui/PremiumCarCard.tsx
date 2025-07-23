@@ -422,7 +422,7 @@ const getThemedStyles = (colors: any, variant: string) => StyleSheet.create({
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    ...Theme.shadows.small,
+    ...Theme.Shadows.sm,
   },
   viewCount: {
     position: 'absolute',
@@ -460,7 +460,7 @@ const getThemedStyles = (colors: any, variant: string) => StyleSheet.create({
     marginBottom: Theme.spacing.xs,
   },
   carTrim: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
   },
   priceContainer: {
     alignItems: 'flex-end',
@@ -485,7 +485,7 @@ const getThemedStyles = (colors: any, variant: string) => StyleSheet.create({
     flex: 1,
   },
   statText: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
     fontWeight: '500',
   },
   locationRow: {
@@ -501,7 +501,7 @@ const getThemedStyles = (colors: any, variant: string) => StyleSheet.create({
     flex: 1,
   },
   locationText: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
   },
   dealerContainer: {
     flexDirection: 'row',
@@ -509,7 +509,7 @@ const getThemedStyles = (colors: any, variant: string) => StyleSheet.create({
     gap: Theme.spacing.xs,
   },
   dealerText: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
   },
   compareSection: {
     marginTop: 'auto',
@@ -522,7 +522,7 @@ const getThemedStyles = (colors: any, variant: string) => StyleSheet.create({
     alignItems: 'center',
   },
   compareButtonText: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
     fontWeight: '600',
   },
 });

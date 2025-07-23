@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   title: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
     lineHeight: 16,
   },

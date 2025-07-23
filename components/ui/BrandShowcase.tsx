@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     marginRight: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   logoContainer: {
     position: 'relative',
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   featuredBrandName: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: Spacing.xs,

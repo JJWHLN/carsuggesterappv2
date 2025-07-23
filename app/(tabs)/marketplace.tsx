@@ -25,7 +25,7 @@ import { withUnifiedTabScreen } from '@/components/ui/UnifiedTabScreen';
 import { UnifiedList } from '@/components/ui/UnifiedList';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
-import { fetchVehicleListings } from '@/services/supabaseService';
+import { fetchVehicleListings } from '@/services/EmergencyCarService';
 import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
 import { Car as CarType } from '@/types/database';
 import { useDebounce } from '@/hooks/useDebounce';

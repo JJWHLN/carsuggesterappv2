@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   trustNumber: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     fontWeight: '700',
     color: '#FFFFFF',
     marginBottom: 2,

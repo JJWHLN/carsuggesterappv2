@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   errorDetails: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: currentColors.textMuted,
     textAlign: 'center',
     marginBottom: Spacing.lg,

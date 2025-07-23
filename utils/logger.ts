@@ -18,33 +18,33 @@ export class Logger {
   
   debug(message: string, ...args: any[]): void {
     if (this.enabled) {
-      logger.debug(`🔧 ${message}`, ...args);
+      console.log(`🔧 ${message}`, ...args);
     }
   }
   
   info(message: string, ...args: any[]): void {
     if (this.enabled) {
-      logger.debug(`ℹ️  ${message}`, ...args);
+      console.log(`ℹ️  ${message}`, ...args);
     }
   }
   
   warn(message: string, ...args: any[]): void {
     if (this.enabled || __DEV__) {
-      logger.warn(`⚠️  ${message}`, ...args);
+      console.warn(`⚠️  ${message}`, ...args);
     }
   }
   
   error(message: string, error?: any, ...args: any[]): void {
     if (this.enabled) {
-      logger.error(`❌ ${message}`, error, ...args);
+      console.error(`❌ ${message}`, error, ...args);
     } else {
-      logger.error(`❌ ${message}`, error?.message || 'Error occurred');
+      console.error(`❌ ${message}`, error?.message || 'Error occurred');
     }
   }
   
   performance(operation: string, duration: number): void {
     if (this.enabled) {
-      logger.debug(`📊 ${operation}: ${duration}ms`);
+      console.log(`📊 ${operation}: ${duration}ms`);
     }
   }
 }

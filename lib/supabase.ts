@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { logger } from '@/utils/logger';
 
 let SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 let SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;

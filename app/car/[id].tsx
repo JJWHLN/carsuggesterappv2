@@ -39,6 +39,9 @@ import { fetchVehicleListingById, SupabaseError } from '@/services/supabaseServi
 import { useApi } from '@/hooks/useApi';
 import { Car as CarType, DatabaseVehicleListing } from '@/types/database';
 import { ArrowLeft, Heart, MapPin, Calendar, Fuel, Settings, Star, Mail, Users, Gauge, MessageCircle, Share, Camera, Phone, ExternalLink } from '@/utils/ultra-optimized-icons';
+import { ContactDealerModal } from '@/components/ui/ContactDealerModal';
+import { PriceAlertModal } from '@/components/ui/PriceAlertModal';
+import { leadService } from '@/services/LeadGenerationService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -46,6 +49,9 @@ export default function CarDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [isSaved, setIsSaved] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [showPriceAlertModal, setShowPriceAlertModal] = useState(false);
+  const [dealerInfo, setDealerInfo] = useState<any>(null);
   const navigation = useNavigation();
   const { colors } = useThemeColors();
   const { user } = useAuth();
@@ -163,10 +169,24 @@ export default function CarDetailScreen() {
     });
   }, [navigation, car, isSaved, handleSave, handleShare, colors]);
 
-  const handleContact = () => {
-    // Implement contact dealer functionality
-    console.log('Contact dealer for car:', id);
-  };
+  const handleContact = useCallback(async () => {
+    if (!user) {
+      Alert.alert('Sign In Required', 'Please sign in to contact the dealer about this car.');
+      return;
+    }
+
+    // Fetch dealer info if not already loaded
+    if (!dealerInfo && id) {
+      try {
+        const info = await leadService.getCarContactInfo(id);
+        setDealerInfo(info);
+      } catch (error) {
+        console.warn('Failed to load dealer info:', error);
+      }
+    }
+
+    setShowContactModal(true);
+  }, [user, id, dealerInfo]);
 
   if (loading) {
     // The native header from _layout will be shown during loading.
@@ -403,20 +423,23 @@ export default function CarDetailScreen() {
           />
           <TouchableOpacity 
             style={styles.secondaryButton}
+            onPress={() => setShowPriceAlertModal(true)}
+          >
+            <Calendar color={colors.primary} size={20} />
+            <Text style={styles.secondaryButtonText}>Price Alert</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.additionalActions}>
+          <TouchableOpacity 
+            style={styles.actionButton}
             onPress={() => {
               // Handle schedule visit
               console.log('Schedule visit for car:', id);
             }}
           >
-            <Calendar color={colors.primary} size={20} />
-            <Text style={styles.secondaryButtonText}>Schedule Visit</Text>
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.additionalActions}>
-          <TouchableOpacity style={styles.actionButton}>
             <MessageCircle color={colors.textSecondary} size={20} />
-            <Text style={styles.actionButtonText}>Message</Text>
+            <Text style={styles.actionButtonText}>Schedule</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
             <MapPin color={colors.textSecondary} size={20} />
@@ -428,6 +451,39 @@ export default function CarDetailScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Contact Dealer Modal */}
+      {car && (
+        <ContactDealerModal
+          visible={showContactModal}
+          onClose={() => setShowContactModal(false)}
+          car={{
+            id: car.id,
+            make: car.make,
+            model: car.model,
+            year: car.year,
+            price: car.price,
+            image: car.images?.[0],
+          }}
+          dealerInfo={dealerInfo}
+        />
+      )}
+
+      {/* Price Alert Modal */}
+      {car && (
+        <PriceAlertModal
+          visible={showPriceAlertModal}
+          onClose={() => setShowPriceAlertModal(false)}
+          car={{
+            id: car.id,
+            make: car.make,
+            model: car.model,
+            year: car.year,
+            price: car.price,
+            image: car.images?.[0],
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }

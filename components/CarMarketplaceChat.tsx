@@ -664,7 +664,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -687,7 +687,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   headerSubtitle: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginTop: Spacing.xs / 2,
   },
   headerActions: {
@@ -717,7 +717,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   carBannerSubtitle: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginTop: Spacing.xs / 2,
   },
   viewCarButton: {
@@ -726,7 +726,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
   },
   viewCarButtonText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   messagesContainer: {
@@ -765,14 +765,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   avatarText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   messageBubble: {
     flex: 1,
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   messageText: {
     ...Typography.bodyText,
@@ -805,7 +805,7 @@ const styles = StyleSheet.create({
   carLinkMessage: {
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   carLinkHeader: {
     flexDirection: 'row',
@@ -822,7 +822,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   carLinkSubtext: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginTop: Spacing.xs / 2,
   },
   carLinkCaption: {
@@ -832,7 +832,7 @@ const styles = StyleSheet.create({
   priceQuoteMessage: {
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   priceQuoteHeader: {
     flexDirection: 'row',
@@ -863,7 +863,7 @@ const styles = StyleSheet.create({
     maxWidth: width * 0.6,
   },
   systemMessage: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     textAlign: 'center',
   },
   systemMessageTime: {
@@ -881,10 +881,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   typingText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontStyle: 'italic',
   },
   typingDots: {

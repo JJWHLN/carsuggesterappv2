@@ -330,7 +330,7 @@ const getThemedStyles = (colors: any, variant: string) => {
       borderRadius: 18,
       alignItems: 'center',
       justifyContent: 'center',
-      ...Shadows.small,
+      ...Shadows.sm,
     },
     viewsContainer: {
       position: 'absolute',

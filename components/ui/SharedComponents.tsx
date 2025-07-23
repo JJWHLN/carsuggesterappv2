@@ -43,7 +43,7 @@ export const CategoryChip: React.FC<CategoryChipProps> = ({
     >
       <Text
         style={{
-          ...Typography.bodySmall,
+          ...Typography.caption,
           color: isActive ? colors.white : colors.text,
           fontWeight: isActive ? '600' : '500',
         }}
@@ -350,7 +350,7 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
     >
       {icon}
       <Text style={{
-        ...Typography.bodySmall,
+        ...Typography.caption,
         color: isActive ? colors.primary : colors.text,
         fontWeight: '500',
       }}>
@@ -381,14 +381,14 @@ export const ResultsHeader: React.FC<ResultsHeaderProps> = ({
       backgroundColor: colors.background,
     }}>
       <Text style={{
-        ...Typography.h3,
+        ...Typography.subtitle,
         color: colors.text,
         fontWeight: '700',
       }}>
         {count} {itemType}{count !== 1 ? 's' : ''} {location ? `in ${location}` : 'available'}
       </Text>
       <Text style={{
-        ...Typography.bodySmall,
+        ...Typography.caption,
         color: colors.textSecondary,
       }}>
         Updated recently

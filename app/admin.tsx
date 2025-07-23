@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   subsectionTitle: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     fontWeight: '600',
     marginBottom: Spacing.md,
   },

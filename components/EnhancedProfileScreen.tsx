@@ -744,7 +744,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   preferredBrandsLabel: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
   },
   brandsContainer: {
     flexDirection: 'row',
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
     flex: 1,
     justifyContent: 'center',
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   primaryButton: {
     // backgroundColor set dynamically
@@ -827,7 +827,7 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     borderBottomWidth: 1,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   tabsContent: {
     paddingHorizontal: Spacing.lg,
@@ -878,7 +878,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     marginBottom: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   carOwnedInfo: {
     flex: 1,
@@ -892,7 +892,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs / 2,
   },
   carOwnedPeriod: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginTop: Spacing.xs / 2,
   },
   verifiedOwnership: {
@@ -962,7 +962,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   brandItemText: {
     ...Typography.bodyText,

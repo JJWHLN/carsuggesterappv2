@@ -658,10 +658,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     borderWidth: 1,
     marginRight: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   filterText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
     marginLeft: Spacing.xs,
   },
@@ -722,12 +722,12 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs / 2,
   },
   activityType: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginLeft: Spacing.xs,
     textTransform: 'capitalize',
   },
   timestamp: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginLeft: Spacing.xs,
   },
   menuButton: {
@@ -754,7 +754,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs / 2,
   },
   ratingText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
     marginLeft: Spacing.xs,
   },
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   readMoreText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   carInfoContainer: {
@@ -801,7 +801,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   carSubtitle: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginTop: Spacing.xs / 2,
   },
   comparisonContent: {
@@ -826,7 +826,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs / 2,
   },
   comparisonCarText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   comparisonStats: {
@@ -839,7 +839,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs / 2,
   },
   comparisonStatText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   followContent: {
@@ -889,7 +889,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs / 2,
   },
   oldPrice: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     textDecorationLine: 'line-through',
   },
   newPrice: {
@@ -902,7 +902,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
   },
   savingsText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   defaultContent: {
@@ -926,7 +926,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
   },
   actionText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   loadingContainer: {

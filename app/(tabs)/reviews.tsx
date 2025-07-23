@@ -43,7 +43,8 @@ import { Review } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
 import { AnalyticsService } from '@/services/analyticsService';
 import { useEngagementTracking } from '@/hooks/useAnalytics';
-import { Star, Award, Calendar, User, Plus, MessageCircle, Heart, Clock, TrendingUp, Filter, List } from '@/utils/ultra-optimized-icons';
+import { logger } from '@/utils/logger';
+import { Star, Award, Calendar, User, Plus, MessageCircle, Heart, Clock, TrendingUp, Filter, List, Search, ArrowRight, ChevronDown, FileText, Grid2x2 } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -245,7 +246,7 @@ export default function ReviewsScreen() {
         } else if (payload.eventType === 'DELETE' && payload.old?.id !== undefined) {
           const deletedId = payload.old.id;
           setReviews(prevReviews => 
-            prevReviews.filter(review => review.id !== deletedId.toString())
+            prevReviews.filter(review => review.id !== deletedId)
           );
         }
       }
@@ -297,12 +298,7 @@ export default function ReviewsScreen() {
         <View style={styles.spotlightSection}>
           <Text style={styles.sectionTitle}>Featured Review</Text>
           <ExpertReviewCard
-            review={{
-              ...featuredReviews[0],
-              car_make: featuredReviews[0].carMake,
-              car_model: featuredReviews[0].carModel,
-              car_year: featuredReviews[0].carYear,
-            }}
+            review={featuredReviews[0] as any}
             isHeadline={true}
             onPress={() => {
               logger.debug('Navigate to featured review:', featuredReviews[0].id);
@@ -498,7 +494,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     gap: Spacing.xs,
   },
   filterButtonText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     fontWeight: '500',
   },
@@ -511,7 +507,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     borderColor: colors.border,
   },
   sortButtonText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     fontWeight: '500',
   },
@@ -555,7 +551,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     borderColor: colors.primary,
   },
   categoryText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     fontWeight: '500',
   },
@@ -571,12 +567,12 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     backgroundColor: colors.background,
   },
   resultsCount: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     color: colors.text,
     fontWeight: '700',
   },
   resultsSubtext: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.textSecondary,
   },
   
@@ -681,7 +677,7 @@ const getStyles = (colors: typeof import('@/constants/Colors').Colors.light) => 
     lineHeight: 20,
   },
   reviewExcerpt: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.textSecondary,
     lineHeight: 18,
     marginBottom: Spacing.sm,

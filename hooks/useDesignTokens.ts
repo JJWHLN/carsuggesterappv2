@@ -88,7 +88,7 @@ export function useDesignTokens() {
         marginBottom: DesignSystem.Spacing.md,
         borderWidth: 1,
         borderColor: colors.border,
-        ...DesignSystem.Shadows.small,
+        ...DesignSystem.Shadows.sm,
       } as ViewStyle,
       secondary: {
         backgroundColor: colors.surface,
@@ -116,7 +116,7 @@ export function useDesignTokens() {
         paddingVertical: DesignSystem.Spacing.md,
         alignItems: 'center',
         justifyContent: 'center',
-        ...DesignSystem.Shadows.small,
+        ...DesignSystem.Shadows.sm,
       } as ViewStyle,
       chip: {
         backgroundColor: colors.surface,

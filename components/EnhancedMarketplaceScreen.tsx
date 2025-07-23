@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   filterButton: {
     width: 40,
@@ -831,7 +831,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   searchBar: {
     marginHorizontal: Spacing.lg,
@@ -851,7 +851,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     gap: Spacing.xs,
     minWidth: 100,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   statIcon: {
     width: 32,
@@ -932,7 +932,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs / 2,
   },
   detailText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
   },
   conditionLocation: {
     flexDirection: 'row',
@@ -968,10 +968,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   locationText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
   },
   distanceText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
   },
   timeAgo: {
     ...Typography.caption,
@@ -1003,7 +1003,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.md,
     gap: Spacing.xs,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   messageButtonText: {
     ...Typography.bodyText,
@@ -1120,7 +1120,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   applyButtonText: {
     ...Typography.bodyLarge,
@@ -1147,7 +1147,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.md,
     marginTop: Spacing.md,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   emptyButtonText: {
     ...Typography.bodyLarge,

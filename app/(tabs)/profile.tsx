@@ -18,11 +18,12 @@ import { Button } from '@/components/ui/Button';
 import { ModernButton } from '@/components/ui/ModernButton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { logger } from '@/utils/logger';
 import { BaseFormInput, FloatingLabelInput, FormFieldGroup, useFormValidation } from '@/components/ui/UnifiedFormComponents';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useAuth } from '@/contexts/AuthContext';
 import { useThemeColors } from '@/hooks/useTheme';
-import { User, Mail, Settings, Heart, Car, ChevronRight, MapPin, Crown, Calendar, Award, Sparkles, TrendingUp, MessageCircle } from '@/utils/ultra-optimized-icons';
+import { User, Mail, Settings, Heart, Car, ChevronRight, MapPin, Crown, Calendar, Award, Sparkles, TrendingUp, MessageCircle, Moon, Bell, Edit, Shield, FileText, LogOut } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -211,7 +212,7 @@ function ProfileScreen() {
           {/* Hero Section for Anonymous Users */}
           <View style={styles.heroSection}>
             <LinearGradient
-              colors={[colors.primary, colors.primaryHover]}
+              colors={[colors.primary, colors.primaryDark]}
               style={styles.heroGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}

@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     position: 'relative',
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   iconContainer: {
     width: 56,

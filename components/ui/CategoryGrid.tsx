@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   categoryDescription: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     lineHeight: 18,
   },
   cardFooter: {

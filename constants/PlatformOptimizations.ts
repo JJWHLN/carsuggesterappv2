@@ -55,14 +55,14 @@ export const PlatformTypography = {
   ios: {
     fontFamily: DesignSystem.Typography.fontFamily,
     title: DesignSystem.Typography.h1,
-    subtitle: DesignSystem.Typography.h3,
+    subtitle: DesignSystem.Typography.subtitle,
     body: DesignSystem.Typography.body,
     caption: DesignSystem.Typography.caption,
   },
   android: {
     fontFamily: DesignSystem.Typography.fontFamily,
     title: DesignSystem.Typography.h1,
-    subtitle: DesignSystem.Typography.h3,
+    subtitle: DesignSystem.Typography.subtitle,
     body: DesignSystem.Typography.body,
     caption: DesignSystem.Typography.caption,
   },
@@ -85,7 +85,7 @@ export const getPlatformShadow = (elevation: number = 2) => {
     case 1:
       return DesignSystem.Shadows.subtle;
     case 2:
-      return DesignSystem.Shadows.small;
+      return DesignSystem.Shadows.sm;
     case 4:
       return DesignSystem.Shadows.medium;
     case 8:

@@ -627,3 +627,43 @@ export const Settings = createIcon(
 export const Bookmark = createIcon(
   <Path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
 );
+
+// Missing icons for profile screen
+export const Moon = createIcon(
+  <Path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+);
+
+export const Edit = createIcon(
+  <Path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+);
+
+export const FileText = createIcon(
+  <>
+    <Path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <Polyline points="14,2 14,8 20,8" />
+    <Line x1="16" y1="13" x2="8" y2="13" />
+    <Line x1="16" y1="17" x2="8" y2="17" />
+    <Polyline points="10,9 9,9 8,9" />
+  </>
+);
+
+export const LogOut = createIcon(
+  <>
+    <Path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <Polyline points="16,17 21,12 16,7" />
+    <Line x1="21" y1="12" x2="9" y2="12" />
+  </>
+);
+
+export const ChevronDown = createIcon(
+  <Polyline points="6,9 12,15 18,9" />
+);
+
+export const Grid2x2 = createIcon(
+  <>
+    <Rect x="3" y="3" width="7" height="7" />
+    <Rect x="14" y="3" width="7" height="7" />
+    <Rect x="14" y="14" width="7" height="7" />
+    <Rect x="3" y="14" width="7" height="7" />
+  </>
+);

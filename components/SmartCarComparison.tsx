@@ -882,7 +882,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.lg,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   headerTitle: {
     ...Typography.pageTitle,
@@ -895,7 +895,7 @@ const styles = StyleSheet.create({
   modeSelector: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   modeSelectorTitle: {
     ...Typography.cardTitle,
@@ -918,7 +918,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   modeButtonText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   scrollView: {
@@ -928,7 +928,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     marginVertical: Spacing.sm,
     borderRadius: BorderRadius.lg,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -958,7 +958,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   categoryFilterText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   aiInsights: {
@@ -1034,7 +1034,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   categoryName: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     width: 80,
     textTransform: 'capitalize',
   },
@@ -1065,7 +1065,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   prosConsItem: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginBottom: Spacing.xs,
     lineHeight: 18,
   },
@@ -1084,7 +1084,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   primaryAction: {
     flex: 1.2,
@@ -1110,7 +1110,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   tableHeaderSubtext: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     textAlign: 'center',
     marginTop: 2,
   },

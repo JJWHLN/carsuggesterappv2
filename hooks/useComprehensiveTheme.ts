@@ -89,10 +89,10 @@ export function useComprehensiveTheme() {
       borderWidth: 1,
       borderColor: colors.border,
       padding: Spacing.md,
-      ...Shadows.small,
+      ...Shadows.sm,
     },
     cardTitle: {
-      ...Typography.h3,
+      ...Typography.subtitle,
       color: colors.text,
       marginBottom: Spacing.sm,
     },
@@ -110,7 +110,7 @@ export function useComprehensiveTheme() {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: 48,
-      ...Shadows.small,
+      ...Shadows.sm,
     },
     primaryButtonText: {
       ...Typography.buttonText,
@@ -142,7 +142,7 @@ export function useComprehensiveTheme() {
       color: colors.text,
     },
     heading: {
-      ...Typography.h3,
+      ...Typography.subtitle,
       color: colors.text,
     },
     body: {

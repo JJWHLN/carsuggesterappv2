@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   detailText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     flex: 1,
   },
   featuresRow: {
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   dealerName: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     flex: 1,
   },
   dealerBadge: {
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   viewAllCardText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     textAlign: 'center',
     marginBottom: Spacing.lg,
     lineHeight: 20,

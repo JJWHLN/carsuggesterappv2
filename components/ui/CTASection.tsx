@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   trustText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: '#FFFFFF',
     opacity: 0.9,
     textAlign: 'center',

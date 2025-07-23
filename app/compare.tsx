@@ -598,7 +598,7 @@ const getThemedStyles = (colors: any) => StyleSheet.create({
     gap: Theme.spacing.xs,
   },
   statText: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
     color: colors.textMuted,
   },
   cardActions: {
@@ -615,7 +615,7 @@ const getThemedStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
   },
   viewButtonText: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
     color: colors.text,
     fontWeight: '600',
   },
@@ -628,7 +628,7 @@ const getThemedStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
   },
   contactButtonText: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
     color: colors.textInverse,
     fontWeight: '600',
   },
@@ -751,7 +751,7 @@ const getThemedStyles = (colors: any) => StyleSheet.create({
     marginBottom: Theme.spacing.xs,
   },
   prosConsText: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
     color: colors.textSecondary,
     flex: 1,
   },
@@ -774,7 +774,7 @@ const getThemedStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
   },
   scoreLabel: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
     color: colors.textMuted,
     marginBottom: Theme.spacing.xs,
   },

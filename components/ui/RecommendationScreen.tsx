@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     ...ColorsShadows.large,
   },
   loadingText: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -436,10 +436,10 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
     gap: Spacing.xs,
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   statsText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   // Controls Section Styles
@@ -461,10 +461,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: Spacing.xs,
     position: 'relative',
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   controlButtonText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   activeIndicator: {
@@ -480,20 +480,20 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     overflow: 'hidden',
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   viewModeButton: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
   },
   viewModeButtonActive: {
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   filtersContainer: {
     marginTop: Spacing.md,
   },
   filtersTitle: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
     marginBottom: Spacing.sm,
   },
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     borderWidth: 1,
     marginRight: Spacing.sm,
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   filterChipText: {
     ...Typography.caption,
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
     gap: 2,
     zIndex: 1,
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   matchText: {
     ...Typography.caption,
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     gap: Spacing.md,
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   footerLoadingText: {
     ...Typography.body,
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
   },
   loadMoreButton: {
     paddingHorizontal: Spacing.xl,
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   // Simple Card Styles (missing from previous implementation)
   simpleCard: {
@@ -628,7 +628,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   ratingText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   locationText: {
@@ -656,6 +656,6 @@ const styles = StyleSheet.create({
     padding: Spacing.xs,
     borderRadius: BorderRadius.full,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
 });

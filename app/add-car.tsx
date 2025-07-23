@@ -590,7 +590,7 @@ const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.ligh
     marginBottom: Spacing.md,
   },
   fieldLabel: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     fontWeight: '600',
   },

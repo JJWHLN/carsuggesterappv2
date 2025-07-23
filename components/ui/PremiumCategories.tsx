@@ -315,7 +315,7 @@ const getThemedStyles = (colors: any) => StyleSheet.create({
     marginBottom: Theme.spacing.xs,
   },
   categorySubtitle: {
-    ...Theme.typography.bodySmall,
+    ...Theme.Typography.caption,
     color: 'rgba(255, 255, 255, 0.9)',
     lineHeight: 18,
     marginBottom: Theme.spacing.sm,

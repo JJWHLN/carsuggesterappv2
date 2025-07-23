@@ -24,6 +24,7 @@ import Animated, {
 import { MapPin, Star, Calendar, DollarSign, Car } from '@/utils/ultra-optimized-icons';
 import { SlidersHorizontal, Zap, TrendingUp, Fuel, Gauge, Building2 } from '@/utils/ultra-optimized-icons';
 import { SearchDataService } from '@/services/SearchDataService';
+import { AISearchQuery, AISearchEngine, SmartNotificationService, AdvancedThemeManager, usePerformanceMonitor } from '@/services/TempAIServices';
 
 import { CarCard } from '@/components/CarCard';
 import AdvancedSearchFilters, { AdvancedSearchFiltersData } from '@/components/AdvancedSearchFilters';
@@ -39,11 +40,8 @@ import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useApi } from '@/hooks/useApi';
-import { AISearchEngine, AISearchQuery } from '@/services/aiSearchService';
-import SmartNotificationService from '@/services/smartNotificationService';
-import AdvancedThemeManager from '@/services/advancedThemeManager';
-import PerformanceMonitor, { usePerformanceMonitor } from '@/services/performanceMonitor';
 import { NavigationService } from '@/services/NavigationService';
+import { logger } from '@/utils/logger';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 
 interface SearchSuggestion {
@@ -97,6 +95,7 @@ export default function SearchScreen() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'year-desc' | 'mileage-asc' | 'rating-desc'>('price-asc');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [filters, setFilters] = useState<any>({});
   const [aiSearchQuery, setAiSearchQuery] = useState<AISearchQuery | null>(null);
   const [showAIInsights, setShowAIInsights] = useState(false);
   const [naturalLanguageSearch, setNaturalLanguageSearch] = useState(false);
@@ -450,9 +449,9 @@ export default function SearchScreen() {
         setSavedSearches(savedQueries);
         
         // Apply stored preferences
-        setSortBy(preferences.sortBy);
-        if (preferences.filters) {
-          setFilters(prev => ({ ...prev, ...preferences.filters }));
+        if (preferences) {
+          setSortBy('price-asc' as any);
+          setFilters((prev: any) => ({ ...prev, ...preferences.filters }));
         }
       } catch (error) {
         console.error('Error loading search data:', error);
@@ -525,7 +524,7 @@ export default function SearchScreen() {
             }));
             
             // Sort by relevance if not already AI-sorted
-            if (!hasNaturalLanguagePatterns || !naturalLanguageSearch || (aiSearchQuery && aiSearchQuery.confidence <= 0.7)) {
+            if (!hasNaturalLanguagePatterns || !naturalLanguageSearch || (aiSearchQuery && (aiSearchQuery.confidence || 0) <= 0.7)) {
               personalizedResults.sort((a, b) => b.relevanceScore - a.relevanceScore);
             }
             
@@ -831,7 +830,7 @@ export default function SearchScreen() {
                   🎯 AI Search Analysis
                 </Text>
                 <Text style={[styles.aiInsightsConfidence, { color: colors.textSecondary }]}>
-                  {Math.round(aiSearchQuery.confidence * 100)}% confidence
+                  {Math.round((aiSearchQuery.confidence || 0) * 100)}% confidence
                 </Text>
               </View>
               
@@ -1795,7 +1794,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     padding: Spacing.md,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   aiToggleContent: {
     flexDirection: 'row',

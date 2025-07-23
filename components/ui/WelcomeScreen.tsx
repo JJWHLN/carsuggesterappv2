@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   featuresTitle: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     textAlign: 'center',
     marginBottom: Spacing.lg,
     fontWeight: '700',
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   featureIcon: {
     width: 40,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   featureDescription: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     lineHeight: 20,
   },
   actionsSection: {

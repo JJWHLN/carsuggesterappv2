@@ -143,6 +143,14 @@ export const Typography = {
   subtitle: { fontSize: 18, lineHeight: 28, fontWeight: '500' as const },
   title: { fontSize: 24, lineHeight: 32, fontWeight: '600' as const },
   heading: { fontSize: 30, lineHeight: 36, fontWeight: '700' as const },
+  
+  // Additional Typography for Components
+  pageTitle: { fontSize: 28, lineHeight: 34, fontWeight: '700' as const },
+  bodyText: { fontSize: 16, lineHeight: 24, fontWeight: '400' as const },
+  bodyLarge: { fontSize: 18, lineHeight: 26, fontWeight: '400' as const },
+  sectionTitle: { fontSize: 20, lineHeight: 28, fontWeight: '600' as const },
+  cardTitle: { fontSize: 18, lineHeight: 24, fontWeight: '600' as const },
+  heroTitle: { fontSize: 32, lineHeight: 40, fontWeight: '800' as const },
 };
 
 export const Shadows = {
@@ -173,6 +181,21 @@ export const Shadows = {
     shadowOpacity: 0.15,
     shadowRadius: 16,
     elevation: 8,
+  },
+  // Additional shadow variants
+  large: {
+    shadowColor: '#48cc6c',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 12,
+  },
+  medium: {
+    shadowColor: '#48cc6c',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   card: {
     shadowColor: '#48cc6c',

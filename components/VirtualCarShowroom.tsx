@@ -661,7 +661,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.primary,
   },
   viewModeText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.textSecondary,
     fontWeight: '600',
     fontSize: 10,
@@ -745,7 +745,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
   },
   featureTooltipText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: '#ffffff',
     fontWeight: '600',
   },
@@ -787,7 +787,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   angleText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     textAlign: 'center',
     fontWeight: '500',
@@ -834,7 +834,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     borderColor: colors.border,
   },
   environmentText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     textAlign: 'center',
     fontWeight: '500',
@@ -865,7 +865,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     borderRadius: BorderRadius.sm,
   },
   toggleText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.primary,
     fontWeight: '600',
   },
@@ -884,7 +884,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.primary,
   },
   featureType: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.textSecondary,
     fontSize: 10,
     fontWeight: '700',
@@ -900,7 +900,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     color: colors.background,
   },
   featureDescription: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.textSecondary,
     lineHeight: 16,
   },
@@ -942,7 +942,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     borderColor: colors.border,
   },
   colorName: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: colors.text,
     textAlign: 'center',
   },

@@ -730,7 +730,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.lg,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   headerTop: {
     flexDirection: 'row',
@@ -748,7 +748,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   controlLabel: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   timeRangeSelector: {
@@ -763,14 +763,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timeRangeText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   tabBar: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   tabButton: {
     flex: 1,
@@ -802,7 +802,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   metricHeader: {
     flexDirection: 'row',
@@ -811,7 +811,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   metricTitle: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
     textTransform: 'uppercase',
   },
@@ -829,7 +829,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   changeText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
     marginBottom: 2,
   },
@@ -842,7 +842,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   expandedText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginBottom: Spacing.sm,
   },
   actionButton: {
@@ -859,7 +859,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.lg,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -872,7 +872,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   sectionSubtitle: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
   },
   insightCard: {
     padding: Spacing.md,
@@ -911,7 +911,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   confidenceText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   timestampText: {
@@ -1008,7 +1008,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   modelAccuracy: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
   },
   accuracyBadge: {
     paddingHorizontal: Spacing.sm,
@@ -1016,7 +1016,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
   },
   accuracyText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '600',
   },
   predictionCard: {
@@ -1035,7 +1035,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   predictionTimeframe: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
   },
   predictionText: {
     ...Typography.bodyText,
@@ -1064,7 +1064,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.lg,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   fullInsightHeader: {
     flexDirection: 'row',

@@ -615,7 +615,7 @@ const getThemedStyles = (colors: any) => {
       padding: Spacing.md,
       borderRadius: BorderRadius.lg,
       position: 'relative',
-      ...Shadows.small,
+      ...Shadows.sm,
     },
     notificationUnread: {
       borderLeftWidth: 3,
@@ -658,7 +658,7 @@ const getThemedStyles = (colors: any) => {
       fontWeight: '500',
     },
     notificationMessage: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       lineHeight: 18,
       marginBottom: Spacing.xs,
     },

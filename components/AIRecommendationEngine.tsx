@@ -651,7 +651,7 @@ const getThemedStyles = (colors: any) => {
       padding: Spacing.sm,
     },
     subtitle: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       paddingHorizontal: Spacing.lg,
       marginBottom: Spacing.lg,
     },
@@ -677,7 +677,7 @@ const getThemedStyles = (colors: any) => {
       borderRadius: BorderRadius.full,
       gap: 4,
       zIndex: 10,
-      ...Shadows.small,
+      ...Shadows.sm,
     },
     categoryText: {
       ...Typography.caption,
@@ -713,10 +713,10 @@ const getThemedStyles = (colors: any) => {
       borderRadius: BorderRadius.lg,
       padding: Spacing.md,
       marginTop: Spacing.sm,
-      ...Shadows.small,
+      ...Shadows.sm,
     },
     reasonsTitle: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       fontWeight: '600',
       marginBottom: Spacing.sm,
     },
@@ -739,7 +739,7 @@ const getThemedStyles = (colors: any) => {
       gap: Spacing.sm,
     },
     dealText: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       color: colors.white,
       fontWeight: '600',
       flex: 1,

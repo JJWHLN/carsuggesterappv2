@@ -1,43 +1,34 @@
-/**
- * Performance Dashboard Component
- * 
- * Phase 2 Week 8 - Performance Optimization & Advanced Features
- * 
- * Features:
- * - Real-time performance metrics display
- * - Interactive charts and graphs
- * - Performance alerts and notifications
- * - Drill-down analytics
- * - Export capabilities
- */
-
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
-  Alert,
   Dimensions,
-  RefreshControl,
-  ActivityIndicator
+  TouchableOpacity,
+  Modal,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useThemeColors } from '../hooks/useTheme';
-import { currentColors, Spacing, Typography, BorderRadius, Shadows } from '../constants/Colors';
-import { Card } from './ui/Card';
+import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import PerformanceTracker, { PerformanceAnalytics } from '../services/PerformanceTracker';
+import ABTestService, { ABTestResults, FeatureFlag } from '../services/ABTestService';
+import { Colors, Typography, Spacing, Shadows } from '../constants/Colors';
+import { AnimatedBadge } from './ui/AnimatedBadge';
 import { LoadingSpinner } from './ui/LoadingSpinner';
-import { ErrorState } from './ui/ErrorState';
-import PerformanceIntegration from '../services/performance/PerformanceIntegration';
-import PerformanceMonitor, { 
-  PerformanceReport, 
-  PerformanceMetrics,
-  PerformanceAnomaly,
-  PerformanceRecommendation 
-} from '../services/performance/PerformanceMonitor';
-import { AdvancedCacheManager } from '../services/performance/AdvancedCacheManager';
-import EnhancedMLPipeline from '../services/performance/EnhancedMLPipeline';
+import {
+  BarChart,
+  LineChart,
+  TrendingUp,
+  Activity,
+  Users,
+  Clock,
+  AlertTriangle,
+  Settings,
+  Eye,
+  Target,
+  Zap,
+} from './ui/ultra-optimized-icons';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 

@@ -153,7 +153,7 @@ export default function ImprovedCompareScreen() {
     },
     
     carTitle: {
-      ...Typography.h3,
+      ...Typography.subtitle,
       color: colors.text,
       fontWeight: '700',
       marginBottom: Spacing.xs,
@@ -183,7 +183,7 @@ export default function ImprovedCompareScreen() {
     },
     
     detailValue: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       color: colors.text,
       fontWeight: '600',
     },
@@ -210,7 +210,7 @@ export default function ImprovedCompareScreen() {
     },
     
     actionButtonText: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       color: colors.textSecondary,
       fontWeight: '500',
     },
@@ -231,7 +231,7 @@ export default function ImprovedCompareScreen() {
     },
     
     sectionTitle: {
-      ...Typography.h3,
+      ...Typography.subtitle,
       color: colors.text,
       fontWeight: '700',
       marginLeft: Spacing.sm,
@@ -253,7 +253,7 @@ export default function ImprovedCompareScreen() {
     
     comparisonLabel: {
       flex: 1,
-      ...Typography.bodySmall,
+      ...Typography.caption,
       color: colors.textSecondary,
       fontWeight: '500',
     },
@@ -302,7 +302,7 @@ export default function ImprovedCompareScreen() {
     },
     
     addCarText: {
-      ...Typography.h3,
+      ...Typography.subtitle,
       color: colors.primary,
       fontWeight: '600',
       marginTop: Spacing.md,

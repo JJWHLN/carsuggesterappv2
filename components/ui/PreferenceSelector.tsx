@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   sliderValue: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     fontWeight: '700',
   },
   stepperContainer: {
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
   valueDisplay: {
     paddingHorizontal: Spacing.lg,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   valueText: {
-    ...Typography.h3,
+    ...Typography.subtitle,
     fontWeight: '700',
   },
   slider: {
@@ -348,6 +348,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    ...ColorsShadows.small,
+    ...ColorsShadows.sm,
   },
 });

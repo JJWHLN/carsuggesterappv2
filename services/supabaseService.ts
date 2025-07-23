@@ -1,5 +1,6 @@
 import { supabase, testSupabaseConnection } from '@/lib/supabase';
 import { DatabaseReview, DatabaseVehicleListing } from '@/types/database';
+import { logger } from '@/utils/logger';
 
 export class SupabaseError extends Error {
   constructor(message: string, public code?: string, public details?: string) {

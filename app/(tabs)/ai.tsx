@@ -26,11 +26,9 @@ import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { NavigationService } from '@/services/NavigationService';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useApi } from '@/hooks/useApi';
-import { AISearchEngine, AISearchQuery } from '@/services/aiSearchService';
-import SmartNotificationService from '@/services/smartNotificationService';
-import AdvancedThemeManager from '@/services/advancedThemeManager';
-import PerformanceMonitor, { usePerformanceMonitor } from '@/services/performanceMonitor';
+import { logger } from '@/utils/logger';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
+import { AISearchQuery, AISearchEngine, SmartNotificationService, AdvancedThemeManager, usePerformanceMonitor } from '@/services/TempAIServices';
 import { Car as CarType } from '@/types/database';
 import { SlidersHorizontal, Car, Sparkles, Search, Zap } from '@/utils/ultra-optimized-icons';
 
@@ -959,7 +957,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     padding: Spacing.md,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   aiStatusContent: {
     flexDirection: 'row',
@@ -978,14 +976,14 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs / 2,
   },
   aiStatusSubtitle: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     lineHeight: 18,
   },
   aiStatusBadge: {
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs / 2,
     borderRadius: BorderRadius.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   aiStatusBadgeText: {
     ...Typography.caption,
@@ -997,7 +995,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   aiInsightsHeader: {
     flexDirection: 'row',
@@ -1037,7 +1035,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   aiSuggestionText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   // Results section styles
@@ -1061,7 +1059,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs / 2,
   },
   searchQuery: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontStyle: 'italic',
   },
   controls: {
@@ -1076,10 +1074,10 @@ const styles = StyleSheet.create({
     minHeight: 44,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   sortText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     marginLeft: Spacing.xs,
     fontWeight: '500',
   },
@@ -1150,10 +1148,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginRight: Spacing.sm,
     marginBottom: Spacing.sm,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   aiExampleText: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     fontWeight: '500',
   },
   // Getting started section styles
@@ -1184,7 +1182,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     marginBottom: Spacing.md,
-    ...Shadows.small,
+    ...Shadows.sm,
   },
   aiExampleIcon: {
     marginRight: Spacing.md,
@@ -1201,7 +1199,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs / 2,
   },
   aiExampleDescription: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     lineHeight: 18,
   },
 });

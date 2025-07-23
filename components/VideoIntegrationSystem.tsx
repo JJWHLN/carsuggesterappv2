@@ -683,7 +683,7 @@ const getThemedStyles = (colors: any) => {
       fontWeight: '700',
     },
     headerSubtitle: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       marginTop: 2,
     },
     closeButton: {

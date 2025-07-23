@@ -84,7 +84,7 @@ export function useDesignSystem() {
           marginBottom: Spacing.md,
           borderWidth: 1,
           borderColor: colors.border,
-          ...Shadows.small,
+          ...Shadows.sm,
         },
         secondary: {
           backgroundColor: colors.surface,
@@ -112,7 +112,7 @@ export function useDesignSystem() {
           paddingVertical: Spacing.md,
           alignItems: 'center' as const,
           justifyContent: 'center' as const,
-          ...Shadows.small,
+          ...Shadows.sm,
         },
         secondary: {
           backgroundColor: 'transparent',

@@ -67,7 +67,7 @@ export const createCommonStyles = (colors: typeof DesignSystem.Colors.light) => 
     gap: DesignSystem.Spacing.xs,
   },
   filterButtonText: {
-    ...DesignSystem.Typography.bodySmall,
+    ...DesignSystem.Typography.caption,
     color: colors.text,
     fontWeight: '500',
   },
@@ -159,7 +159,7 @@ export const createCommonStyles = (colors: typeof DesignSystem.Colors.light) => 
     borderColor: colors.primary,
   },
   categoryText: {
-    ...DesignSystem.Typography.bodySmall,
+    ...DesignSystem.Typography.caption,
     color: colors.text,
     fontWeight: '500',
   },
@@ -228,12 +228,12 @@ export const createCommonStyles = (colors: typeof DesignSystem.Colors.light) => 
     backgroundColor: colors.background,
   },
   resultsCount: {
-    ...DesignSystem.Typography.h3,
+    ...DesignSystem.Typography.subtitle,
     color: colors.text,
     fontWeight: '700',
   },
   resultsSubtext: {
-    ...DesignSystem.Typography.bodySmall,
+    ...DesignSystem.Typography.caption,
     color: colors.textSecondary,
   },
   
@@ -271,7 +271,7 @@ export const createCommonStyles = (colors: typeof DesignSystem.Colors.light) => 
     gap: DesignSystem.Spacing.xs,
   },
   detailText: {
-    ...DesignSystem.Typography.bodySmall,
+    ...DesignSystem.Typography.caption,
     color: colors.textSecondary,
     fontWeight: '500',
   },

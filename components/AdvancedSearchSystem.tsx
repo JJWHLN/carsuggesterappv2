@@ -608,7 +608,7 @@ const getThemedStyles = (colors: any) => {
       borderColor: colors.primary,
     },
     categoryButtonText: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       fontWeight: '600',
     },
     premiumBadge: {
@@ -697,7 +697,7 @@ const getThemedStyles = (colors: any) => {
       marginBottom: Spacing.sm,
     },
     resultsText: {
-      ...Typography.bodySmall,
+      ...Typography.caption,
       fontWeight: '500',
     },
     footerButtons: {

@@ -91,15 +91,6 @@ const ModelCardComponent: React.FC<ModelCardProps> = ({ model, onPress }) => {
     </AnimatedTouchableOpacity>
   );
 };
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
-      </Card>
-    </TouchableOpacity>
-  );
-};
 
 const getThemedModelCardStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
   container: {
