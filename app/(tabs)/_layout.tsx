@@ -81,7 +81,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* AI tab temporarily disabled - complex dependencies removed during cleanup
       <Tabs.Screen
         name="ai"
         options={{
@@ -95,7 +94,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      */}
       <Tabs.Screen
         name="admin"
         options={{
