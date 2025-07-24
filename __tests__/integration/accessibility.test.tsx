@@ -1,14 +1,24 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { 
+  renderWithProviders, 
+  expectAccessibilityProps 
+} from '../utils/testUtils';
 
-// Additional mock settings for this test file
-beforeEach(() => {
-  jest.clearAllMocks();
-});
+// Mock AccessibilityInfo
+jest.mock('react-native', () => ({
+  ...jest.requireActual('react-native'),
+  AccessibilityInfo: {
+    isScreenReaderEnabled: jest.fn(),
+    isReduceMotionEnabled: jest.fn(),
+    isBoldTextEnabled: jest.fn(),
+    announceForAccessibility: jest.fn(),
+  },
+}));
 
 describe('Accessibility Integration Tests', () => {
   beforeEach(() => {
@@ -18,7 +28,7 @@ describe('Accessibility Integration Tests', () => {
   describe('Button Accessibility', () => {
     it('should have proper accessibility props', () => {
       const onPress = jest.fn();
-      const { getByRole } = render(
+      const { getByRole } = renderWithProviders(
         <Button
           title="Test Button"
           onPress={onPress}
@@ -28,18 +38,19 @@ describe('Accessibility Integration Tests', () => {
       );
 
       const button = getByRole('button');
-      expect(button.props.accessibilityRole).toBe('button');
-      expect(button.props.accessibilityLabel).toBe('Custom test button');
-      expect(button.props.accessibilityHint).toBe('Tap to perform test action');
-      expect(button.props.accessibilityState).toEqual({ disabled: false, busy: false });
+      expectAccessibilityProps(button, {
+        role: 'button',
+        label: 'Custom test button',
+        hint: 'Tap to perform test action',
+        state: { disabled: false, busy: false }
+      });
     });
 
     it('should announce actions for screen readers', async () => {
-      // Mock screen reader enabled
       (AccessibilityInfo.isScreenReaderEnabled as jest.Mock).mockResolvedValue(true);
 
       const onPress = jest.fn();
-      const { getByRole } = render(
+      const { getByRole } = renderWithProviders(
         <Button
           title="Submit"
           onPress={onPress}
@@ -58,7 +69,7 @@ describe('Accessibility Integration Tests', () => {
 
     it('should handle disabled state correctly', () => {
       const onPress = jest.fn();
-      const { getByRole } = render(
+      const { getByRole } = renderWithProviders(
         <Button
           title="Disabled Button"
           onPress={onPress}
@@ -67,7 +78,9 @@ describe('Accessibility Integration Tests', () => {
       );
 
       const button = getByRole('button');
-      expect(button.props.accessibilityState.disabled).toBe(true);
+      expectAccessibilityProps(button, {
+        state: { disabled: true }
+      });
       
       fireEvent.press(button);
       expect(onPress).not.toHaveBeenCalled();
@@ -75,7 +88,7 @@ describe('Accessibility Integration Tests', () => {
 
     it('should handle loading state correctly', () => {
       const onPress = jest.fn();
-      const { getByRole } = render(
+      const { getByRole } = renderWithProviders(
         <Button
           title="Loading Button"
           onPress={onPress}
@@ -84,10 +97,12 @@ describe('Accessibility Integration Tests', () => {
       );
 
       const button = getByRole('button');
-      expect(button.props.accessibilityState.disabled).toBe(true);
-      expect(button.props.accessibilityState.busy).toBe(true);
-      expect(button.props.accessibilityHint).toBe('Loading, please wait');
+      expectAccessibilityProps(button, {
+        state: { disabled: true, busy: true },
+        hint: 'Loading, please wait'
+      });
     });
+  });
 
     it('should support destructive actions', () => {
       const onPress = jest.fn();
