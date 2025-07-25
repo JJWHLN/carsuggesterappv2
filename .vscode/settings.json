@@ -1,0 +1,115 @@
+{
+  // AGGRESSIVE Performance optimizations to prevent VS Code crashes
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/.expo/**": true,
+    "**/build/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true,
+    "**/.turbo/**": true,
+    "**/coverage/**": true,
+    "**/__tests__/**": true,
+    "**/test/**": true,
+    "**/*.test.ts": true,
+    "**/*.test.tsx": true,
+    "**/*.spec.ts": true,
+    "**/*.spec.tsx": true
+  },
+  
+  // Limit search and indexing for large files
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/.expo/**": true,
+    "**/build/**": true,
+    "**/dist/**": true,
+    "**/*.log": true,
+    "**/.DS_Store": true,
+    "**/node_modules/**/typescript.js": true,
+    "**/node_modules/**/_tsc.js": true,
+    "**/node_modules/**/parseHookNames.chunk.js": true
+  },
+  
+  // TypeScript performance optimizations - BALANCED SETTINGS
+  "typescript.preferences.maxInlayHintLength": 30,
+  "typescript.suggest.includeCompletionsForModuleExports": true,
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "typescript.disableAutomaticTypeAcquisition": false,
+  "typescript.preferences.useLabelDetailsInCompletionEntries": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.updateImportsOnFileMove.enabled": "prompt",
+  "typescript.suggest.enabled": true,
+  "typescript.validate.enable": true,
+  "typescript.format.enable": true,
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.enablePromptUseWorkspaceTsdk": false,
+  "typescript.surveys.enabled": false,
+  
+  // Memory and performance settings - ULTRA AGGRESSIVE
+  "files.maxMemoryForLargeFilesMB": 256,
+  "editor.maxTokenizationLineLength": 2000,
+  "editor.semanticHighlighting.enabled": false,
+  "editor.tokenColorCustomizations": {},
+  "editor.experimentalWhitespaceRendering": "off",
+  "editor.renderWhitespace": "none",
+  "editor.guides.indentation": false,
+  "editor.guides.bracketPairs": false,
+  "editor.lightbulb.enabled": "off",
+  "editor.hover.enabled": false,
+  "editor.parameterHints.enabled": false,
+  "editor.quickSuggestions": {
+    "other": false,
+    "comments": false,
+    "strings": false
+  },
+  "editor.suggestOnTriggerCharacters": false,
+  "editor.wordBasedSuggestions": "off",
+  "editor.occurrencesHighlight": "off",
+  "editor.selectionHighlight": false,
+  
+  // Disable heavy features for large projects
+  "editor.minimap.enabled": false,
+  "editor.bracketPairColorization.enabled": false,
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "editor.renderLineHighlight": "none",
+  
+  // Git optimizations
+  "git.enabled": true,
+  "git.autorefresh": false,
+  "git.decorations.enabled": false,
+  
+  // Extension optimizations
+  "extensions.autoUpdate": false,
+  "extensions.autoCheckUpdates": false,
+  "extensions.ignoreRecommendations": true,
+  
+  // Complete language service shutdown for power saving (JavaScript only)
+  "javascript.suggest.enabled": false,
+  "javascript.validate.enable": false,
+  "javascript.format.enable": false,
+  
+  // Language server settings
+  "eslint.workingDirectories": ["."],
+  "eslint.validate": ["typescript", "typescriptreact"],
+  
+  // ULTRA Power/CPU optimizations
+  "workbench.startupEditor": "none",
+  "workbench.editor.restoreViewState": false,
+  "workbench.editor.limit.enabled": true,
+  "workbench.editor.limit.value": 5,
+  "workbench.editor.limit.perEditorGroup": true,
+  "files.autoSave": "off",
+  "files.hotExit": "off",
+  "files.trimTrailingWhitespace": false,
+  "files.insertFinalNewline": false,
+  "problems.decorations.enabled": false,
+  "breadcrumbs.enabled": false,
+  "outline.icons": false,
+  "scm.diffDecorations": "none",
+  "workbench.tree.indent": 8,
+  "workbench.list.smoothScrolling": false,
+  "workbench.reduceMotion": "on"
+}

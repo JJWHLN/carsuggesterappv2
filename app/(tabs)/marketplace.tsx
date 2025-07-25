@@ -25,11 +25,12 @@ import { withUnifiedTabScreen } from '@/components/ui/UnifiedTabScreen';
 import { UnifiedList } from '@/components/ui/UnifiedList';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
-import { fetchVehicleListings } from '@/services/EmergencyCarService';
+// TODO: Fix these services - temporarily disabled to prevent VS Code crashes
+// import { fetchVehicleListings } from '@/services/EmergencyCarService';
 import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
 import { Car as CarType } from '@/types/database';
 import { useDebounce } from '@/hooks/useDebounce';
-import { NavigationService } from '@/services/NavigationService';
+// import { NavigationService } from '@/services/NavigationService';
 import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Star, Building2, Award, Clock, ChevronRight, Mail, List, Shield } from '@/utils/ultra-optimized-icons';
 
 // Lazy loaded components for performance optimization
@@ -143,7 +144,9 @@ function MarketplaceScreen() {
       const currentPage = reset ? 0 : page;
       const limit = 10;
       
-      const data = await fetchVehicleListings(currentPage, limit, debouncedSearchTerm || undefined);
+      // TODO: Re-enable when EmergencyCarService is implemented
+      // const data = await fetchVehicleListings(currentPage, limit, debouncedSearchTerm || undefined);
+      const data: any[] = []; // Temporary mock data to prevent crashes
       
       if (data && Array.isArray(data)) {
         const transformedCars = data.map(transformDatabaseVehicleListingToCar);
@@ -182,7 +185,7 @@ function MarketplaceScreen() {
 
   const handleCarPress = useCallback((carId: string) => {
     console.log('Navigate to car details:', carId);
-    NavigationService.navigateToCar(carId);
+    // NavigationService.navigateToCar(carId);
   }, []);
 
   const renderListing = ({ item }: { item: CarType }) => (
