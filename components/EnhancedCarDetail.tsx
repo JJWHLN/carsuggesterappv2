@@ -34,7 +34,7 @@ import { Button } from '@/components/ui/Button';
 import { ModernButton } from '@/components/ui/ModernButton';
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';

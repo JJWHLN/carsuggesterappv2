@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Text } from 'react-native';
-import { SearchBar } from '../components/Search/SearchBar';
+import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified';
 import { Car } from '../features/recommendations/types';
 
 interface SearchScreenProps {

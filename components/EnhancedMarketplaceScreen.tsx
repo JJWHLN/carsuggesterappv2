@@ -17,7 +17,7 @@ import { useThemeColors } from '@/hooks/useTheme';
 import { useDebounce } from '@/hooks/useDebounce';
 import { socialService } from '@/services/socialService';
 import { realTimeChatService } from '@/services/realTimeChatService';
-import { SearchBar } from '@/components/ui/SearchBar';
+import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';

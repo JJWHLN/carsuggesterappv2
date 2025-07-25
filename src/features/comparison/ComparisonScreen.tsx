@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, TouchableOpacity, Text, Dimensions } from 'react-native';
 import { ArrowLeft, Plus, Settings } from 'lucide-react-native';
-import { ComparisonProvider, useComparison } from './ComparisonContext';
+import { useComparison } from '@/stores';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonDrawer } from './ComparisonDrawer';
 import { ExtendedCar } from './types';
@@ -15,9 +15,10 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
   navigation, 
   initialCars = [] 
 }) => {
-  const { state, actions } = useComparison();
+  const comparison = useComparison();
   const [showDrawer, setShowDrawer] = useState(false);
   const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('mobile');
 
   // Handle screen orientation changes
   useEffect(() => {
@@ -25,9 +26,9 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
       setScreenWidth(window.width);
       // Auto-switch to mobile view on narrow screens
       if (window.width < 768) {
-        actions.setViewMode('mobile');
+        setViewMode('mobile');
       } else {
-        actions.setViewMode('desktop');
+        setViewMode('desktop');
       }
     });
 
@@ -37,7 +38,7 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
   // Load initial cars
   useEffect(() => {
     initialCars.forEach(car => {
-      actions.addCar(car);
+      comparison.addToComparison(car);
     });
   }, [initialCars, actions]);
 
@@ -142,7 +143,7 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
   ];
 
   const handleAddCar = (car: ExtendedCar) => {
-    actions.addCar(car);
+    comparison.addToComparison(car);
     setShowDrawer(false);
   };
 
@@ -176,10 +177,10 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
             Car Comparison
           </Text>
           
-          {state.cars.length > 0 && (
+          {comparison.comparisonCars.length > 0 && (
             <View className="bg-green-500 rounded-full w-6 h-6 items-center justify-center ml-2">
               <Text className="text-white text-xs font-bold">
-                {state.cars.length}
+                {comparison.comparisonCars.length}
               </Text>
             </View>
           )}
@@ -205,8 +206,8 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
           showsHorizontalScrollIndicator={false}
           className="flex-1"
         >
-          {state.cars.length > 0 ? (
-            state.cars.map((car, index) => (
+          {comparison.comparisonCars.length > 0 ? (
+            comparison.comparisonCars.map((car, index) => (
               <View key={car.id} className="w-full px-4 py-6" style={{ width: screenWidth }}>
                 <View className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <View className="flex-row items-center justify-between mb-4">
@@ -214,7 +215,7 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
                       {car.year} {car.make} {car.model}
                     </Text>
                     <TouchableOpacity
-                      onPress={() => actions.removeCar(car.id)}
+                      onPress={() => comparison.removeFromComparison(car.id)}
                       className="p-2"
                     >
                       <Text className="text-red-500">✕</Text>
@@ -257,7 +258,7 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
 
                   {/* Page indicator */}
                   <View className="flex-row justify-center mt-6 space-x-1">
-                    {state.cars.map((_, i) => (
+                    {comparison.comparisonCars.map((_, i) => (
                       <View
                         key={i}
                         className={`w-2 h-2 rounded-full ${
@@ -293,7 +294,7 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
       )}
 
       {/* Quick Add Demo Cars Button */}
-      {state.cars.length === 0 && (
+      {comparison.comparisonCars.length === 0 && (
         <View className="absolute bottom-6 left-6 right-6">
           <TouchableOpacity
             onPress={() => {

@@ -16,7 +16,7 @@ import { Search, Sparkles, ArrowRight, Award, TrendingUp } from '@/utils/ultra-o
 import { Car as CarIcon } from '@/utils/ultra-optimized-icons';
 
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 

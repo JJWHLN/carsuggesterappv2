@@ -26,7 +26,7 @@ import {
   Fuel, Settings, Award, TrendingUp, Sparkles,
   ChevronRight, ChevronLeft, Grid, List
 } from '@/utils/ultra-optimized-icons';
-import { SearchBar } from '@/components/ui/SearchBar';
+import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified';
 import { Button } from '@/components/ui/Button';
 import { useThemeColors } from '@/hooks/useTheme';
 import { BorderRadius, Spacing, Typography, Shadows } from '@/constants/Colors';

@@ -39,8 +39,8 @@ import { fetchVehicleListingById, SupabaseError } from '@/services/supabaseServi
 import { useApi } from '@/hooks/useApi';
 import { Car as CarType, DatabaseVehicleListing } from '@/types/database';
 import { ArrowLeft, Heart, MapPin, Calendar, Fuel, Settings, Star, Mail, Users, Gauge, MessageCircle, Share, Camera, Phone, ExternalLink } from '@/utils/ultra-optimized-icons';
-import { ContactDealerModal } from '@/components/ui/ContactDealerModal';
-import { PriceAlertModal } from '@/components/ui/PriceAlertModal';
+import { ContactDealerModal } from '@/components/ui/unified/ContactDealerModal';
+import { PriceAlertModal } from '@/components/ui/unified/PriceAlertModal';
 import { leadService } from '@/services/LeadGenerationService';
 
 const { width, height } = Dimensions.get('window');
