@@ -56,6 +56,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Search',
+          tabBarIcon: ({ color, focused }) => (
+            <Sparkles 
+              color={focused ? colors.primary : color} 
+              size={focused ? 26 : 24} 
+              strokeWidth={focused ? 2.5 : 2} 
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="reviews"
         options={{
           title: 'Reviews',
@@ -130,12 +143,6 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="reviews_new"
-        options={{
-          href: null, // This hides the tab from the tab bar
-        }}
-      />
-      <Tabs.Screen
-        name="search"
         options={{
           href: null, // This hides the tab from the tab bar
         }}

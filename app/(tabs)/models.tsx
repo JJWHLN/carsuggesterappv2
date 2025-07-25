@@ -24,7 +24,8 @@ import { useApi } from '@/hooks/useApi';
 import { useDebounce } from '@/hooks/useDebounce';
 import { fetchCarModels, fetchPopularBrands, FetchCarModelsOptions } from '@/services/api';
 import { CarModel, Brand } from '@/types/database';
-import { trackScreenView, trackCarInteraction } from '@/services/analyticsService';
+// TODO: Implement analyticsService - temporarily disabled to prevent crashes
+// import { trackScreenView, trackCarInteraction } from '@/services/analyticsService';
 import { Car, Search, TrendingUp, Star, Calendar, ChevronRight } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
@@ -99,11 +100,12 @@ export default function ModelsScreen() {
   ];
   
   useEffect(() => {
-    trackScreenView('models', {
-      category: selectedCategory,
-      brand: selectedBrand,
-      search_query: debouncedSearchTerm,
-    });
+    // TODO: Re-enable analytics when service is implemented
+    // trackScreenView('models', {
+    //   category: selectedCategory,
+    //   brand: selectedBrand,
+    //   search_query: debouncedSearchTerm,
+    // });
   }, [selectedCategory, selectedBrand, debouncedSearchTerm]);
   
   const handleRefresh = useCallback(() => {
@@ -114,12 +116,14 @@ export default function ModelsScreen() {
   }, [refetchModels, refetchBrands]);
   
   const handleModelPress = useCallback((model: CarModel) => {
-    trackCarInteraction('view', `${model.name} - ${model.brands?.name || 'Unknown'}`);
+    // TODO: Re-enable analytics when service is implemented
+    // trackCarInteraction('view', `${model.name} - ${model.brands?.name || 'Unknown'}`);
     router.push(`/model/${model.id}`);
   }, [router]);
   
   const handleBrandPress = useCallback((brand: Brand) => {
-    trackCarInteraction('view', `Brand: ${brand.name}`);
+    // TODO: Re-enable analytics when service is implemented  
+    // trackCarInteraction('view', `Brand: ${brand.name}`);
     setSelectedBrand(selectedBrand === brand.name ? null : brand.name);
   }, [selectedBrand]);
   
