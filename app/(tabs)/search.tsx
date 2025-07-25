@@ -95,7 +95,6 @@ export default function SearchScreen() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'year-desc' | 'mileage-asc' | 'rating-desc'>('price-asc');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [filters, setFilters] = useState<any>({});
   const [aiSearchQuery, setAiSearchQuery] = useState<AISearchQuery | null>(null);
   const [showAIInsights, setShowAIInsights] = useState(false);
   const [naturalLanguageSearch, setNaturalLanguageSearch] = useState(false);
