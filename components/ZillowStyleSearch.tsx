@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Button } from '@/components/ui/Button';
-import { SearchBar } from '@/components/ui/SearchBar';
+import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified';
 import { ModernCarCard } from '@/components/ModernCarCard';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Car } from '@/types/database';

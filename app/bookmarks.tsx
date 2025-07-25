@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
 import { RoleGate } from '@/components/ui/RoleProtection';
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import { useDesignSystem } from '@/hooks/useDesignSystem';
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Car as CarType } from '@/types/database';

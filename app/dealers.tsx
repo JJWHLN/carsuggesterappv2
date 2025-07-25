@@ -13,7 +13,7 @@ import { router } from 'expo-router';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { SearchBar } from '@/components/ui/SearchBar';
+import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified';
 import { Card } from '@/components/ui/Card';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Button } from '@/components/ui/Button';

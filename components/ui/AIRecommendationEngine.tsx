@@ -22,7 +22,7 @@ import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UnifiedSearchFilter } from '@/components/ui/UnifiedSearchFilter';

@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Search, SlidersHorizontal, Star, MapPin, DollarSign } from '@/utils/ultra-optimized-icons';
 
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useThemeColors } from '@/hooks/useTheme';

@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { Button } from '@/components/ui/Button';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';

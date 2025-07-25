@@ -16,12 +16,12 @@ import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Search, Sparkles, Filter, Clock, Star, TrendingUp } from '@/utils/ultra-optimized-icons';
 
-import { SearchBar } from '@/components/ui/SearchBar';
+import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { Button } from '@/components/ui/Button';
 
 import { useThemeColors } from '@/hooks/useTheme';

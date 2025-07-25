@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { X, Filter } from 'lucide-react-native';
-import { FilterPanel } from './FilterPanel';
+import { UnifiedFilterPanel as FilterPanel } from '@/components/ui/unified';
 import { SearchFilters, FilterPreset } from '../../features/recommendations/types/search';
 
 interface FilterBottomSheetProps {

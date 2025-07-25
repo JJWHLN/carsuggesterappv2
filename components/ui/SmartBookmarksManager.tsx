@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/Colors';
-import { CarCard } from '@/components/CarCard';
+import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { AnimatedBadge } from '@/components/ui/AnimatedBadge';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
