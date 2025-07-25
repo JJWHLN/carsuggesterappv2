@@ -14,7 +14,7 @@ import {
   Eye,
   EyeOff 
 } from 'lucide-react-native';
-import { useComparison } from './ComparisonContext';
+import { useComparison } from '@/stores';
 import { ExtendedCar, ComparisonField, comparisonSections } from './types';
 
 interface ComparisonTableProps {
@@ -74,7 +74,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ className = ""
   const getFieldHighlight = (car: ExtendedCar, field: ComparisonField) => {
     if (!field.highlightBest && !field.highlightWorst) return null;
     
-    const values = state.cars.map(c => getFieldValue(c, field)).filter(v => v !== null && v !== undefined);
+    const values = comparison.comparisonCars.map(c => getFieldValue(c, field)).filter(v => v !== null && v !== undefined);
     if (values.length < 2) return null;
     
     const currentValue = getFieldValue(car, field);
@@ -98,7 +98,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ className = ""
 
   // Check if row has differences
   const hasRowDifferences = (field: ComparisonField) => {
-    const values = state.cars.map(car => getFieldValue(car, field));
+    const values = comparison.comparisonCars.map(car => getFieldValue(car, field));
     const uniqueValues = [...new Set(values.map(v => JSON.stringify(v)))];
     return uniqueValues.length > 1;
   };
@@ -114,7 +114,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ className = ""
         ),
       }))
       .filter(section => section.fields.length > 0);
-  }, [state.selectedSections, state.showDifferencesOnly, state.cars]);
+  }, [state.selectedSections, state.showDifferencesOnly, comparison.comparisonCars]);
 
   // Handle drag and drop reordering
   const handleDragStart = (carId: string) => {
@@ -128,15 +128,15 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ className = ""
   const handleDrop = (targetIndex: number) => {
     if (!draggedCar) return;
     
-    const fromIndex = state.cars.findIndex(car => car.id === draggedCar);
+    const fromIndex = comparison.comparisonCars.findIndex(car => car.id === draggedCar);
     if (fromIndex !== -1 && fromIndex !== targetIndex) {
-      actions.reorderCars(fromIndex, targetIndex);
+      comparison.reorderComparison(fromIndex, targetIndex);
     }
     
     setDraggedCar(null);
   };
 
-  if (state.cars.length === 0) {
+  if (comparison.comparisonCars.length === 0) {
     return (
       <View className={`flex-1 justify-center items-center bg-gray-50 ${className}`}>
         <Text className="text-6xl mb-4">🚗</Text>
@@ -155,7 +155,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ className = ""
       {/* Header Controls */}
       <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
         <Text className="text-lg font-semibold text-gray-800">
-          Compare {state.cars.length} Cars
+          Compare {comparison.comparisonCars.length} Cars
         </Text>
         
         <View className="flex-row space-x-2">
@@ -206,7 +206,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ className = ""
               </View>
               
               {/* Car Columns */}
-              {state.cars.map((car, index) => (
+              {comparison.comparisonCars.map((car, index) => (
                 <motion.div
                   key={car.id}
                   layout
@@ -227,7 +227,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ className = ""
                     
                     {/* Remove Button */}
                     <TouchableOpacity
-                      onPress={() => actions.removeCar(car.id)}
+                      onPress={() => comparison.removeFromComparison(car.id)}
                       className="absolute top-0 right-8 p-1"
                     >
                       <X size={16} className="text-red-500" />
@@ -317,7 +317,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ className = ""
                           </View>
                           
                           {/* Field Values */}
-                          {state.cars.map((car) => {
+                          {comparison.comparisonCars.map((car) => {
                             const value = getFieldValue(car, field);
                             const highlight = getFieldHighlight(car, field);
                             

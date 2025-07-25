@@ -231,7 +231,7 @@ export const ComparisonDrawer: React.FC<ComparisonDrawerProps> = ({
                   
                   {carCount > 0 && (
                     <TouchableOpacity
-                      onPress={actions.clearComparison}
+                      onPress={comparison.clearComparison}
                       className="flex-row items-center px-3 py-1 rounded-lg bg-red-50"
                     >
                       <Trash2 size={14} className="text-red-600 mr-1" />
@@ -250,7 +250,7 @@ export const ComparisonDrawer: React.FC<ComparisonDrawerProps> = ({
                       >
                         <View className="relative">
                           <TouchableOpacity
-                            onPress={() => actions.removeCar(car.id)}
+                            onPress={() => comparison.removeFromComparison(car.id)}
                             className="absolute top-0 right-0 p-1 z-10"
                           >
                             <X size={14} className="text-red-500" />

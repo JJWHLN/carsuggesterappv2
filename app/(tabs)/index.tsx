@@ -28,6 +28,7 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
+import { useCarData, useSearch, useUserProfile } from '@/stores';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useApi } from '@/hooks/useApi';
 import { fetchCarModels, fetchPopularBrands } from '@/services/api';

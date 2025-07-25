@@ -66,10 +66,10 @@ const CarCard: React.FC<{ car: Car; onNavigateToComparison: () => void }> = ({
 
   const handleToggleComparison = () => {
     if (isInComparison) {
-      actions.removeCar(car.id);
+      comparison.removeFromComparison(car.id);
     } else if (canAddCar) {
       const extendedCar = extendCarData(car);
-      actions.addCar(extendedCar);
+      comparison.addToComparison(extendedCar);
     }
   };
 
@@ -161,7 +161,7 @@ const ComparisonFloat: React.FC<{ onNavigateToComparison: () => void }> = ({
 }) => {
   const { state } = useComparison();
   
-  if (state.cars.length === 0) return null;
+  if (comparison.comparisonCars.length === 0) return null;
 
   return (
     <View className="absolute bottom-6 left-6 right-6">
@@ -171,7 +171,7 @@ const ComparisonFloat: React.FC<{ onNavigateToComparison: () => void }> = ({
       >
         <GitCompare size={20} className="text-white mr-2" />
         <Text className="text-white font-semibold">
-          Compare {state.cars.length} Car{state.cars.length > 1 ? 's' : ''}
+          Compare {comparison.comparisonCars.length} Car{comparison.comparisonCars.length > 1 ? 's' : ''}
         </Text>
       </TouchableOpacity>
     </View>
