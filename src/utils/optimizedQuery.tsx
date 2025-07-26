@@ -1,5 +1,11 @@
 import React from 'react';
-import { QueryClient, QueryClientProvider, useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+  useMutation,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
 import { focusManager, onlineManager } from '@tanstack/react-query';
 import { AppState, Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
@@ -56,7 +62,7 @@ const setupAppStateMonitoring = () => {
       const subscription = AppState.addEventListener('change', (state) => {
         handleFocus(state === 'active');
       });
-      
+
       return () => subscription?.remove();
     });
   }
@@ -68,7 +74,7 @@ const addPerformanceMonitoring = () => {
     if (event?.query && event.type === 'observerResult') {
       const query = event.query;
       const queryKey = JSON.stringify(query.queryKey);
-      
+
       // Track successful queries
       if (query.state.status === 'success' && query.state.dataUpdatedAt) {
         const fetchTime = Date.now() - query.state.dataUpdatedAt;
@@ -76,25 +82,25 @@ const addPerformanceMonitoring = () => {
           'query-fetch-time',
           fetchTime,
           { good: 500, needsImprovement: 1000 },
-          { 
+          {
             queryKey,
             cacheStatus: query.state.fetchStatus,
-            dataSize: JSON.stringify(query.state.data).length
-          }
+            dataSize: JSON.stringify(query.state.data).length,
+          },
         );
       }
-      
+
       // Track failed queries
       if (query.state.status === 'error') {
         performanceMonitor.trackCustomMetric(
           'query-error-rate',
           1,
           { good: 0, needsImprovement: 0.05 },
-          { 
+          {
             queryKey,
             error: query.state.error?.message || 'Unknown error',
-            retryCount: query.state.failureCount
-          }
+            retryCount: query.state.failureCount,
+          },
         );
       }
     }
@@ -122,10 +128,10 @@ export function useOptimizedQuery<TData = unknown, TError = unknown>(
     placeholderData?: TData;
     keepPreviousData?: boolean;
     priority?: 'high' | 'normal' | 'low';
-  }
+  },
 ) {
   const startTime = React.useRef<number>();
-  
+
   const optimizedOptions = React.useMemo(() => {
     const baseOptions = {
       staleTime: options?.priority === 'high' ? 2 * 60 * 1000 : 5 * 60 * 1000,
@@ -145,13 +151,13 @@ export function useOptimizedQuery<TData = unknown, TError = unknown>(
             'optimized-query-time',
             queryTime,
             { good: 300, needsImprovement: 600 },
-            { 
+            {
               queryKey: JSON.stringify(queryKey),
-              priority: options?.priority || 'normal'
-            }
+              priority: options?.priority || 'normal',
+            },
           );
         }
-      }
+      },
     };
   }, [options, queryKey]);
 
@@ -170,33 +176,37 @@ export function useOptimizedInfiniteQuery<TData = unknown, TError = unknown>(
     keepPreviousData?: boolean;
     refetchOnMount?: boolean;
     pageSize?: number;
-  }
+  },
 ) {
-  return useInfiniteQuery(
-    queryKey,
-    queryFn,
-    {
-      staleTime: 10 * 60 * 1000, // 10 minutes for infinite queries
-      cacheTime: 60 * 60 * 1000, // 1 hour cache time
-      keepPreviousData: true,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      ...options,
-      getNextPageParam: options?.getNextPageParam || (() => undefined),
-    }
-  );
+  return useInfiniteQuery(queryKey, queryFn, {
+    staleTime: 10 * 60 * 1000, // 10 minutes for infinite queries
+    cacheTime: 60 * 60 * 1000, // 1 hour cache time
+    keepPreviousData: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    ...options,
+    getNextPageParam: options?.getNextPageParam || (() => undefined),
+  });
 }
 
 // Optimized mutation hook
-export function useOptimizedMutation<TData = unknown, TError = unknown, TVariables = void>(
+export function useOptimizedMutation<
+  TData = unknown,
+  TError = unknown,
+  TVariables = void,
+>(
   mutationFn: (variables: TVariables) => Promise<TData>,
   options?: {
     onSuccess?: (data: TData, variables: TVariables) => void;
     onError?: (error: TError, variables: TVariables) => void;
-    onSettled?: (data: TData | undefined, error: TError | null, variables: TVariables) => void;
+    onSettled?: (
+      data: TData | undefined,
+      error: TError | null,
+      variables: TVariables,
+    ) => void;
     optimisticUpdate?: boolean;
     invalidateQueries?: any[][];
-  }
+  },
 ) {
   const startTime = React.useRef<number>();
 
@@ -214,16 +224,16 @@ export function useOptimizedMutation<TData = unknown, TError = unknown, TVariabl
           'mutation-time',
           mutationTime,
           { good: 500, needsImprovement: 1000 },
-          { 
+          {
             success: true,
-            optimistic: options?.optimisticUpdate || false
-          }
+            optimistic: options?.optimisticUpdate || false,
+          },
         );
       }
 
       // Invalidate specified queries
       if (options?.invalidateQueries) {
-        options.invalidateQueries.forEach(queryKey => {
+        options.invalidateQueries.forEach((queryKey) => {
           queryClient.invalidateQueries(queryKey);
         });
       }
@@ -238,10 +248,10 @@ export function useOptimizedMutation<TData = unknown, TError = unknown, TVariabl
           'mutation-error',
           mutationTime,
           { good: 0, needsImprovement: 0.05 },
-          { 
+          {
             error: error instanceof Error ? error.message : 'Unknown error',
-            optimistic: options?.optimisticUpdate || false
-          }
+            optimistic: options?.optimisticUpdate || false,
+          },
         );
       }
 
@@ -252,15 +262,15 @@ export function useOptimizedMutation<TData = unknown, TError = unknown, TVariabl
 }
 
 // Query client provider with performance monitoring
-export const OptimizedQueryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const OptimizedQueryProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   React.useEffect(() => {
     initializeReactQuery();
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
 
@@ -270,37 +280,40 @@ export const cacheUtils = {
   clearCache: () => {
     queryClient.clear();
   },
-  
+
   // Remove specific query from cache
   removeQuery: (queryKey: any[]) => {
     queryClient.removeQueries(queryKey);
   },
-  
+
   // Prefetch data
-  prefetchQuery: async function<TData>(
+  prefetchQuery: async function <TData>(
     queryKey: any[],
     queryFn: () => Promise<TData>,
-    staleTime: number = 5 * 60 * 1000
+    staleTime: number = 5 * 60 * 1000,
   ) {
     return queryClient.prefetchQuery(queryKey, queryFn, { staleTime });
   },
-  
+
   // Set query data manually
-  setQueryData: function<TData>(queryKey: any[], data: TData) {
+  setQueryData: function <TData>(queryKey: any[], data: TData) {
     queryClient.setQueryData(queryKey, data);
   },
-  
+
   // Get cache stats
   getCacheStats: () => {
     const cache = queryClient.getQueryCache();
     const queries = cache.getAll();
-    
+
     return {
       totalQueries: queries.length,
-      activeQueries: queries.filter(q => q.getObserversCount() > 0).length,
-      staleQueries: queries.filter(q => q.isStale()).length,
+      activeQueries: queries.filter((q) => q.getObserversCount() > 0).length,
+      staleQueries: queries.filter((q) => q.isStale()).length,
       cacheSize: JSON.stringify(
-        queries.reduce((acc, q) => ({ ...acc, [JSON.stringify(q.queryKey)]: q.state.data }), {})
+        queries.reduce(
+          (acc, q) => ({ ...acc, [JSON.stringify(q.queryKey)]: q.state.data }),
+          {},
+        ),
       ).length,
     };
   },

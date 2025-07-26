@@ -7,7 +7,9 @@ export default function PerformanceScreen() {
   const { colors } = useThemeColors();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <PerformanceDashboard />
     </SafeAreaView>
   );

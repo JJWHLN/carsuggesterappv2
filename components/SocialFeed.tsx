@@ -13,12 +13,36 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
-import { socialService, SocialActivity, CarReview, CarComparison, UserProfile } from '@/services/socialService';
+import {
+  socialService,
+  SocialActivity,
+  CarReview,
+  CarComparison,
+  UserProfile,
+} from '@/services/socialService';
 import { realTimeChatService } from '@/services/realTimeChatService';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { Heart, MessageCircle, Star, TrendingUp, Users, Car, Calendar, MapPin, DollarSign, Zap, Award, Eye, Clock, CheckCircle, Filter, Search, User } from '@/utils/ultra-optimized-icons';
+import {
+  Heart,
+  MessageCircle,
+  Star,
+  TrendingUp,
+  Users,
+  Car,
+  Calendar,
+  MapPin,
+  DollarSign,
+  Zap,
+  Award,
+  Eye,
+  Clock,
+  CheckCircle,
+  Filter,
+  Search,
+  User,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -47,14 +71,14 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
 }) => {
   const { colors } = useThemeColors();
   const { cards, spacing } = useDesignTokens();
-  
+
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [showFullContent, setShowFullContent] = useState(false);
 
   const handleLike = useCallback(() => {
     setIsLiked(!isLiked);
-    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+    setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
     onLike(activity.id);
   }, [isLiked, activity.id, onLike]);
 
@@ -69,8 +93,16 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
                   <Star
                     key={star}
                     size={16}
-                    color={star <= (activity.metadata?.rating || 0) ? colors.warning : colors.border}
-                    fill={star <= (activity.metadata?.rating || 0) ? colors.warning : 'transparent'}
+                    color={
+                      star <= (activity.metadata?.rating || 0)
+                        ? colors.warning
+                        : colors.border
+                    }
+                    fill={
+                      star <= (activity.metadata?.rating || 0)
+                        ? colors.warning
+                        : 'transparent'
+                    }
                   />
                 ))}
                 <Text style={[styles.ratingText, { color: colors.text }]}>
@@ -78,7 +110,12 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
                 </Text>
               </View>
               {activity.metadata?.verified_purchase && (
-                <View style={[styles.verifiedBadge, { backgroundColor: colors.success }]}>
+                <View
+                  style={[
+                    styles.verifiedBadge,
+                    { backgroundColor: colors.success },
+                  ]}
+                >
                   <CheckCircle size={12} color={colors.white} />
                   <Text style={[styles.verifiedText, { color: colors.white }]}>
                     Verified Purchase
@@ -86,39 +123,60 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
                 </View>
               )}
             </View>
-            
+
             <Text style={[styles.reviewTitle, { color: colors.text }]}>
               {activity.metadata?.title || 'Car Review'}
             </Text>
-            
+
             <Text
-              style={[styles.reviewContentText, { color: colors.textSecondary }]}
+              style={[
+                styles.reviewContentText,
+                { color: colors.textSecondary },
+              ]}
               numberOfLines={showFullContent ? undefined : 3}
             >
               {activity.metadata?.content || 'No review content available'}
             </Text>
-            
-            {activity.metadata?.content && activity.metadata.content.length > 100 && (
-              <TouchableOpacity onPress={() => setShowFullContent(!showFullContent)}>
-                <Text style={[styles.readMoreText, { color: colors.primary }]}>
-                  {showFullContent ? 'Show less' : 'Read more'}
-                </Text>
-              </TouchableOpacity>
-            )}
+
+            {activity.metadata?.content &&
+              activity.metadata.content.length > 100 && (
+                <TouchableOpacity
+                  onPress={() => setShowFullContent(!showFullContent)}
+                >
+                  <Text
+                    style={[styles.readMoreText, { color: colors.primary }]}
+                  >
+                    {showFullContent ? 'Show less' : 'Read more'}
+                  </Text>
+                </TouchableOpacity>
+              )}
 
             {activity.metadata?.car_details && (
               <TouchableOpacity
-                style={[styles.carInfoContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                style={[
+                  styles.carInfoContainer,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                  },
+                ]}
                 onPress={() => onCarPress(activity.metadata.car_id)}
               >
                 <View style={styles.carInfoContent}>
                   <Car size={20} color={colors.primary} />
                   <View style={styles.carInfoText}>
                     <Text style={[styles.carTitle, { color: colors.text }]}>
-                      {activity.metadata.car_details.make} {activity.metadata.car_details.model}
+                      {activity.metadata.car_details.make}{' '}
+                      {activity.metadata.car_details.model}
                     </Text>
-                    <Text style={[styles.carSubtitle, { color: colors.textSecondary }]}>
-                      {activity.metadata.car_details.year} • ${activity.metadata.car_details.price?.toLocaleString()}
+                    <Text
+                      style={[
+                        styles.carSubtitle,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
+                      {activity.metadata.car_details.year} • $
+                      {activity.metadata.car_details.price?.toLocaleString()}
                     </Text>
                   </View>
                 </View>
@@ -133,23 +191,46 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
             <Text style={[styles.comparisonTitle, { color: colors.text }]}>
               {activity.metadata?.title || 'Car Comparison'}
             </Text>
-            
+
             <View style={styles.comparisonCars}>
-              {activity.metadata?.cars?.slice(0, 3).map((carId: string, index: number) => (
-                <TouchableOpacity
-                  key={carId}
-                  style={[styles.comparisonCarChip, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                  onPress={() => onCarPress(carId)}
-                >
-                  <Car size={16} color={colors.primary} />
-                  <Text style={[styles.comparisonCarText, { color: colors.text }]}>
-                    Car {index + 1}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {activity.metadata?.cars
+                ?.slice(0, 3)
+                .map((carId: string, index: number) => (
+                  <TouchableOpacity
+                    key={carId}
+                    style={[
+                      styles.comparisonCarChip,
+                      {
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                      },
+                    ]}
+                    onPress={() => onCarPress(carId)}
+                  >
+                    <Car size={16} color={colors.primary} />
+                    <Text
+                      style={[styles.comparisonCarText, { color: colors.text }]}
+                    >
+                      Car {index + 1}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               {activity.metadata?.cars?.length > 3 && (
-                <View style={[styles.comparisonCarChip, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                  <Text style={[styles.comparisonCarText, { color: colors.textSecondary }]}>
+                <View
+                  style={[
+                    styles.comparisonCarChip,
+                    {
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.comparisonCarText,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     +{activity.metadata.cars.length - 3} more
                   </Text>
                 </View>
@@ -159,13 +240,20 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
             <View style={styles.comparisonStats}>
               <View style={styles.comparisonStat}>
                 <TrendingUp size={16} color={colors.success} />
-                <Text style={[styles.comparisonStatText, { color: colors.success }]}>
+                <Text
+                  style={[styles.comparisonStatText, { color: colors.success }]}
+                >
                   {activity.metadata?.winner || 'Analysis Complete'}
                 </Text>
               </View>
               <View style={styles.comparisonStat}>
                 <Eye size={16} color={colors.textSecondary} />
-                <Text style={[styles.comparisonStatText, { color: colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.comparisonStatText,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   {activity.metadata?.views || 0} views
                 </Text>
               </View>
@@ -180,7 +268,9 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
               <UserPlus size={20} color={colors.primary} />
               <Text style={[styles.followText, { color: colors.text }]}>
                 Started following{' '}
-                <Text style={[styles.followUsername, { color: colors.primary }]}>
+                <Text
+                  style={[styles.followUsername, { color: colors.primary }]}
+                >
                   {activity.metadata?.target_username || 'a user'}
                 </Text>
               </Text>
@@ -197,20 +287,33 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
                 Interested in this car
               </Text>
             </View>
-            
+
             {activity.metadata?.car_details && (
               <TouchableOpacity
-                style={[styles.carInfoContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                style={[
+                  styles.carInfoContainer,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                  },
+                ]}
                 onPress={() => onCarPress(activity.metadata.car_id)}
               >
                 <View style={styles.carInfoContent}>
                   <Car size={20} color={colors.primary} />
                   <View style={styles.carInfoText}>
                     <Text style={[styles.carTitle, { color: colors.text }]}>
-                      {activity.metadata.car_details.make} {activity.metadata.car_details.model}
+                      {activity.metadata.car_details.make}{' '}
+                      {activity.metadata.car_details.model}
                     </Text>
-                    <Text style={[styles.carSubtitle, { color: colors.textSecondary }]}>
-                      {activity.metadata.car_details.year} • ${activity.metadata.car_details.price?.toLocaleString()}
+                    <Text
+                      style={[
+                        styles.carSubtitle,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
+                      {activity.metadata.car_details.year} • $
+                      {activity.metadata.car_details.price?.toLocaleString()}
                     </Text>
                   </View>
                 </View>
@@ -228,19 +331,29 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
                 Price Alert: {activity.metadata?.alert_type || 'Price Drop'}
               </Text>
             </View>
-            
+
             <View style={styles.priceChangeContainer}>
               <View style={styles.priceChange}>
-                <Text style={[styles.oldPrice, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.oldPrice, { color: colors.textSecondary }]}
+                >
                   ${activity.metadata?.old_price?.toLocaleString()}
                 </Text>
                 <Text style={[styles.newPrice, { color: colors.success }]}>
                   ${activity.metadata?.new_price?.toLocaleString()}
                 </Text>
               </View>
-              <View style={[styles.savingsContainer, { backgroundColor: colors.primaryLight }]}>
+              <View
+                style={[
+                  styles.savingsContainer,
+                  { backgroundColor: colors.primaryLight },
+                ]}
+              >
                 <Text style={[styles.savingsText, { color: colors.primary }]}>
-                  Save ${(activity.metadata?.old_price - activity.metadata?.new_price)?.toLocaleString()}
+                  Save $
+                  {(
+                    activity.metadata?.old_price - activity.metadata?.new_price
+                  )?.toLocaleString()}
                 </Text>
               </View>
             </View>
@@ -278,17 +391,26 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
   const getTimeAgo = (timestamp: string) => {
     const now = new Date();
     const activityTime = new Date(timestamp);
-    const diffInSeconds = Math.floor((now.getTime() - activityTime.getTime()) / 1000);
-    
+    const diffInSeconds = Math.floor(
+      (now.getTime() - activityTime.getTime()) / 1000,
+    );
+
     if (diffInSeconds < 60) return 'Just now';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 2592000)
+      return `${Math.floor(diffInSeconds / 86400)}d ago`;
     return activityTime.toLocaleDateString();
   };
 
   return (
-    <View style={[styles.feedItem, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+    <View
+      style={[
+        styles.feedItem,
+        { backgroundColor: colors.cardBackground, borderColor: colors.border },
+      ]}
+    >
       {/* Header */}
       <View style={styles.feedItemHeader}>
         <TouchableOpacity
@@ -297,7 +419,10 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
         >
           <View style={[styles.avatar, { backgroundColor: colors.surface }]}>
             {activity.user_profile?.avatar_url ? (
-              <Image source={{ uri: activity.user_profile.avatar_url }} style={styles.avatarImage} />
+              <Image
+                source={{ uri: activity.user_profile.avatar_url }}
+                style={styles.avatarImage}
+              />
             ) : (
               <Text style={[styles.avatarText, { color: colors.text }]}>
                 {activity.user_profile?.display_name?.charAt(0) || '?'}
@@ -315,7 +440,9 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
             </View>
             <View style={styles.activityMeta}>
               {getActivityIcon()}
-              <Text style={[styles.activityType, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.activityType, { color: colors.textSecondary }]}
+              >
                 {activity.type.replace('_', ' ')}
               </Text>
               <Text style={[styles.timestamp, { color: colors.textSecondary }]}>
@@ -324,33 +451,33 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
             </View>
           </View>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.menuButton}>
           <MoreHorizontal size={20} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
       {/* Content */}
-      <View style={styles.feedItemContent}>
-        {renderActivityContent()}
-      </View>
+      <View style={styles.feedItemContent}>{renderActivityContent()}</View>
 
       {/* Actions */}
       <View style={styles.feedItemActions}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={handleLike}
-        >
+        <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
           <Heart
             size={18}
             color={isLiked ? colors.error : colors.textSecondary}
             fill={isLiked ? colors.error : 'transparent'}
           />
-          <Text style={[styles.actionText, { color: isLiked ? colors.error : colors.textSecondary }]}>
+          <Text
+            style={[
+              styles.actionText,
+              { color: isLiked ? colors.error : colors.textSecondary },
+            ]}
+          >
             {likeCount > 0 ? likeCount : 'Like'}
           </Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => onComment(activity.id)}
@@ -360,7 +487,7 @@ const SocialFeedItem: React.FC<SocialFeedItemProps> = ({
             Comment
           </Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => onShare(activity.id)}
@@ -383,7 +510,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
   const { colors } = useThemeColors();
   const { spacing } = useDesignTokens();
   const { user } = useAuth();
-  
+
   const [activities, setActivities] = useState<SocialActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -399,39 +526,43 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
     { id: 'activity', label: 'My Activity', icon: User },
   ];
 
-  const loadActivities = useCallback(async (pageNum = 1, refresh = false) => {
-    try {
-      if (refresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
+  const loadActivities = useCallback(
+    async (pageNum = 1, refresh = false) => {
+      try {
+        if (refresh) {
+          setRefreshing(true);
+        } else {
+          setLoading(true);
+        }
 
-      const options = {
-        page: pageNum,
-        limit: 20,
-        types: activeFilter === 'all' ? undefined : [activeFilter],
-        following_only: activeFilter === 'following',
-      };
+        const options = {
+          page: pageNum,
+          limit: 20,
+          types: activeFilter === 'all' ? undefined : [activeFilter],
+          following_only: activeFilter === 'following',
+        };
 
-      const newActivities = await socialService.getSocialActivityFeed(options);
-      
-      if (refresh || pageNum === 1) {
-        setActivities(newActivities);
-      } else {
-        setActivities(prev => [...prev, ...newActivities]);
+        const newActivities =
+          await socialService.getSocialActivityFeed(options);
+
+        if (refresh || pageNum === 1) {
+          setActivities(newActivities);
+        } else {
+          setActivities((prev) => [...prev, ...newActivities]);
+        }
+
+        setHasMore(newActivities.length === 20);
+        setPage(pageNum);
+      } catch (error) {
+        logger.error('Error loading activities:', error);
+        Alert.alert('Error', 'Failed to load social activities');
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-      
-      setHasMore(newActivities.length === 20);
-      setPage(pageNum);
-    } catch (error) {
-      logger.error('Error loading activities:', error);
-      Alert.alert('Error', 'Failed to load social activities');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [activeFilter]);
+    },
+    [activeFilter],
+  );
 
   useEffect(() => {
     loadActivities(1, true);
@@ -486,20 +617,20 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
 
   const filteredActivities = useMemo(() => {
     if (carId) {
-      return activities.filter(activity => 
-        activity.metadata?.car_id === carId
+      return activities.filter(
+        (activity) => activity.metadata?.car_id === carId,
       );
     }
     if (userId) {
-      return activities.filter(activity => 
-        activity.user_id === userId
-      );
+      return activities.filter((activity) => activity.user_id === userId);
     }
     return activities;
   }, [activities, carId, userId]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
@@ -510,7 +641,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             Stay connected with the car community
           </Text>
         </View>
-        
+
         <TouchableOpacity style={styles.searchButton}>
           <Search size={20} color={colors.textSecondary} />
         </TouchableOpacity>
@@ -519,8 +650,8 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
       {/* Filters */}
       {!carId && !userId && (
         <View style={styles.filtersContainer}>
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filtersContent}
           >
@@ -530,9 +661,15 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
                 style={[
                   styles.filterChip,
                   {
-                    backgroundColor: activeFilter === filter.id ? colors.primary : colors.surface,
-                    borderColor: activeFilter === filter.id ? colors.primary : colors.border,
-                  }
+                    backgroundColor:
+                      activeFilter === filter.id
+                        ? colors.primary
+                        : colors.surface,
+                    borderColor:
+                      activeFilter === filter.id
+                        ? colors.primary
+                        : colors.border,
+                  },
                 ]}
                 onPress={() => {
                   setActiveFilter(filter.id as typeof activeFilter);
@@ -541,14 +678,23 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
               >
                 <filter.icon
                   size={16}
-                  color={activeFilter === filter.id ? colors.white : colors.textSecondary}
-                />
-                <Text style={[
-                  styles.filterText,
-                  {
-                    color: activeFilter === filter.id ? colors.white : colors.textSecondary,
+                  color={
+                    activeFilter === filter.id
+                      ? colors.white
+                      : colors.textSecondary
                   }
-                ]}>
+                />
+                <Text
+                  style={[
+                    styles.filterText,
+                    {
+                      color:
+                        activeFilter === filter.id
+                          ? colors.white
+                          : colors.textSecondary,
+                    },
+                  ]}
+                >
                   {filter.label}
                 </Text>
               </TouchableOpacity>
@@ -570,9 +716,13 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
           />
         }
         onMomentumScrollEnd={(event) => {
-          const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+          const { layoutMeasurement, contentOffset, contentSize } =
+            event.nativeEvent;
           const paddingToBottom = 20;
-          if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
+          if (
+            layoutMeasurement.height + contentOffset.y >=
+            contentSize.height - paddingToBottom
+          ) {
             handleLoadMore();
           }
         }}
@@ -588,7 +738,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             onCarPress={handleCarPress}
           />
         ))}
-        
+
         {loading && activities.length === 0 && (
           <View style={styles.loadingContainer}>
             <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
@@ -596,14 +746,16 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             </Text>
           </View>
         )}
-        
+
         {!loading && filteredActivities.length === 0 && (
           <View style={styles.emptyContainer}>
             <Users size={48} color={colors.textSecondary} />
             <Text style={[styles.emptyTitle, { color: colors.text }]}>
               No activities yet
             </Text>
-            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
               Follow users and interact with cars to see activities here
             </Text>
           </View>

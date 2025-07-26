@@ -1,27 +1,27 @@
 /**
  * Unified Components Index
- * 
+ *
  * This file consolidates all the unified components that replace multiple
  * duplicate components throughout the codebase.
- * 
+ *
  * MIGRATION GUIDE:
  * ===============
- * 
+ *
  * 1. Search Components:
  *    - Old: SearchBar, DebouncedSearch, AdvancedSearch, ModernSearchBar, etc.
  *    - New: UnifiedSearchComponent (with different modes)
  *    - Import: import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified'
- * 
+ *
  * 2. Car Card Components:
  *    - Old: CarCard, PremiumCarCard, ModernCarCard, UltraPremiumCarCard, OptimizedCarCard, etc.
  *    - New: UnifiedCarCard (with different variants)
  *    - Import: import { UnifiedCarCard as CarCard } from '@/components/ui/unified'
- * 
+ *
  * 3. Filter Components:
  *    - Old: FilterPanel, AdvancedSearchFilters, SmartFilters, etc.
  *    - New: UnifiedFilterPanel (with different variants)
  *    - Import: import { UnifiedFilterPanel as FilterPanel } from '@/components/ui/unified'
- * 
+ *
  * 4. Modal Components:
  *    - Old: ContactDealerModal, PriceAlertModal, LoginModal, etc.
  *    - New: UnifiedModal (with different variants and content slots)
@@ -29,7 +29,7 @@
  */
 
 // Export unified components
-export { 
+export {
   UnifiedSearchComponent,
   UnifiedSearchComponent as SearchComponent,
   UnifiedSearchComponent as SearchBar,
@@ -38,7 +38,7 @@ export {
   useOptimizedSearch,
 } from './UnifiedSearchComponent';
 
-export { 
+export {
   UnifiedCarCard,
   UnifiedCarCard as CarCard,
   UnifiedCarCard as PremiumCarCard,
@@ -46,14 +46,14 @@ export {
   UnifiedCarCard as OptimizedCarCard,
 } from './UnifiedCarCard';
 
-export { 
+export {
   UnifiedFilterPanel,
   UnifiedFilterPanel as FilterPanel,
   UnifiedFilterPanel as AdvancedSearchFilters,
   UnifiedFilterPanel as SmartFilters,
 } from './UnifiedFilterPanel';
 
-export { 
+export {
   UnifiedModal,
   UnifiedModal as Modal,
   UnifiedModal as ContactDealerModal,
@@ -72,7 +72,7 @@ export { EmptyState } from '../EmptyState';
 
 /**
  * Migration Helper Functions
- * 
+ *
  * These functions help migrate existing component usage to the new unified components
  */
 
@@ -155,82 +155,82 @@ export const createLoginModalProps = (oldProps: any) => ({
 
 /**
  * Component Replacement Map
- * 
+ *
  * Use this to systematically replace old components with new unified ones
  */
 export const COMPONENT_REPLACEMENTS = {
   // Search components
-  'SearchBar': 'UnifiedSearchComponent',
-  'DebouncedSearch': 'UnifiedSearchComponent',
-  'AdvancedSearch': 'UnifiedSearchComponent',
-  'ModernSearchBar': 'UnifiedSearchComponent',
-  'EnhancedSearchBar': 'UnifiedSearchComponent',
-  'SmartSearchBar': 'UnifiedSearchComponent',
-  'ComprehensiveSearch': 'UnifiedSearchComponent',
-  
+  SearchBar: 'UnifiedSearchComponent',
+  DebouncedSearch: 'UnifiedSearchComponent',
+  AdvancedSearch: 'UnifiedSearchComponent',
+  ModernSearchBar: 'UnifiedSearchComponent',
+  EnhancedSearchBar: 'UnifiedSearchComponent',
+  SmartSearchBar: 'UnifiedSearchComponent',
+  ComprehensiveSearch: 'UnifiedSearchComponent',
+
   // Card components
-  'CarCard': 'UnifiedCarCard',
-  'PremiumCarCard': 'UnifiedCarCard',
-  'ModernCarCard': 'UnifiedCarCard',
-  'UltraPremiumCarCard': 'UnifiedCarCard',
-  'OptimizedCarCard': 'UnifiedCarCard',
-  'EnhancedCarCard': 'UnifiedCarCard',
-  'VehicleCard': 'UnifiedCarCard',
-  'AutoCard': 'UnifiedCarCard',
-  
+  CarCard: 'UnifiedCarCard',
+  PremiumCarCard: 'UnifiedCarCard',
+  ModernCarCard: 'UnifiedCarCard',
+  UltraPremiumCarCard: 'UnifiedCarCard',
+  OptimizedCarCard: 'UnifiedCarCard',
+  EnhancedCarCard: 'UnifiedCarCard',
+  VehicleCard: 'UnifiedCarCard',
+  AutoCard: 'UnifiedCarCard',
+
   // Filter components
-  'FilterPanel': 'UnifiedFilterPanel',
-  'AdvancedSearchFilters': 'UnifiedFilterPanel',
-  'SmartFilters': 'UnifiedFilterPanel',
-  'SearchFiltersPanel': 'UnifiedFilterPanel',
-  'FilterBottomSheet': 'UnifiedFilterPanel',
-  'MultiSelectFilter': 'UnifiedFilterPanel',
-  
+  FilterPanel: 'UnifiedFilterPanel',
+  AdvancedSearchFilters: 'UnifiedFilterPanel',
+  SmartFilters: 'UnifiedFilterPanel',
+  SearchFiltersPanel: 'UnifiedFilterPanel',
+  FilterBottomSheet: 'UnifiedFilterPanel',
+  MultiSelectFilter: 'UnifiedFilterPanel',
+
   // Modal components
-  'ContactDealerModal': 'UnifiedModal',
-  'PriceAlertModal': 'UnifiedModal',
-  'LoginModal': 'UnifiedModal',
-  'SignUpModal': 'UnifiedModal',
-  'ForgotPasswordModal': 'UnifiedModal',
+  ContactDealerModal: 'UnifiedModal',
+  PriceAlertModal: 'UnifiedModal',
+  LoginModal: 'UnifiedModal',
+  SignUpModal: 'UnifiedModal',
+  ForgotPasswordModal: 'UnifiedModal',
 } as const;
 
 /**
  * Prop Migration Map
- * 
+ *
  * Maps old component props to new unified component props
  */
 export const PROP_MIGRATIONS = {
   // Search component prop migrations
   SearchBar: {
-    'onSearchTextChange': 'onChangeText',
-    'searchText': 'value',
-    'showAI': 'showAIIcon',
-    'isLoading': 'loading',
+    onSearchTextChange: 'onChangeText',
+    searchText: 'value',
+    showAI: 'showAIIcon',
+    isLoading: 'loading',
   },
-  
+
   // Car card prop migrations
   CarCard: {
-    'vehicle': 'car',
-    'onPress': 'onPress',
-    'onSavePress': 'onSave',
-    'saved': 'isSaved',
-    'showSave': 'showSaveButton',
+    vehicle: 'car',
+    onPress: 'onPress',
+    onSavePress: 'onSave',
+    saved: 'isSaved',
+    showSave: 'showSaveButton',
   },
-  
+
   // Filter panel prop migrations
   FilterPanel: {
-    'isVisible': 'visible',
-    'onDismiss': 'onClose',
-    'filterConfig': 'filters',
-    'selectedFilters': 'values',
-    'onFilterChange': 'onValuesChange',
+    isVisible: 'visible',
+    onDismiss: 'onClose',
+    filterConfig: 'filters',
+    selectedFilters: 'values',
+    onFilterChange: 'onValuesChange',
   },
-  
+
   // Modal prop migrations
   Modal: {
-    'isVisible': 'visible',
-    'onDismiss': 'onClose',
-    'modalTitle': 'title',
-    'content': 'children',
+    isVisible: 'visible',
+    onDismiss: 'onClose',
+    modalTitle: 'title',
+    content: 'children',
   },
 } as const;

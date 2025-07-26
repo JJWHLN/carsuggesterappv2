@@ -1,6 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { currentColors, Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
+import {
+  currentColors,
+  Spacing,
+  Typography,
+  BorderRadius,
+  Shadows as ColorsShadows,
+} from '@/constants/Colors';
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -20,13 +26,13 @@ export const StatCard: React.FC<StatCardProps> = ({
   return (
     <View style={[styles.statCard, style]}>
       {iconBackgroundColor ? (
-        <View style={[styles.iconWrapper, { backgroundColor: iconBackgroundColor }]}>
+        <View
+          style={[styles.iconWrapper, { backgroundColor: iconBackgroundColor }]}
+        >
           {icon}
         </View>
       ) : (
-        <View style={styles.iconWrapperSimple}>
-          {icon}
-        </View>
+        <View style={styles.iconWrapperSimple}>{icon}</View>
       )}
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>

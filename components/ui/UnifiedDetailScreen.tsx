@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  SafeAreaView, 
-  ScrollView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
   TouchableOpacity,
   RefreshControl,
   useColorScheme,
@@ -18,12 +18,12 @@ import { ErrorState } from './ErrorState';
 export interface UnifiedDetailScreenProps<T = any> {
   // Data fetching
   fetchData: (id: string) => Promise<T>;
-  
+
   // Render functions
   renderContent: (data: T) => React.ReactNode;
   renderHeader?: (data: T) => React.ReactNode;
   renderActions?: (data: T) => React.ReactNode;
-  
+
   // Configuration
   title?: string;
   loadingText?: string;
@@ -31,11 +31,11 @@ export interface UnifiedDetailScreenProps<T = any> {
   errorMessage?: string;
   showBackButton?: boolean;
   refreshable?: boolean;
-  
+
   // Styling
   containerStyle?: any;
   contentStyle?: any;
-  
+
   // Callbacks
   onDataLoaded?: (data: T) => void;
   onError?: (error: Error) => void;
@@ -66,9 +66,14 @@ export function UnifiedDetailScreen<T = any>({
   onBack,
 }: UnifiedDetailScreenProps<T>) {
   const colorScheme = useColorScheme();
-  const theme = { colors: colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light };
+  const theme = {
+    colors:
+      colorScheme === 'dark'
+        ? DesignSystem.Colors.dark
+        : DesignSystem.Colors.light,
+  };
   const { id } = useLocalSearchParams<{ id: string }>();
-  
+
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +88,7 @@ export function UnifiedDetailScreen<T = any>({
 
   const loadData = async (isRefresh = false) => {
     if (!id) return;
-    
+
     try {
       if (isRefresh) {
         setRefreshing(true);
@@ -91,7 +96,7 @@ export function UnifiedDetailScreen<T = any>({
         setLoading(true);
       }
       setError(null);
-      
+
       const result = await fetchData(id);
       setData(result);
       onDataLoaded?.(result);
@@ -201,15 +206,15 @@ export function UnifiedDetailScreen<T = any>({
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             {showBackButton && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.backButton}
                 onPress={handleBack}
                 accessibilityLabel="Go back"
               >
-                <Ionicons 
-                  name="arrow-back" 
-                  size={24} 
-                  color={theme.colors.onSurface} 
+                <Ionicons
+                  name="arrow-back"
+                  size={24}
+                  color={theme.colors.onSurface}
                 />
               </TouchableOpacity>
             )}
@@ -233,15 +238,15 @@ export function UnifiedDetailScreen<T = any>({
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             {showBackButton && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.backButton}
                 onPress={handleBack}
                 accessibilityLabel="Go back"
               >
-                <Ionicons 
-                  name="arrow-back" 
-                  size={24} 
-                  color={theme.colors.onSurface} 
+                <Ionicons
+                  name="arrow-back"
+                  size={24}
+                  color={theme.colors.onSurface}
                 />
               </TouchableOpacity>
             )}
@@ -254,7 +259,7 @@ export function UnifiedDetailScreen<T = any>({
           <View style={styles.errorContainer}>
             <Text style={styles.errorTitle}>{errorTitle}</Text>
             <Text style={styles.errorMessage}>{error}</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.retryButton}
               onPress={() => loadData()}
             >
@@ -273,25 +278,23 @@ export function UnifiedDetailScreen<T = any>({
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           {showBackButton && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.backButton}
               onPress={handleBack}
               accessibilityLabel="Go back"
             >
-              <Ionicons 
-                name="arrow-back" 
-                size={24} 
-                color={theme.colors.onSurface} 
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={theme.colors.onSurface}
               />
             </TouchableOpacity>
           )}
           {title && <Text style={styles.title}>{title}</Text>}
         </View>
-        
+
         {data && renderActions && (
-          <View style={styles.actionsContainer}>
-            {renderActions(data)}
-          </View>
+          <View style={styles.actionsContainer}>{renderActions(data)}</View>
         )}
       </View>
 
@@ -299,13 +302,13 @@ export function UnifiedDetailScreen<T = any>({
       {data && renderHeader && renderHeader(data)}
 
       {/* Content */}
-      <ScrollView 
+      <ScrollView
         style={[styles.content, contentStyle]}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           refreshable ? (
-            <RefreshControl 
-              refreshing={refreshing} 
+            <RefreshControl
+              refreshing={refreshing}
               onRefresh={handleRefresh}
               colors={[theme.colors.primary]}
               tintColor={theme.colors.primary}
@@ -322,9 +325,11 @@ export function UnifiedDetailScreen<T = any>({
 
 // HOC for creating detail screen components
 export function createDetailScreen<T = any>(
-  config: Omit<UnifiedDetailScreenProps<T>, 'children'>
+  config: Omit<UnifiedDetailScreenProps<T>, 'children'>,
 ) {
-  return function DetailScreenComponent(props: Partial<UnifiedDetailScreenProps<T>> = {}) {
+  return function DetailScreenComponent(
+    props: Partial<UnifiedDetailScreenProps<T>> = {},
+  ) {
     return <UnifiedDetailScreen<T> {...config} {...props} />;
   };
 }

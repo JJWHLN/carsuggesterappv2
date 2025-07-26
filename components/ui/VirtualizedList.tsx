@@ -1,8 +1,17 @@
 import React, { useMemo, useCallback, useRef, useEffect } from 'react';
-import { FlatList, View, Dimensions, ListRenderItem, ViewToken } from 'react-native';
+import {
+  FlatList,
+  View,
+  Dimensions,
+  ListRenderItem,
+  ViewToken,
+} from 'react-native';
 import { FixedSizeList as List, VariableSizeList } from 'react-window';
 import { useWindowDimensions } from 'react-native';
-import { performanceMonitor, usePerformanceMonitor } from '../../src/utils/performance';
+import {
+  performanceMonitor,
+  usePerformanceMonitor,
+} from '../../src/utils/performance';
 
 interface VirtualizedListProps<T> {
   data: T[];
@@ -20,7 +29,10 @@ interface VirtualizedListProps<T> {
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
   ListFooterComponent?: React.ComponentType<any> | React.ReactElement | null;
   ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
-  onViewableItemsChanged?: (info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => void;
+  onViewableItemsChanged?: (info: {
+    viewableItems: ViewToken[];
+    changed: ViewToken[];
+  }) => void;
   viewabilityConfig?: {
     minimumViewTime?: number;
     viewAreaCoveragePercentThreshold?: number;
@@ -62,7 +74,7 @@ export function VirtualizedList<T>({
   refreshing,
   onRefresh,
   progressViewOffset,
-  debug = false
+  debug = false,
 }: VirtualizedListProps<T>) {
   const { trackMetric } = usePerformanceMonitor();
   const flatListRef = useRef<FlatList>(null);
@@ -79,57 +91,70 @@ export function VirtualizedList<T>({
   }, [data, debug]);
 
   // Optimized render item with performance tracking
-  const optimizedRenderItem = useCallback<ListRenderItem<T>>(({ item, index }) => {
-    const itemRenderStart = Date.now();
-    
-    const result = renderItem({ item, index, separators: {} as any });
-    
-    // Track render performance for sampling (every 10th item)
-    if (index % 10 === 0) {
-      const renderTime = Date.now() - itemRenderStart;
-      trackMetric(
-        'list-item-render-time',
-        renderTime,
-        { good: 5, needsImprovement: 10 },
-        { index, itemType: typeof item }
-      );
-    }
-    
-    return result;
-  }, [renderItem, trackMetric]);
+  const optimizedRenderItem = useCallback<ListRenderItem<T>>(
+    ({ item, index }) => {
+      const itemRenderStart = Date.now();
+
+      const result = renderItem({ item, index, separators: {} as any });
+
+      // Track render performance for sampling (every 10th item)
+      if (index % 10 === 0) {
+        const renderTime = Date.now() - itemRenderStart;
+        trackMetric(
+          'list-item-render-time',
+          renderTime,
+          { good: 5, needsImprovement: 10 },
+          { index, itemType: typeof item },
+        );
+      }
+
+      return result;
+    },
+    [renderItem, trackMetric],
+  );
 
   // Optimized key extractor
-  const optimizedKeyExtractor = useCallback((item: T, index: number) => {
-    if (keyExtractor) {
-      return keyExtractor(item, index);
-    }
-    
-    // Default key extraction with performance considerations
-    if (typeof item === 'object' && item !== null) {
-      const obj = item as any;
-      return obj.id || obj.key || obj._id || index.toString();
-    }
-    
-    return index.toString();
-  }, [keyExtractor]);
+  const optimizedKeyExtractor = useCallback(
+    (item: T, index: number) => {
+      if (keyExtractor) {
+        return keyExtractor(item, index);
+      }
+
+      // Default key extraction with performance considerations
+      if (typeof item === 'object' && item !== null) {
+        const obj = item as any;
+        return obj.id || obj.key || obj._id || index.toString();
+      }
+
+      return index.toString();
+    },
+    [keyExtractor],
+  );
 
   // Handle scroll performance tracking
-  const handleScroll = useCallback((event: any) => {
-    const currentOffset = event.nativeEvent.contentOffset.y;
-    const scrollDelta = Math.abs(currentOffset - lastScrollOffset.current);
-    
-    if (scrollDelta > 100) { // Only track significant scrolls
-      const scrollTime = Date.now() - (renderStartTime.current || Date.now());
-      trackMetric(
-        'scroll-performance',
-        scrollTime,
-        { good: 16, needsImprovement: 32 },
-        { scrollDelta, direction: currentOffset > lastScrollOffset.current ? 'down' : 'up' }
-      );
-    }
-    
-    lastScrollOffset.current = currentOffset;
-  }, [trackMetric]);
+  const handleScroll = useCallback(
+    (event: any) => {
+      const currentOffset = event.nativeEvent.contentOffset.y;
+      const scrollDelta = Math.abs(currentOffset - lastScrollOffset.current);
+
+      if (scrollDelta > 100) {
+        // Only track significant scrolls
+        const scrollTime = Date.now() - (renderStartTime.current || Date.now());
+        trackMetric(
+          'scroll-performance',
+          scrollTime,
+          { good: 16, needsImprovement: 32 },
+          {
+            scrollDelta,
+            direction: currentOffset > lastScrollOffset.current ? 'down' : 'up',
+          },
+        );
+      }
+
+      lastScrollOffset.current = currentOffset;
+    },
+    [trackMetric],
+  );
 
   // Handle scroll begin/end for performance monitoring
   const handleScrollBeginDrag = useCallback(() => {
@@ -145,31 +170,37 @@ export function VirtualizedList<T>({
         'scroll-session-duration',
         totalScrollTime,
         { good: 1000, needsImprovement: 3000 },
-        { itemCount: data.length }
+        { itemCount: data.length },
       );
     }
   }, [trackMetric, data.length]);
 
   // Optimized viewability config
-  const optimizedViewabilityConfig = useMemo(() => ({
-    minimumViewTime: 100,
-    viewAreaCoveragePercentThreshold: 50,
-    waitForInteraction: true,
-    ...viewabilityConfig
-  }), [viewabilityConfig]);
+  const optimizedViewabilityConfig = useMemo(
+    () => ({
+      minimumViewTime: 100,
+      viewAreaCoveragePercentThreshold: 50,
+      waitForInteraction: true,
+      ...viewabilityConfig,
+    }),
+    [viewabilityConfig],
+  );
 
   // Handle viewable items changed with performance tracking
-  const handleViewableItemsChanged = useCallback((info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => {
-    // Track visibility metrics
-    trackMetric(
-      'visible-items-count',
-      info.viewableItems.length,
-      { good: 10, needsImprovement: 20 },
-      { changed: info.changed.length }
-    );
-    
-    onViewableItemsChanged?.(info);
-  }, [onViewableItemsChanged, trackMetric]);
+  const handleViewableItemsChanged = useCallback(
+    (info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => {
+      // Track visibility metrics
+      trackMetric(
+        'visible-items-count',
+        info.viewableItems.length,
+        { good: 10, needsImprovement: 20 },
+        { changed: info.changed.length },
+      );
+
+      onViewableItemsChanged?.(info);
+    },
+    [onViewableItemsChanged, trackMetric],
+  );
 
   // Performance optimization: getItemLayout for fixed size items
   const getItemLayout = useMemo(() => {
@@ -192,7 +223,7 @@ export function VirtualizedList<T>({
         'list-mount-duration',
         unmountTime,
         { good: 1000, needsImprovement: 3000 },
-        { itemCount: data.length }
+        { itemCount: data.length },
       );
     };
   }, [trackMetric, data.length]);
@@ -202,7 +233,7 @@ export function VirtualizedList<T>({
     if (data.length > 1000 && !getItemLayout && debug) {
       console.warn(
         `VirtualizedList: Large dataset (${data.length} items) without getItemLayout. ` +
-        'Consider implementing getItemLayout for better performance.'
+          'Consider implementing getItemLayout for better performance.',
       );
     }
   }, [data.length, getItemLayout, debug]);
@@ -218,7 +249,7 @@ export function VirtualizedList<T>({
     onScrollEndDrag: handleScrollEndDrag,
     onViewableItemsChanged: handleViewableItemsChanged,
     viewabilityConfig: optimizedViewabilityConfig,
-    
+
     // Performance optimizations
     windowSize,
     initialNumToRender,
@@ -226,21 +257,21 @@ export function VirtualizedList<T>({
     updateCellsBatchingPeriod,
     removeClippedSubviews,
     scrollEventThrottle: 16,
-    
+
     // Layout props
     horizontal,
     numColumns,
     columnWrapperStyle,
-    
+
     // Refresh props
     refreshing,
     onRefresh,
     progressViewOffset,
-    
+
     // End reached
     onEndReached,
     onEndReachedThreshold,
-    
+
     // Components
     ListHeaderComponent,
     ListFooterComponent,
@@ -253,35 +284,34 @@ export function VirtualizedList<T>({
 // Hook for managing virtual list performance
 export function useVirtualListPerformance() {
   const { trackMetric } = usePerformanceMonitor();
-  
-  const trackScrollPerformance = useCallback((
-    scrollDuration: number,
-    itemCount: number,
-    visibleItems: number
-  ) => {
-    trackMetric(
-      'virtual-scroll-performance',
-      scrollDuration,
-      { good: 16, needsImprovement: 32 },
-      { itemCount, visibleItems, fps: 1000 / scrollDuration }
-    );
-  }, [trackMetric]);
 
-  const trackRenderPerformance = useCallback((
-    renderDuration: number,
-    itemIndex: number
-  ) => {
-    trackMetric(
-      'virtual-render-performance',
-      renderDuration,
-      { good: 5, needsImprovement: 10 },
-      { itemIndex }
-    );
-  }, [trackMetric]);
+  const trackScrollPerformance = useCallback(
+    (scrollDuration: number, itemCount: number, visibleItems: number) => {
+      trackMetric(
+        'virtual-scroll-performance',
+        scrollDuration,
+        { good: 16, needsImprovement: 32 },
+        { itemCount, visibleItems, fps: 1000 / scrollDuration },
+      );
+    },
+    [trackMetric],
+  );
+
+  const trackRenderPerformance = useCallback(
+    (renderDuration: number, itemIndex: number) => {
+      trackMetric(
+        'virtual-render-performance',
+        renderDuration,
+        { good: 5, needsImprovement: 10 },
+        { itemIndex },
+      );
+    },
+    [trackMetric],
+  );
 
   return {
     trackScrollPerformance,
-    trackRenderPerformance
+    trackRenderPerformance,
   };
 }
 
@@ -295,11 +325,7 @@ export const OptimizedCarListItem = React.memo<{
     onPress(car);
   }, [car, onPress]);
 
-  return (
-    <View style={style}>
-      {/* Car item content */}
-    </View>
-  );
+  return <View style={style}>{/* Car item content */}</View>;
 });
 
 OptimizedCarListItem.displayName = 'OptimizedCarListItem';

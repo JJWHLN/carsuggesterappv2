@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { UnifiedModal } from './UnifiedModal';
-import { currentColors, Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import {
+  currentColors,
+  Spacing,
+  Typography,
+  BorderRadius,
+} from '@/constants/Colors';
 
 interface Car {
   id: string;
@@ -54,9 +59,10 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
     >
       <View style={styles.container}>
         <Text style={styles.description}>
-          Get notified when the price of this vehicle drops below your target price.
+          Get notified when the price of this vehicle drops below your target
+          price.
         </Text>
-        
+
         <View style={styles.carInfo}>
           <Text style={styles.carTitle}>
             {car.year} {car.make} {car.model}
@@ -90,7 +96,8 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
         </View>
 
         <Text style={styles.note}>
-          We'll send you an email notification when the price drops to or below your target price.
+          We'll send you an email notification when the price drops to or below
+          your target price.
         </Text>
       </View>
     </UnifiedModal>

@@ -2,12 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { RecommendationScreen, CarRecommendation } from '@/components/ui/RecommendationScreen';
+import {
+  RecommendationScreen,
+  CarRecommendation,
+} from '@/components/ui/RecommendationScreen';
 import { Button } from '@/components/ui/Button';
 import { useThemeColors } from '@/hooks/useTheme';
-import { useApi } from '@/hooks/useApi';
 import { fetchCarModels } from '@/services/api';
 import { Spacing, Typography } from '@/constants/Colors';
+import { useUnifiedDataFetching } from '@/hooks/useUnifiedDataFetching';
 
 interface FilterOption {
   id: string;
@@ -18,35 +21,39 @@ interface FilterOption {
 
 export default function Recommendations() {
   const { colors } = useThemeColors();
-  const [selectedFilters, setSelectedFilters] = useState<{[key: string]: any}>({});
+  const [selectedFilters, setSelectedFilters] = useState<{
+    [key: string]: any;
+  }>({});
 
   // Fetch car data for recommendations
   const {
     data: cars,
     loading,
     error,
-    refetch
-  } = useApi(fetchCarModels);
+    refetch,
+  } = useUnifiedDataFetching(fetchCarModels);
 
   // Transform API data to match RecommendationScreen expected format
   const recommendedCars: CarRecommendation[] = useMemo(() => {
     if (!cars) return [];
-    
+
     return cars.map((car: any) => ({
       id: car.id,
       name: `${car.make} ${car.model}`,
       year: car.year,
-      image: car.image_url || `https://images.unsplash.com/photo-1494905998402-395d579af36f?w=800&h=600&fit=crop`,
-      priceRange: `$${(car.starting_price || 25000).toLocaleString()}`,
+      image:
+        car.image_url ||
+        `https://images.unsplash.com/photo-1494905998402-395d579af36f?w=800&h=600&fit=crop`,
+      priceRange: `$${(car.starting_price || 25000, { initialLoad: true, enabled: true }).toLocaleString()}`,
       tags: [
         car.body_type || 'Sedan',
         car.fuel_type || 'Gasoline',
-        car.transmission || 'Automatic'
+        car.transmission || 'Automatic',
       ].filter(Boolean),
       rating: car.rating || 4.2,
       location: 'Available nationwide',
       matchScore: Math.floor(Math.random() * 30) + 70, // Random match score for demo
-      highlightReason: 'Matches your budget and style preferences'
+      highlightReason: 'Matches your budget and style preferences',
     }));
   }, [cars]);
 
@@ -62,9 +69,9 @@ export default function Recommendations() {
   };
 
   const handleFilterChange = (filterId: string, value: any) => {
-    setSelectedFilters(prev => ({
+    setSelectedFilters((prev) => ({
       ...prev,
-      [filterId]: value
+      [filterId]: value,
     }));
   };
 
@@ -76,7 +83,9 @@ export default function Recommendations() {
   // Show error state if there's an error
   if (error && !loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.errorContainer}>
           <Text style={[styles.errorText, { color: colors.text }]}>
             {error}
@@ -88,7 +97,9 @@ export default function Recommendations() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <RecommendationScreen
         cars={recommendedCars}
         loading={loading}

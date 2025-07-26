@@ -23,7 +23,10 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
 import { withUnifiedTabScreen } from '@/components/ui/UnifiedTabScreen';
 import { UnifiedList } from '@/components/ui/UnifiedList';
-import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
+import {
+  UnifiedSearchFilter,
+  useSearchFilters,
+} from '@/components/ui/UnifiedSearchFilter';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
 // TODO: Fix these services - temporarily disabled to prevent VS Code crashes
 // import { fetchVehicleListings } from '@/services/EmergencyCarService';
@@ -31,7 +34,23 @@ import { transformDatabaseVehicleListingToCar } from '@/utils/dataTransformers';
 import { Car as CarType } from '@/types/database';
 import { useDebounce } from '@/hooks/useDebounce';
 // import { NavigationService } from '@/services/NavigationService';
-import { Search, Filter, MapPin, DollarSign, Car, TrendingUp, Users, Star, Building2, Award, Clock, ChevronRight, Mail, List, Shield } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  Filter,
+  MapPin,
+  DollarSign,
+  Car,
+  TrendingUp,
+  Users,
+  Star,
+  Building2,
+  Award,
+  Clock,
+  ChevronRight,
+  Mail,
+  List,
+  Shield,
+} from '@/utils/ultra-optimized-icons';
 
 // Lazy loaded components for performance optimization
 // Note: Commented out for compatibility - can be re-enabled when module resolution is fixed
@@ -45,7 +64,7 @@ function MarketplaceScreen() {
   const { colors } = useThemeColors();
   const { layout, cards, buttons } = useDesignTokens();
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
-  
+
   // Use unified search/filter hook
   const {
     filters,
@@ -62,7 +81,7 @@ function MarketplaceScreen() {
     sortOrder: 'asc',
     viewMode: 'grid',
   });
-  
+
   const [cars, setCars] = useState<CarType[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -97,7 +116,12 @@ function MarketplaceScreen() {
         { id: 'suv', label: 'SUV', value: 'suv', count: 18 },
         { id: 'hatchback', label: 'Hatchback', value: 'hatchback', count: 12 },
         { id: 'coupe', label: 'Coupe', value: 'coupe', count: 8 },
-        { id: 'convertible', label: 'Convertible', value: 'convertible', count: 5 },
+        {
+          id: 'convertible',
+          label: 'Convertible',
+          value: 'convertible',
+          count: 5,
+        },
       ],
     },
     {
@@ -121,9 +145,21 @@ function MarketplaceScreen() {
   ];
 
   const marketplaceStats = [
-    { icon: <Car color={colors.primary} size={24} />, value: cars.length.toString(), label: "Cars Available" },
-    { icon: <Users color={colors.success} size={24} />, value: "89", label: "Verified Dealers" },
-    { icon: <Shield color={colors.primary} size={24} />, value: "100%", label: "Verified Listings" },
+    {
+      icon: <Car color={colors.primary} size={24} />,
+      value: cars.length.toString(),
+      label: 'Cars Available',
+    },
+    {
+      icon: <Users color={colors.success} size={24} />,
+      value: '89',
+      label: 'Verified Dealers',
+    },
+    {
+      icon: <Shield color={colors.primary} size={24} />,
+      value: '100%',
+      label: 'Verified Listings',
+    },
   ];
 
   // Load initial data
@@ -143,27 +179,28 @@ function MarketplaceScreen() {
 
       const currentPage = reset ? 0 : page;
       const limit = 10;
-      
+
       // TODO: Re-enable when EmergencyCarService is implemented
       // const data = await fetchVehicleListings(currentPage, limit, debouncedSearchTerm || undefined);
       const data: any[] = []; // Temporary mock data to prevent crashes
-      
+
       if (data && Array.isArray(data)) {
         const transformedCars = data.map(transformDatabaseVehicleListingToCar);
-        
+
         if (reset) {
           setCars(transformedCars);
         } else {
-          setCars(prevCars => [...prevCars, ...transformedCars]);
+          setCars((prevCars) => [...prevCars, ...transformedCars]);
         }
-        
+
         setHasMore(transformedCars.length === limit);
         setPage(currentPage + 1);
       } else {
         setHasMore(false);
       }
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to load cars';
+      const errorMsg =
+        err instanceof Error ? err.message : 'Failed to load cars';
       setError(errorMsg);
       setHasMore(false);
     } finally {
@@ -190,16 +227,13 @@ function MarketplaceScreen() {
 
   const renderListing = ({ item }: { item: CarType }) => (
     <View style={viewMode === 'grid' ? styles.gridItem : styles.listItem}>
-      <CarCard
-        car={item}
-        onPress={() => handleCarPress(item.id)}
-      />
+      <CarCard car={item} onPress={() => handleCarPress(item.id)} />
     </View>
   );
 
   const renderFooter = () => {
     if (!loadingMore) return null;
-    
+
     return (
       <View style={styles.footerLoader}>
         <LoadingSpinner size={24} color={colors.primary} />
@@ -212,30 +246,28 @@ function MarketplaceScreen() {
     <View style={styles.headerContainer}>
       {/* Hero Section */}
       <View style={styles.heroSection}>
-        <Text style={[styles.heroTitle, { color: colors.text }]}>Car Marketplace</Text>
+        <Text style={[styles.heroTitle, { color: colors.text }]}>
+          Car Marketplace
+        </Text>
         <Text style={[styles.heroSubtitle, { color: colors.textSecondary }]}>
           Find your perfect car from verified dealers nationwide
         </Text>
-        
+
         <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
           <UnifiedSearchFilter
             searchPlaceholder="Search by make, model, or location..."
             searchValue={searchTerm}
             onSearchChange={setSearchTerm}
             enableSearch={true}
-            
             filterCategories={filterCategories}
             activeFilters={filters}
             onFiltersChange={updateFilters}
             enableFilters={true}
-            
             quickFilters={quickFilters}
             enableQuickFilters={true}
-            
             resultsCount={cars.length}
             resultsLabel="cars available"
             showResultsCount={true}
-            
             variant="compact"
             showClearAll={true}
             onClearAll={clearFilters}
@@ -245,10 +277,10 @@ function MarketplaceScreen() {
 
       {/* Lazy Loaded Stats Section */}
       {/* Note: Lazy loading disabled for compatibility */}
-      
+
       {/* Lazy Loaded Featured Section */}
       {/* Note: Lazy loading disabled for compatibility */}
-      
+
       {/* Lazy Loaded Dealer Section */}
       {/* Note: Lazy loading disabled for compatibility */}
 
@@ -258,8 +290,12 @@ function MarketplaceScreen() {
           {marketplaceStats.map((stat, index) => (
             <View key={index} style={styles.statCard}>
               {stat.icon}
-              <Text style={[styles.statValue, { color: colors.text }]}>{stat.value}</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stat.label}</Text>
+              <Text style={[styles.statValue, { color: colors.text }]}>
+                {stat.value}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                {stat.label}
+              </Text>
             </View>
           ))}
         </View>
@@ -269,33 +305,77 @@ function MarketplaceScreen() {
       <View style={styles.controlsContainer}>
         <View style={styles.leftControls}>
           <TouchableOpacity
-            style={[styles.filterButton, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}
+            style={[
+              styles.filterButton,
+              {
+                backgroundColor: colors.cardBackground,
+                borderColor: colors.border,
+              },
+            ]}
             onPress={() => {}}
           >
             <Filter color={colors.primary} size={18} />
-            <Text style={[styles.filterButtonText, { color: colors.text }]}>Filters</Text>
+            <Text style={[styles.filterButtonText, { color: colors.text }]}>
+              Filters
+            </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
-            style={[styles.sortButton, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}
+            style={[
+              styles.sortButton,
+              {
+                backgroundColor: colors.cardBackground,
+                borderColor: colors.border,
+              },
+            ]}
             onPress={() => {}}
           >
-            <Text style={[styles.sortButtonText, { color: colors.text }]}>Price: Low to High</Text>
+            <Text style={[styles.sortButtonText, { color: colors.text }]}>
+              Price: Low to High
+            </Text>
           </TouchableOpacity>
         </View>
-        
-        <View style={[styles.viewToggle, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+
+        <View
+          style={[
+            styles.viewToggle,
+            {
+              backgroundColor: colors.cardBackground,
+              borderColor: colors.border,
+            },
+          ]}
+        >
           <TouchableOpacity
-            style={[styles.viewButton, viewMode === 'grid' && { backgroundColor: colors.primary }]}
+            style={[
+              styles.viewButton,
+              viewMode === 'grid' && { backgroundColor: colors.primary },
+            ]}
             onPress={() => setViewMode('grid')}
           >
-            <Text style={{ color: viewMode === 'grid' ? colors.background : colors.textSecondary }}>Grid</Text>
+            <Text
+              style={{
+                color:
+                  viewMode === 'grid'
+                    ? colors.background
+                    : colors.textSecondary,
+              }}
+            >
+              Grid
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.viewButton, viewMode === 'list' && { backgroundColor: colors.primary }]}
+            style={[
+              styles.viewButton,
+              viewMode === 'list' && { backgroundColor: colors.primary },
+            ]}
             onPress={() => setViewMode('list')}
           >
-            <List color={viewMode === 'list' ? colors.background : colors.textSecondary} size={16} />
+            <List
+              color={
+                viewMode === 'list' ? colors.background : colors.textSecondary
+              }
+              size={16}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -311,14 +391,19 @@ function MarketplaceScreen() {
             <TouchableOpacity
               style={[
                 styles.categoryChip,
-                selectedCategory === item.id && { backgroundColor: colors.primary, borderColor: colors.primary }
+                selectedCategory === item.id && {
+                  backgroundColor: colors.primary,
+                  borderColor: colors.primary,
+                },
               ]}
               onPress={() => setSelectedCategory(item.id)}
             >
-              <Text style={[
-                styles.categoryText,
-                selectedCategory === item.id && { color: colors.background }
-              ]}>
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === item.id && { color: colors.background },
+                ]}
+              >
                 {item.label} ({item.count})
               </Text>
             </TouchableOpacity>
@@ -329,8 +414,12 @@ function MarketplaceScreen() {
 
       {/* Results Header */}
       <View style={styles.resultsHeader}>
-        <Text style={[styles.resultsCount, { color: colors.text }]}>{cars.length} cars</Text>
-        <Text style={[styles.resultsLocation, { color: colors.textSecondary }]}>from verified dealers</Text>
+        <Text style={[styles.resultsCount, { color: colors.text }]}>
+          {cars.length} cars
+        </Text>
+        <Text style={[styles.resultsLocation, { color: colors.textSecondary }]}>
+          from verified dealers
+        </Text>
       </View>
     </View>
   );
@@ -338,7 +427,9 @@ function MarketplaceScreen() {
   // Loading state
   if (loading && cars.length === 0) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <LoadingState />
       </SafeAreaView>
     );
@@ -347,7 +438,9 @@ function MarketplaceScreen() {
   // Error state
   if (error && cars.length === 0) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <ErrorState
           title="Unable to Load Marketplace"
           message={error}
@@ -360,12 +453,18 @@ function MarketplaceScreen() {
   // Empty state
   if (!loading && cars.length === 0) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         {renderHeader()}
         <View style={styles.emptyStateContainer}>
           <EmptyState
             title="No vehicles available"
-            subtitle={searchTerm ? "Try adjusting your search criteria or browse all available cars" : "We're working to add more listings to our marketplace"}
+            subtitle={
+              searchTerm
+                ? 'Try adjusting your search criteria or browse all available cars'
+                : "We're working to add more listings to our marketplace"
+            }
             icon={<Car color={colors.textSecondary} size={64} />}
             action={
               searchTerm ? (
@@ -389,7 +488,9 @@ function MarketplaceScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <FlatList
         data={cars}
         renderItem={renderListing}
@@ -399,7 +500,9 @@ function MarketplaceScreen() {
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
         contentContainerStyle={styles.listContent}
-        columnWrapperStyle={viewMode === 'grid' ? styles.columnWrapper : undefined}
+        columnWrapperStyle={
+          viewMode === 'grid' ? styles.columnWrapper : undefined
+        }
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -424,217 +527,218 @@ export default function WrappedMarketplaceScreen() {
   );
 }
 
-const getThemedStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  
-  // Loading States
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    gap: 16,
-  },
-  loadingText: {
-    fontSize: 18,
-    color: colors.text,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  loadingSubtext: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  emptyStateContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  footerLoader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 20,
-    gap: 8,
-  },
-  footerLoaderText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  
-  // Header
-  headerContainer: {
-    backgroundColor: colors.background,
-    paddingBottom: 16,
-  },
-  heroSection: {
-    backgroundColor: colors.cardBackground,
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  heroTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  heroSubtitle: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 22,
-  },
-  heroSearchBar: {
-    marginHorizontal: 0,
-  },
-  
-  // Stats
-  statsSection: {
-    padding: 16,
-    backgroundColor: colors.background,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 16,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    padding: 16,
-    borderRadius: 12,
-    gap: 8,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  statLabel: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  
-  // Controls
-  controlsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: colors.cardBackground,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  leftControls: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  filterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 4,
-  },
-  filterButtonText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  sortButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  sortButtonText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  viewToggle: {
-    flexDirection: 'row',
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  viewButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  
-  // Categories
-  categoriesContainer: {
-    paddingVertical: 12,
-    backgroundColor: colors.cardBackground,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  categoriesContent: {
-    paddingHorizontal: 16,
-  },
-  categoryChip: {
-    backgroundColor: colors.background,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginRight: 8,
-  },
-  categoryText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  
-  // Results
-  resultsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: colors.background,
-    gap: 4,
-  },
-  resultsCount: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  resultsLocation: {
-    fontSize: 14,
-  },
-  
-  // List
-  listContent: {
-    paddingBottom: 40,
-  },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-  },
-  gridItem: {
-    width: (width - 16 * 2 - 12) / 2,
-    marginBottom: 16,
-  },
-  listItem: {
-    paddingHorizontal: 16,
-    marginBottom: 16,
-  },
-  carCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-});
+const getThemedStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+
+    // Loading States
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      gap: 16,
+    },
+    loadingText: {
+      fontSize: 18,
+      color: colors.text,
+      textAlign: 'center',
+      fontWeight: '600',
+    },
+    loadingSubtext: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      textAlign: 'center',
+    },
+    emptyStateContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+    },
+    footerLoader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 20,
+      gap: 8,
+    },
+    footerLoaderText: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
+
+    // Header
+    headerContainer: {
+      backgroundColor: colors.background,
+      paddingBottom: 16,
+    },
+    heroSection: {
+      backgroundColor: colors.cardBackground,
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    heroTitle: {
+      fontSize: 24,
+      fontWeight: '800',
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    heroSubtitle: {
+      fontSize: 14,
+      textAlign: 'center',
+      marginBottom: 20,
+      lineHeight: 22,
+    },
+    heroSearchBar: {
+      marginHorizontal: 0,
+    },
+
+    // Stats
+    statsSection: {
+      padding: 16,
+      backgroundColor: colors.background,
+    },
+    statsGrid: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      gap: 16,
+    },
+    statCard: {
+      flex: 1,
+      alignItems: 'center',
+      backgroundColor: colors.cardBackground,
+      padding: 16,
+      borderRadius: 12,
+      gap: 8,
+    },
+    statValue: {
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    statLabel: {
+      fontSize: 12,
+      textAlign: 'center',
+    },
+
+    // Controls
+    controlsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      backgroundColor: colors.cardBackground,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    leftControls: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    filterButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 1,
+      gap: 4,
+    },
+    filterButtonText: {
+      fontSize: 12,
+      fontWeight: '500',
+    },
+    sortButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 1,
+    },
+    sortButtonText: {
+      fontSize: 12,
+      fontWeight: '500',
+    },
+    viewToggle: {
+      flexDirection: 'row',
+      borderRadius: 8,
+      borderWidth: 1,
+      overflow: 'hidden',
+    },
+    viewButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+    },
+
+    // Categories
+    categoriesContainer: {
+      paddingVertical: 12,
+      backgroundColor: colors.cardBackground,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    categoriesContent: {
+      paddingHorizontal: 16,
+    },
+    categoryChip: {
+      backgroundColor: colors.background,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginRight: 8,
+    },
+    categoryText: {
+      fontSize: 12,
+      fontWeight: '500',
+      color: colors.text,
+    },
+
+    // Results
+    resultsHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      backgroundColor: colors.background,
+      gap: 4,
+    },
+    resultsCount: {
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    resultsLocation: {
+      fontSize: 14,
+    },
+
+    // List
+    listContent: {
+      paddingBottom: 40,
+    },
+    columnWrapper: {
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+    },
+    gridItem: {
+      width: (width - 16 * 2 - 12) / 2,
+      marginBottom: 16,
+    },
+    listItem: {
+      paddingHorizontal: 16,
+      marginBottom: 16,
+    },
+    carCard: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: 12,
+      overflow: 'hidden',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+  });

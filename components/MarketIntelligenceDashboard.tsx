@@ -25,7 +25,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
-import AdvancedAnalyticsService, { MarketInsight, AnalyticsDashboard } from '@/services/advancedAnalyticsService';
+import AdvancedAnalyticsService, {
+  MarketInsight,
+  AnalyticsDashboard,
+} from '@/services/advancedAnalyticsService';
 
 interface MarketIntelligenceDashboardProps {
   onInsightTap: (insight: MarketInsight) => void;
@@ -70,20 +73,21 @@ interface PredictionModel {
 const { width, height } = Dimensions.get('window');
 const chartWidth = width - Spacing.lg * 2;
 
-const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = ({
-  onInsightTap,
-  onDrillDown,
-  timeRange,
-  onTimeRangeChange,
-}) => {
+const MarketIntelligenceDashboard: React.FC<
+  MarketIntelligenceDashboardProps
+> = ({ onInsightTap, onDrillDown, timeRange, onTimeRangeChange }) => {
   const { colors } = useThemeColors();
   const analyticsService = AdvancedAnalyticsService.getInstance();
 
-  const [dashboardData, setDashboardData] = useState<AnalyticsDashboard | null>(null);
+  const [dashboardData, setDashboardData] = useState<AnalyticsDashboard | null>(
+    null,
+  );
   const [marketInsights, setMarketInsights] = useState<MarketInsight[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'trends' | 'predictions' | 'insights'>('overview');
+  const [selectedTab, setSelectedTab] = useState<
+    'overview' | 'trends' | 'predictions' | 'insights'
+  >('overview');
   const [realTimeEnabled, setRealTimeEnabled] = useState(true);
   const [alertsEnabled, setAlertsEnabled] = useState(true);
   const [expandedCards, setExpandedCards] = useState<string[]>([]);
@@ -116,7 +120,7 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
         analyticsService.generateAnalyticsDashboard(timeRange),
         analyticsService.generateMarketInsights(),
       ]);
-      
+
       setDashboardData(dashboard);
       setMarketInsights(insights);
     } catch (error) {
@@ -136,17 +140,17 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
   }, [loadDashboardData]);
 
   const toggleCardExpansion = useCallback((cardId: string) => {
-    setExpandedCards(prev =>
+    setExpandedCards((prev) =>
       prev.includes(cardId)
-        ? prev.filter(id => id !== cardId)
-        : [...prev, cardId]
+        ? prev.filter((id) => id !== cardId)
+        : [...prev, cardId],
     );
   }, []);
 
   // Generate chart data from dashboard
   const priceTreendData: TrendData = useMemo(() => {
     if (!dashboardData) return { labels: [], datasets: [] };
-    
+
     return {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
       datasets: [
@@ -161,7 +165,7 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
 
   const demandData: TrendData = useMemo(() => {
     if (!dashboardData) return { labels: [], datasets: [] };
-    
+
     return {
       labels: ['Electric', 'Hybrid', 'Petrol', 'Diesel'],
       datasets: [
@@ -175,7 +179,7 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
 
   const insightCards: InsightCard[] = useMemo(() => {
     if (!dashboardData) return [];
-    
+
     return [
       {
         id: 'avg_price',
@@ -220,48 +224,51 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
     ];
   }, [dashboardData]);
 
-  const predictionModels: PredictionModel[] = useMemo(() => [
-    {
-      id: 'price_prediction',
-      name: 'Price Prediction Model',
-      accuracy: 87.3,
-      lastUpdated: '2 hours ago',
-      predictions: [
-        {
-          category: 'Electric Vehicles',
-          prediction: 'Prices expected to stabilize',
-          confidence: 0.85,
-          timeframe: 'Next 3 months',
-        },
-        {
-          category: 'Luxury Sedans',
-          prediction: '8-12% price increase likely',
-          confidence: 0.73,
-          timeframe: 'Next 6 months',
-        },
-      ],
-    },
-    {
-      id: 'demand_forecast',
-      name: 'Demand Forecast Model',
-      accuracy: 92.1,
-      lastUpdated: '1 hour ago',
-      predictions: [
-        {
-          category: 'SUVs',
-          prediction: 'High demand surge expected',
-          confidence: 0.91,
-          timeframe: 'Next 2 months',
-        },
-        {
-          category: 'Compact Cars',
-          prediction: 'Steady demand with seasonal dip',
-          confidence: 0.78,
-          timeframe: 'Next month',
-        },
-      ],
-    },
-  ], []);
+  const predictionModels: PredictionModel[] = useMemo(
+    () => [
+      {
+        id: 'price_prediction',
+        name: 'Price Prediction Model',
+        accuracy: 87.3,
+        lastUpdated: '2 hours ago',
+        predictions: [
+          {
+            category: 'Electric Vehicles',
+            prediction: 'Prices expected to stabilize',
+            confidence: 0.85,
+            timeframe: 'Next 3 months',
+          },
+          {
+            category: 'Luxury Sedans',
+            prediction: '8-12% price increase likely',
+            confidence: 0.73,
+            timeframe: 'Next 6 months',
+          },
+        ],
+      },
+      {
+        id: 'demand_forecast',
+        name: 'Demand Forecast Model',
+        accuracy: 92.1,
+        lastUpdated: '1 hour ago',
+        predictions: [
+          {
+            category: 'SUVs',
+            prediction: 'High demand surge expected',
+            confidence: 0.91,
+            timeframe: 'Next 2 months',
+          },
+          {
+            category: 'Compact Cars',
+            prediction: 'Steady demand with seasonal dip',
+            confidence: 0.78,
+            timeframe: 'Next month',
+          },
+        ],
+      },
+    ],
+    [],
+  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: fadeAnim.value,
@@ -293,47 +300,85 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
               styles.metricCard,
               {
                 backgroundColor: colors.cardBackground,
-                borderColor: card.urgency === 'critical' ? '#ef4444' : colors.border,
+                borderColor:
+                  card.urgency === 'critical' ? '#ef4444' : colors.border,
                 borderWidth: card.urgency === 'critical' ? 2 : 1,
-              }
+              },
             ]}
             onPress={() => toggleCardExpansion(card.id)}
           >
             <View style={styles.metricHeader}>
-              <Text style={[styles.metricTitle, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.metricTitle, { color: colors.textSecondary }]}
+              >
                 {card.title}
               </Text>
               {card.actionRequired && (
-                <View style={[styles.alertDot, { backgroundColor: '#ef4444' }]} />
+                <View
+                  style={[styles.alertDot, { backgroundColor: '#ef4444' }]}
+                />
               )}
             </View>
-            
+
             <Text style={[styles.metricValue, { color: colors.text }]}>
               {card.value}
             </Text>
-            
+
             <View style={styles.metricChange}>
-              <Text style={[
-                styles.changeText,
-                { color: card.trend === 'up' ? '#10b981' : card.trend === 'down' ? '#ef4444' : colors.textSecondary }
-              ]}>
-                {card.trend === 'up' ? '↗' : card.trend === 'down' ? '↘' : '→'} {Math.abs(card.change)}%
+              <Text
+                style={[
+                  styles.changeText,
+                  {
+                    color:
+                      card.trend === 'up'
+                        ? '#10b981'
+                        : card.trend === 'down'
+                          ? '#ef4444'
+                          : colors.textSecondary,
+                  },
+                ]}
+              >
+                {card.trend === 'up'
+                  ? '↗'
+                  : card.trend === 'down'
+                    ? '↘'
+                    : '→'}{' '}
+                {Math.abs(card.change)}%
               </Text>
-              <Text style={[styles.changeDescription, { color: colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.changeDescription,
+                  { color: colors.textSecondary },
+                ]}
+              >
                 {card.description}
               </Text>
             </View>
-            
+
             {expandedCards.includes(card.id) && (
-              <View style={[styles.expandedContent, { borderTopColor: colors.border }]}>
+              <View
+                style={[
+                  styles.expandedContent,
+                  { borderTopColor: colors.border },
+                ]}
+              >
                 <Text style={[styles.expandedText, { color: colors.text }]}>
-                  Detailed analysis and recommendations for {card.title.toLowerCase()}.
+                  Detailed analysis and recommendations for{' '}
+                  {card.title.toLowerCase()}.
                 </Text>
                 <TouchableOpacity
-                  style={[styles.actionButton, { backgroundColor: colors.primary }]}
+                  style={[
+                    styles.actionButton,
+                    { backgroundColor: colors.primary },
+                  ]}
                   onPress={() => onDrillDown(card.id, card)}
                 >
-                  <Text style={[styles.actionButtonText, { color: colors.background }]}>
+                  <Text
+                    style={[
+                      styles.actionButtonText,
+                      { color: colors.background },
+                    ]}
+                  >
                     View Details
                   </Text>
                 </TouchableOpacity>
@@ -344,16 +389,20 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
       </View>
 
       {/* Market Insights Section */}
-      <View style={[styles.section, { backgroundColor: colors.cardBackground }]}>
+      <View
+        style={[styles.section, { backgroundColor: colors.cardBackground }]}
+      >
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             🧠 AI Market Insights
           </Text>
-          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+          <Text
+            style={[styles.sectionSubtitle, { color: colors.textSecondary }]}
+          >
             {marketInsights.length} active insights
           </Text>
         </View>
-        
+
         {marketInsights.slice(0, 3).map((insight) => (
           <TouchableOpacity
             key={insight.id}
@@ -364,31 +413,40 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
               <Text style={[styles.insightTitle, { color: colors.text }]}>
                 {insight.title}
               </Text>
-              <View style={[
-                styles.impactBadge,
-                { backgroundColor: getImpactColor(insight.impact_level) }
-              ]}>
+              <View
+                style={[
+                  styles.impactBadge,
+                  { backgroundColor: getImpactColor(insight.impact_level) },
+                ]}
+              >
                 <Text style={[styles.impactText, { color: colors.background }]}>
                   {insight.impact_level.toUpperCase()}
                 </Text>
               </View>
             </View>
-            
-            <Text style={[styles.insightDescription, { color: colors.textSecondary }]}>
+
+            <Text
+              style={[
+                styles.insightDescription,
+                { color: colors.textSecondary },
+              ]}
+            >
               {insight.description}
             </Text>
-            
+
             <View style={styles.insightFooter}>
               <Text style={[styles.confidenceText, { color: colors.primary }]}>
                 {Math.round(insight.confidence_score * 100)}% confidence
               </Text>
-              <Text style={[styles.timestampText, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.timestampText, { color: colors.textSecondary }]}
+              >
                 {new Date(insight.generated_at).toLocaleDateString()}
               </Text>
             </View>
           </TouchableOpacity>
         ))}
-        
+
         <TouchableOpacity
           style={[styles.viewAllButton, { backgroundColor: colors.surface }]}
           onPress={() => setSelectedTab('insights')}
@@ -404,12 +462,21 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
   const renderTrendsTab = () => (
     <ScrollView showsVerticalScrollIndicator={false}>
       {/* Price Trends Chart */}
-      <View style={[styles.section, { backgroundColor: colors.cardBackground }]}>
+      <View
+        style={[styles.section, { backgroundColor: colors.cardBackground }]}
+      >
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           📈 Price Trends
         </Text>
-        <View style={[styles.chartPlaceholder, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.chartPlaceholderText, { color: colors.textSecondary }]}>
+        <View
+          style={[styles.chartPlaceholder, { backgroundColor: colors.surface }]}
+        >
+          <Text
+            style={[
+              styles.chartPlaceholderText,
+              { color: colors.textSecondary },
+            ]}
+          >
             Price Trend Chart
           </Text>
           <Text style={[styles.chartData, { color: colors.text }]}>
@@ -422,72 +489,150 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
       </View>
 
       {/* Demand Distribution */}
-      <View style={[styles.section, { backgroundColor: colors.cardBackground }]}>
+      <View
+        style={[styles.section, { backgroundColor: colors.cardBackground }]}
+      >
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           🎯 Demand by Fuel Type
         </Text>
-        <View style={[styles.chartPlaceholder, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.chartPlaceholderText, { color: colors.textSecondary }]}>
+        <View
+          style={[styles.chartPlaceholder, { backgroundColor: colors.surface }]}
+        >
+          <Text
+            style={[
+              styles.chartPlaceholderText,
+              { color: colors.textSecondary },
+            ]}
+          >
             Demand Distribution
           </Text>
           <View style={styles.demandItems}>
             <View style={styles.demandItem}>
-              <View style={[styles.demandDot, { backgroundColor: '#10b981' }]} />
-              <Text style={[styles.demandText, { color: colors.text }]}>Electric: 35%</Text>
+              <View
+                style={[styles.demandDot, { backgroundColor: '#10b981' }]}
+              />
+              <Text style={[styles.demandText, { color: colors.text }]}>
+                Electric: 35%
+              </Text>
             </View>
             <View style={styles.demandItem}>
-              <View style={[styles.demandDot, { backgroundColor: '#3b82f6' }]} />
-              <Text style={[styles.demandText, { color: colors.text }]}>Hybrid: 25%</Text>
+              <View
+                style={[styles.demandDot, { backgroundColor: '#3b82f6' }]}
+              />
+              <Text style={[styles.demandText, { color: colors.text }]}>
+                Hybrid: 25%
+              </Text>
             </View>
             <View style={styles.demandItem}>
-              <View style={[styles.demandDot, { backgroundColor: '#f59e0b' }]} />
-              <Text style={[styles.demandText, { color: colors.text }]}>Petrol: 25%</Text>
+              <View
+                style={[styles.demandDot, { backgroundColor: '#f59e0b' }]}
+              />
+              <Text style={[styles.demandText, { color: colors.text }]}>
+                Petrol: 25%
+              </Text>
             </View>
             <View style={styles.demandItem}>
-              <View style={[styles.demandDot, { backgroundColor: '#ef4444' }]} />
-              <Text style={[styles.demandText, { color: colors.text }]}>Diesel: 15%</Text>
+              <View
+                style={[styles.demandDot, { backgroundColor: '#ef4444' }]}
+              />
+              <Text style={[styles.demandText, { color: colors.text }]}>
+                Diesel: 15%
+              </Text>
             </View>
           </View>
         </View>
       </View>
 
       {/* Regional Performance */}
-      <View style={[styles.section, { backgroundColor: colors.cardBackground }]}>
+      <View
+        style={[styles.section, { backgroundColor: colors.cardBackground }]}
+      >
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           🗺️ Regional Performance
         </Text>
-        <View style={[styles.chartPlaceholder, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.chartPlaceholderText, { color: colors.textSecondary }]}>
+        <View
+          style={[styles.chartPlaceholder, { backgroundColor: colors.surface }]}
+        >
+          <Text
+            style={[
+              styles.chartPlaceholderText,
+              { color: colors.textSecondary },
+            ]}
+          >
             Regional Sales Volume
           </Text>
           <View style={styles.regionalItems}>
             <View style={styles.regionalItem}>
-              <Text style={[styles.regionalCity, { color: colors.text }]}>Dublin</Text>
-              <View style={[styles.regionalBar, { backgroundColor: colors.border }]}>
-                <View style={[styles.regionalBarFill, { backgroundColor: '#10b981', width: '85%' }]} />
+              <Text style={[styles.regionalCity, { color: colors.text }]}>
+                Dublin
+              </Text>
+              <View
+                style={[styles.regionalBar, { backgroundColor: colors.border }]}
+              >
+                <View
+                  style={[
+                    styles.regionalBarFill,
+                    { backgroundColor: '#10b981', width: '85%' },
+                  ]}
+                />
               </View>
-              <Text style={[styles.regionalValue, { color: colors.text }]}>2,847</Text>
+              <Text style={[styles.regionalValue, { color: colors.text }]}>
+                2,847
+              </Text>
             </View>
             <View style={styles.regionalItem}>
-              <Text style={[styles.regionalCity, { color: colors.text }]}>Cork</Text>
-              <View style={[styles.regionalBar, { backgroundColor: colors.border }]}>
-                <View style={[styles.regionalBarFill, { backgroundColor: '#10b981', width: '65%' }]} />
+              <Text style={[styles.regionalCity, { color: colors.text }]}>
+                Cork
+              </Text>
+              <View
+                style={[styles.regionalBar, { backgroundColor: colors.border }]}
+              >
+                <View
+                  style={[
+                    styles.regionalBarFill,
+                    { backgroundColor: '#10b981', width: '65%' },
+                  ]}
+                />
               </View>
-              <Text style={[styles.regionalValue, { color: colors.text }]}>1,923</Text>
+              <Text style={[styles.regionalValue, { color: colors.text }]}>
+                1,923
+              </Text>
             </View>
             <View style={styles.regionalItem}>
-              <Text style={[styles.regionalCity, { color: colors.text }]}>Galway</Text>
-              <View style={[styles.regionalBar, { backgroundColor: colors.border }]}>
-                <View style={[styles.regionalBarFill, { backgroundColor: '#10b981', width: '45%' }]} />
+              <Text style={[styles.regionalCity, { color: colors.text }]}>
+                Galway
+              </Text>
+              <View
+                style={[styles.regionalBar, { backgroundColor: colors.border }]}
+              >
+                <View
+                  style={[
+                    styles.regionalBarFill,
+                    { backgroundColor: '#10b981', width: '45%' },
+                  ]}
+                />
               </View>
-              <Text style={[styles.regionalValue, { color: colors.text }]}>1,456</Text>
+              <Text style={[styles.regionalValue, { color: colors.text }]}>
+                1,456
+              </Text>
             </View>
             <View style={styles.regionalItem}>
-              <Text style={[styles.regionalCity, { color: colors.text }]}>Limerick</Text>
-              <View style={[styles.regionalBar, { backgroundColor: colors.border }]}>
-                <View style={[styles.regionalBarFill, { backgroundColor: '#10b981', width: '35%' }]} />
+              <Text style={[styles.regionalCity, { color: colors.text }]}>
+                Limerick
+              </Text>
+              <View
+                style={[styles.regionalBar, { backgroundColor: colors.border }]}
+              >
+                <View
+                  style={[
+                    styles.regionalBarFill,
+                    { backgroundColor: '#10b981', width: '35%' },
+                  ]}
+                />
               </View>
-              <Text style={[styles.regionalValue, { color: colors.text }]}>1,092</Text>
+              <Text style={[styles.regionalValue, { color: colors.text }]}>
+                1,092
+              </Text>
             </View>
           </View>
         </View>
@@ -498,40 +643,68 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
   const renderPredictionsTab = () => (
     <ScrollView showsVerticalScrollIndicator={false}>
       {predictionModels.map((model) => (
-        <View key={model.id} style={[styles.section, { backgroundColor: colors.cardBackground }]}>
+        <View
+          key={model.id}
+          style={[styles.section, { backgroundColor: colors.cardBackground }]}
+        >
           <View style={styles.modelHeader}>
             <View style={styles.modelInfo}>
               <Text style={[styles.modelName, { color: colors.text }]}>
                 {model.name}
               </Text>
-              <Text style={[styles.modelAccuracy, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.modelAccuracy, { color: colors.textSecondary }]}
+              >
                 {model.accuracy}% accuracy • Updated {model.lastUpdated}
               </Text>
             </View>
-            <View style={[styles.accuracyBadge, { backgroundColor: colors.primary }]}>
+            <View
+              style={[
+                styles.accuracyBadge,
+                { backgroundColor: colors.primary },
+              ]}
+            >
               <Text style={[styles.accuracyText, { color: colors.background }]}>
                 {model.accuracy}%
               </Text>
             </View>
           </View>
-          
+
           {model.predictions.map((prediction, index) => (
-            <View key={index} style={[styles.predictionCard, { backgroundColor: colors.surface }]}>
+            <View
+              key={index}
+              style={[
+                styles.predictionCard,
+                { backgroundColor: colors.surface },
+              ]}
+            >
               <View style={styles.predictionHeader}>
-                <Text style={[styles.predictionCategory, { color: colors.text }]}>
+                <Text
+                  style={[styles.predictionCategory, { color: colors.text }]}
+                >
                   {prediction.category}
                 </Text>
-                <Text style={[styles.predictionTimeframe, { color: colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.predictionTimeframe,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   {prediction.timeframe}
                 </Text>
               </View>
-              
+
               <Text style={[styles.predictionText, { color: colors.text }]}>
                 {prediction.prediction}
               </Text>
-              
+
               <View style={styles.confidenceBar}>
-                <View style={[styles.confidenceBarBg, { backgroundColor: colors.border }]}>
+                <View
+                  style={[
+                    styles.confidenceBarBg,
+                    { backgroundColor: colors.border },
+                  ]}
+                >
                   <View
                     style={[
                       styles.confidenceBarFill,
@@ -542,7 +715,12 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
                     ]}
                   />
                 </View>
-                <Text style={[styles.confidenceValue, { color: colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.confidenceValue,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   {Math.round(prediction.confidence * 100)}% confidence
                 </Text>
               </View>
@@ -558,43 +736,58 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
       {marketInsights.map((insight) => (
         <TouchableOpacity
           key={insight.id}
-          style={[styles.fullInsightCard, { backgroundColor: colors.cardBackground }]}
+          style={[
+            styles.fullInsightCard,
+            { backgroundColor: colors.cardBackground },
+          ]}
           onPress={() => onInsightTap(insight)}
         >
           <View style={styles.fullInsightHeader}>
             <Text style={[styles.fullInsightTitle, { color: colors.text }]}>
               {insight.title}
             </Text>
-            <View style={[
-              styles.impactBadge,
-              { backgroundColor: getImpactColor(insight.impact_level) }
-            ]}>
+            <View
+              style={[
+                styles.impactBadge,
+                { backgroundColor: getImpactColor(insight.impact_level) },
+              ]}
+            >
               <Text style={[styles.impactText, { color: colors.background }]}>
                 {insight.impact_level.toUpperCase()}
               </Text>
             </View>
           </View>
-          
+
           <Text style={[styles.fullInsightDescription, { color: colors.text }]}>
             {insight.description}
           </Text>
-          
+
           <View style={styles.recommendationsContainer}>
-            <Text style={[styles.recommendationsTitle, { color: colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.recommendationsTitle,
+                { color: colors.textSecondary },
+              ]}
+            >
               Recommended Actions:
             </Text>
             {insight.actionable_recommendations.map((recommendation, index) => (
-              <Text key={index} style={[styles.recommendationItem, { color: colors.text }]}>
+              <Text
+                key={index}
+                style={[styles.recommendationItem, { color: colors.text }]}
+              >
                 • {recommendation}
               </Text>
             ))}
           </View>
-          
+
           <View style={styles.fullInsightFooter}>
             <Text style={[styles.confidenceText, { color: colors.primary }]}>
               {Math.round(insight.confidence_score * 100)}% confidence
             </Text>
-            <Text style={[styles.timestampText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.timestampText, { color: colors.textSecondary }]}
+            >
               {new Date(insight.generated_at).toLocaleDateString()}
             </Text>
           </View>
@@ -605,17 +798,24 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
 
   const getImpactColor = (impact: string): string => {
     switch (impact) {
-      case 'critical': return '#ef4444';
-      case 'high': return '#f59e0b';
-      case 'medium': return '#3b82f6';
-      case 'low': return '#10b981';
-      default: return '#6b7280';
+      case 'critical':
+        return '#ef4444';
+      case 'high':
+        return '#f59e0b';
+      case 'medium':
+        return '#3b82f6';
+      case 'low':
+        return '#10b981';
+      default:
+        return '#6b7280';
     }
   };
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
           <Text style={[styles.loadingText, { color: colors.text }]}>
             Loading Market Intelligence...
@@ -626,10 +826,14 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <Animated.View style={[styles.content, animatedStyle]}>
         {/* Header */}
-        <View style={[styles.header, { backgroundColor: colors.cardBackground }]}>
+        <View
+          style={[styles.header, { backgroundColor: colors.cardBackground }]}
+        >
           <View style={styles.headerTop}>
             <Text style={[styles.headerTitle, { color: colors.text }]}>
               Market Intelligence
@@ -641,12 +845,14 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
                 trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor={colors.background}
               />
-              <Text style={[styles.controlLabel, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.controlLabel, { color: colors.textSecondary }]}
+              >
                 Real-time
               </Text>
             </View>
           </View>
-          
+
           {/* Time Range Selector */}
           <View style={styles.timeRangeSelector}>
             {(['day', 'week', 'month', 'quarter'] as const).map((range) => (
@@ -655,16 +861,22 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
                 style={[
                   styles.timeRangeButton,
                   {
-                    backgroundColor: timeRange === range ? colors.primary : colors.surface,
+                    backgroundColor:
+                      timeRange === range ? colors.primary : colors.surface,
                     borderColor: colors.border,
-                  }
+                  },
                 ]}
                 onPress={() => onTimeRangeChange(range)}
               >
-                <Text style={[
-                  styles.timeRangeText,
-                  { color: timeRange === range ? colors.background : colors.text }
-                ]}>
+                <Text
+                  style={[
+                    styles.timeRangeText,
+                    {
+                      color:
+                        timeRange === range ? colors.background : colors.text,
+                    },
+                  ]}
+                >
                   {range.charAt(0).toUpperCase() + range.slice(1)}
                 </Text>
               </TouchableOpacity>
@@ -673,7 +885,9 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
         </View>
 
         {/* Tab Navigation */}
-        <View style={[styles.tabBar, { backgroundColor: colors.cardBackground }]}>
+        <View
+          style={[styles.tabBar, { backgroundColor: colors.cardBackground }]}
+        >
           {[
             { id: 'overview', name: 'Overview', icon: '📊' },
             { id: 'trends', name: 'Trends', icon: '📈' },
@@ -684,15 +898,22 @@ const MarketIntelligenceDashboard: React.FC<MarketIntelligenceDashboardProps> = 
               key={tab.id}
               style={[
                 styles.tabButton,
-                selectedTab === tab.id && { backgroundColor: colors.primary }
+                selectedTab === tab.id && { backgroundColor: colors.primary },
               ]}
               onPress={() => setSelectedTab(tab.id as any)}
             >
               <Text style={styles.tabIcon}>{tab.icon}</Text>
-              <Text style={[
-                styles.tabText,
-                { color: selectedTab === tab.id ? colors.background : colors.textSecondary }
-              ]}>
+              <Text
+                style={[
+                  styles.tabText,
+                  {
+                    color:
+                      selectedTab === tab.id
+                        ? colors.background
+                        : colors.textSecondary,
+                  },
+                ]}
+              >
                 {tab.name}
               </Text>
             </TouchableOpacity>

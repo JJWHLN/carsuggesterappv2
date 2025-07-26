@@ -2,27 +2,58 @@
 
 A professional React Native mobile app for CarSuggester.com, built with Expo, TypeScript, and Supabase.
 
+## 🏗️ Architecture
+
+### Tech Stack
+- **Framework**: React Native with Expo SDK 52
+- **Language**: TypeScript (strict mode)
+- **Database**: Supabase
+- **Styling**: Unified Design System with Tailwind-inspired utilities
+- **State Management**: Zustand stores
+- **Performance**: Code splitting with lazy loading
+
+### Design System
+The app uses a consolidated styling approach with:
+- **Unified utilities** (`tw` object) for consistent styling
+- **Theme-aware colors** with light/dark mode support
+- **Responsive spacing** scale (xs: 4px → xxxl: 64px)
+- **Typography system** with semantic sizing
+- **Component patterns** for common UI elements
+
+```typescript
+// Example usage
+<View style={[tw.flex, tw['items-center'], tw['p-md']]}>
+  <Text style={[tw['text-lg'], tw['font-bold'], tw['text-primary']]}>
+    Welcome to CarSuggester
+  </Text>
+</View>
+```
+
 ## ✨ Features
 
 ### 🏠 **Home Screen**
+
 - Welcome dashboard with platform overview
 - Quick access to all main features
 - Real-time database connection status
 - Platform statistics and highlights
 
 ### 🔍 **AI Search**
+
 - Natural language car search (coming soon)
 - Smart search suggestions and examples
 - Advanced filtering capabilities
 - Search history and recommendations
 
 ### 🚗 **Browse Cars**
+
 - Comprehensive car model database
 - Advanced search and filtering
 - Detailed model information pages
 - Category-based browsing
 
 ### 🏪 **Marketplace**
+
 - Car listings from verified dealers
 - Dealer profiles and ratings
 - Advanced search and filtering
@@ -40,17 +71,20 @@ A professional React Native mobile app for CarSuggester.com, built with Expo, Ty
 ## 🎨 Design System
 
 ### Colors
+
 - **Primary**: Forest Green (#228B22) - matching carsuggester.com
 - **Secondary**: Professional grays and blues
 - **Accent**: Warm amber for highlights
 - **Success/Error**: Standard semantic colors
 
 ### Typography
+
 - **Headings**: Bold, clear hierarchy
 - **Body**: Readable 16px base size
 - **Captions**: 12px for metadata
 
 ### Spacing
+
 - **8px grid system** for consistent spacing
 - **Responsive padding** based on screen size
 - **Proper touch targets** (44px minimum)
@@ -82,16 +116,19 @@ CarSuggester App
 ## 🚀 Getting Started
 
 1. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    ```
 
 3. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -104,6 +141,7 @@ CarSuggester App
 ## 🗄 Database Integration
 
 The app connects to Supabase with the following main tables:
+
 - **car_models**: Vehicle model information
 - **brands**: Car manufacturer data
 - **reviews**: Expert reviews and ratings
@@ -113,12 +151,14 @@ The app connects to Supabase with the following main tables:
 ## 🔧 Configuration
 
 ### Environment Variables
+
 ```env
 EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### App Configuration
+
 - **Name**: CarSuggester
 - **Scheme**: carsuggester://
 - **Platform**: Web-first with mobile support
@@ -127,11 +167,13 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## 📦 Key Components
 
 ### UI Components
+
 - **LoadingSpinner**: Consistent loading states
 - **ErrorState**: Error handling with retry
 - **EmptyState**: Empty state messaging
 
 ### Screens
+
 - **HomeScreen**: Dashboard and overview
 - **SearchScreen**: AI search interface
 - **ModelsScreen**: Car model browsing
@@ -141,18 +183,21 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## 🎯 Future Enhancements
 
 ### Phase 1 (Current)
+
 - ✅ Core navigation and screens
 - ✅ Database integration
 - ✅ Professional design system
 - ✅ Model browsing and details
 
 ### Phase 2 (Next)
+
 - 🔄 AI-powered search implementation
 - 🔄 User authentication
 - 🔄 Marketplace listings
 - 🔄 Review system integration
 
 ### Phase 3 (Future)
+
 - 📋 User profiles and preferences
 - 📋 Saved cars and favorites
 - 📋 Push notifications

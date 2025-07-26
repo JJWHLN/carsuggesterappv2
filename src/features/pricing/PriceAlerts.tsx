@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
   TextInput,
   Alert,
   Modal,
-  Switch
+  Switch,
 } from 'react-native';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { 
-  Bell, 
-  BellOff, 
-  Plus, 
-  Edit3, 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  Bell,
+  BellOff,
+  Plus,
+  Edit3,
   Trash2,
   TrendingDown,
   TrendingUp,
@@ -24,14 +24,14 @@ import {
   Smartphone,
   Check,
   X,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react-native';
 import { useAuth } from '../auth/AuthContext';
-import { 
-  fetchUserPriceAlerts, 
-  createPriceAlert, 
-  updatePriceAlert, 
-  deletePriceAlert 
+import {
+  fetchUserPriceAlerts,
+  createPriceAlert,
+  updatePriceAlert,
+  deletePriceAlert,
 } from './api';
 import { PriceAlert, PriceNotification } from './types';
 import { formatCurrency, formatRelativeTime } from '../../../utils/formatters';
@@ -55,17 +55,21 @@ interface AlertCardProps {
   onToggle: (alertId: string, isActive: boolean) => void;
 }
 
-const CreateAlertModal: React.FC<CreateAlertModalProps> = ({ 
-  visible, 
-  onClose, 
-  carId = 'default-car', 
-  currentPrice = 25000 
+const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
+  visible,
+  onClose,
+  carId = 'default-car',
+  currentPrice = 25000,
 }) => {
   const { state } = useAuth();
   const queryClient = useQueryClient();
   const [targetPrice, setTargetPrice] = useState(currentPrice.toString());
-  const [alertType, setAlertType] = useState<'below' | 'above' | 'drop' | 'increase'>('below');
-  const [frequency, setFrequency] = useState<'immediate' | 'daily' | 'weekly'>('immediate');
+  const [alertType, setAlertType] = useState<
+    'below' | 'above' | 'drop' | 'increase'
+  >('below');
+  const [frequency, setFrequency] = useState<'immediate' | 'daily' | 'weekly'>(
+    'immediate',
+  );
 
   const createMutation = useMutation(createPriceAlert, {
     onSuccess: () => {
@@ -76,7 +80,7 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
     },
     onError: () => {
       Alert.alert('Error', 'Failed to create price alert. Please try again.');
-    }
+    },
   });
 
   const resetForm = () => {
@@ -103,45 +107,60 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
       targetPrice: price,
       alertType,
       frequency,
-      isActive: true
+      isActive: true,
     });
   };
 
-  const AlertTypeButton: React.FC<{ 
-    type: typeof alertType; 
-    label: string; 
+  const AlertTypeButton: React.FC<{
+    type: typeof alertType;
+    label: string;
     description: string;
     icon: React.ComponentType<any>;
   }> = ({ type, label, description, icon: IconComponent }) => (
     <TouchableOpacity
       onPress={() => setAlertType(type)}
       className={`p-4 border-2 rounded-lg mb-3 ${
-        alertType === type ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'
+        alertType === type
+          ? 'border-blue-500 bg-blue-50'
+          : 'border-gray-200 bg-white'
       }`}
     >
       <View className="flex-row items-center mb-2">
-        <IconComponent size={20} className={alertType === type ? 'text-blue-600' : 'text-gray-600'} />
-        <Text className={`ml-2 font-semibold ${
-          alertType === type ? 'text-blue-900' : 'text-gray-900'
-        }`}>
+        <IconComponent
+          size={20}
+          className={alertType === type ? 'text-blue-600' : 'text-gray-600'}
+        />
+        <Text
+          className={`ml-2 font-semibold ${
+            alertType === type ? 'text-blue-900' : 'text-gray-900'
+          }`}
+        >
           {label}
         </Text>
       </View>
-      <Text className={`text-sm ${
-        alertType === type ? 'text-blue-700' : 'text-gray-600'
-      }`}>
+      <Text
+        className={`text-sm ${
+          alertType === type ? 'text-blue-700' : 'text-gray-600'
+        }`}
+      >
         {description}
       </Text>
     </TouchableOpacity>
   );
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+    >
       <View className="flex-1 bg-gray-50">
         {/* Header */}
         <View className="bg-white border-b border-gray-200 px-4 py-4 pt-12">
           <View className="flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-gray-900">Create Price Alert</Text>
+            <Text className="text-xl font-bold text-gray-900">
+              Create Price Alert
+            </Text>
             <TouchableOpacity onPress={onClose} className="p-2">
               <X size={24} className="text-gray-600" />
             </TouchableOpacity>
@@ -154,9 +173,12 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
             <Text className="text-lg font-semibold text-gray-900 mb-4">
               Target Price
             </Text>
-            
+
             <View className="relative">
-              <DollarSign size={20} className="absolute left-3 top-3 text-gray-400 z-10" />
+              <DollarSign
+                size={20}
+                className="absolute left-3 top-3 text-gray-400 z-10"
+              />
               <TextInput
                 value={targetPrice}
                 onChangeText={setTargetPrice}
@@ -166,7 +188,7 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
                 placeholderTextColor="#9CA3AF"
               />
             </View>
-            
+
             <Text className="text-sm text-gray-600 mt-2">
               Current price: {formatCurrency(currentPrice)}
             </Text>
@@ -177,28 +199,28 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
             <Text className="text-lg font-semibold text-gray-900 mb-4">
               Alert Type
             </Text>
-            
+
             <AlertTypeButton
               type="below"
               label="Price Below Target"
               description="Notify when the price drops below your target"
               icon={TrendingDown}
             />
-            
+
             <AlertTypeButton
               type="above"
               label="Price Above Target"
               description="Notify when the price rises above your target"
               icon={TrendingUp}
             />
-            
+
             <AlertTypeButton
               type="drop"
               label="Any Price Drop"
               description="Notify on any price decrease"
               icon={TrendingDown}
             />
-            
+
             <AlertTypeButton
               type="increase"
               label="Any Price Increase"
@@ -212,7 +234,7 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
             <Text className="text-lg font-semibold text-gray-900 mb-4">
               Notification Frequency
             </Text>
-            
+
             <View className="space-y-3">
               {(['immediate', 'daily', 'weekly'] as const).map((freq) => (
                 <TouchableOpacity
@@ -220,9 +242,13 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
                   onPress={() => setFrequency(freq)}
                   className="flex-row items-center p-3 bg-gray-50 rounded-lg"
                 >
-                  <View className={`w-5 h-5 border-2 rounded-full mr-3 ${
-                    frequency === freq ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
-                  }`}>
+                  <View
+                    className={`w-5 h-5 border-2 rounded-full mr-3 ${
+                      frequency === freq
+                        ? 'border-blue-500 bg-blue-500'
+                        : 'border-gray-300'
+                    }`}
+                  >
                     {frequency === freq && (
                       <View className="w-full h-full rounded-full bg-white scale-50" />
                     )}
@@ -231,8 +257,11 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
                     {freq}
                   </Text>
                   <Text className="text-sm text-gray-600">
-                    {freq === 'immediate' ? 'Instant notifications' :
-                     freq === 'daily' ? 'Once per day' : 'Weekly summary'}
+                    {freq === 'immediate'
+                      ? 'Instant notifications'
+                      : freq === 'daily'
+                        ? 'Once per day'
+                        : 'Weekly summary'}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -254,7 +283,9 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
             ) : (
               <>
                 <Bell size={20} className="text-white mr-2" />
-                <Text className="text-white font-semibold text-lg">Create Alert</Text>
+                <Text className="text-white font-semibold text-lg">
+                  Create Alert
+                </Text>
               </>
             )}
           </TouchableOpacity>
@@ -264,7 +295,12 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
   );
 };
 
-const AlertCard: React.FC<AlertCardProps> = ({ alert, onEdit, onDelete, onToggle }) => {
+const AlertCard: React.FC<AlertCardProps> = ({
+  alert,
+  onEdit,
+  onDelete,
+  onToggle,
+}) => {
   const getAlertTypeConfig = () => {
     switch (alert.alertType) {
       case 'below':
@@ -272,28 +308,28 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onEdit, onDelete, onToggle
           icon: TrendingDown,
           color: 'text-green-600',
           bgColor: 'bg-green-100',
-          label: 'Below Target'
+          label: 'Below Target',
         };
       case 'above':
         return {
           icon: TrendingUp,
           color: 'text-red-600',
           bgColor: 'bg-red-100',
-          label: 'Above Target'
+          label: 'Above Target',
         };
       case 'drop':
         return {
           icon: TrendingDown,
           color: 'text-blue-600',
           bgColor: 'bg-blue-100',
-          label: 'Any Drop'
+          label: 'Any Drop',
         };
       case 'increase':
         return {
           icon: TrendingUp,
           color: 'text-orange-600',
           bgColor: 'bg-orange-100',
-          label: 'Any Increase'
+          label: 'Any Increase',
         };
     }
   };
@@ -307,17 +343,21 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onEdit, onDelete, onToggle
       <View className="p-4 border-b border-gray-100">
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center flex-1">
-            <View className={`w-10 h-10 ${config.bgColor} rounded-full items-center justify-center mr-3`}>
+            <View
+              className={`w-10 h-10 ${config.bgColor} rounded-full items-center justify-center mr-3`}
+            >
               <IconComponent size={20} className={config.color} />
             </View>
             <View className="flex-1">
-              <Text className="font-semibold text-gray-900">{config.label}</Text>
+              <Text className="font-semibold text-gray-900">
+                {config.label}
+              </Text>
               <Text className="text-sm text-gray-600">
                 Target: {formatCurrency(alert.targetPrice)}
               </Text>
             </View>
           </View>
-          
+
           <View className="flex-row items-center space-x-2">
             <Switch
               value={alert.isActive}
@@ -372,38 +412,49 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onEdit, onDelete, onToggle
   );
 };
 
-const NotificationCard: React.FC<{ notification: PriceNotification }> = ({ notification }) => {
+const NotificationCard: React.FC<{ notification: PriceNotification }> = ({
+  notification,
+}) => {
   const isPositive = notification.priceChange < 0; // Price drop is positive for buyers
 
   return (
-    <View className={`p-4 rounded-lg border ${
-      notification.read ? 'bg-gray-50 border-gray-200' : 'bg-blue-50 border-blue-200'
-    } mb-3`}>
+    <View
+      className={`p-4 rounded-lg border ${
+        notification.read
+          ? 'bg-gray-50 border-gray-200'
+          : 'bg-blue-50 border-blue-200'
+      } mb-3`}
+    >
       <View className="flex-row items-start justify-between mb-2">
         <View className="flex-1">
-          <Text className={`font-semibold ${
-            notification.read ? 'text-gray-900' : 'text-blue-900'
-          }`}>
+          <Text
+            className={`font-semibold ${
+              notification.read ? 'text-gray-900' : 'text-blue-900'
+            }`}
+          >
             {notification.message}
           </Text>
           <Text className="text-sm text-gray-600 mt-1">
             {formatRelativeTime(notification.triggeredAt)}
           </Text>
         </View>
-        
+
         <View className="items-end">
-          <Text className={`text-lg font-bold ${
-            isPositive ? 'text-green-600' : 'text-red-600'
-          }`}>
+          <Text
+            className={`text-lg font-bold ${
+              isPositive ? 'text-green-600' : 'text-red-600'
+            }`}
+          >
             {notification.priceChange < 0 ? '' : '+'}
             {formatCurrency(notification.priceChange)}
           </Text>
           <Text className="text-sm text-gray-600">
-            {formatCurrency(notification.oldPrice)} → {formatCurrency(notification.newPrice)}
+            {formatCurrency(notification.oldPrice)} →{' '}
+            {formatCurrency(notification.newPrice)}
           </Text>
         </View>
       </View>
-      
+
       {!notification.read && (
         <View className="w-2 h-2 bg-blue-500 rounded-full absolute top-4 right-4" />
       )}
@@ -411,11 +462,16 @@ const NotificationCard: React.FC<{ notification: PriceNotification }> = ({ notif
   );
 };
 
-export const PriceAlerts: React.FC<PriceAlertsProps> = ({ carId, currentPrice }) => {
+export const PriceAlerts: React.FC<PriceAlertsProps> = ({
+  carId,
+  currentPrice,
+}) => {
   const { state } = useAuth();
   const queryClient = useQueryClient();
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'alerts' | 'notifications'>('alerts');
+  const [activeTab, setActiveTab] = useState<'alerts' | 'notifications'>(
+    'alerts',
+  );
 
   const { data: alertsData, isLoading } = useQuery(
     ['priceAlerts', state.user?.id],
@@ -424,7 +480,7 @@ export const PriceAlerts: React.FC<PriceAlertsProps> = ({ carId, currentPrice })
       enabled: !!state.user?.id,
       staleTime: 2 * 60 * 1000, // 2 minutes
       cacheTime: 10 * 60 * 1000, // 10 minutes
-    }
+    },
   );
 
   const updateMutation = useMutation(
@@ -433,14 +489,14 @@ export const PriceAlerts: React.FC<PriceAlertsProps> = ({ carId, currentPrice })
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['priceAlerts']);
-      }
-    }
+      },
+    },
   );
 
   const deleteMutation = useMutation(deletePriceAlert, {
     onSuccess: () => {
       queryClient.invalidateQueries(['priceAlerts']);
-    }
+    },
   });
 
   const handleToggleAlert = (alertId: string, isActive: boolean) => {
@@ -461,17 +517,17 @@ export const PriceAlerts: React.FC<PriceAlertsProps> = ({ carId, currentPrice })
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => deleteMutation.mutate(alertId)
-        }
-      ]
+          onPress: () => deleteMutation.mutate(alertId),
+        },
+      ],
     );
   };
 
-  const TabButton: React.FC<{ tab: typeof activeTab; label: string; count?: number }> = ({ 
-    tab, 
-    label, 
-    count 
-  }) => (
+  const TabButton: React.FC<{
+    tab: typeof activeTab;
+    label: string;
+    count?: number;
+  }> = ({ tab, label, count }) => (
     <TouchableOpacity
       onPress={() => setActiveTab(tab)}
       className={`flex-1 py-3 border-b-2 ${
@@ -479,9 +535,11 @@ export const PriceAlerts: React.FC<PriceAlertsProps> = ({ carId, currentPrice })
       }`}
     >
       <View className="flex-row items-center justify-center">
-        <Text className={`font-medium ${
-          activeTab === tab ? 'text-blue-600' : 'text-gray-600'
-        }`}>
+        <Text
+          className={`font-medium ${
+            activeTab === tab ? 'text-blue-600' : 'text-gray-600'
+          }`}
+        >
           {label}
         </Text>
         {count !== undefined && count > 0 && (
@@ -504,7 +562,7 @@ export const PriceAlerts: React.FC<PriceAlertsProps> = ({ carId, currentPrice })
 
   const alerts = alertsData?.alerts || [];
   const notifications = alertsData?.recentNotifications || [];
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -540,14 +598,17 @@ export const PriceAlerts: React.FC<PriceAlertsProps> = ({ carId, currentPrice })
                   No Price Alerts
                 </Text>
                 <Text className="text-gray-600 text-center mb-6 px-8 leading-6">
-                  Set up price alerts to get notified when car prices change according to your preferences.
+                  Set up price alerts to get notified when car prices change
+                  according to your preferences.
                 </Text>
                 <TouchableOpacity
                   onPress={() => setShowCreateModal(true)}
                   className="flex-row items-center px-6 py-3 bg-blue-500 rounded-lg"
                 >
                   <Plus size={16} className="text-white mr-2" />
-                  <Text className="text-white font-semibold">Create Your First Alert</Text>
+                  <Text className="text-white font-semibold">
+                    Create Your First Alert
+                  </Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -575,13 +636,17 @@ export const PriceAlerts: React.FC<PriceAlertsProps> = ({ carId, currentPrice })
                   No Notifications
                 </Text>
                 <Text className="text-gray-600 text-center px-8 leading-6">
-                  You'll see price change notifications here when your alerts are triggered.
+                  You'll see price change notifications here when your alerts
+                  are triggered.
                 </Text>
               </View>
             ) : (
               <View>
                 {notifications.map((notification) => (
-                  <NotificationCard key={notification.id} notification={notification} />
+                  <NotificationCard
+                    key={notification.id}
+                    notification={notification}
+                  />
                 ))}
               </View>
             )}

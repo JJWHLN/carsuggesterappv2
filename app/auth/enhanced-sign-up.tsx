@@ -19,7 +19,14 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
 import { EnhancedAuthService } from '@/services/enhancedAuthService';
-import { Car, Mail, Eye, EyeOff, User, Building2 } from '@/utils/ultra-optimized-icons';
+import {
+  Car,
+  Mail,
+  Eye,
+  EyeOff,
+  User,
+  Building2,
+} from '@/utils/ultra-optimized-icons';
 
 function EnhancedSignUpScreen() {
   const [formData, setFormData] = useState({
@@ -43,7 +50,7 @@ function EnhancedSignUpScreen() {
   const authProviders = EnhancedAuthService.getSupportedProviders();
 
   const updateFormData = (key: string, value: any) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const validateForm = () => {
@@ -64,7 +71,10 @@ function EnhancedSignUpScreen() {
       return false;
     }
     if (formData.password.length < 8) {
-      Alert.alert('Weak Password', 'Password must be at least 8 characters long.');
+      Alert.alert(
+        'Weak Password',
+        'Password must be at least 8 characters long.',
+      );
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
@@ -72,7 +82,10 @@ function EnhancedSignUpScreen() {
       return false;
     }
     if (!formData.agreeToTerms) {
-      Alert.alert('Terms Required', 'Please agree to the Terms of Service and Privacy Policy.');
+      Alert.alert(
+        'Terms Required',
+        'Please agree to the Terms of Service and Privacy Policy.',
+      );
       return false;
     }
     return true;
@@ -91,7 +104,7 @@ function EnhancedSignUpScreen() {
         formData.password,
         formData.firstName,
         formData.lastName,
-        formData.isDealer
+        formData.isDealer,
       );
 
       if (result?.error) {
@@ -99,7 +112,7 @@ function EnhancedSignUpScreen() {
       }
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      
+
       Alert.alert(
         'Account Created!',
         'Please check your email to verify your account.',
@@ -108,12 +121,12 @@ function EnhancedSignUpScreen() {
             text: 'OK',
             onPress: () => router.push('/auth/sign-in'),
           },
-        ]
+        ],
       );
     } catch (error: any) {
       Alert.alert(
         'Sign Up Failed',
-        error.message || 'Failed to create account. Please try again.'
+        error.message || 'Failed to create account. Please try again.',
       );
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -147,7 +160,8 @@ function EnhancedSignUpScreen() {
       logger.error(`${provider} sign-up error:`, error);
       Alert.alert(
         'Sign Up Failed',
-        error.message || `Failed to sign up with ${provider}. Please try again.`
+        error.message ||
+          `Failed to sign up with ${provider}. Please try again.`,
       );
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -159,7 +173,7 @@ function EnhancedSignUpScreen() {
     if (!provider.available) return null;
 
     const isLoading = socialLoading === provider.id;
-    
+
     return (
       <TouchableOpacity
         key={provider.id}
@@ -168,7 +182,7 @@ function EnhancedSignUpScreen() {
           {
             backgroundColor: colors.cardBackground,
             borderColor: colors.border,
-          }
+          },
         ]}
         onPress={() => handleSocialSignUp(provider.id)}
         disabled={isLoading || loading}
@@ -189,7 +203,9 @@ function EnhancedSignUpScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
@@ -221,23 +237,44 @@ function EnhancedSignUpScreen() {
               style={[
                 styles.accountTypeOption,
                 {
-                  backgroundColor: !formData.isDealer ? colors.primaryLight : colors.cardBackground,
-                  borderColor: !formData.isDealer ? colors.primary : colors.border,
-                }
+                  backgroundColor: !formData.isDealer
+                    ? colors.primaryLight
+                    : colors.cardBackground,
+                  borderColor: !formData.isDealer
+                    ? colors.primary
+                    : colors.border,
+                },
               ]}
               onPress={() => updateFormData('isDealer', false)}
             >
-              <User color={!formData.isDealer ? colors.primary : colors.textSecondary} size={24} />
-              <Text style={[
-                styles.accountTypeLabel,
-                { color: !formData.isDealer ? colors.primary : colors.textSecondary }
-              ]}>
+              <User
+                color={
+                  !formData.isDealer ? colors.primary : colors.textSecondary
+                }
+                size={24}
+              />
+              <Text
+                style={[
+                  styles.accountTypeLabel,
+                  {
+                    color: !formData.isDealer
+                      ? colors.primary
+                      : colors.textSecondary,
+                  },
+                ]}
+              >
                 Car Buyer
               </Text>
-              <Text style={[
-                styles.accountTypeDescription,
-                { color: !formData.isDealer ? colors.primary : colors.textSecondary }
-              ]}>
+              <Text
+                style={[
+                  styles.accountTypeDescription,
+                  {
+                    color: !formData.isDealer
+                      ? colors.primary
+                      : colors.textSecondary,
+                  },
+                ]}
+              >
                 Looking to buy a car
               </Text>
             </TouchableOpacity>
@@ -246,23 +283,44 @@ function EnhancedSignUpScreen() {
               style={[
                 styles.accountTypeOption,
                 {
-                  backgroundColor: formData.isDealer ? colors.primaryLight : colors.cardBackground,
-                  borderColor: formData.isDealer ? colors.primary : colors.border,
-                }
+                  backgroundColor: formData.isDealer
+                    ? colors.primaryLight
+                    : colors.cardBackground,
+                  borderColor: formData.isDealer
+                    ? colors.primary
+                    : colors.border,
+                },
               ]}
               onPress={() => updateFormData('isDealer', true)}
             >
-              <Building2 color={formData.isDealer ? colors.primary : colors.textSecondary} size={24} />
-              <Text style={[
-                styles.accountTypeLabel,
-                { color: formData.isDealer ? colors.primary : colors.textSecondary }
-              ]}>
+              <Building2
+                color={
+                  formData.isDealer ? colors.primary : colors.textSecondary
+                }
+                size={24}
+              />
+              <Text
+                style={[
+                  styles.accountTypeLabel,
+                  {
+                    color: formData.isDealer
+                      ? colors.primary
+                      : colors.textSecondary,
+                  },
+                ]}
+              >
                 Car Dealer
               </Text>
-              <Text style={[
-                styles.accountTypeDescription,
-                { color: formData.isDealer ? colors.primary : colors.textSecondary }
-              ]}>
+              <Text
+                style={[
+                  styles.accountTypeDescription,
+                  {
+                    color: formData.isDealer
+                      ? colors.primary
+                      : colors.textSecondary,
+                  },
+                ]}
+              >
                 Selling cars professionally
               </Text>
             </TouchableOpacity>
@@ -272,7 +330,7 @@ function EnhancedSignUpScreen() {
         {/* Social Sign-Up Options */}
         <View style={styles.socialSection}>
           {authProviders
-            .filter(provider => provider.id !== 'email')
+            .filter((provider) => provider.id !== 'email')
             .map(renderSocialButton)}
         </View>
 
@@ -345,7 +403,11 @@ function EnhancedSignUpScreen() {
               )}
             </TouchableOpacity>
             <TextInput
-              style={[styles.input, styles.passwordInput, { color: colors.text }]}
+              style={[
+                styles.input,
+                styles.passwordInput,
+                { color: colors.text },
+              ]}
               placeholder="Password (min. 8 characters)"
               placeholderTextColor={colors.textSecondary}
               value={formData.password}
@@ -369,7 +431,11 @@ function EnhancedSignUpScreen() {
               )}
             </TouchableOpacity>
             <TextInput
-              style={[styles.input, styles.passwordInput, { color: colors.text }]}
+              style={[
+                styles.input,
+                styles.passwordInput,
+                { color: colors.text },
+              ]}
               placeholder="Confirm password"
               placeholderTextColor={colors.textSecondary}
               value={formData.confirmPassword}
@@ -386,21 +452,35 @@ function EnhancedSignUpScreen() {
               style={[
                 styles.checkbox,
                 {
-                  backgroundColor: formData.agreeToTerms ? colors.primary : colors.cardBackground,
-                  borderColor: formData.agreeToTerms ? colors.primary : colors.border,
-                }
+                  backgroundColor: formData.agreeToTerms
+                    ? colors.primary
+                    : colors.cardBackground,
+                  borderColor: formData.agreeToTerms
+                    ? colors.primary
+                    : colors.border,
+                },
               ]}
-              onPress={() => updateFormData('agreeToTerms', !formData.agreeToTerms)}
+              onPress={() =>
+                updateFormData('agreeToTerms', !formData.agreeToTerms)
+              }
             >
               {formData.agreeToTerms && (
-                <Text style={[styles.checkmark, { color: colors.background }]}>✓</Text>
+                <Text style={[styles.checkmark, { color: colors.background }]}>
+                  ✓
+                </Text>
               )}
             </TouchableOpacity>
-            <Text style={[styles.checkboxText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.checkboxText, { color: colors.textSecondary }]}
+            >
               I agree to the{' '}
-              <Text style={[styles.link, { color: colors.primary }]}>Terms of Service</Text>
-              {' '}and{' '}
-              <Text style={[styles.link, { color: colors.primary }]}>Privacy Policy</Text>
+              <Text style={[styles.link, { color: colors.primary }]}>
+                Terms of Service
+              </Text>{' '}
+              and{' '}
+              <Text style={[styles.link, { color: colors.primary }]}>
+                Privacy Policy
+              </Text>
             </Text>
           </View>
 
@@ -408,18 +488,24 @@ function EnhancedSignUpScreen() {
           <View style={styles.switchContainer}>
             <Switch
               value={formData.agreeToMarketing}
-              onValueChange={(value) => updateFormData('agreeToMarketing', value)}
+              onValueChange={(value) =>
+                updateFormData('agreeToMarketing', value)
+              }
               trackColor={{ false: colors.border, true: colors.primaryLight }}
-              thumbColor={formData.agreeToMarketing ? colors.primary : colors.textSecondary}
+              thumbColor={
+                formData.agreeToMarketing
+                  ? colors.primary
+                  : colors.textSecondary
+              }
             />
             <Text style={[styles.switchText, { color: colors.textSecondary }]}>
               Send me updates about new cars and price drops
             </Text>
           </View>
 
-          <Button 
-            title="Create Account" 
-            onPress={handleEmailSignUp} 
+          <Button
+            title="Create Account"
+            onPress={handleEmailSignUp}
             loading={loading}
             disabled={socialLoading !== null}
             style={styles.signUpButton}

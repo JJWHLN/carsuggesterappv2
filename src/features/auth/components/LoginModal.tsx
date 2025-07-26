@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  Modal, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Modal,
   ScrollView,
   Alert,
-  ActivityIndicator 
+  ActivityIndicator,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { 
-  X, 
-  Eye, 
-  EyeOff, 
-  Mail, 
-  Lock, 
-  AlertCircle 
-} from 'lucide-react-native';
+import { X, Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react-native';
 import { useAuth } from '../AuthContext';
 import { loginSchema, LoginFormData } from '../validation';
 import { SocialLoginProvider } from '../types';
@@ -83,12 +76,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         password: data.password,
         rememberMe: data.rememberMe,
       });
-      
+
       reset();
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
-      
+      const errorMessage =
+        error instanceof Error ? error.message : 'Login failed';
+
       if (errorMessage.includes('Invalid email or password')) {
         setError('email', { message: 'Invalid email or password' });
         setError('password', { message: 'Invalid email or password' });
@@ -96,7 +90,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         Alert.alert(
           'Account Temporarily Locked',
           'Too many failed login attempts. Please try again later or reset your password.',
-          [{ text: 'OK' }]
+          [{ text: 'OK' }],
         );
       } else {
         Alert.alert('Login Error', errorMessage);
@@ -107,15 +101,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const handleSocialLogin = async (provider: SocialLoginProvider) => {
     try {
       setSocialLoading(provider.id);
-      
+
       // In a real app, this would open the social login flow
       // For demo purposes, we'll simulate it
       const mockToken = `mock_${provider.id}_token_${Date.now()}`;
       await actions.socialLogin(provider.id, mockToken);
-      
+
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Social login failed';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Social login failed';
       Alert.alert('Login Error', errorMessage);
     } finally {
       setSocialLoading(null);
@@ -139,9 +134,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       <View className="flex-1 bg-white">
         {/* Header */}
         <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
-          <Text className="text-xl font-bold text-gray-900">
-            Welcome Back
-          </Text>
+          <Text className="text-xl font-bold text-gray-900">Welcome Back</Text>
           <TouchableOpacity
             onPress={handleClose}
             className="p-2 rounded-full bg-gray-100"
@@ -210,7 +203,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View className="relative">
-                    <Mail size={20} className="absolute left-3 top-3 text-gray-400 z-10" />
+                    <Mail
+                      size={20}
+                      className="absolute left-3 top-3 text-gray-400 z-10"
+                    />
                     <TextInput
                       value={value}
                       onChangeText={onChange}
@@ -220,7 +216,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                       autoCapitalize="none"
                       autoComplete="email"
                       className={`w-full pl-12 pr-4 py-3 border rounded-lg text-gray-900 ${
-                        errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white'
+                        errors.email
+                          ? 'border-red-300 bg-red-50'
+                          : 'border-gray-300 bg-white'
                       }`}
                       placeholderTextColor="#9CA3AF"
                     />
@@ -230,7 +228,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               {errors.email && (
                 <View className="flex-row items-center mt-2">
                   <AlertCircle size={16} className="text-red-500 mr-1" />
-                  <Text className="text-red-500 text-sm">{errors.email.message}</Text>
+                  <Text className="text-red-500 text-sm">
+                    {errors.email.message}
+                  </Text>
                 </View>
               )}
             </View>
@@ -245,7 +245,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View className="relative">
-                    <Lock size={20} className="absolute left-3 top-3 text-gray-400 z-10" />
+                    <Lock
+                      size={20}
+                      className="absolute left-3 top-3 text-gray-400 z-10"
+                    />
                     <TextInput
                       value={value}
                       onChangeText={onChange}
@@ -254,7 +257,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                       secureTextEntry={!showPassword}
                       autoComplete="password"
                       className={`w-full pl-12 pr-12 py-3 border rounded-lg text-gray-900 ${
-                        errors.password ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white'
+                        errors.password
+                          ? 'border-red-300 bg-red-50'
+                          : 'border-gray-300 bg-white'
                       }`}
                       placeholderTextColor="#9CA3AF"
                     />
@@ -274,7 +279,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               {errors.password && (
                 <View className="flex-row items-center mt-2">
                   <AlertCircle size={16} className="text-red-500 mr-1" />
-                  <Text className="text-red-500 text-sm">{errors.password.message}</Text>
+                  <Text className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </Text>
                 </View>
               )}
             </View>
@@ -289,9 +296,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                     onPress={() => onChange(!value)}
                     className="flex-row items-center"
                   >
-                    <View className={`w-5 h-5 border-2 rounded mr-3 items-center justify-center ${
-                      value ? 'bg-green-500 border-green-500' : 'border-gray-300'
-                    }`}>
+                    <View
+                      className={`w-5 h-5 border-2 rounded mr-3 items-center justify-center ${
+                        value
+                          ? 'bg-green-500 border-green-500'
+                          : 'border-gray-300'
+                      }`}
+                    >
                       {value && <Text className="text-white text-xs">✓</Text>}
                     </View>
                     <Text className="text-gray-700 text-sm">Remember me</Text>
@@ -311,12 +322,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               onPress={handleSubmit(onSubmit)}
               disabled={isSubmitting || state.isLoading}
               className={`w-full py-4 rounded-lg flex-row items-center justify-center ${
-                isSubmitting || state.isLoading
-                  ? 'bg-gray-300'
-                  : 'bg-green-500'
+                isSubmitting || state.isLoading ? 'bg-gray-300' : 'bg-green-500'
               }`}
             >
-              {(isSubmitting || state.isLoading) ? (
+              {isSubmitting || state.isLoading ? (
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <Text className="text-white font-semibold text-lg">

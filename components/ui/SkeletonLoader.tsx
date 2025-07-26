@@ -34,7 +34,7 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
         easing: Easing.inOut(Easing.ease),
       }),
       -1,
-      true
+      true,
     );
   }, []);
 
@@ -68,7 +68,9 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   );
 };
 
-export const BrandSkeletonLoader: React.FC<{ featured?: boolean }> = ({ featured = false }) => {
+export const BrandSkeletonLoader: React.FC<{ featured?: boolean }> = ({
+  featured = false,
+}) => {
   const { colors } = useThemeColors();
 
   return (
@@ -79,7 +81,9 @@ export const BrandSkeletonLoader: React.FC<{ featured?: boolean }> = ({ featured
       ]}
     >
       {/* Logo Skeleton */}
-      <View style={[styles.logoSkeleton, featured && styles.featuredLogoSkeleton]}>
+      <View
+        style={[styles.logoSkeleton, featured && styles.featuredLogoSkeleton]}
+      >
         <SkeletonLoader
           width={featured ? 64 : 48}
           height={featured ? 64 : 48}
@@ -94,25 +98,17 @@ export const BrandSkeletonLoader: React.FC<{ featured?: boolean }> = ({ featured
           height={featured ? 16 : 12}
           borderRadius={4}
         />
-        
+
         {featured && (
           <View style={{ marginTop: 4 }}>
-            <SkeletonLoader
-              width={80}
-              height={12}
-              borderRadius={4}
-            />
+            <SkeletonLoader width={80} height={12} borderRadius={4} />
           </View>
         )}
       </View>
 
       {featured && (
         <View style={{ marginTop: 8 }}>
-          <SkeletonLoader
-            width={16}
-            height={16}
-            borderRadius={8}
-          />
+          <SkeletonLoader width={16} height={16} borderRadius={8} />
         </View>
       )}
     </View>

@@ -5,10 +5,10 @@ export { Favorites } from './Favorites';
 export { OnboardingQuiz } from './OnboardingQuiz';
 
 // Re-export types for convenience
-export type { 
-  User, 
-  UserPreferences, 
-  SavedSearch, 
+export type {
+  User,
+  UserPreferences,
+  SavedSearch,
   SavedSearchAlert,
-  FavoriteCar 
+  FavoriteCar,
 } from '../auth/types';

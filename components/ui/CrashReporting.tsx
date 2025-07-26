@@ -88,11 +88,11 @@ export class CrashReportingBoundary extends Component<Props, State> {
 
     // In production, this would send the report to your crash reporting service
     logger.debug('🐛 Bug Report:', reportData);
-    
+
     Alert.alert(
       'Report Sent',
       'Thank you for helping us improve the app. The development team has been notified.',
-      [{ text: 'OK' }]
+      [{ text: 'OK' }],
     );
   };
 
@@ -102,12 +102,14 @@ export class CrashReportingBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
-      return <CrashScreen 
-        error={this.state.error}
-        onRestart={this.handleRestart}
-        onGoHome={this.handleGoHome}
-        onReportBug={this.handleReportBug}
-      />;
+      return (
+        <CrashScreen
+          error={this.state.error}
+          onRestart={this.handleRestart}
+          onGoHome={this.handleGoHome}
+          onReportBug={this.handleReportBug}
+        />
+      );
     }
 
     return this.props.children;
@@ -117,11 +119,11 @@ export class CrashReportingBoundary extends Component<Props, State> {
 /**
  * Crash screen component using hooks
  */
-function CrashScreen({ 
-  error, 
-  onRestart, 
-  onGoHome, 
-  onReportBug 
+function CrashScreen({
+  error,
+  onRestart,
+  onGoHome,
+  onReportBug,
 }: {
   error: Error | null;
   onRestart: () => void;
@@ -129,7 +131,7 @@ function CrashScreen({
   onReportBug: () => void;
 }) {
   const { colors } = useThemeColors();
-  
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -208,11 +210,12 @@ function CrashScreen({
       <View style={styles.iconContainer}>
         <AlertTriangle color={colors.error} size={40} />
       </View>
-      
+
       <Text style={styles.title}>Oops! Something went wrong</Text>
-      
+
       <Text style={styles.subtitle}>
-        We're sorry for the inconvenience. The app encountered an unexpected error and needs to restart.
+        We're sorry for the inconvenience. The app encountered an unexpected
+        error and needs to restart.
       </Text>
 
       {__DEV__ && error && (
@@ -231,13 +234,23 @@ function CrashScreen({
           <Text style={styles.buttonText}>Try Again</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={onGoHome}>
+        <TouchableOpacity
+          style={[styles.button, styles.buttonSecondary]}
+          onPress={onGoHome}
+        >
           <Home color={colors.text} size={20} />
-          <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Go to Home</Text>
+          <Text style={[styles.buttonText, styles.buttonTextSecondary]}>
+            Go to Home
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={onReportBug}>
-          <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Report Bug</Text>
+        <TouchableOpacity
+          style={[styles.button, styles.buttonSecondary]}
+          onPress={onReportBug}
+        >
+          <Text style={[styles.buttonText, styles.buttonTextSecondary]}>
+            Report Bug
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -250,7 +263,7 @@ function CrashScreen({
 export function useErrorReporting() {
   const reportError = (error: Error, context?: Record<string, any>) => {
     logger.error('🚨 Reported Error:', error);
-    
+
     trackError(error, {
       ...context,
       reported_manually: true,
@@ -260,7 +273,7 @@ export function useErrorReporting() {
 
   const reportWarning = (message: string, context?: Record<string, any>) => {
     logger.warn('⚠️ Warning:', message);
-    
+
     trackError(new Error(message), {
       ...context,
       severity: 'warning',
@@ -279,7 +292,7 @@ export function useErrorReporting() {
  */
 export function withCrashReporting<P extends object>(
   WrappedComponent: React.ComponentType<P>,
-  fallback?: ReactNode
+  fallback?: ReactNode,
 ) {
   return function CrashReportingWrapper(props: P) {
     return (

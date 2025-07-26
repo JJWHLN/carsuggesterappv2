@@ -11,8 +11,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
-import PerformanceTracker, { PerformanceAnalytics } from '../services/PerformanceTracker';
-import ABTestService, { ABTestResults, FeatureFlag } from '../services/ABTestService';
+import PerformanceTracker, {
+  PerformanceAnalytics,
+} from '../services/PerformanceTracker';
+import ABTestService, {
+  ABTestResults,
+  FeatureFlag,
+} from '../services/ABTestService';
 import { Colors, Typography, Spacing, Shadows } from '../constants/Colors';
 import { AnimatedBadge } from './ui/AnimatedBadge';
 import { LoadingSpinner } from './ui/LoadingSpinner';
@@ -47,35 +52,41 @@ interface MetricTrend {
 
 export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   onNavigateToDetails,
-  refreshInterval = 30000 // 30 seconds
+  refreshInterval = 30000, // 30 seconds
 }) => {
   const { colors } = useThemeColors();
   const styles = getStyles();
-  
+
   // State
-  const [performanceReport, setPerformanceReport] = useState<PerformanceReport | null>(null);
+  const [performanceReport, setPerformanceReport] =
+    useState<PerformanceReport | null>(null);
   const [cacheStats, setCacheStats] = useState<any>(null);
   const [mlStats, setMLStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTimeframe, setSelectedTimeframe] = useState<'1h' | '6h' | '24h' | '7d'>('1h');
-  
+  const [selectedTimeframe, setSelectedTimeframe] = useState<
+    '1h' | '6h' | '24h' | '7d'
+  >('1h');
+
   // Services
-  const performanceMonitor = useMemo(() => PerformanceMonitor.getInstance(), []);
+  const performanceMonitor = useMemo(
+    () => PerformanceMonitor.getInstance(),
+    [],
+  );
   const cacheManager = useMemo(() => AdvancedCacheManager.getInstance(), []);
   const mlPipeline = useMemo(() => EnhancedMLPipeline.getInstance(), []);
 
   // Effects
   useEffect(() => {
     loadDashboardData();
-    
+
     const interval = setInterval(() => {
       if (!isLoading && !isRefreshing) {
         refreshData();
       }
     }, refreshInterval);
-    
+
     return () => clearInterval(interval);
   }, [selectedTimeframe]);
 
@@ -83,12 +94,12 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   const loadDashboardData = async (): Promise<void> => {
     try {
       setError(null);
-      
+
       const [report, cache] = await Promise.all([
         performanceMonitor.getPerformanceReport(selectedTimeframe),
-        cacheManager.getStats()
+        cacheManager.getStats(),
       ]);
-      
+
       setPerformanceReport(report);
       setCacheStats(cache);
       setMLStats({ totalModels: 5, activeModels: 3, accuracy: 0.85 }); // Mock ML stats
@@ -107,13 +118,18 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   };
 
   // Metric calculations
-  const getPerformanceScore = (): { score: number; grade: string; color: string } => {
-    if (!performanceReport) return { score: 0, grade: 'F', color: colors.error };
-    
+  const getPerformanceScore = (): {
+    score: number;
+    grade: string;
+    color: string;
+  } => {
+    if (!performanceReport)
+      return { score: 0, grade: 'F', color: colors.error };
+
     const score = performanceReport.score;
     let grade = 'F';
     let color = colors.error;
-    
+
     if (score >= 90) {
       grade = 'A';
       color = colors.success;
@@ -127,7 +143,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       grade = 'D';
       color = colors.warning;
     }
-    
+
     return { score, grade, color };
   };
 
@@ -162,9 +178,9 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
             } catch (err) {
               Alert.alert('Error', 'Failed to clear data');
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
 
@@ -176,14 +192,15 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           key={timeframe}
           style={[
             styles.timeframeButton,
-            selectedTimeframe === timeframe && styles.timeframeButtonActive
+            selectedTimeframe === timeframe && styles.timeframeButtonActive,
           ]}
           onPress={() => handleTimeframeChange(timeframe)}
         >
           <Text
             style={[
               styles.timeframeButtonText,
-              selectedTimeframe === timeframe && styles.timeframeButtonTextActive
+              selectedTimeframe === timeframe &&
+                styles.timeframeButtonTextActive,
             ]}
           >
             {timeframe}
@@ -193,7 +210,13 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     </View>
   );
 
-  const renderStatCard = (title: string, value: string, subtitle: string, trend: 'up' | 'down' | 'stable', color: string) => (
+  const renderStatCard = (
+    title: string,
+    value: string,
+    subtitle: string,
+    trend: 'up' | 'down' | 'stable',
+    color: string,
+  ) => (
     <View style={[styles.statCard, { borderLeftColor: color }]}>
       <Text style={styles.statTitle}>{title}</Text>
       <Text style={[styles.statValue, { color }]}>{value}</Text>
@@ -208,10 +231,10 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
   const renderOverviewStats = () => {
     if (!performanceReport) return null;
-    
+
     const { score, grade, color } = getPerformanceScore();
     const metrics = performanceReport.metrics;
-    
+
     return (
       <View style={styles.statsContainer}>
         <View style={styles.statsRow}>
@@ -220,14 +243,14 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
             grade,
             `${score}/100`,
             'stable',
-            color
+            color,
           )}
           {renderStatCard(
             'Response Time',
             `${Math.round(metrics.responseTime)}ms`,
             'Average',
             metrics.responseTime > 1000 ? 'down' : 'up',
-            metrics.responseTime > 1000 ? colors.error : colors.success
+            metrics.responseTime > 1000 ? colors.error : colors.success,
           )}
         </View>
         <View style={styles.statsRow}>
@@ -236,14 +259,14 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
             `${metrics.errorRate.toFixed(1)}%`,
             'Current',
             metrics.errorRate > 5 ? 'down' : 'up',
-            metrics.errorRate > 5 ? colors.error : colors.success
+            metrics.errorRate > 5 ? colors.error : colors.success,
           )}
           {renderStatCard(
             'Cache Hit Rate',
             `${metrics.cacheHitRate.toFixed(1)}%`,
             'Efficiency',
             metrics.cacheHitRate > 80 ? 'up' : 'down',
-            metrics.cacheHitRate > 80 ? colors.success : colors.warning
+            metrics.cacheHitRate > 80 ? colors.success : colors.warning,
           )}
         </View>
       </View>
@@ -252,84 +275,104 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
   const renderAnomalies = () => {
     if (!performanceReport?.anomalies.length) return null;
-    
+
     return (
       <Card style={styles.sectionCard}>
         <Text style={styles.sectionTitle}>Performance Anomalies</Text>
-        {performanceReport.anomalies.map((anomaly: PerformanceAnomaly, index: number) => (
-          <View key={index} style={styles.anomalyItem}>
-            <View style={styles.anomalyHeader}>
-              <Text style={styles.anomalyMetric}>{anomaly.metric}</Text>
-              <View style={[
-                styles.severityBadge,
-                { backgroundColor: anomaly.severity === 'critical' ? colors.error : colors.warning }
-              ]}>
-                <Text style={styles.severityText}>{anomaly.severity}</Text>
+        {performanceReport.anomalies.map(
+          (anomaly: PerformanceAnomaly, index: number) => (
+            <View key={index} style={styles.anomalyItem}>
+              <View style={styles.anomalyHeader}>
+                <Text style={styles.anomalyMetric}>{anomaly.metric}</Text>
+                <View
+                  style={[
+                    styles.severityBadge,
+                    {
+                      backgroundColor:
+                        anomaly.severity === 'critical'
+                          ? colors.error
+                          : colors.warning,
+                    },
+                  ]}
+                >
+                  <Text style={styles.severityText}>{anomaly.severity}</Text>
+                </View>
               </View>
+              <Text style={styles.anomalyDescription}>
+                Value: {anomaly.value.toFixed(2)} (Threshold:{' '}
+                {anomaly.threshold})
+              </Text>
+              {anomaly.cause && (
+                <Text style={styles.anomalyCause}>Cause: {anomaly.cause}</Text>
+              )}
             </View>
-            <Text style={styles.anomalyDescription}>
-              Value: {anomaly.value.toFixed(2)} (Threshold: {anomaly.threshold})
-            </Text>
-            {anomaly.cause && (
-              <Text style={styles.anomalyCause}>Cause: {anomaly.cause}</Text>
-            )}
-          </View>
-        ))}
+          ),
+        )}
       </Card>
     );
   };
 
   const renderRecommendations = () => {
     if (!performanceReport?.recommendations.length) return null;
-    
+
     return (
       <Card style={styles.sectionCard}>
         <Text style={styles.sectionTitle}>Performance Recommendations</Text>
-        {performanceReport.recommendations.map((rec: PerformanceRecommendation, index: number) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.recommendationItem}
-            onPress={() => onNavigateToDetails?.('recommendation')}
-          >
-            <View style={styles.recommendationHeader}>
-              <Text style={styles.recommendationTitle}>{rec.title}</Text>
-              <View style={styles.impactBadge}>
-                <Text style={styles.impactText}>{rec.impact} impact</Text>
+        {performanceReport.recommendations.map(
+          (rec: PerformanceRecommendation, index: number) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.recommendationItem}
+              onPress={() => onNavigateToDetails?.('recommendation')}
+            >
+              <View style={styles.recommendationHeader}>
+                <Text style={styles.recommendationTitle}>{rec.title}</Text>
+                <View style={styles.impactBadge}>
+                  <Text style={styles.impactText}>{rec.impact} impact</Text>
+                </View>
               </View>
-            </View>
-            <Text style={styles.recommendationDescription}>
-              {rec.description}
-            </Text>
-            <Text style={styles.recommendationEffort}>
-              Effort: {rec.effort} • Priority: {rec.priority}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text style={styles.recommendationDescription}>
+                {rec.description}
+              </Text>
+              <Text style={styles.recommendationEffort}>
+                Effort: {rec.effort} • Priority: {rec.priority}
+              </Text>
+            </TouchableOpacity>
+          ),
+        )}
       </Card>
     );
   };
 
   const renderCacheStats = () => {
     if (!cacheStats) return null;
-    
+
     return (
       <Card style={styles.sectionCard}>
         <Text style={styles.sectionTitle}>Cache Performance</Text>
         <View style={styles.cacheStatsGrid}>
           <View style={styles.cacheStatItem}>
-            <Text style={styles.cacheStatValue}>{cacheStats.totalEntries || 0}</Text>
+            <Text style={styles.cacheStatValue}>
+              {cacheStats.totalEntries || 0}
+            </Text>
             <Text style={styles.cacheStatLabel}>Total Entries</Text>
           </View>
           <View style={styles.cacheStatItem}>
-            <Text style={styles.cacheStatValue}>{(cacheStats.hitRate || 0).toFixed(1)}%</Text>
+            <Text style={styles.cacheStatValue}>
+              {(cacheStats.hitRate || 0).toFixed(1)}%
+            </Text>
             <Text style={styles.cacheStatLabel}>Hit Rate</Text>
           </View>
           <View style={styles.cacheStatItem}>
-            <Text style={styles.cacheStatValue}>{Math.round((cacheStats.totalSize || 0) / 1024)}KB</Text>
+            <Text style={styles.cacheStatValue}>
+              {Math.round((cacheStats.totalSize || 0) / 1024)}KB
+            </Text>
             <Text style={styles.cacheStatLabel}>Cache Size</Text>
           </View>
           <View style={styles.cacheStatItem}>
-            <Text style={styles.cacheStatValue}>{cacheStats.evictions || 0}</Text>
+            <Text style={styles.cacheStatValue}>
+              {cacheStats.evictions || 0}
+            </Text>
             <Text style={styles.cacheStatLabel}>Evictions</Text>
           </View>
         </View>
@@ -350,14 +393,14 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           <Text style={styles.refreshButtonText}>Refresh</Text>
         )}
       </TouchableOpacity>
-      
+
       <TouchableOpacity
         style={[styles.actionButton, styles.exportButton]}
         onPress={handleExportData}
       >
         <Text style={styles.exportButtonText}>Export</Text>
       </TouchableOpacity>
-      
+
       <TouchableOpacity
         style={[styles.actionButton, styles.clearButton]}
         onPress={handleClearData}
@@ -371,9 +414,17 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
           <LoadingSpinner />
-          <Text style={{ marginTop: 16, fontSize: 16, color: currentColors.textSecondary }}>
+          <Text
+            style={{
+              marginTop: 16,
+              fontSize: 16,
+              color: currentColors.textSecondary,
+            }}
+          >
             Loading performance data...
           </Text>
         </View>
@@ -438,243 +489,244 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   );
 };
 
-const getStyles = () => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: currentColors.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: currentColors.text,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: currentColors.textSecondary,
-  },
-  timeframeSelector: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    backgroundColor: currentColors.surface,
-    borderRadius: 12,
-    padding: 4,
-  },
-  timeframeButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  timeframeButtonActive: {
-    backgroundColor: currentColors.primary,
-  },
-  timeframeButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: currentColors.textSecondary,
-  },
-  timeframeButtonTextActive: {
-    color: currentColors.white,
-  },
-  statsContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    gap: 16,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: currentColors.surface,
-    padding: 20,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    ...Shadows.medium,
-  },
-  statTitle: {
-    fontSize: 14,
-    color: currentColors.textSecondary,
-    marginBottom: 4,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  statSubtitle: {
-    fontSize: 12,
-    color: currentColors.textSecondary,
-  },
-  trendIndicator: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-  },
-  trendText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  sectionCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: currentColors.text,
-    marginBottom: 16,
-  },
-  anomalyItem: {
-    marginBottom: 12,
-    padding: 12,
-    backgroundColor: currentColors.background,
-    borderRadius: 8,
-  },
-  anomalyHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  anomalyMetric: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: currentColors.text,
-  },
-  severityBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  severityText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: currentColors.white,
-    textTransform: 'uppercase',
-  },
-  anomalyDescription: {
-    fontSize: 14,
-    color: currentColors.textSecondary,
-    marginBottom: 4,
-  },
-  anomalyCause: {
-    fontSize: 12,
-    color: currentColors.textSecondary,
-    fontStyle: 'italic',
-  },
-  recommendationItem: {
-    marginBottom: 12,
-    padding: 12,
-    backgroundColor: currentColors.background,
-    borderRadius: 8,
-  },
-  recommendationHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  recommendationTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: currentColors.text,
-    flex: 1,
-  },
-  impactBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: currentColors.primary,
-    borderRadius: 4,
-  },
-  impactText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: currentColors.white,
-  },
-  recommendationDescription: {
-    fontSize: 14,
-    color: currentColors.textSecondary,
-    marginBottom: 8,
-  },
-  recommendationEffort: {
-    fontSize: 12,
-    color: currentColors.textSecondary,
-  },
-  cacheStatsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  cacheStatItem: {
-    width: '50%',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  cacheStatValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: currentColors.primary,
-    marginBottom: 4,
-  },
-  cacheStatLabel: {
-    fontSize: 14,
-    color: currentColors.textSecondary,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  refreshButton: {
-    backgroundColor: currentColors.primary,
-    borderColor: currentColors.primary,
-  },
-  refreshButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: currentColors.white,
-  },
-  exportButton: {
-    backgroundColor: 'transparent',
-    borderColor: currentColors.primary,
-  },
-  exportButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: currentColors.primary,
-  },
-  clearButton: {
-    backgroundColor: 'transparent',
-    borderColor: currentColors.error,
-  },
-  clearButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: currentColors.error,
-  },
-  bottomPadding: {
-    height: 40,
-  },
-});
+const getStyles = () =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: currentColors.background,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    header: {
+      padding: 24,
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: currentColors.text,
+      marginBottom: 8,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: currentColors.textSecondary,
+    },
+    timeframeSelector: {
+      flexDirection: 'row',
+      marginHorizontal: 20,
+      marginBottom: 20,
+      backgroundColor: currentColors.surface,
+      borderRadius: 12,
+      padding: 4,
+    },
+    timeframeButton: {
+      flex: 1,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      alignItems: 'center',
+    },
+    timeframeButtonActive: {
+      backgroundColor: currentColors.primary,
+    },
+    timeframeButtonText: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: currentColors.textSecondary,
+    },
+    timeframeButtonTextActive: {
+      color: currentColors.white,
+    },
+    statsContainer: {
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      marginBottom: 16,
+      gap: 16,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: currentColors.surface,
+      padding: 20,
+      borderRadius: 12,
+      borderLeftWidth: 4,
+      ...Shadows.medium,
+    },
+    statTitle: {
+      fontSize: 14,
+      color: currentColors.textSecondary,
+      marginBottom: 4,
+    },
+    statValue: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 4,
+    },
+    statSubtitle: {
+      fontSize: 12,
+      color: currentColors.textSecondary,
+    },
+    trendIndicator: {
+      position: 'absolute',
+      top: 16,
+      right: 16,
+    },
+    trendText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    sectionCard: {
+      marginHorizontal: 20,
+      marginBottom: 20,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: currentColors.text,
+      marginBottom: 16,
+    },
+    anomalyItem: {
+      marginBottom: 12,
+      padding: 12,
+      backgroundColor: currentColors.background,
+      borderRadius: 8,
+    },
+    anomalyHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    anomalyMetric: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: currentColors.text,
+    },
+    severityBadge: {
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+    },
+    severityText: {
+      fontSize: 12,
+      fontWeight: '500',
+      color: currentColors.white,
+      textTransform: 'uppercase',
+    },
+    anomalyDescription: {
+      fontSize: 14,
+      color: currentColors.textSecondary,
+      marginBottom: 4,
+    },
+    anomalyCause: {
+      fontSize: 12,
+      color: currentColors.textSecondary,
+      fontStyle: 'italic',
+    },
+    recommendationItem: {
+      marginBottom: 12,
+      padding: 12,
+      backgroundColor: currentColors.background,
+      borderRadius: 8,
+    },
+    recommendationHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    recommendationTitle: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: currentColors.text,
+      flex: 1,
+    },
+    impactBadge: {
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      backgroundColor: currentColors.primary,
+      borderRadius: 4,
+    },
+    impactText: {
+      fontSize: 12,
+      fontWeight: '500',
+      color: currentColors.white,
+    },
+    recommendationDescription: {
+      fontSize: 14,
+      color: currentColors.textSecondary,
+      marginBottom: 8,
+    },
+    recommendationEffort: {
+      fontSize: 12,
+      color: currentColors.textSecondary,
+    },
+    cacheStatsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    cacheStatItem: {
+      width: '50%',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    cacheStatValue: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: currentColors.primary,
+      marginBottom: 4,
+    },
+    cacheStatLabel: {
+      fontSize: 14,
+      color: currentColors.textSecondary,
+    },
+    actionButtons: {
+      flexDirection: 'row',
+      paddingHorizontal: 20,
+      marginBottom: 20,
+      gap: 12,
+    },
+    actionButton: {
+      flex: 1,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      alignItems: 'center',
+      borderWidth: 1,
+    },
+    refreshButton: {
+      backgroundColor: currentColors.primary,
+      borderColor: currentColors.primary,
+    },
+    refreshButtonText: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: currentColors.white,
+    },
+    exportButton: {
+      backgroundColor: 'transparent',
+      borderColor: currentColors.primary,
+    },
+    exportButtonText: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: currentColors.primary,
+    },
+    clearButton: {
+      backgroundColor: 'transparent',
+      borderColor: currentColors.error,
+    },
+    clearButtonText: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: currentColors.error,
+    },
+    bottomPadding: {
+      height: 40,
+    },
+  });
 
 export default PerformanceDashboard;

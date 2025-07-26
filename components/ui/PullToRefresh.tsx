@@ -2,21 +2,22 @@ import React, { useState, useCallback } from 'react';
 import { RefreshControl, RefreshControlProps } from 'react-native';
 import { currentColors } from '@/constants/Colors';
 
-interface PullToRefreshProps extends Omit<RefreshControlProps, 'refreshing' | 'onRefresh'> {
+interface PullToRefreshProps
+  extends Omit<RefreshControlProps, 'refreshing' | 'onRefresh'> {
   onRefresh: () => Promise<void>;
   isRefreshing?: boolean;
 }
 
-export function PullToRefresh({ 
-  onRefresh, 
+export function PullToRefresh({
+  onRefresh,
   isRefreshing = false,
-  ...props 
+  ...props
 }: PullToRefreshProps) {
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
     if (refreshing || isRefreshing) return;
-    
+
     setRefreshing(true);
     try {
       await onRefresh();

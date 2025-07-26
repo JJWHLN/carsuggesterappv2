@@ -113,7 +113,10 @@ class ComparisonService {
     }
   }
 
-  static async addCarToComparison(comparisonId: string, carId: string): Promise<CarComparison> {
+  static async addCarToComparison(
+    comparisonId: string,
+    carId: string,
+  ): Promise<CarComparison> {
     try {
       const response = await fetch(`/api/comparisons/${comparisonId}/cars`, {
         method: 'POST',
@@ -132,11 +135,17 @@ class ComparisonService {
     }
   }
 
-  static async removeCarFromComparison(comparisonId: string, carId: string): Promise<CarComparison> {
+  static async removeCarFromComparison(
+    comparisonId: string,
+    carId: string,
+  ): Promise<CarComparison> {
     try {
-      const response = await fetch(`/api/comparisons/${comparisonId}/cars/${carId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/comparisons/${comparisonId}/cars/${carId}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (!response.ok) {
         throw new Error('Failed to remove car from comparison');
       }
@@ -149,7 +158,10 @@ class ComparisonService {
 }
 
 export default function CarComparisonScreen() {
-  const { id, carIds } = useLocalSearchParams<{ id?: string; carIds?: string }>();
+  const { id, carIds } = useLocalSearchParams<{
+    id?: string;
+    carIds?: string;
+  }>();
   const router = useRouter();
   const { colors } = useThemeColors();
   const styles = getThemedStyles(colors);
@@ -175,13 +187,16 @@ export default function CarComparisonScreen() {
       } else if (carIds) {
         // Create new comparison from car IDs
         const carIdArray = carIds.split(',');
-        const comparisonData = await ComparisonService.createComparison(carIdArray);
+        const comparisonData =
+          await ComparisonService.createComparison(carIdArray);
         setComparison(comparisonData);
       } else {
         throw new Error('No comparison ID or car IDs provided');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load comparison');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load comparison',
+      );
     } finally {
       setLoading(false);
     }
@@ -199,7 +214,10 @@ export default function CarComparisonScreen() {
     if (!comparison) return;
 
     try {
-      const updatedComparison = await ComparisonService.removeCarFromComparison(comparison.id, carId);
+      const updatedComparison = await ComparisonService.removeCarFromComparison(
+        comparison.id,
+        carId,
+      );
       setComparison(updatedComparison);
     } catch (err) {
       Alert.alert('Error', 'Failed to remove car from comparison');
@@ -219,12 +237,12 @@ export default function CarComparisonScreen() {
         >
           <X size={16} color={colors.error} />
         </TouchableOpacity>
-        
+
         <OptimizedImage
           source={{ uri: car.imageUrl }}
           style={styles.carImage}
         />
-        
+
         <TouchableOpacity onPress={() => handleViewCar(car.id)}>
           <Text style={[styles.carName, { color: colors.text }]}>
             {car.year} {car.make} {car.model}
@@ -233,7 +251,7 @@ export default function CarComparisonScreen() {
             {car.trim}
           </Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.carPrice, { color: colors.primary }]}>
           ${car.price.toLocaleString()}
         </Text>
@@ -256,15 +274,53 @@ export default function CarComparisonScreen() {
     if (!comparison) return null;
 
     const specs = [
-      { key: 'engine', label: 'Engine', getValue: (car: CarComparisonItem) => car.specs.engine },
-      { key: 'horsepower', label: 'Horsepower', getValue: (car: CarComparisonItem) => `${car.specs.horsepower} hp` },
-      { key: 'torque', label: 'Torque', getValue: (car: CarComparisonItem) => `${car.specs.torque} lb-ft` },
-      { key: 'fuelEconomy', label: 'Fuel Economy', getValue: (car: CarComparisonItem) => `${car.specs.fuelEconomy.combined} mpg` },
-      { key: 'transmission', label: 'Transmission', getValue: (car: CarComparisonItem) => car.specs.transmission },
-      { key: 'drivetrain', label: 'Drivetrain', getValue: (car: CarComparisonItem) => car.specs.drivetrain },
-      { key: 'seating', label: 'Seating', getValue: (car: CarComparisonItem) => `${car.specs.seating} seats` },
-      { key: 'cargoSpace', label: 'Cargo Space', getValue: (car: CarComparisonItem) => `${car.specs.cargoSpace} cu ft` },
-      { key: 'safetyRating', label: 'Safety Rating', getValue: (car: CarComparisonItem) => `${car.specs.safetyRating}/5 stars` },
+      {
+        key: 'engine',
+        label: 'Engine',
+        getValue: (car: CarComparisonItem) => car.specs.engine,
+      },
+      {
+        key: 'horsepower',
+        label: 'Horsepower',
+        getValue: (car: CarComparisonItem) => `${car.specs.horsepower} hp`,
+      },
+      {
+        key: 'torque',
+        label: 'Torque',
+        getValue: (car: CarComparisonItem) => `${car.specs.torque} lb-ft`,
+      },
+      {
+        key: 'fuelEconomy',
+        label: 'Fuel Economy',
+        getValue: (car: CarComparisonItem) =>
+          `${car.specs.fuelEconomy.combined} mpg`,
+      },
+      {
+        key: 'transmission',
+        label: 'Transmission',
+        getValue: (car: CarComparisonItem) => car.specs.transmission,
+      },
+      {
+        key: 'drivetrain',
+        label: 'Drivetrain',
+        getValue: (car: CarComparisonItem) => car.specs.drivetrain,
+      },
+      {
+        key: 'seating',
+        label: 'Seating',
+        getValue: (car: CarComparisonItem) => `${car.specs.seating} seats`,
+      },
+      {
+        key: 'cargoSpace',
+        label: 'Cargo Space',
+        getValue: (car: CarComparisonItem) => `${car.specs.cargoSpace} cu ft`,
+      },
+      {
+        key: 'safetyRating',
+        label: 'Safety Rating',
+        getValue: (car: CarComparisonItem) =>
+          `${car.specs.safetyRating}/5 stars`,
+      },
     ];
 
     return (
@@ -278,14 +334,18 @@ export default function CarComparisonScreen() {
             </View>
             {comparison.cars.map((car) => (
               <View key={car.id} style={styles.valueColumn}>
-                <Text style={[styles.specValue, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.specValue, { color: colors.textSecondary }]}
+                >
                   {spec.getValue(car)}
                 </Text>
               </View>
             ))}
             {comparison.cars.length < 3 && (
               <View style={styles.valueColumn}>
-                <Text style={[styles.specValue, { color: colors.border }]}>-</Text>
+                <Text style={[styles.specValue, { color: colors.border }]}>
+                  -
+                </Text>
               </View>
             )}
           </View>
@@ -327,7 +387,9 @@ export default function CarComparisonScreen() {
             ))}
             {comparison.cars.length < 3 && (
               <View style={styles.valueColumn}>
-                <Text style={[styles.specValue, { color: colors.border }]}>-</Text>
+                <Text style={[styles.specValue, { color: colors.border }]}>
+                  -
+                </Text>
               </View>
             )}
           </View>
@@ -346,20 +408,30 @@ export default function CarComparisonScreen() {
             <Text style={[styles.prosConsTitle, { color: colors.text }]}>
               {car.make} {car.model}
             </Text>
-            
+
             <View style={styles.prosConsSection}>
-              <Text style={[styles.prosConsLabel, { color: '#10B981' }]}>Pros</Text>
+              <Text style={[styles.prosConsLabel, { color: '#10B981' }]}>
+                Pros
+              </Text>
               {car.pros.map((pro, index) => (
-                <Text key={index} style={[styles.prosConsItem, { color: colors.textSecondary }]}>
+                <Text
+                  key={index}
+                  style={[styles.prosConsItem, { color: colors.textSecondary }]}
+                >
                   • {pro}
                 </Text>
               ))}
             </View>
-            
+
             <View style={styles.prosConsSection}>
-              <Text style={[styles.prosConsLabel, { color: '#EF4444' }]}>Cons</Text>
+              <Text style={[styles.prosConsLabel, { color: '#EF4444' }]}>
+                Cons
+              </Text>
               {car.cons.map((con, index) => (
-                <Text key={index} style={[styles.prosConsItem, { color: colors.textSecondary }]}>
+                <Text
+                  key={index}
+                  style={[styles.prosConsItem, { color: colors.textSecondary }]}
+                >
                   • {con}
                 </Text>
               ))}
@@ -413,12 +485,18 @@ export default function CarComparisonScreen() {
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Car Comparison</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          Car Comparison
+        </Text>
         <View style={styles.headerRight} />
       </View>
 
       {/* Car Headers */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.carHeadersContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.carHeadersContainer}
+      >
         <View style={styles.carHeadersRow}>
           {comparison.cars.map((car, index) => renderCarHeader(car, index))}
           {comparison.cars.length < 3 && renderAddCarColumn()}
@@ -430,21 +508,30 @@ export default function CarComparisonScreen() {
         {categories.map((category) => {
           const IconComponent = category.icon;
           const isSelected = selectedCategory === category.id;
-          
+
           return (
             <TouchableOpacity
               key={category.id}
               onPress={() => setSelectedCategory(category.id)}
               style={[
                 styles.categoryTab,
-                { borderBottomColor: isSelected ? colors.primary : 'transparent' }
+                {
+                  borderBottomColor: isSelected
+                    ? colors.primary
+                    : 'transparent',
+                },
               ]}
             >
-              <IconComponent size={20} color={isSelected ? colors.primary : colors.textSecondary} />
-              <Text style={[
-                styles.categoryTabText,
-                { color: isSelected ? colors.primary : colors.textSecondary }
-              ]}>
+              <IconComponent
+                size={20}
+                color={isSelected ? colors.primary : colors.textSecondary}
+              />
+              <Text
+                style={[
+                  styles.categoryTabText,
+                  { color: isSelected ? colors.primary : colors.textSecondary },
+                ]}
+              >
                 {category.label}
               </Text>
             </TouchableOpacity>
@@ -453,7 +540,10 @@ export default function CarComparisonScreen() {
       </View>
 
       {/* Comparison Content */}
-      <ScrollView style={styles.comparisonContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.comparisonContent}
+        showsVerticalScrollIndicator={false}
+      >
         {selectedCategory === 'specs' && renderSpecsComparison()}
         {selectedCategory === 'ratings' && renderRatingsComparison()}
         {selectedCategory === 'proscons' && renderProsConsComparison()}
@@ -464,7 +554,7 @@ export default function CarComparisonScreen() {
 
 const getThemedStyles = (colors: any) => {
   const carColumnWidth = (SCREEN_WIDTH - Spacing.lg * 2) / 3;
-  
+
   return StyleSheet.create({
     container: {
       flex: 1,

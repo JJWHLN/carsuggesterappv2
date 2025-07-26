@@ -20,7 +20,17 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
 import { CarUserPreferences } from '@/services/enhancedAuthService';
-import { Car, MapPin, DollarSign, Fuel, Settings, CheckCircle, ArrowRight, Zap, Truck } from '@/utils/ultra-optimized-icons';
+import {
+  Car,
+  MapPin,
+  DollarSign,
+  Fuel,
+  Settings,
+  CheckCircle,
+  ArrowRight,
+  Zap,
+  Truck,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -52,7 +62,7 @@ function CarMarketplaceOnboardingScreen() {
   });
   const [userLocation, setUserLocation] = useState('');
   const scrollViewRef = useRef<ScrollView>(null);
-  
+
   const { completeOnboarding, user } = useAuth();
   const router = useRouter();
   const { colors } = useThemeColors();
@@ -81,7 +91,12 @@ function CarMarketplaceOnboardingScreen() {
     { id: 'diesel', name: 'Diesel', icon: '🛢️', popular: true },
     { id: 'electric', name: 'Electric', icon: '⚡', popular: true },
     { id: 'hybrid', name: 'Hybrid', icon: '🔋', popular: true },
-    { id: 'plug-in-hybrid', name: 'Plug-in Hybrid', icon: '🔌', popular: false },
+    {
+      id: 'plug-in-hybrid',
+      name: 'Plug-in Hybrid',
+      icon: '🔌',
+      popular: false,
+    },
   ];
 
   const bodyTypes = [
@@ -102,18 +117,21 @@ function CarMarketplaceOnboardingScreen() {
   ];
 
   const updatePreferences = (key: keyof CarUserPreferences, value: any) => {
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
 
-  const toggleArrayPreference = (key: keyof CarUserPreferences, itemId: string) => {
+  const toggleArrayPreference = (
+    key: keyof CarUserPreferences,
+    itemId: string,
+  ) => {
     const currentArray = (preferences[key] as string[]) || [];
     const updatedArray = currentArray.includes(itemId)
-      ? currentArray.filter(id => id !== itemId)
+      ? currentArray.filter((id) => id !== itemId)
       : [...currentArray, itemId];
-    
+
     updatePreferences(key, updatedArray);
   };
 
@@ -150,9 +168,11 @@ function CarMarketplaceOnboardingScreen() {
       };
 
       const success = await completeOnboarding(onboardingData);
-      
+
       if (success) {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        await Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success,
+        );
         Alert.alert(
           'Welcome to Our Car Marketplace! 🚗',
           'Your account is now set up. Start exploring personalized car recommendations!',
@@ -161,7 +181,7 @@ function CarMarketplaceOnboardingScreen() {
               text: 'Get Started',
               onPress: () => router.replace('/(tabs)'),
             },
-          ]
+          ],
         );
       } else {
         throw new Error('Failed to complete onboarding');
@@ -169,7 +189,7 @@ function CarMarketplaceOnboardingScreen() {
     } catch (error: any) {
       Alert.alert(
         'Setup Error',
-        error.message || 'Failed to complete setup. Please try again.'
+        error.message || 'Failed to complete setup. Please try again.',
       );
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -183,69 +203,89 @@ function CarMarketplaceOnboardingScreen() {
       <Text style={[styles.stepDescription, { color: colors.textSecondary }]}>
         Select your favorite car brands to get personalized recommendations
       </Text>
-      
-      <Text style={[styles.subsectionTitle, { color: colors.text }]}>Popular Brands</Text>
+
+      <Text style={[styles.subsectionTitle, { color: colors.text }]}>
+        Popular Brands
+      </Text>
       <View style={styles.optionsGrid}>
-        {carBrands.filter(brand => brand.popular).map(brand => (
-          <TouchableOpacity
-            key={brand.id}
-            style={[
-              styles.optionChip,
-              {
-                backgroundColor: preferences.preferredBrands?.includes(brand.name) 
-                  ? colors.primaryLight 
-                  : colors.cardBackground,
-                borderColor: preferences.preferredBrands?.includes(brand.name) 
-                  ? colors.primary 
-                  : colors.border,
+        {carBrands
+          .filter((brand) => brand.popular)
+          .map((brand) => (
+            <TouchableOpacity
+              key={brand.id}
+              style={[
+                styles.optionChip,
+                {
+                  backgroundColor: preferences.preferredBrands?.includes(
+                    brand.name,
+                  )
+                    ? colors.primaryLight
+                    : colors.cardBackground,
+                  borderColor: preferences.preferredBrands?.includes(brand.name)
+                    ? colors.primary
+                    : colors.border,
+                },
+              ]}
+              onPress={() =>
+                toggleArrayPreference('preferredBrands', brand.name)
               }
-            ]}
-            onPress={() => toggleArrayPreference('preferredBrands', brand.name)}
-          >
-            <Text style={[
-              styles.optionText,
-              { 
-                color: preferences.preferredBrands?.includes(brand.name) 
-                  ? colors.primary 
-                  : colors.text 
-              }
-            ]}>
-              {brand.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  {
+                    color: preferences.preferredBrands?.includes(brand.name)
+                      ? colors.primary
+                      : colors.text,
+                  },
+                ]}
+              >
+                {brand.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
       </View>
 
-      <Text style={[styles.subsectionTitle, { color: colors.text }]}>Other Brands</Text>
+      <Text style={[styles.subsectionTitle, { color: colors.text }]}>
+        Other Brands
+      </Text>
       <View style={styles.optionsGrid}>
-        {carBrands.filter(brand => !brand.popular).map(brand => (
-          <TouchableOpacity
-            key={brand.id}
-            style={[
-              styles.optionChip,
-              {
-                backgroundColor: preferences.preferredBrands?.includes(brand.name) 
-                  ? colors.primaryLight 
-                  : colors.cardBackground,
-                borderColor: preferences.preferredBrands?.includes(brand.name) 
-                  ? colors.primary 
-                  : colors.border,
+        {carBrands
+          .filter((brand) => !brand.popular)
+          .map((brand) => (
+            <TouchableOpacity
+              key={brand.id}
+              style={[
+                styles.optionChip,
+                {
+                  backgroundColor: preferences.preferredBrands?.includes(
+                    brand.name,
+                  )
+                    ? colors.primaryLight
+                    : colors.cardBackground,
+                  borderColor: preferences.preferredBrands?.includes(brand.name)
+                    ? colors.primary
+                    : colors.border,
+                },
+              ]}
+              onPress={() =>
+                toggleArrayPreference('preferredBrands', brand.name)
               }
-            ]}
-            onPress={() => toggleArrayPreference('preferredBrands', brand.name)}
-          >
-            <Text style={[
-              styles.optionText,
-              { 
-                color: preferences.preferredBrands?.includes(brand.name) 
-                  ? colors.primary 
-                  : colors.text 
-              }
-            ]}>
-              {brand.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  {
+                    color: preferences.preferredBrands?.includes(brand.name)
+                      ? colors.primary
+                      : colors.text,
+                  },
+                ]}
+              >
+                {brand.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
       </View>
     </View>
   );
@@ -256,20 +296,26 @@ function CarMarketplaceOnboardingScreen() {
       <Text style={[styles.stepDescription, { color: colors.textSecondary }]}>
         Set your budget range to see cars within your price range
       </Text>
-      
+
       <View style={styles.budgetContainer}>
         <View style={styles.budgetInputContainer}>
-          <Text style={[styles.budgetLabel, { color: colors.text }]}>Minimum Budget</Text>
+          <Text style={[styles.budgetLabel, { color: colors.text }]}>
+            Minimum Budget
+          </Text>
           <View style={styles.budgetInputWrapper}>
-            <Text style={[styles.currencySymbol, { color: colors.textSecondary }]}>€</Text>
+            <Text
+              style={[styles.currencySymbol, { color: colors.textSecondary }]}
+            >
+              €
+            </Text>
             <TextInput
               style={[styles.budgetInput, { color: colors.text }]}
               value={preferences.budgetRange?.min.toString()}
               onChangeText={(text) => {
                 const value = parseInt(text) || 0;
-                updatePreferences('budgetRange', { 
-                  ...preferences.budgetRange!, 
-                  min: value 
+                updatePreferences('budgetRange', {
+                  ...preferences.budgetRange!,
+                  min: value,
                 });
               }}
               keyboardType="numeric"
@@ -280,17 +326,23 @@ function CarMarketplaceOnboardingScreen() {
         </View>
 
         <View style={styles.budgetInputContainer}>
-          <Text style={[styles.budgetLabel, { color: colors.text }]}>Maximum Budget</Text>
+          <Text style={[styles.budgetLabel, { color: colors.text }]}>
+            Maximum Budget
+          </Text>
           <View style={styles.budgetInputWrapper}>
-            <Text style={[styles.currencySymbol, { color: colors.textSecondary }]}>€</Text>
+            <Text
+              style={[styles.currencySymbol, { color: colors.textSecondary }]}
+            >
+              €
+            </Text>
             <TextInput
               style={[styles.budgetInput, { color: colors.text }]}
               value={preferences.budgetRange?.max.toString()}
               onChangeText={(text) => {
                 const value = parseInt(text) || 0;
-                updatePreferences('budgetRange', { 
-                  ...preferences.budgetRange!, 
-                  max: value 
+                updatePreferences('budgetRange', {
+                  ...preferences.budgetRange!,
+                  max: value,
                 });
               }}
               keyboardType="numeric"
@@ -302,7 +354,9 @@ function CarMarketplaceOnboardingScreen() {
       </View>
 
       {/* Quick Budget Presets */}
-      <Text style={[styles.subsectionTitle, { color: colors.text }]}>Quick Presets</Text>
+      <Text style={[styles.subsectionTitle, { color: colors.text }]}>
+        Quick Presets
+      </Text>
       <View style={styles.optionsGrid}>
         {[
           { min: 5000, max: 15000, label: 'Under €15k' },
@@ -310,7 +364,7 @@ function CarMarketplaceOnboardingScreen() {
           { min: 30000, max: 50000, label: '€30k - €50k' },
           { min: 50000, max: 100000, label: '€50k - €100k' },
           { min: 100000, max: 500000, label: 'Over €100k' },
-        ].map(preset => (
+        ].map((preset) => (
           <TouchableOpacity
             key={`${preset.min}-${preset.max}`}
             style={[
@@ -318,7 +372,7 @@ function CarMarketplaceOnboardingScreen() {
               {
                 backgroundColor: colors.cardBackground,
                 borderColor: colors.border,
-              }
+              },
             ]}
             onPress={() => updatePreferences('budgetRange', preset)}
           >
@@ -337,34 +391,36 @@ function CarMarketplaceOnboardingScreen() {
       <Text style={[styles.stepDescription, { color: colors.textSecondary }]}>
         Choose your preferred fuel types
       </Text>
-      
+
       <View style={styles.optionsGrid}>
-        {fuelTypes.map(fuel => (
+        {fuelTypes.map((fuel) => (
           <TouchableOpacity
             key={fuel.id}
             style={[
               styles.optionChip,
               styles.fuelTypeChip,
               {
-                backgroundColor: preferences.fuelTypes?.includes(fuel.id) 
-                  ? colors.primaryLight 
+                backgroundColor: preferences.fuelTypes?.includes(fuel.id)
+                  ? colors.primaryLight
                   : colors.cardBackground,
-                borderColor: preferences.fuelTypes?.includes(fuel.id) 
-                  ? colors.primary 
+                borderColor: preferences.fuelTypes?.includes(fuel.id)
+                  ? colors.primary
                   : colors.border,
-              }
+              },
             ]}
             onPress={() => toggleArrayPreference('fuelTypes', fuel.id)}
           >
             <Text style={styles.fuelIcon}>{fuel.icon}</Text>
-            <Text style={[
-              styles.optionText,
-              { 
-                color: preferences.fuelTypes?.includes(fuel.id) 
-                  ? colors.primary 
-                  : colors.text 
-              }
-            ]}>
+            <Text
+              style={[
+                styles.optionText,
+                {
+                  color: preferences.fuelTypes?.includes(fuel.id)
+                    ? colors.primary
+                    : colors.text,
+                },
+              ]}
+            >
               {fuel.name}
             </Text>
           </TouchableOpacity>
@@ -379,34 +435,36 @@ function CarMarketplaceOnboardingScreen() {
       <Text style={[styles.stepDescription, { color: colors.textSecondary }]}>
         Select the car body types you're interested in
       </Text>
-      
+
       <View style={styles.optionsGrid}>
-        {bodyTypes.map(body => (
+        {bodyTypes.map((body) => (
           <TouchableOpacity
             key={body.id}
             style={[
               styles.optionChip,
               styles.bodyTypeChip,
               {
-                backgroundColor: preferences.bodyTypes?.includes(body.id) 
-                  ? colors.primaryLight 
+                backgroundColor: preferences.bodyTypes?.includes(body.id)
+                  ? colors.primaryLight
                   : colors.cardBackground,
-                borderColor: preferences.bodyTypes?.includes(body.id) 
-                  ? colors.primary 
+                borderColor: preferences.bodyTypes?.includes(body.id)
+                  ? colors.primary
                   : colors.border,
-              }
+              },
             ]}
             onPress={() => toggleArrayPreference('bodyTypes', body.id)}
           >
             <Text style={styles.bodyIcon}>{body.icon}</Text>
-            <Text style={[
-              styles.optionText,
-              { 
-                color: preferences.bodyTypes?.includes(body.id) 
-                  ? colors.primary 
-                  : colors.text 
-              }
-            ]}>
+            <Text
+              style={[
+                styles.optionText,
+                {
+                  color: preferences.bodyTypes?.includes(body.id)
+                    ? colors.primary
+                    : colors.text,
+                },
+              ]}
+            >
               {body.name}
             </Text>
           </TouchableOpacity>
@@ -421,9 +479,11 @@ function CarMarketplaceOnboardingScreen() {
       <Text style={[styles.stepDescription, { color: colors.textSecondary }]}>
         Set your location and notification preferences
       </Text>
-      
+
       <View style={styles.locationContainer}>
-        <Text style={[styles.subsectionTitle, { color: colors.text }]}>Your Location</Text>
+        <Text style={[styles.subsectionTitle, { color: colors.text }]}>
+          Your Location
+        </Text>
         <View style={styles.locationInputContainer}>
           <MapPin color={colors.textSecondary} size={20} />
           <TextInput
@@ -438,13 +498,31 @@ function CarMarketplaceOnboardingScreen() {
       </View>
 
       <View style={styles.notificationsContainer}>
-        <Text style={[styles.subsectionTitle, { color: colors.text }]}>Notification Preferences</Text>
-        
+        <Text style={[styles.subsectionTitle, { color: colors.text }]}>
+          Notification Preferences
+        </Text>
+
         {Object.entries({
-          priceDrops: { label: 'Price Drop Alerts', icon: '💰', description: 'Get notified when saved cars drop in price' },
-          newListings: { label: 'New Listings', icon: '🆕', description: 'See new cars that match your criteria' },
-          savedSearchMatches: { label: 'Saved Search Updates', icon: '🔍', description: 'Updates for your saved searches' },
-          dealerMessages: { label: 'Dealer Messages', icon: '💬', description: 'Messages from car dealers' },
+          priceDrops: {
+            label: 'Price Drop Alerts',
+            icon: '💰',
+            description: 'Get notified when saved cars drop in price',
+          },
+          newListings: {
+            label: 'New Listings',
+            icon: '🆕',
+            description: 'See new cars that match your criteria',
+          },
+          savedSearchMatches: {
+            label: 'Saved Search Updates',
+            icon: '🔍',
+            description: 'Updates for your saved searches',
+          },
+          dealerMessages: {
+            label: 'Dealer Messages',
+            icon: '💬',
+            description: 'Messages from car dealers',
+          },
         }).map(([key, notification]) => (
           <TouchableOpacity
             key={key}
@@ -462,21 +540,30 @@ function CarMarketplaceOnboardingScreen() {
               <Text style={[styles.notificationLabel, { color: colors.text }]}>
                 {notification.label}
               </Text>
-              <Text style={[styles.notificationDescription, { color: colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.notificationDescription,
+                  { color: colors.textSecondary },
+                ]}
+              >
                 {notification.description}
               </Text>
             </View>
-            <View style={[
-              styles.notificationToggle,
-              {
-                backgroundColor: preferences.notificationSettings?.[key as keyof typeof preferences.notificationSettings]
-                  ? colors.primary
-                  : colors.border,
-              }
-            ]}>
-              {preferences.notificationSettings?.[key as keyof typeof preferences.notificationSettings] && (
-                <CheckCircle color={colors.background} size={16} />
-              )}
+            <View
+              style={[
+                styles.notificationToggle,
+                {
+                  backgroundColor: preferences.notificationSettings?.[
+                    key as keyof typeof preferences.notificationSettings
+                  ]
+                    ? colors.primary
+                    : colors.border,
+                },
+              ]}
+            >
+              {preferences.notificationSettings?.[
+                key as keyof typeof preferences.notificationSettings
+              ] && <CheckCircle color={colors.background} size={16} />}
             </View>
           </TouchableOpacity>
         ))}
@@ -525,19 +612,21 @@ function CarMarketplaceOnboardingScreen() {
   const currentStepData = steps[currentStep];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Progress Header */}
       <View style={styles.header}>
         <View style={styles.progressContainer}>
           <View style={styles.progressTrack}>
-            <View 
+            <View
               style={[
                 styles.progressFill,
-                { 
+                {
                   backgroundColor: colors.primary,
                   width: `${((currentStep + 1) / steps.length) * 100}%`,
-                }
-              ]} 
+                },
+              ]}
             />
           </View>
           <Text style={[styles.progressText, { color: colors.textSecondary }]}>
@@ -547,16 +636,14 @@ function CarMarketplaceOnboardingScreen() {
       </View>
 
       {/* Step Content */}
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
         style={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.stepHeader}>
-          <View style={styles.stepIconContainer}>
-            {currentStepData.icon}
-          </View>
+          <View style={styles.stepIconContainer}>{currentStepData.icon}</View>
           <Text style={[styles.stepTitle, { color: colors.text }]}>
             {currentStepData.title}
           </Text>
@@ -578,13 +665,21 @@ function CarMarketplaceOnboardingScreen() {
             style={styles.backButton}
           />
         )}
-        
+
         <Button
-          title={currentStep === steps.length - 1 ? 'Complete Setup' : 'Continue'}
+          title={
+            currentStep === steps.length - 1 ? 'Complete Setup' : 'Continue'
+          }
           onPress={nextStep}
           loading={loading}
           style={styles.nextButton}
-          icon={currentStep === steps.length - 1 ? <CheckCircle color={colors.background} size={20} /> : <ArrowRight color={colors.background} size={20} />}
+          icon={
+            currentStep === steps.length - 1 ? (
+              <CheckCircle color={colors.background} size={20} />
+            ) : (
+              <ArrowRight color={colors.background} size={20} />
+            )
+          }
         />
       </View>
     </SafeAreaView>

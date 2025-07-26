@@ -15,13 +15,34 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
-import { socialService, UserProfile, SocialActivity, CarReview } from '@/services/socialService';
+import {
+  socialService,
+  UserProfile,
+  SocialActivity,
+  CarReview,
+} from '@/services/socialService';
 import { realTimeChatService } from '@/services/realTimeChatService';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { SocialFeed } from './SocialFeed';
-import { MessageCircle, Star, Heart, Users, Car, MapPin, Calendar, Award, TrendingUp, Settings, Mail, CheckCircle, Eye, Clock, Filter } from '@/utils/ultra-optimized-icons';
+import {
+  MessageCircle,
+  Star,
+  Heart,
+  Users,
+  Car,
+  MapPin,
+  Calendar,
+  Award,
+  TrendingUp,
+  Settings,
+  Mail,
+  CheckCircle,
+  Eye,
+  Clock,
+  Filter,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -57,11 +78,11 @@ interface ProfileTabsProps {
   carsOwnedCount: number;
 }
 
-const ProfileStats: React.FC<ProfileStatsProps> = ({ 
-  userProfile, 
-  isOwnProfile, 
-  onFollowersPress, 
-  onFollowingPress 
+const ProfileStats: React.FC<ProfileStatsProps> = ({
+  userProfile,
+  isOwnProfile,
+  onFollowersPress,
+  onFollowingPress,
 }) => {
   const { colors } = useThemeColors();
 
@@ -114,7 +135,9 @@ const ProfileStats: React.FC<ProfileStatsProps> = ({
           onPress={stat.onPress}
           disabled={!stat.onPress}
         >
-          <View style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}>
+          <View
+            style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}
+          >
             <stat.icon size={20} color={stat.color} />
           </View>
           <Text style={[styles.statValue, { color: colors.text }]}>
@@ -147,16 +170,26 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   return (
     <View style={styles.profileHeader}>
       <View style={styles.profileInfo}>
-        <View style={[styles.profileAvatar, { backgroundColor: colors.surface }]}>
+        <View
+          style={[styles.profileAvatar, { backgroundColor: colors.surface }]}
+        >
           {userProfile.avatar_url ? (
-            <Image source={{ uri: userProfile.avatar_url }} style={styles.avatarImage} />
+            <Image
+              source={{ uri: userProfile.avatar_url }}
+              style={styles.avatarImage}
+            />
           ) : (
             <Text style={[styles.avatarText, { color: colors.text }]}>
               {userProfile.display_name.charAt(0)}
             </Text>
           )}
           {userProfile.verified_buyer && (
-            <View style={[styles.verifiedBadge, { backgroundColor: colors.success }]}>
+            <View
+              style={[
+                styles.verifiedBadge,
+                { backgroundColor: colors.success },
+              ]}
+            >
               <CheckCircle size={14} color={colors.white} />
             </View>
           )}
@@ -175,7 +208,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           {userProfile.location && (
             <View style={styles.locationContainer}>
               <MapPin size={14} color={colors.textSecondary} />
-              <Text style={[styles.locationText, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.locationText, { color: colors.textSecondary }]}
+              >
                 {userProfile.location}
               </Text>
             </View>
@@ -183,37 +218,65 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
           <View style={styles.memberSince}>
             <Calendar size={14} color={colors.textSecondary} />
-            <Text style={[styles.memberSinceText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.memberSinceText, { color: colors.textSecondary }]}
+            >
               Member since {formatMemberSince(userProfile.member_since)}
             </Text>
           </View>
 
-          {userProfile.preferred_brands && userProfile.preferred_brands.length > 0 && (
-            <View style={styles.preferredBrands}>
-              <Text style={[styles.preferredBrandsLabel, { color: colors.textSecondary }]}>
-                Interested in:
-              </Text>
-              <View style={styles.brandsContainer}>
-                {userProfile.preferred_brands.slice(0, 3).map((brand) => (
-                  <View key={brand} style={[styles.brandChip, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                    <Text style={[styles.brandText, { color: colors.text }]}>{brand}</Text>
-                  </View>
-                ))}
-                {userProfile.preferred_brands.length > 3 && (
-                  <Text style={[styles.moreBrands, { color: colors.textSecondary }]}>
-                    +{userProfile.preferred_brands.length - 3} more
-                  </Text>
-                )}
+          {userProfile.preferred_brands &&
+            userProfile.preferred_brands.length > 0 && (
+              <View style={styles.preferredBrands}>
+                <Text
+                  style={[
+                    styles.preferredBrandsLabel,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  Interested in:
+                </Text>
+                <View style={styles.brandsContainer}>
+                  {userProfile.preferred_brands.slice(0, 3).map((brand) => (
+                    <View
+                      key={brand}
+                      style={[
+                        styles.brandChip,
+                        {
+                          backgroundColor: colors.surface,
+                          borderColor: colors.border,
+                        },
+                      ]}
+                    >
+                      <Text style={[styles.brandText, { color: colors.text }]}>
+                        {brand}
+                      </Text>
+                    </View>
+                  ))}
+                  {userProfile.preferred_brands.length > 3 && (
+                    <Text
+                      style={[
+                        styles.moreBrands,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
+                      +{userProfile.preferred_brands.length - 3} more
+                    </Text>
+                  )}
+                </View>
               </View>
-            </View>
-          )}
+            )}
         </View>
       </View>
 
       <View style={styles.profileActions}>
         {isOwnProfile ? (
           <TouchableOpacity
-            style={[styles.actionButton, styles.primaryButton, { backgroundColor: colors.primary }]}
+            style={[
+              styles.actionButton,
+              styles.primaryButton,
+              { backgroundColor: colors.primary },
+            ]}
             onPress={onEditPress}
           >
             <Edit size={16} color={colors.white} />
@@ -228,9 +291,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 styles.actionButton,
                 isFollowing ? styles.secondaryButton : styles.primaryButton,
                 {
-                  backgroundColor: isFollowing ? colors.surface : colors.primary,
+                  backgroundColor: isFollowing
+                    ? colors.surface
+                    : colors.primary,
                   borderColor: colors.border,
-                }
+                },
               ]}
               onPress={onFollowToggle}
             >
@@ -239,16 +304,22 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               ) : (
                 <UserPlus size={16} color={colors.white} />
               )}
-              <Text style={[
-                styles.actionButtonText,
-                { color: isFollowing ? colors.text : colors.white }
-              ]}>
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  { color: isFollowing ? colors.text : colors.white },
+                ]}
+              >
                 {isFollowing ? 'Following' : 'Follow'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionButton, styles.secondaryButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              style={[
+                styles.actionButton,
+                styles.secondaryButton,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
               onPress={onMessagePress}
             >
               <MessageCircle size={16} color={colors.text} />
@@ -259,10 +330,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           </>
         )}
 
-        <TouchableOpacity
-          style={styles.menuButton}
-          onPress={onSharePress}
-        >
+        <TouchableOpacity style={styles.menuButton} onPress={onSharePress}>
           <Share2 size={18} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
@@ -280,44 +348,85 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
   const { colors } = useThemeColors();
 
   const tabs = [
-    { id: 'activity', label: 'Activity', count: activityCount, icon: TrendingUp },
+    {
+      id: 'activity',
+      label: 'Activity',
+      count: activityCount,
+      icon: TrendingUp,
+    },
     { id: 'reviews', label: 'Reviews', count: reviewCount, icon: Star },
     { id: 'cars', label: 'Cars Owned', count: carsOwnedCount, icon: Car },
     { id: 'about', label: 'About', icon: Users },
   ];
 
   return (
-    <View style={[styles.tabsContainer, { backgroundColor: colors.cardBackground, borderBottomColor: colors.border }]}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContent}>
+    <View
+      style={[
+        styles.tabsContainer,
+        {
+          backgroundColor: colors.cardBackground,
+          borderBottomColor: colors.border,
+        },
+      ]}
+    >
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabsContent}
+      >
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.id}
             style={[
               styles.tab,
-              activeTab === tab.id && { borderBottomColor: colors.primary, borderBottomWidth: 2 }
+              activeTab === tab.id && {
+                borderBottomColor: colors.primary,
+                borderBottomWidth: 2,
+              },
             ]}
             onPress={() => onTabChange(tab.id)}
           >
             <View style={styles.tabContentInner}>
-              <tab.icon 
-                size={18} 
-                color={activeTab === tab.id ? colors.primary : colors.textSecondary} 
+              <tab.icon
+                size={18}
+                color={
+                  activeTab === tab.id ? colors.primary : colors.textSecondary
+                }
               />
-              <Text style={[
-                styles.tabText,
-                { color: activeTab === tab.id ? colors.primary : colors.textSecondary }
-              ]}>
+              <Text
+                style={[
+                  styles.tabText,
+                  {
+                    color:
+                      activeTab === tab.id
+                        ? colors.primary
+                        : colors.textSecondary,
+                  },
+                ]}
+              >
                 {tab.label}
               </Text>
               {tab.count !== undefined && (
-                <View style={[
-                  styles.tabBadge,
-                  { backgroundColor: activeTab === tab.id ? colors.primary : colors.surface }
-                ]}>
-                  <Text style={[
-                    styles.tabBadgeText,
-                    { color: activeTab === tab.id ? colors.white : colors.textSecondary }
-                  ]}>
+                <View
+                  style={[
+                    styles.tabBadge,
+                    {
+                      backgroundColor:
+                        activeTab === tab.id ? colors.primary : colors.surface,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.tabBadgeText,
+                      {
+                        color:
+                          activeTab === tab.id
+                            ? colors.white
+                            : colors.textSecondary,
+                      },
+                    ]}
+                  >
                     {tab.count}
                   </Text>
                 </View>
@@ -339,7 +448,7 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
   const { colors } = useThemeColors();
   const { spacing } = useDesignTokens();
   const { user } = useAuth();
-  
+
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -355,7 +464,7 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
     try {
       const profile = await socialService.getUserProfile(targetUserId);
       setUserProfile(profile);
-      
+
       if (!isOwnProfile) {
         // Check if following
         // TODO: Implement isFollowing check
@@ -407,7 +516,12 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
       loadUserProfile();
     } catch (error) {
       logger.error('Error toggling follow:', error);
-      Alert.alert('Error', error instanceof Error ? error.message : 'Failed to update follow status');
+      Alert.alert(
+        'Error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to update follow status',
+      );
     }
   }, [isFollowing, targetUserId, loadUserProfile]);
 
@@ -422,7 +536,11 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
       });
 
       // Add the target user as a participant
-      await realTimeChatService.addParticipant(conversation.id, targetUserId, 'member');
+      await realTimeChatService.addParticipant(
+        conversation.id,
+        targetUserId,
+        'member',
+      );
 
       onMessageUser?.(targetUserId);
     } catch (error) {
@@ -462,17 +580,14 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
   const renderTabContent = () => {
     switch (activeTab) {
       case 'activity':
-        return (
-          <SocialFeed
-            filterType="activity"
-            userId={targetUserId}
-          />
-        );
+        return <SocialFeed filterType="activity" userId={targetUserId} />;
 
       case 'reviews':
         return (
           <View style={styles.tabContent}>
-            <Text style={[styles.comingSoonText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.comingSoonText, { color: colors.textSecondary }]}
+            >
               Reviews content coming soon
             </Text>
           </View>
@@ -484,22 +599,50 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
             {userProfile?.cars_owned && userProfile.cars_owned.length > 0 ? (
               <ScrollView showsVerticalScrollIndicator={false}>
                 {userProfile.cars_owned.map((car, index) => (
-                  <View key={index} style={[styles.carOwnedItem, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+                  <View
+                    key={index}
+                    style={[
+                      styles.carOwnedItem,
+                      {
+                        backgroundColor: colors.cardBackground,
+                        borderColor: colors.border,
+                      },
+                    ]}
+                  >
                     <View style={styles.carOwnedInfo}>
-                      <Text style={[styles.carOwnedTitle, { color: colors.text }]}>
+                      <Text
+                        style={[styles.carOwnedTitle, { color: colors.text }]}
+                      >
                         {car.make} {car.model}
                       </Text>
-                      <Text style={[styles.carOwnedYear, { color: colors.textSecondary }]}>
+                      <Text
+                        style={[
+                          styles.carOwnedYear,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
                         {car.year}
                       </Text>
-                      <Text style={[styles.carOwnedPeriod, { color: colors.textSecondary }]}>
+                      <Text
+                        style={[
+                          styles.carOwnedPeriod,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
                         {car.owned_from} - {car.owned_to || 'Present'}
                       </Text>
                     </View>
                     {car.verified && (
-                      <View style={[styles.verifiedOwnership, { backgroundColor: colors.success }]}>
+                      <View
+                        style={[
+                          styles.verifiedOwnership,
+                          { backgroundColor: colors.success },
+                        ]}
+                      >
                         <CheckCircle size={14} color={colors.white} />
-                        <Text style={[styles.verifiedText, { color: colors.white }]}>
+                        <Text
+                          style={[styles.verifiedText, { color: colors.white }]}
+                        >
                           Verified
                         </Text>
                       </View>
@@ -513,8 +656,15 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
                 <Text style={[styles.emptyStateText, { color: colors.text }]}>
                   No cars owned yet
                 </Text>
-                <Text style={[styles.emptyStateSubtext, { color: colors.textSecondary }]}>
-                  {isOwnProfile ? 'Add your car ownership history' : 'This user hasn\'t added any cars yet'}
+                <Text
+                  style={[
+                    styles.emptyStateSubtext,
+                    { color: colors.textSecondary },
+                  ]}
+                >
+                  {isOwnProfile
+                    ? 'Add your car ownership history'
+                    : "This user hasn't added any cars yet"}
                 </Text>
               </View>
             )}
@@ -530,7 +680,12 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
               </Text>
               <View style={styles.aboutStats}>
                 <View style={styles.aboutStat}>
-                  <Text style={[styles.aboutStatLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.aboutStatLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     Total Reviews
                   </Text>
                   <Text style={[styles.aboutStatValue, { color: colors.text }]}>
@@ -538,18 +693,34 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
                   </Text>
                 </View>
                 <View style={styles.aboutStat}>
-                  <Text style={[styles.aboutStatLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.aboutStatLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     Average Rating Given
                   </Text>
                   <View style={styles.ratingDisplay}>
-                    <Star size={16} color={colors.warning} fill={colors.warning} />
-                    <Text style={[styles.aboutStatValue, { color: colors.text }]}>
+                    <Star
+                      size={16}
+                      color={colors.warning}
+                      fill={colors.warning}
+                    />
+                    <Text
+                      style={[styles.aboutStatValue, { color: colors.text }]}
+                    >
                       {userProfile?.average_rating_given?.toFixed(1) || '0.0'}
                     </Text>
                   </View>
                 </View>
                 <View style={styles.aboutStat}>
-                  <Text style={[styles.aboutStatLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.aboutStatLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     Marketplace Interactions
                   </Text>
                   <Text style={[styles.aboutStatValue, { color: colors.text }]}>
@@ -559,20 +730,36 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
               </View>
             </View>
 
-            {userProfile?.preferred_brands && userProfile.preferred_brands.length > 0 && (
-              <View style={styles.aboutSection}>
-                <Text style={[styles.aboutSectionTitle, { color: colors.text }]}>
-                  Preferred Brands
-                </Text>
-                <View style={styles.brandsGrid}>
-                  {userProfile.preferred_brands.map((brand) => (
-                    <View key={brand} style={[styles.brandItem, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                      <Text style={[styles.brandItemText, { color: colors.text }]}>{brand}</Text>
-                    </View>
-                  ))}
+            {userProfile?.preferred_brands &&
+              userProfile.preferred_brands.length > 0 && (
+                <View style={styles.aboutSection}>
+                  <Text
+                    style={[styles.aboutSectionTitle, { color: colors.text }]}
+                  >
+                    Preferred Brands
+                  </Text>
+                  <View style={styles.brandsGrid}>
+                    {userProfile.preferred_brands.map((brand) => (
+                      <View
+                        key={brand}
+                        style={[
+                          styles.brandItem,
+                          {
+                            backgroundColor: colors.surface,
+                            borderColor: colors.border,
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[styles.brandItemText, { color: colors.text }]}
+                        >
+                          {brand}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
-              </View>
-            )}
+              )}
           </View>
         );
 
@@ -583,7 +770,9 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
 
   if (loading && !userProfile) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
             Loading profile...
@@ -595,7 +784,9 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
 
   if (!userProfile) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.errorContainer}>
           <Text style={[styles.errorText, { color: colors.text }]}>
             Profile not found
@@ -606,7 +797,9 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -644,9 +837,7 @@ export const EnhancedProfileScreen: React.FC<EnhancedProfileScreenProps> = ({
           carsOwnedCount={userProfile.cars_owned?.length || 0}
         />
 
-        <View style={styles.tabContentContainer}>
-          {renderTabContent()}
-        </View>
+        <View style={styles.tabContentContainer}>{renderTabContent()}</View>
       </ScrollView>
     </SafeAreaView>
   );

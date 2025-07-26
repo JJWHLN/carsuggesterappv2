@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { 
-  Search, 
-  Bell, 
-  BellOff, 
-  Trash2, 
-  Edit3, 
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import {
+  Search,
+  Bell,
+  BellOff,
+  Trash2,
+  Edit3,
   Plus,
   Clock,
   Filter,
   TrendingDown,
   Car,
   MapPin,
-  DollarSign
+  DollarSign,
 } from 'lucide-react-native';
 import { useAuth } from '../auth/AuthContext';
 import { SavedSearch, SavedSearchAlert } from '../auth/types';
@@ -53,27 +60,27 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
 
   const toggleAlert = async (searchId: string, alertType: string) => {
     try {
-      const updatedSearches = savedSearches.map(search => {
+      const updatedSearches = savedSearches.map((search) => {
         if (search.id === searchId) {
           return {
             ...search,
             alerts: {
               ...search.alerts,
-              [alertType]: !search.alerts[alertType as keyof SavedSearchAlert]
-            }
+              [alertType]: !search.alerts[alertType as keyof SavedSearchAlert],
+            },
           };
         }
         return search;
       });
-      
+
       setSavedSearches(updatedSearches);
-      
+
       // Mock API call
       await mockUpdateSearchAlert(searchId, alertType);
-      
+
       Alert.alert(
         'Alert Updated',
-        `${alertType} alerts have been ${updatedSearches.find(s => s.id === searchId)?.alerts[alertType as keyof SavedSearchAlert] ? 'enabled' : 'disabled'}.`
+        `${alertType} alerts have been ${updatedSearches.find((s) => s.id === searchId)?.alerts[alertType as keyof SavedSearchAlert] ? 'enabled' : 'disabled'}.`,
       );
     } catch (error) {
       console.error('Failed to update alert:', error);
@@ -92,29 +99,29 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              setSavedSearches(prev => prev.filter(s => s.id !== searchId));
+              setSavedSearches((prev) => prev.filter((s) => s.id !== searchId));
               await mockDeleteSavedSearch(searchId);
             } catch (error) {
               console.error('Failed to delete search:', error);
               Alert.alert('Error', 'Failed to delete saved search');
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
 
   const editSearch = (search: SavedSearch) => {
-    navigation?.navigate('Search', { 
+    navigation?.navigate('Search', {
       editSavedSearch: search,
-      filters: search.filters 
+      filters: search.filters,
     });
   };
 
   const runSearch = (search: SavedSearch) => {
-    navigation?.navigate('Search', { 
+    navigation?.navigate('Search', {
       filters: search.filters,
-      autoSearch: true 
+      autoSearch: true,
     });
   };
 
@@ -123,7 +130,10 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
       {/* Search Header */}
       <View className="p-4 border-b border-gray-100">
         <View className="flex-row items-center justify-between mb-2">
-          <Text className="text-lg font-semibold text-gray-900 flex-1" numberOfLines={1}>
+          <Text
+            className="text-lg font-semibold text-gray-900 flex-1"
+            numberOfLines={1}
+          >
             {search.name}
           </Text>
           <View className="flex-row items-center space-x-2">
@@ -163,12 +173,13 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
               </Text>
             </View>
           )}
-          
+
           {search.filters.priceRange && (
             <View className="flex-row items-center bg-green-100 px-3 py-1 rounded-full">
               <DollarSign size={12} className="text-green-600 mr-1" />
               <Text className="text-green-700 text-xs font-medium">
-                {formatCurrency(search.filters.priceRange.min)} - {formatCurrency(search.filters.priceRange.max)}
+                {formatCurrency(search.filters.priceRange.min)} -{' '}
+                {formatCurrency(search.filters.priceRange.max)}
               </Text>
             </View>
           )}
@@ -194,16 +205,22 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
 
       {/* Alert Settings */}
       <View className="p-4 border-b border-gray-100">
-        <Text className="text-sm font-medium text-gray-700 mb-3">Alert Settings</Text>
-        
+        <Text className="text-sm font-medium text-gray-700 mb-3">
+          Alert Settings
+        </Text>
+
         <View className="space-y-3">
           {/* New Listings Alert */}
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
               <Bell size={16} className="text-gray-600 mr-2" />
               <View>
-                <Text className="text-sm font-medium text-gray-900">New Listings</Text>
-                <Text className="text-xs text-gray-600">Get notified of new cars matching your criteria</Text>
+                <Text className="text-sm font-medium text-gray-900">
+                  New Listings
+                </Text>
+                <Text className="text-xs text-gray-600">
+                  Get notified of new cars matching your criteria
+                </Text>
               </View>
             </View>
             <TouchableOpacity
@@ -212,9 +229,11 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
                 search.alerts.newListings ? 'bg-green-500' : 'bg-gray-300'
               }`}
             >
-              <View className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                search.alerts.newListings ? 'translate-x-6' : 'translate-x-0'
-              }`} />
+              <View
+                className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                  search.alerts.newListings ? 'translate-x-6' : 'translate-x-0'
+                }`}
+              />
             </TouchableOpacity>
           </View>
 
@@ -223,8 +242,12 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
             <View className="flex-row items-center flex-1">
               <TrendingDown size={16} className="text-gray-600 mr-2" />
               <View>
-                <Text className="text-sm font-medium text-gray-900">Price Drops</Text>
-                <Text className="text-xs text-gray-600">Get notified when prices decrease</Text>
+                <Text className="text-sm font-medium text-gray-900">
+                  Price Drops
+                </Text>
+                <Text className="text-xs text-gray-600">
+                  Get notified when prices decrease
+                </Text>
               </View>
             </View>
             <TouchableOpacity
@@ -233,9 +256,11 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
                 search.alerts.priceDrops ? 'bg-green-500' : 'bg-gray-300'
               }`}
             >
-              <View className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                search.alerts.priceDrops ? 'translate-x-6' : 'translate-x-0'
-              }`} />
+              <View
+                className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                  search.alerts.priceDrops ? 'translate-x-6' : 'translate-x-0'
+                }`}
+              />
             </TouchableOpacity>
           </View>
 
@@ -244,8 +269,12 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
             <View className="flex-row items-center flex-1">
               <Filter size={16} className="text-gray-600 mr-2" />
               <View>
-                <Text className="text-sm font-medium text-gray-900">Weekly Summary</Text>
-                <Text className="text-xs text-gray-600">Weekly digest of market activity</Text>
+                <Text className="text-sm font-medium text-gray-900">
+                  Weekly Summary
+                </Text>
+                <Text className="text-xs text-gray-600">
+                  Weekly digest of market activity
+                </Text>
               </View>
             </View>
             <TouchableOpacity
@@ -254,9 +283,13 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
                 search.alerts.weeklySummary ? 'bg-green-500' : 'bg-gray-300'
               }`}
             >
-              <View className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                search.alerts.weeklySummary ? 'translate-x-6' : 'translate-x-0'
-              }`} />
+              <View
+                className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                  search.alerts.weeklySummary
+                    ? 'translate-x-6'
+                    : 'translate-x-0'
+                }`}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -284,7 +317,8 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
         No Saved Searches
       </Text>
       <Text className="text-gray-600 text-center mb-8 leading-6">
-        Save your searches to get notifications when new cars are listed or prices drop.
+        Save your searches to get notifications when new cars are listed or
+        prices drop.
       </Text>
       <TouchableOpacity
         onPress={() => navigation?.navigate('Search')}
@@ -310,7 +344,9 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
       {/* Header */}
       <View className="bg-white border-b border-gray-200 px-4 py-4">
         <View className="flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-gray-900">Saved Searches</Text>
+          <Text className="text-2xl font-bold text-gray-900">
+            Saved Searches
+          </Text>
           <TouchableOpacity
             onPress={() => navigation?.navigate('Search')}
             className="p-2 bg-green-100 rounded-full"
@@ -340,8 +376,8 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({ navigation }) => {
 // Mock API functions - replace with actual implementation
 const mockGetSavedSearches = async (): Promise<SavedSearch[]> => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   return [
     {
       id: '1',
@@ -356,16 +392,16 @@ const mockGetSavedSearches = async (): Promise<SavedSearch[]> => {
         priceRange: { min: 15000, max: 25000 },
         yearRange: { min: 2018, max: 2024 },
         location: 'New York, NY',
-        radius: 50
+        radius: 50,
       },
       alerts: {
         newListings: true,
         priceDrops: true,
-        weeklySummary: false
+        weeklySummary: false,
       },
       resultCount: 23,
       createdAt: '2024-01-15T00:00:00Z',
-      updatedAt: '2024-01-20T00:00:00Z'
+      updatedAt: '2024-01-20T00:00:00Z',
     },
     {
       id: '2',
@@ -380,28 +416,31 @@ const mockGetSavedSearches = async (): Promise<SavedSearch[]> => {
         yearRange: { min: 2020, max: 2024 },
         location: 'Los Angeles, CA',
         radius: 25,
-        features: ['leather', 'sunroof', 'navigation']
+        features: ['leather', 'sunroof', 'navigation'],
       },
       alerts: {
         newListings: false,
         priceDrops: true,
-        weeklySummary: true
+        weeklySummary: true,
       },
       resultCount: 47,
       createdAt: '2024-01-10T00:00:00Z',
-      updatedAt: '2024-01-18T00:00:00Z'
-    }
+      updatedAt: '2024-01-18T00:00:00Z',
+    },
   ];
 };
 
-const mockUpdateSearchAlert = async (searchId: string, alertType: string): Promise<void> => {
+const mockUpdateSearchAlert = async (
+  searchId: string,
+  alertType: string,
+): Promise<void> => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   console.log(`Updated alert ${alertType} for search ${searchId}`);
 };
 
 const mockDeleteSavedSearch = async (searchId: string): Promise<void> => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   console.log(`Deleted search ${searchId}`);
 };

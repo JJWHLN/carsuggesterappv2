@@ -43,31 +43,43 @@ export const ContactDealerModal: React.FC<ContactDealerModalProps> = ({
     >
       <div style={{ padding: '20px' }}>
         <p>Contact the dealer about this vehicle:</p>
-        <h4>{car.year} {car.make} {car.model}</h4>
+        <h4>
+          {car.year} {car.make} {car.model}
+        </h4>
         <p>Price: ${car.price.toLocaleString()}</p>
-        
+
         {dealerInfo && (
           <div style={{ marginTop: '20px' }}>
             <h5>Dealer Information:</h5>
-            <p><strong>Name:</strong> {dealerInfo.name}</p>
-            <p><strong>Phone:</strong> {dealerInfo.phone}</p>
-            <p><strong>Email:</strong> {dealerInfo.email}</p>
-            <p><strong>Address:</strong> {dealerInfo.address}</p>
-            <p><strong>Hours:</strong> {dealerInfo.hours}</p>
+            <p>
+              <strong>Name:</strong> {dealerInfo.name}
+            </p>
+            <p>
+              <strong>Phone:</strong> {dealerInfo.phone}
+            </p>
+            <p>
+              <strong>Email:</strong> {dealerInfo.email}
+            </p>
+            <p>
+              <strong>Address:</strong> {dealerInfo.address}
+            </p>
+            <p>
+              <strong>Hours:</strong> {dealerInfo.hours}
+            </p>
           </div>
         )}
-        
+
         <div style={{ marginTop: '20px' }}>
           <label>
             Your Message:
-            <textarea 
-              style={{ 
-                width: '100%', 
-                height: '100px', 
+            <textarea
+              style={{
+                width: '100%',
+                height: '100px',
                 marginTop: '8px',
                 padding: '8px',
                 border: '1px solid #ccc',
-                borderRadius: '4px'
+                borderRadius: '4px',
               }}
               placeholder="I'm interested in this vehicle..."
             />

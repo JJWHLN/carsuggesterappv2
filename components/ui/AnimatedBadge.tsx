@@ -14,7 +14,14 @@ interface AnimatedBadgeProps {
   children: React.ReactNode;
   active?: boolean;
   disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'outline' | 'success' | 'warning' | 'error' | 'info';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'success'
+    | 'warning'
+    | 'error'
+    | 'info';
   size?: 'small' | 'medium' | 'large';
   onPress?: () => void;
   style?: ViewStyle;
@@ -25,7 +32,8 @@ interface AnimatedBadgeProps {
   onRemove?: () => void;
 }
 
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
 
 export const AnimatedBadge: React.FC<AnimatedBadgeProps> = ({
   children,
@@ -68,11 +76,11 @@ export const AnimatedBadge: React.FC<AnimatedBadgeProps> = ({
 
   const handlePress = () => {
     if (disabled || !onPress) return;
-    
+
     pressScale.value = withSpring(0.95, { duration: 100 }, () => {
       pressScale.value = withSpring(1, { duration: 100 });
     });
-    
+
     runOnJS(onPress)();
   };
 
@@ -188,13 +196,11 @@ export const AnimatedBadge: React.FC<AnimatedBadgeProps> = ({
     const backgroundColor = interpolateColor(
       colorTransition.value,
       [0, 1],
-      [colors.inactive, colors.active]
+      [colors.inactive, colors.active],
     );
 
     return {
-      transform: [
-        { scale: scale.value * pressScale.value },
-      ],
+      transform: [{ scale: scale.value * pressScale.value }],
       opacity: opacity.value,
       backgroundColor,
       borderColor: colors.border,
@@ -205,7 +211,7 @@ export const AnimatedBadge: React.FC<AnimatedBadgeProps> = ({
     const textColor = interpolateColor(
       colorTransition.value,
       [0, 1],
-      [colors.text, colors.text]
+      [colors.text, colors.text],
     );
 
     return {
@@ -244,7 +250,7 @@ export const AnimatedBadge: React.FC<AnimatedBadgeProps> = ({
       >
         {children}
       </Animated.Text>
-      
+
       {showRemove && (
         <TouchableOpacity
           onPress={handleRemove}
@@ -254,11 +260,13 @@ export const AnimatedBadge: React.FC<AnimatedBadgeProps> = ({
           }}
           hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
         >
-          <Text style={{ 
-            color: colors.text, 
-            fontSize: sizeStyles.fontSize * 0.8,
-            lineHeight: sizeStyles.fontSize * 0.8,
-          }}>
+          <Text
+            style={{
+              color: colors.text,
+              fontSize: sizeStyles.fontSize * 0.8,
+              lineHeight: sizeStyles.fontSize * 0.8,
+            }}
+          >
             ×
           </Text>
         </TouchableOpacity>
@@ -268,21 +276,22 @@ export const AnimatedBadge: React.FC<AnimatedBadgeProps> = ({
 };
 
 // Convenience wrapper for filter badges
-export const FilterBadge: React.FC<Omit<AnimatedBadgeProps, 'variant'> & { 
-  count?: number;
-}> = ({ children, count, ...props }) => {
+export const FilterBadge: React.FC<
+  Omit<AnimatedBadgeProps, 'variant'> & {
+    count?: number;
+  }
+> = ({ children, count, ...props }) => {
   return (
-    <AnimatedBadge
-      variant="outline"
-      {...props}
-    >
+    <AnimatedBadge variant="outline" {...props}>
       {children}
       {count !== undefined && count > 0 && (
-        <Text style={{ 
-          marginLeft: 4, 
-          fontWeight: '600',
-          color: Colors.light.primary,
-        }}>
+        <Text
+          style={{
+            marginLeft: 4,
+            fontWeight: '600',
+            color: Colors.light.primary,
+          }}
+        >
           ({count})
         </Text>
       )}
@@ -309,7 +318,7 @@ export const QuickFilters: React.FC<QuickFiltersProps> = ({
   onClearAll,
   style,
 }) => {
-  const activeCount = filters.filter(f => f.active).length;
+  const activeCount = filters.filter((f) => f.active).length;
 
   return (
     <Animated.ScrollView
@@ -337,7 +346,7 @@ export const QuickFilters: React.FC<QuickFiltersProps> = ({
           {filter.label}
         </AnimatedBadge>
       ))}
-      
+
       {activeCount > 0 && onClearAll && (
         <AnimatedBadge
           variant="error"

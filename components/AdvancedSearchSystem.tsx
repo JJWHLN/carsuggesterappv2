@@ -20,11 +20,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 
-import { 
-  Search, Filter, SlidersHorizontal, X, Check, 
-  Car, DollarSign, Gauge, MapPin, Calendar,
-  Fuel, Settings, Award, TrendingUp, Sparkles,
-  ChevronRight, ChevronLeft, Grid, List
+import {
+  Search,
+  Filter,
+  SlidersHorizontal,
+  X,
+  Check,
+  Car,
+  DollarSign,
+  Gauge,
+  MapPin,
+  Calendar,
+  Fuel,
+  Settings,
+  Award,
+  TrendingUp,
+  Sparkles,
+  ChevronRight,
+  ChevronLeft,
+  Grid,
+  List,
 } from '@/utils/ultra-optimized-icons';
 import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified';
 import { Button } from '@/components/ui/Button';
@@ -99,10 +114,28 @@ const FILTER_CATEGORIES: FilterCategory[] = [
       { id: 'chevrolet', label: 'Chevrolet', value: 'chevrolet', count: 723 },
       { id: 'nissan', label: 'Nissan', value: 'nissan', count: 656 },
       { id: 'bmw', label: 'BMW', value: 'bmw', count: 445, premium: true },
-      { id: 'mercedes', label: 'Mercedes-Benz', value: 'mercedes', count: 387, premium: true },
+      {
+        id: 'mercedes',
+        label: 'Mercedes-Benz',
+        value: 'mercedes',
+        count: 387,
+        premium: true,
+      },
       { id: 'audi', label: 'Audi', value: 'audi', count: 321, premium: true },
-      { id: 'lexus', label: 'Lexus', value: 'lexus', count: 289, premium: true },
-      { id: 'tesla', label: 'Tesla', value: 'tesla', count: 234, premium: true },
+      {
+        id: 'lexus',
+        label: 'Lexus',
+        value: 'lexus',
+        count: 289,
+        premium: true,
+      },
+      {
+        id: 'tesla',
+        label: 'Tesla',
+        value: 'tesla',
+        count: 234,
+        premium: true,
+      },
     ],
   },
   {
@@ -138,10 +171,29 @@ const FILTER_CATEGORIES: FilterCategory[] = [
     type: 'multiple',
     options: [
       { id: 'gasoline', label: 'Gasoline', value: 'gasoline', count: 8934 },
-      { id: 'hybrid', label: 'Hybrid', value: 'hybrid', count: 1247, icon: Sparkles },
-      { id: 'electric', label: 'Electric', value: 'electric', count: 789, icon: Sparkles, premium: true },
+      {
+        id: 'hybrid',
+        label: 'Hybrid',
+        value: 'hybrid',
+        count: 1247,
+        icon: Sparkles,
+      },
+      {
+        id: 'electric',
+        label: 'Electric',
+        value: 'electric',
+        count: 789,
+        icon: Sparkles,
+        premium: true,
+      },
       { id: 'diesel', label: 'Diesel', value: 'diesel', count: 456 },
-      { id: 'plugin-hybrid', label: 'Plug-in Hybrid', value: 'plugin-hybrid', count: 234, premium: true },
+      {
+        id: 'plugin-hybrid',
+        label: 'Plug-in Hybrid',
+        value: 'plugin-hybrid',
+        count: 234,
+        premium: true,
+      },
     ],
   },
   {
@@ -165,7 +217,13 @@ const FILTER_CATEGORIES: FilterCategory[] = [
       { id: 'suv', label: 'SUV', value: 'suv', count: 4234 },
       { id: 'hatchback', label: 'Hatchback', value: 'hatchback', count: 1567 },
       { id: 'coupe', label: 'Coupe', value: 'coupe', count: 987 },
-      { id: 'convertible', label: 'Convertible', value: 'convertible', count: 234, premium: true },
+      {
+        id: 'convertible',
+        label: 'Convertible',
+        value: 'convertible',
+        count: 234,
+        premium: true,
+      },
       { id: 'truck', label: 'Truck', value: 'truck', count: 1876 },
       { id: 'wagon', label: 'Wagon', value: 'wagon', count: 345 },
     ],
@@ -178,7 +236,13 @@ const FILTER_CATEGORIES: FilterCategory[] = [
     options: [
       { id: 'new', label: 'New', value: 'new', count: 2345, icon: Sparkles },
       { id: 'used', label: 'Used', value: 'used', count: 8765 },
-      { id: 'certified', label: 'Certified Pre-Owned', value: 'certified', count: 1234, premium: true },
+      {
+        id: 'certified',
+        label: 'Certified Pre-Owned',
+        value: 'certified',
+        count: 1234,
+        premium: true,
+      },
     ],
   },
 ];
@@ -193,92 +257,24 @@ const SORT_OPTIONS = [
   { id: 'distance', label: 'Distance', icon: MapPin },
 ];
 
-export const AdvancedSearchSystem = memo<AdvancedSearchSystemProps>(({
-  visible,
-  onClose,
-  onApplyFilters,
-  onResetFilters,
-  initialFilters,
-  resultsCount = 0,
-}) => {
-  const { colors } = useThemeColors();
-  const styles = getThemedStyles(colors);
+export const AdvancedSearchSystem = memo<AdvancedSearchSystemProps>(
+  ({
+    visible,
+    onClose,
+    onApplyFilters,
+    onResetFilters,
+    initialFilters,
+    resultsCount = 0,
+  }) => {
+    const { colors } = useThemeColors();
+    const styles = getThemedStyles(colors);
 
-  // Animation values
-  const modalScale = useSharedValue(0);
-  const backdropOpacity = useSharedValue(0);
+    // Animation values
+    const modalScale = useSharedValue(0);
+    const backdropOpacity = useSharedValue(0);
 
-  // Filter state
-  const [filters, setFilters] = useState<AdvancedSearchFilters>({
-    searchTerm: '',
-    make: [],
-    model: [],
-    yearRange: [2015, 2025],
-    priceRange: [0, 100000],
-    mileageRange: [0, 100000],
-    fuelType: [],
-    transmission: [],
-    bodyType: [],
-    condition: [],
-    features: [],
-    location: '',
-    radius: 50,
-    sortBy: 'relevance',
-    sortOrder: 'desc',
-    viewMode: 'grid',
-    showFeatured: false,
-    showDeals: false,
-    showCertified: false,
-    excludeSold: true,
-    ...initialFilters,
-  });
-
-  const [activeCategory, setActiveCategory] = useState<string>('make');
-  const [showAdvanced, setShowAdvanced] = useState(false);
-
-  // Animation effects
-  React.useEffect(() => {
-    if (visible) {
-      modalScale.value = withSpring(1, { stiffness: 300 });
-      backdropOpacity.value = withTiming(1, { duration: 200 });
-    } else {
-      modalScale.value = withTiming(0, { duration: 200 });
-      backdropOpacity.value = withTiming(0, { duration: 200 });
-    }
-  }, [visible]);
-
-  const backdropStyle = useAnimatedStyle(() => ({
-    opacity: backdropOpacity.value,
-  }));
-
-  const modalStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: modalScale.value }],
-  }));
-
-  // Filter management
-  const updateFilter = useCallback((key: keyof AdvancedSearchFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  }, []);
-
-  const toggleMultipleFilter = useCallback((category: string, value: string) => {
-    setFilters(prev => {
-      const currentValues = prev[category as keyof AdvancedSearchFilters] as string[];
-      const newValues = currentValues.includes(value)
-        ? currentValues.filter(v => v !== value)
-        : [...currentValues, value];
-      return { ...prev, [category]: newValues };
-    });
-  }, []);
-
-  const handleApply = useCallback(async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onApplyFilters(filters);
-    onClose();
-  }, [filters, onApplyFilters, onClose]);
-
-  const handleReset = useCallback(async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setFilters({
+    // Filter state
+    const [filters, setFilters] = useState<AdvancedSearchFilters>({
       searchTerm: '',
       make: [],
       model: [],
@@ -299,225 +295,333 @@ export const AdvancedSearchSystem = memo<AdvancedSearchSystemProps>(({
       showDeals: false,
       showCertified: false,
       excludeSold: true,
+      ...initialFilters,
     });
-    onResetFilters();
-  }, [onResetFilters]);
 
-  // Active filters count
-  const activeFiltersCount = useMemo(() => {
-    let count = 0;
-    if (filters.make.length > 0) count++;
-    if (filters.fuelType.length > 0) count++;
-    if (filters.transmission.length > 0) count++;
-    if (filters.bodyType.length > 0) count++;
-    if (filters.condition.length > 0) count++;
-    if (filters.showFeatured) count++;
-    if (filters.showDeals) count++;
-    if (filters.showCertified) count++;
-    return count;
-  }, [filters]);
+    const [activeCategory, setActiveCategory] = useState<string>('make');
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const renderFilterCategory = (category: FilterCategory) => {
-    const Icon = category.icon;
-    const isActive = activeCategory === category.id;
+    // Animation effects
+    React.useEffect(() => {
+      if (visible) {
+        modalScale.value = withSpring(1, { stiffness: 300 });
+        backdropOpacity.value = withTiming(1, { duration: 200 });
+      } else {
+        modalScale.value = withTiming(0, { duration: 200 });
+        backdropOpacity.value = withTiming(0, { duration: 200 });
+      }
+    }, [visible]);
 
-    return (
-      <TouchableOpacity
-        key={category.id}
-        style={[
-          styles.categoryButton,
-          isActive && styles.categoryButtonActive,
-          { backgroundColor: isActive ? colors.primary : colors.cardBackground }
-        ]}
-        onPress={() => setActiveCategory(category.id)}
-      >
-        <Icon 
-          size={20} 
-          color={isActive ? colors.white : colors.textSecondary} 
-        />
-        <Text style={[
-          styles.categoryButtonText,
-          { color: isActive ? colors.white : colors.text }
-        ]}>
-          {category.title}
-        </Text>
-        {category.premium && (
-          <View style={styles.premiumBadge}>
-            <Sparkles size={12} color={colors.white} />
-          </View>
-        )}
-      </TouchableOpacity>
+    const backdropStyle = useAnimatedStyle(() => ({
+      opacity: backdropOpacity.value,
+    }));
+
+    const modalStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: modalScale.value }],
+    }));
+
+    // Filter management
+    const updateFilter = useCallback(
+      (key: keyof AdvancedSearchFilters, value: any) => {
+        setFilters((prev) => ({ ...prev, [key]: value }));
+      },
+      [],
     );
-  };
 
-  const renderFilterOptions = () => {
-    const category = FILTER_CATEGORIES.find(c => c.id === activeCategory);
-    if (!category) return null;
+    const toggleMultipleFilter = useCallback(
+      (category: string, value: string) => {
+        setFilters((prev) => {
+          const currentValues = prev[
+            category as keyof AdvancedSearchFilters
+          ] as string[];
+          const newValues = currentValues.includes(value)
+            ? currentValues.filter((v) => v !== value)
+            : [...currentValues, value];
+          return { ...prev, [category]: newValues };
+        });
+      },
+      [],
+    );
 
-    if (category.type === 'multiple' && category.options) {
+    const handleApply = useCallback(async () => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      onApplyFilters(filters);
+      onClose();
+    }, [filters, onApplyFilters, onClose]);
+
+    const handleReset = useCallback(async () => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setFilters({
+        searchTerm: '',
+        make: [],
+        model: [],
+        yearRange: [2015, 2025],
+        priceRange: [0, 100000],
+        mileageRange: [0, 100000],
+        fuelType: [],
+        transmission: [],
+        bodyType: [],
+        condition: [],
+        features: [],
+        location: '',
+        radius: 50,
+        sortBy: 'relevance',
+        sortOrder: 'desc',
+        viewMode: 'grid',
+        showFeatured: false,
+        showDeals: false,
+        showCertified: false,
+        excludeSold: true,
+      });
+      onResetFilters();
+    }, [onResetFilters]);
+
+    // Active filters count
+    const activeFiltersCount = useMemo(() => {
+      let count = 0;
+      if (filters.make.length > 0) count++;
+      if (filters.fuelType.length > 0) count++;
+      if (filters.transmission.length > 0) count++;
+      if (filters.bodyType.length > 0) count++;
+      if (filters.condition.length > 0) count++;
+      if (filters.showFeatured) count++;
+      if (filters.showDeals) count++;
+      if (filters.showCertified) count++;
+      return count;
+    }, [filters]);
+
+    const renderFilterCategory = (category: FilterCategory) => {
+      const Icon = category.icon;
+      const isActive = activeCategory === category.id;
+
       return (
-        <ScrollView style={styles.optionsContainer}>
-          {category.options.map((option) => {
-            const isSelected = (filters[category.id as keyof AdvancedSearchFilters] as string[])
-              ?.includes(option.value);
-            const OptionIcon = option.icon;
-
-            return (
-              <TouchableOpacity
-                key={option.id}
-                style={[
-                  styles.optionButton,
-                  isSelected && styles.optionButtonSelected,
-                  { 
-                    backgroundColor: isSelected ? colors.primary + '20' : colors.cardBackground,
-                    borderColor: isSelected ? colors.primary : colors.border 
-                  }
-                ]}
-                onPress={() => toggleMultipleFilter(category.id, option.value)}
-              >
-                <View style={styles.optionContent}>
-                  <View style={styles.optionLeft}>
-                    {OptionIcon && <OptionIcon size={18} color={colors.textSecondary} />}
-                    <Text style={[styles.optionLabel, { color: colors.text }]}>
-                      {option.label}
-                    </Text>
-                    {option.premium && (
-                      <View style={styles.optionPremiumBadge}>
-                        <Sparkles size={10} color={colors.primary} />
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.optionRight}>
-                    {option.count && (
-                      <Text style={[styles.optionCount, { color: colors.textSecondary }]}>
-                        {option.count.toLocaleString()}
-                      </Text>
-                    )}
-                    {isSelected && (
-                      <View style={[styles.checkIcon, { backgroundColor: colors.primary }]}>
-                        <Check size={12} color={colors.white} />
-                      </View>
-                    )}
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        <TouchableOpacity
+          key={category.id}
+          style={[
+            styles.categoryButton,
+            isActive && styles.categoryButtonActive,
+            {
+              backgroundColor: isActive
+                ? colors.primary
+                : colors.cardBackground,
+            },
+          ]}
+          onPress={() => setActiveCategory(category.id)}
+        >
+          <Icon
+            size={20}
+            color={isActive ? colors.white : colors.textSecondary}
+          />
+          <Text
+            style={[
+              styles.categoryButtonText,
+              { color: isActive ? colors.white : colors.text },
+            ]}
+          >
+            {category.title}
+          </Text>
+          {category.premium && (
+            <View style={styles.premiumBadge}>
+              <Sparkles size={12} color={colors.white} />
+            </View>
+          )}
+        </TouchableOpacity>
       );
-    }
+    };
 
-    // Range filters would be implemented here
+    const renderFilterOptions = () => {
+      const category = FILTER_CATEGORIES.find((c) => c.id === activeCategory);
+      if (!category) return null;
+
+      if (category.type === 'multiple' && category.options) {
+        return (
+          <ScrollView style={styles.optionsContainer}>
+            {category.options.map((option) => {
+              const isSelected = (
+                filters[category.id as keyof AdvancedSearchFilters] as string[]
+              )?.includes(option.value);
+              const OptionIcon = option.icon;
+
+              return (
+                <TouchableOpacity
+                  key={option.id}
+                  style={[
+                    styles.optionButton,
+                    isSelected && styles.optionButtonSelected,
+                    {
+                      backgroundColor: isSelected
+                        ? colors.primary + '20'
+                        : colors.cardBackground,
+                      borderColor: isSelected ? colors.primary : colors.border,
+                    },
+                  ]}
+                  onPress={() =>
+                    toggleMultipleFilter(category.id, option.value)
+                  }
+                >
+                  <View style={styles.optionContent}>
+                    <View style={styles.optionLeft}>
+                      {OptionIcon && (
+                        <OptionIcon size={18} color={colors.textSecondary} />
+                      )}
+                      <Text
+                        style={[styles.optionLabel, { color: colors.text }]}
+                      >
+                        {option.label}
+                      </Text>
+                      {option.premium && (
+                        <View style={styles.optionPremiumBadge}>
+                          <Sparkles size={10} color={colors.primary} />
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.optionRight}>
+                      {option.count && (
+                        <Text
+                          style={[
+                            styles.optionCount,
+                            { color: colors.textSecondary },
+                          ]}
+                        >
+                          {option.count.toLocaleString()}
+                        </Text>
+                      )}
+                      {isSelected && (
+                        <View
+                          style={[
+                            styles.checkIcon,
+                            { backgroundColor: colors.primary },
+                          ]}
+                        >
+                          <Check size={12} color={colors.white} />
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        );
+      }
+
+      // Range filters would be implemented here
+      return (
+        <View style={styles.rangeContainer}>
+          <Text style={[styles.rangeLabel, { color: colors.text }]}>
+            Range filters coming soon...
+          </Text>
+        </View>
+      );
+    };
+
+    if (!visible) return null;
+
     return (
-      <View style={styles.rangeContainer}>
-        <Text style={[styles.rangeLabel, { color: colors.text }]}>
-          Range filters coming soon...
-        </Text>
-      </View>
-    );
-  };
+      <Modal
+        visible={visible}
+        transparent
+        animationType="none"
+        statusBarTranslucent
+      >
+        <Animated.View style={[styles.backdrop, backdropStyle]}>
+          <TouchableOpacity
+            style={styles.backdropTouchable}
+            onPress={onClose}
+            activeOpacity={1}
+          />
 
-  if (!visible) return null;
-
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      statusBarTranslucent
-    >
-      <Animated.View style={[styles.backdrop, backdropStyle]}>
-        <TouchableOpacity 
-          style={styles.backdropTouchable}
-          onPress={onClose}
-          activeOpacity={1}
-        />
-        
-        <Animated.View style={[styles.modal, modalStyle]}>
-          <BlurView intensity={100} style={styles.blurBackground}>
-            <LinearGradient
-              colors={[colors.white + 'F0', colors.white + 'F8']}
-              style={styles.gradientBackground}
-            />
-          </BlurView>
-
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Filter size={24} color={colors.text} />
-              <Text style={[styles.headerTitle, { color: colors.text }]}>
-                Advanced Search
-              </Text>
-              {activeFiltersCount > 0 && (
-                <View style={[styles.filtersBadge, { backgroundColor: colors.primary }]}>
-                  <Text style={styles.filtersBadgeText}>
-                    {activeFiltersCount}
-                  </Text>
-                </View>
-              )}
-            </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={24} color={colors.textSecondary} />
-            </TouchableOpacity>
-          </View>
-
-          {/* Search Bar */}
-          <View style={styles.searchSection}>
-            <SearchBar
-              value={filters.searchTerm}
-              onChangeText={(text) => updateFilter('searchTerm', text)}
-              placeholder="Search by make, model, features..."
-              showAIIcon={true}
-              containerStyle={styles.searchBar}
-            />
-          </View>
-
-          {/* Content */}
-          <View style={styles.content}>
-            {/* Categories */}
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              style={styles.categoriesContainer}
-              contentContainerStyle={styles.categoriesContent}
-            >
-              {FILTER_CATEGORIES.map(renderFilterCategory)}
-            </ScrollView>
-
-            {/* Filter Options */}
-            <View style={styles.filtersContent}>
-              {renderFilterOptions()}
-            </View>
-          </View>
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            <View style={styles.resultsIndicator}>
-              <Text style={[styles.resultsText, { color: colors.textSecondary }]}>
-                {resultsCount.toLocaleString()} cars found
-              </Text>
-            </View>
-            
-            <View style={styles.footerButtons}>
-              <Button
-                title="Reset"
-                variant="outline"
-                onPress={handleReset}
-                style={styles.resetButton}
+          <Animated.View style={[styles.modal, modalStyle]}>
+            <BlurView intensity={100} style={styles.blurBackground}>
+              <LinearGradient
+                colors={[colors.white + 'F0', colors.white + 'F8']}
+                style={styles.gradientBackground}
               />
-              <Button
-                title="Apply Filters"
-                onPress={handleApply}
-                style={styles.applyButton}
-                icon={<Check size={18} color={colors.white} />}
+            </BlurView>
+
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <Filter size={24} color={colors.text} />
+                <Text style={[styles.headerTitle, { color: colors.text }]}>
+                  Advanced Search
+                </Text>
+                {activeFiltersCount > 0 && (
+                  <View
+                    style={[
+                      styles.filtersBadge,
+                      { backgroundColor: colors.primary },
+                    ]}
+                  >
+                    <Text style={styles.filtersBadgeText}>
+                      {activeFiltersCount}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <X size={24} color={colors.textSecondary} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Search Bar */}
+            <View style={styles.searchSection}>
+              <SearchBar
+                value={filters.searchTerm}
+                onChangeText={(text) => updateFilter('searchTerm', text)}
+                placeholder="Search by make, model, features..."
+                showAIIcon={true}
+                containerStyle={styles.searchBar}
               />
             </View>
-          </View>
+
+            {/* Content */}
+            <View style={styles.content}>
+              {/* Categories */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.categoriesContainer}
+                contentContainerStyle={styles.categoriesContent}
+              >
+                {FILTER_CATEGORIES.map(renderFilterCategory)}
+              </ScrollView>
+
+              {/* Filter Options */}
+              <View style={styles.filtersContent}>{renderFilterOptions()}</View>
+            </View>
+
+            {/* Footer */}
+            <View style={styles.footer}>
+              <View style={styles.resultsIndicator}>
+                <Text
+                  style={[styles.resultsText, { color: colors.textSecondary }]}
+                >
+                  {resultsCount.toLocaleString()} cars found
+                </Text>
+              </View>
+
+              <View style={styles.footerButtons}>
+                <Button
+                  title="Reset"
+                  variant="outline"
+                  onPress={handleReset}
+                  style={styles.resetButton}
+                />
+                <Button
+                  title="Apply Filters"
+                  onPress={handleApply}
+                  style={styles.applyButton}
+                  icon={<Check size={18} color={colors.white} />}
+                />
+              </View>
+            </View>
+          </Animated.View>
         </Animated.View>
-      </Animated.View>
-    </Modal>
-  );
-});
+      </Modal>
+    );
+  },
+);
 
 const getThemedStyles = (colors: any) => {
   return StyleSheet.create({

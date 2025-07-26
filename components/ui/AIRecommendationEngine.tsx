@@ -28,7 +28,14 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { UnifiedSearchFilter } from '@/components/ui/UnifiedSearchFilter';
 import { useAuth } from '@/contexts/AuthContext';
 import { Car } from '@/types/database';
-import { Sparkles, Star, TrendingUp, Zap, Heart, ArrowRight } from '@/utils/ultra-optimized-icons';
+import {
+  Sparkles,
+  Star,
+  TrendingUp,
+  Zap,
+  Heart,
+  ArrowRight,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -72,18 +79,22 @@ export const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
   const { colors } = useThemeColors();
   const { layout, cards, buttons, spacing } = useDesignTokens();
   const { user } = useAuth();
-  
-  const [recommendations, setRecommendations] = useState<AIRecommendation[]>([]);
+
+  const [recommendations, setRecommendations] = useState<AIRecommendation[]>(
+    [],
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showDetails, setShowDetails] = useState<{ [key: string]: boolean }>({});
+  const [showDetails, setShowDetails] = useState<{ [key: string]: boolean }>(
+    {},
+  );
   const [refreshing, setRefreshing] = useState(false);
-  
+
   // Animation values
   const headerOpacity = useSharedValue(0);
   const recommendationsOpacity = useSharedValue(0);
   const sparkleRotation = useSharedValue(0);
-  
+
   // Mock AI preferences based on user data
   const mockUserPreferences: AIPreference[] = [
     {
@@ -198,163 +209,182 @@ export const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
   ];
 
   // AI scoring algorithm
-  const calculateAIScore = useCallback((car: Car, preferences: AIPreference[]): AIRecommendation => {
-    let totalScore = 0;
-    let reasons: string[] = [];
-    let priceScore = 0;
-    let featureScore = 0;
-    let reliabilityScore = 0;
-    let userPreferenceScore = 0;
+  const calculateAIScore = useCallback(
+    (car: Car, preferences: AIPreference[]): AIRecommendation => {
+      let totalScore = 0;
+      let reasons: string[] = [];
+      let priceScore = 0;
+      let featureScore = 0;
+      let reliabilityScore = 0;
+      let userPreferenceScore = 0;
 
-    preferences.forEach(preference => {
-      let score = 0;
-      
-      switch (preference.category) {
-        case 'budget':
-          const [minPrice, maxPrice] = preference.value.split('-').map(Number);
-          if (car.price >= minPrice && car.price <= maxPrice) {
-            score = 100;
-            reasons.push(`Perfect price match (€${car.price.toLocaleString()})`);
-          } else if (car.price < minPrice) {
-            score = 80;
-            reasons.push(`Great value under budget (€${car.price.toLocaleString()})`);
-          } else {
-            score = Math.max(0, 60 - ((car.price - maxPrice) / 1000));
-            if (score > 40) reasons.push(`Slightly over budget but worth it`);
-          }
-          priceScore = score;
-          break;
-          
-        case 'usage':
-          if (preference.value === 'family') {
-            const familyFriendly = ['RAV4', 'CR-V', 'CX-5', 'X3', 'Q5'];
-            if (familyFriendly.some(model => car.model.includes(model))) {
-              score = 90;
-              reasons.push(`Excellent family vehicle`);
+      preferences.forEach((preference) => {
+        let score = 0;
+
+        switch (preference.category) {
+          case 'budget':
+            const [minPrice, maxPrice] = preference.value
+              .split('-')
+              .map(Number);
+            if (car.price >= minPrice && car.price <= maxPrice) {
+              score = 100;
+              reasons.push(
+                `Perfect price match (€${car.price.toLocaleString()})`,
+              );
+            } else if (car.price < minPrice) {
+              score = 80;
+              reasons.push(
+                `Great value under budget (€${car.price.toLocaleString()})`,
+              );
             } else {
-              score = 60;
+              score = Math.max(0, 60 - (car.price - maxPrice) / 1000);
+              if (score > 40) reasons.push(`Slightly over budget but worth it`);
             }
-          }
-          userPreferenceScore += score * 0.4;
-          break;
-          
-        case 'style':
-          if (preference.value === 'suv') {
-            const suvModels = ['RAV4', 'CR-V', 'CX-5', 'X3', 'Q5'];
-            if (suvModels.some(model => car.model.includes(model))) {
-              score = 95;
-              reasons.push(`Perfect SUV match`);
+            priceScore = score;
+            break;
+
+          case 'usage':
+            if (preference.value === 'family') {
+              const familyFriendly = ['RAV4', 'CR-V', 'CX-5', 'X3', 'Q5'];
+              if (familyFriendly.some((model) => car.model.includes(model))) {
+                score = 90;
+                reasons.push(`Excellent family vehicle`);
+              } else {
+                score = 60;
+              }
+            }
+            userPreferenceScore += score * 0.4;
+            break;
+
+          case 'style':
+            if (preference.value === 'suv') {
+              const suvModels = ['RAV4', 'CR-V', 'CX-5', 'X3', 'Q5'];
+              if (suvModels.some((model) => car.model.includes(model))) {
+                score = 95;
+                reasons.push(`Perfect SUV match`);
+              } else {
+                score = 30;
+              }
+            }
+            userPreferenceScore += score * 0.3;
+            break;
+
+          case 'features':
+            const features = preference.value as string[];
+            let featureCount = 0;
+
+            if (features.includes('safety')) {
+              featureCount++;
+              reasons.push(`Advanced safety features`);
+            }
+            if (
+              features.includes('fuel_efficiency') &&
+              car.fuel_type === 'Hybrid'
+            ) {
+              featureCount += 2;
+              reasons.push(`Excellent fuel efficiency (${car.fuel_type})`);
+            }
+            if (features.includes('technology')) {
+              featureCount++;
+              reasons.push(`Latest technology features`);
+            }
+
+            score = (featureCount / features.length) * 100;
+            featureScore = score;
+            break;
+
+          case 'performance':
+            const luxuryBrands = ['BMW', 'Audi', 'Mercedes-Benz'];
+            if (luxuryBrands.includes(car.make)) {
+              score = 85;
+              reasons.push(`Premium performance (${car.make})`);
             } else {
-              score = 30;
+              score = 70;
+              reasons.push(`Reliable performance`);
             }
-          }
-          userPreferenceScore += score * 0.3;
-          break;
-          
-        case 'features':
-          const features = preference.value as string[];
-          let featureCount = 0;
-          
-          if (features.includes('safety')) {
-            featureCount++;
-            reasons.push(`Advanced safety features`);
-          }
-          if (features.includes('fuel_efficiency') && car.fuel_type === 'Hybrid') {
-            featureCount += 2;
-            reasons.push(`Excellent fuel efficiency (${car.fuel_type})`);
-          }
-          if (features.includes('technology')) {
-            featureCount++;
-            reasons.push(`Latest technology features`);
-          }
-          
-          score = (featureCount / features.length) * 100;
-          featureScore = score;
-          break;
-          
-        case 'performance':
-          const luxuryBrands = ['BMW', 'Audi', 'Mercedes-Benz'];
-          if (luxuryBrands.includes(car.make)) {
-            score = 85;
-            reasons.push(`Premium performance (${car.make})`);
-          } else {
-            score = 70;
-            reasons.push(`Reliable performance`);
-          }
-          break;
+            break;
+        }
+
+        totalScore += score * preference.weight * preference.confidence;
+      });
+
+      // Reliability score based on brand reputation
+      const reliableBrands = ['Toyota', 'Honda', 'Mazda'];
+      if (reliableBrands.includes(car.make)) {
+        reliabilityScore = 90;
+        reasons.push(`Highly reliable brand`);
+      } else {
+        reliabilityScore = 75;
       }
-      
-      totalScore += score * preference.weight * preference.confidence;
-    });
 
-    // Reliability score based on brand reputation
-    const reliableBrands = ['Toyota', 'Honda', 'Mazda'];
-    if (reliableBrands.includes(car.make)) {
-      reliabilityScore = 90;
-      reasons.push(`Highly reliable brand`);
-    } else {
-      reliabilityScore = 75;
-    }
+      // Mileage consideration
+      if (car.mileage > 50000) {
+        totalScore *= 0.95;
+        reasons.push(`Higher mileage considered`);
+      } else if (car.mileage < 30000) {
+        totalScore *= 1.05;
+        reasons.push(`Low mileage advantage`);
+      }
 
-    // Mileage consideration
-    if (car.mileage > 50000) {
-      totalScore *= 0.95;
-      reasons.push(`Higher mileage considered`);
-    } else if (car.mileage < 30000) {
-      totalScore *= 1.05;
-      reasons.push(`Low mileage advantage`);
-    }
+      const matchPercentage = Math.min(Math.round(totalScore), 100);
+      let category: 'perfect' | 'great' | 'good' | 'consider' = 'consider';
 
-    const matchPercentage = Math.min(Math.round(totalScore), 100);
-    let category: 'perfect' | 'great' | 'good' | 'consider' = 'consider';
-    
-    if (matchPercentage >= 90) category = 'perfect';
-    else if (matchPercentage >= 80) category = 'great';
-    else if (matchPercentage >= 70) category = 'good';
+      if (matchPercentage >= 90) category = 'perfect';
+      else if (matchPercentage >= 80) category = 'great';
+      else if (matchPercentage >= 70) category = 'good';
 
-    return {
-      id: car.id,
-      car,
-      score: totalScore,
-      reasons: reasons.slice(0, 4), // Limit to top 4 reasons
-      matchPercentage,
-      category,
-      priceScore,
-      featureScore,
-      reliabilityScore,
-      userPreferenceScore,
-    };
-  }, []);
+      return {
+        id: car.id,
+        car,
+        score: totalScore,
+        reasons: reasons.slice(0, 4), // Limit to top 4 reasons
+        matchPercentage,
+        category,
+        priceScore,
+        featureScore,
+        reliabilityScore,
+        userPreferenceScore,
+      };
+    },
+    [],
+  );
 
   // Generate AI recommendations
   const generateRecommendations = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // Simulate AI processing time
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const preferences = userPreferences.length > 0 ? userPreferences : mockUserPreferences;
-      const scoredCars = mockCars.map(car => calculateAIScore(car, preferences));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const preferences =
+        userPreferences.length > 0 ? userPreferences : mockUserPreferences;
+      const scoredCars = mockCars.map((car) =>
+        calculateAIScore(car, preferences),
+      );
+
       // Sort by score and take top recommendations
       const sortedRecommendations = scoredCars
         .sort((a, b) => b.score - a.score)
         .slice(0, maxRecommendations);
-      
+
       setRecommendations(sortedRecommendations);
-      
+
       // Animate in
       headerOpacity.value = withTiming(1, { duration: 500 });
       recommendationsOpacity.value = withTiming(1, { duration: 800 });
-      
     } catch (err) {
       setError('Failed to generate recommendations. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, [userPreferences, mockUserPreferences, calculateAIScore, maxRecommendations]);
+  }, [
+    userPreferences,
+    mockUserPreferences,
+    calculateAIScore,
+    maxRecommendations,
+  ]);
 
   // Refresh recommendations
   const handleRefresh = useCallback(async () => {
@@ -368,13 +398,16 @@ export const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
 
   // Toggle details for a recommendation
   const toggleDetails = useCallback((id: string) => {
-    setShowDetails(prev => ({ ...prev, [id]: !prev[id] }));
+    setShowDetails((prev) => ({ ...prev, [id]: !prev[id] }));
   }, []);
 
   // Handle recommendation selection
-  const handleRecommendationPress = useCallback((recommendation: AIRecommendation) => {
-    onRecommendationSelect?.(recommendation);
-  }, [onRecommendationSelect]);
+  const handleRecommendationPress = useCallback(
+    (recommendation: AIRecommendation) => {
+      onRecommendationSelect?.(recommendation);
+    },
+    [onRecommendationSelect],
+  );
 
   // Load recommendations on mount
   useEffect(() => {
@@ -402,9 +435,9 @@ export const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
       good: { color: colors.warning, label: 'Good Option', icon: '👍' },
       consider: { color: colors.textSecondary, label: 'Consider', icon: '💭' },
     };
-    
+
     const { color, label, icon } = config[category as keyof typeof config];
-    
+
     return (
       <View style={[styles.categoryBadge, { backgroundColor: color }]}>
         <Text style={styles.categoryIcon}>{icon}</Text>
@@ -416,7 +449,7 @@ export const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
   // Render recommendation item
   const renderRecommendation = (recommendation: AIRecommendation) => {
     const isExpanded = showDetails[recommendation.id];
-    
+
     return (
       <Card key={recommendation.id} style={styles.recommendationCard}>
         <View style={styles.recommendationHeader}>
@@ -440,49 +473,63 @@ export const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
             </Text>
           </View>
         </View>
-        
+
         <View style={styles.reasonsContainer}>
           <Text style={[styles.reasonsTitle, { color: colors.text }]}>
             Why this car fits you:
           </Text>
           {recommendation.reasons.slice(0, 2).map((reason, index) => (
-            <Text key={index} style={[styles.reasonText, { color: colors.textSecondary }]}>
+            <Text
+              key={index}
+              style={[styles.reasonText, { color: colors.textSecondary }]}
+            >
               • {reason}
             </Text>
           ))}
           {recommendation.reasons.length > 2 && (
             <TouchableOpacity onPress={() => toggleDetails(recommendation.id)}>
               <Text style={[styles.showMoreText, { color: colors.primary }]}>
-                {isExpanded ? 'Show less' : `${recommendation.reasons.length - 2} more reasons`}
+                {isExpanded
+                  ? 'Show less'
+                  : `${recommendation.reasons.length - 2} more reasons`}
               </Text>
             </TouchableOpacity>
           )}
         </View>
-        
+
         {isExpanded && (
           <View style={styles.expandedDetails}>
             {recommendation.reasons.slice(2).map((reason, index) => (
-              <Text key={index} style={[styles.reasonText, { color: colors.textSecondary }]}>
+              <Text
+                key={index}
+                style={[styles.reasonText, { color: colors.textSecondary }]}
+              >
                 • {reason}
               </Text>
             ))}
-            
+
             <View style={styles.scoresContainer}>
               <View style={styles.scoreBreakdown}>
-                <Text style={[styles.scoreBreakdownLabel, { color: colors.text }]}>
+                <Text
+                  style={[styles.scoreBreakdownLabel, { color: colors.text }]}
+                >
                   Price: {Math.round(recommendation.priceScore)}%
                 </Text>
-                <Text style={[styles.scoreBreakdownLabel, { color: colors.text }]}>
+                <Text
+                  style={[styles.scoreBreakdownLabel, { color: colors.text }]}
+                >
                   Features: {Math.round(recommendation.featureScore)}%
                 </Text>
-                <Text style={[styles.scoreBreakdownLabel, { color: colors.text }]}>
+                <Text
+                  style={[styles.scoreBreakdownLabel, { color: colors.text }]}
+                >
                   Reliability: {Math.round(recommendation.reliabilityScore)}%
                 </Text>
               </View>
             </View>
           </View>
         )}
-        
+
         <View style={styles.actionButtons}>
           <Button
             title="View Details"
@@ -522,9 +569,7 @@ export const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
         title="Unable to Generate Recommendations"
         subtitle={error}
         icon={<Sparkles color={colors.textSecondary} size={48} />}
-        action={
-          <Button title="Try Again" onPress={generateRecommendations} />
-        }
+        action={<Button title="Try Again" onPress={generateRecommendations} />}
       />
     );
   }
@@ -556,7 +601,7 @@ export const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
           </TouchableOpacity>
         </LinearGradient>
       </Animated.View>
-      
+
       <Animated.View style={[styles.content, recommendationsStyle]}>
         <ScrollView
           showsVerticalScrollIndicator={false}

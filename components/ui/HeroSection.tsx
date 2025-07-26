@@ -1,11 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Button } from '@/components/ui/Button';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Search, Sparkles, ArrowRight, MapPin, Filter } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  Sparkles,
+  ArrowRight,
+  MapPin,
+  Filter,
+} from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -34,22 +46,37 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       >
         {/* Background Pattern */}
         <View style={styles.backgroundPattern}>
-          <View style={[styles.patternDot, { backgroundColor: 'rgba(255,255,255,0.1)' }]} />
-          <View style={[styles.patternDot, { backgroundColor: 'rgba(255,255,255,0.05)' }]} />
-          <View style={[styles.patternDot, { backgroundColor: 'rgba(255,255,255,0.08)' }]} />
+          <View
+            style={[
+              styles.patternDot,
+              { backgroundColor: 'rgba(255,255,255,0.1)' },
+            ]}
+          />
+          <View
+            style={[
+              styles.patternDot,
+              { backgroundColor: 'rgba(255,255,255,0.05)' },
+            ]}
+          />
+          <View
+            style={[
+              styles.patternDot,
+              { backgroundColor: 'rgba(255,255,255,0.08)' },
+            ]}
+          />
         </View>
 
         <View style={styles.content}>
           {/* Trust Badge - removed fake claim */}
           <View style={styles.trustBadge}>
             <Sparkles color="#22C55E" size={14} />
-            <Text style={styles.trustBadgeText}>Expert Car Recommendations</Text>
+            <Text style={styles.trustBadgeText}>
+              Expert Car Recommendations
+            </Text>
           </View>
 
           {/* Main Headlines */}
-          <Text style={styles.mainTitle}>
-            Find Your Perfect Car
-          </Text>
+          <Text style={styles.mainTitle}>Find Your Perfect Car</Text>
           <Text style={styles.subtitle}>
             Search thousands of verified listings from trusted dealers.{'\n'}
             Get AI-powered recommendations tailored just for you.
@@ -57,7 +84,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           {/* Enhanced Search Bar */}
           <View style={styles.searchContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.searchBar}
               onPress={onSearchPress}
               activeOpacity={0.9}
@@ -68,7 +95,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   Try "BMW under $30k" or "Family SUV"
                 </Text>
               </View>
-              
+
               {/* Quick Filters */}
               <View style={styles.quickFilters}>
                 <View style={styles.filterChip}>
@@ -80,7 +107,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   <Text style={styles.filterText}>Filters</Text>
                 </View>
               </View>
-              
+
               <View style={styles.searchButton}>
                 <Search color="#FFFFFF" size={20} />
               </View>
@@ -90,7 +117,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Action Buttons */}
           <View style={styles.actionButtons}>
             <Button
-              title={canAccessAI ? "Get AI Recommendations" : "Try AI Search Free"}
+              title={
+                canAccessAI ? 'Get AI Recommendations' : 'Try AI Search Free'
+              }
               onPress={onAIRecommendations}
               variant="secondary"
               style={styles.primaryButton}

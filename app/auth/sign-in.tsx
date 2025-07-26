@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  StyleSheet, 
-  Alert, 
-  SafeAreaView, 
-  ScrollView, 
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Alert,
+  SafeAreaView,
+  ScrollView,
   KeyboardAvoidingView,
   Platform,
-  TouchableOpacity 
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,45 +21,54 @@ import { ModernButton } from '@/components/ui/ModernButton';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
-import { Car, Mail, Lock, Eye, EyeOff, ArrowRight } from '@/utils/ultra-optimized-icons';
+import {
+  Car,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+} from '@/utils/ultra-optimized-icons';
 
 function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{email?: string; password?: string}>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
   const { signInWithPassword } = useAuth();
   const router = useRouter();
   const { colors } = useThemeColors();
 
   const validateForm = () => {
-    const newErrors: {email?: string; password?: string} = {};
-    
+    const newErrors: { email?: string; password?: string } = {};
+
     if (!email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!password) {
       newErrors.password = 'Password is required';
     } else if (password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSignIn = async () => {
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
       // Use RealAuthService for more robust authentication
       const result = await RealAuthService.signIn({ email, password });
-      
+
       if (result.success) {
         // Update auth context with new user
         if (result.user) {
@@ -67,13 +76,16 @@ function SignInScreen() {
           router.replace('/(tabs)');
         }
       } else {
-        Alert.alert('Sign In Failed', result.error || 'Please check your credentials and try again.');
+        Alert.alert(
+          'Sign In Failed',
+          result.error || 'Please check your credentials and try again.',
+        );
       }
     } catch (error: any) {
       console.error('Sign in error:', error);
       Alert.alert(
-        'Sign In Failed', 
-        'An unexpected error occurred. Please try again.'
+        'Sign In Failed',
+        'An unexpected error occurred. Please try again.',
       );
     } finally {
       setLoading(false);
@@ -85,8 +97,8 @@ function SignInScreen() {
     try {
       // Implement real social sign-in with Supabase
       Alert.alert(
-        'Social Sign-In', 
-        `${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is being implemented. Please use email sign-in for now.`
+        'Social Sign-In',
+        `${provider.charAt(0).toUpperCase() + provider.slice(1)} sign-in is being implemented. Please use email sign-in for now.`,
       );
     } catch (error) {
       console.error('Social sign-in error:', error);
@@ -97,8 +109,10 @@ function SignInScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <KeyboardAvoidingView 
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: colors.background }]}
+    >
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
@@ -109,10 +123,17 @@ function SignInScreen() {
         >
           {/* Header with Logo */}
           <View style={styles.header}>
-            <View style={[styles.logoContainer, { backgroundColor: colors.primary }]}>
+            <View
+              style={[
+                styles.logoContainer,
+                { backgroundColor: colors.primary },
+              ]}
+            >
               <Car color={colors.white} size={32} />
             </View>
-            <Text style={[styles.title, { color: colors.text }]}>Welcome Back</Text>
+            <Text style={[styles.title, { color: colors.text }]}>
+              Welcome Back
+            </Text>
             <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               Sign in to access your personalized car recommendations
             </Text>
@@ -122,9 +143,20 @@ function SignInScreen() {
           <View style={styles.form}>
             {/* Email Input */}
             <View style={styles.inputContainer}>
-              <Text style={[styles.inputLabel, { color: colors.text }]}>Email</Text>
-              <View style={[styles.inputWrapper, { borderColor: errors.email ? colors.error : colors.border }]}>
-                <Mail color={colors.textSecondary} size={20} style={styles.inputIcon} />
+              <Text style={[styles.inputLabel, { color: colors.text }]}>
+                Email
+              </Text>
+              <View
+                style={[
+                  styles.inputWrapper,
+                  { borderColor: errors.email ? colors.error : colors.border },
+                ]}
+              >
+                <Mail
+                  color={colors.textSecondary}
+                  size={20}
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   style={[styles.input, { color: colors.text }]}
                   placeholder="Enter your email"
@@ -132,7 +164,8 @@ function SignInScreen() {
                   value={email}
                   onChangeText={(text) => {
                     setEmail(text);
-                    if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                    if (errors.email)
+                      setErrors((prev) => ({ ...prev, email: undefined }));
                   }}
                   autoCapitalize="none"
                   keyboardType="email-address"
@@ -140,15 +173,30 @@ function SignInScreen() {
                 />
               </View>
               {errors.email && (
-                <Text style={[styles.errorText, { color: colors.error }]}>{errors.email}</Text>
+                <Text style={[styles.errorText, { color: colors.error }]}>
+                  {errors.email}
+                </Text>
               )}
             </View>
 
             {/* Password Input */}
             <View style={styles.inputContainer}>
-              <Text style={[styles.inputLabel, { color: colors.text }]}>Password</Text>
-              <View style={[styles.inputWrapper, { borderColor: errors.password ? colors.error : colors.border }]}>
-                <Lock color={colors.textSecondary} size={20} style={styles.inputIcon} />
+              <Text style={[styles.inputLabel, { color: colors.text }]}>
+                Password
+              </Text>
+              <View
+                style={[
+                  styles.inputWrapper,
+                  {
+                    borderColor: errors.password ? colors.error : colors.border,
+                  },
+                ]}
+              >
+                <Lock
+                  color={colors.textSecondary}
+                  size={20}
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   style={[styles.input, { color: colors.text }]}
                   placeholder="Enter your password"
@@ -156,7 +204,8 @@ function SignInScreen() {
                   value={password}
                   onChangeText={(text) => {
                     setPassword(text);
-                    if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                    if (errors.password)
+                      setErrors((prev) => ({ ...prev, password: undefined }));
                   }}
                   secureTextEntry={!showPassword}
                   autoComplete="password"
@@ -173,7 +222,9 @@ function SignInScreen() {
                 </TouchableOpacity>
               </View>
               {errors.password && (
-                <Text style={[styles.errorText, { color: colors.error }]}>{errors.password}</Text>
+                <Text style={[styles.errorText, { color: colors.error }]}>
+                  {errors.password}
+                </Text>
               )}
             </View>
 
@@ -182,15 +233,17 @@ function SignInScreen() {
               onPress={() => router.push('/auth/forgot-password')}
               style={styles.forgotPasswordContainer}
             >
-              <Text style={[styles.forgotPasswordText, { color: colors.primary }]}>
+              <Text
+                style={[styles.forgotPasswordText, { color: colors.primary }]}
+              >
                 Forgot Password?
               </Text>
             </TouchableOpacity>
 
             {/* Sign In Button */}
-            <Button 
-              title="Sign In" 
-              onPress={handleSignIn} 
+            <Button
+              title="Sign In"
+              onPress={handleSignIn}
               loading={loading}
               style={styles.signInButton}
               icon={<ArrowRight color={colors.white} size={20} />}
@@ -198,9 +251,17 @@ function SignInScreen() {
 
             {/* Divider */}
             <View style={styles.divider}>
-              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-              <Text style={[styles.dividerText, { color: colors.textSecondary }]}>or continue with</Text>
-              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+              <View
+                style={[styles.dividerLine, { backgroundColor: colors.border }]}
+              />
+              <Text
+                style={[styles.dividerText, { color: colors.textSecondary }]}
+              >
+                or continue with
+              </Text>
+              <View
+                style={[styles.dividerLine, { backgroundColor: colors.border }]}
+              />
             </View>
 
             {/* Social Sign In Options */}
@@ -226,7 +287,9 @@ function SignInScreen() {
               Don't have an account?{' '}
             </Text>
             <TouchableOpacity onPress={() => router.push('/auth/sign-up')}>
-              <Text style={[styles.footerLink, { color: colors.primary }]}>Sign Up</Text>
+              <Text style={[styles.footerLink, { color: colors.primary }]}>
+                Sign Up
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

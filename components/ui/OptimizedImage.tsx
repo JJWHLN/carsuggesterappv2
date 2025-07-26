@@ -1,11 +1,27 @@
-import React, { useState, memo, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Image, StyleSheet, ViewStyle, ImageStyle, Dimensions, LayoutChangeEvent, PixelRatio } from 'react-native';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withTiming, 
+import React, {
+  useState,
+  memo,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
+import {
+  View,
+  Image,
+  StyleSheet,
+  ViewStyle,
+  ImageStyle,
+  Dimensions,
+  LayoutChangeEvent,
+  PixelRatio,
+} from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
   interpolate,
-  runOnJS 
+  runOnJS,
 } from 'react-native-reanimated';
 import { BorderRadius } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
@@ -35,7 +51,10 @@ interface OptimizedImageProps {
 // Simple in-memory cache for images
 class ImageCache {
   private static instance: ImageCache;
-  private cache = new Map<string, { uri: string; timestamp: number; size: number }>();
+  private cache = new Map<
+    string,
+    { uri: string; timestamp: number; size: number }
+  >();
   private maxCacheSize = 50 * 1024 * 1024; // 50MB
   private currentCacheSize = 0;
 
@@ -54,14 +73,17 @@ class ImageCache {
     }
 
     // Clean cache if needed
-    while (this.currentCacheSize + size > this.maxCacheSize && this.cache.size > 0) {
+    while (
+      this.currentCacheSize + size > this.maxCacheSize &&
+      this.cache.size > 0
+    ) {
       this.removeOldest();
     }
 
     this.cache.set(key, {
       uri,
       timestamp: Date.now(),
-      size
+      size,
     });
     this.currentCacheSize += size;
   }
@@ -102,214 +124,234 @@ class ImageCache {
 
 const imageCache = ImageCache.getInstance();
 
-const OptimizedImage = memo<OptimizedImageProps>(({
-  source,
-  style,
-  containerStyle,
-  placeholder,
-  fallbackSource,
-  onLoad,
-  onError,
-  resizeMode = 'cover',
-  accessibilityLabel,
-  lazy = false,
-  cacheKey,
-  priority = 'normal',
-  quality = 'medium',
-  blur = false,
-  progressive = true,
-}) => {
-  const { colors } = useThemeColors();
-  const styles = getThemedOptimizedImageStyles(colors);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [isVisible, setIsVisible] = useState(!lazy);
-  const [isInView, setIsInView] = useState(false);
-  const containerRef = useRef<View>(null);
-  
-  // Memory optimization
-  const { addCleanupFunction } = useMemoryOptimization();
-  
-  // Animation values
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.95);
-  const blurRadius = useSharedValue(blur ? 10 : 0);
+const OptimizedImage = memo<OptimizedImageProps>(
+  ({
+    source,
+    style,
+    containerStyle,
+    placeholder,
+    fallbackSource,
+    onLoad,
+    onError,
+    resizeMode = 'cover',
+    accessibilityLabel,
+    lazy = false,
+    cacheKey,
+    priority = 'normal',
+    quality = 'medium',
+    blur = false,
+    progressive = true,
+  }) => {
+    const { colors } = useThemeColors();
+    const styles = getThemedOptimizedImageStyles(colors);
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasError, setHasError] = useState(false);
+    const [isVisible, setIsVisible] = useState(!lazy);
+    const [isInView, setIsInView] = useState(false);
+    const containerRef = useRef<View>(null);
 
-  // Animated styles
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
-  }));
+    // Memory optimization
+    const { addCleanupFunction } = useMemoryOptimization();
 
-  const blurStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(blurRadius.value, [0, 10], [1, 0.3]),
-  }));
+    // Animation values
+    const opacity = useSharedValue(0);
+    const scale = useSharedValue(0.95);
+    const blurRadius = useSharedValue(blur ? 10 : 0);
 
-  // Get optimized image URI using the centralized optimization utility
-  const getOptimizedUri = useCallback((originalUri: string): string => {
-    if (typeof source === 'number') return originalUri;
-    
-    // Use the centralized image optimization utility
-    return optimizeImageUrl(originalUri, quality);
-  }, [quality, source]);
+    // Animated styles
+    const animatedStyle = useAnimatedStyle(() => ({
+      opacity: opacity.value,
+      transform: [{ scale: scale.value }],
+    }));
 
-  // Cache management
-  const getCachedUri = useCallback((): string | null => {
-    if (!cacheKey || typeof source === 'number') return null;
-    return imageCache.get(cacheKey);
-  }, [cacheKey, source]);
+    const blurStyle = useAnimatedStyle(() => ({
+      opacity: interpolate(blurRadius.value, [0, 10], [1, 0.3]),
+    }));
 
-  const setCachedUri = useCallback((uri: string): void => {
-    if (!cacheKey || typeof source === 'number') return;
-    imageCache.set(cacheKey, uri);
-  }, [cacheKey, source]);
+    // Get optimized image URI using the centralized optimization utility
+    const getOptimizedUri = useCallback(
+      (originalUri: string): string => {
+        if (typeof source === 'number') return originalUri;
 
-  // Viewport-based lazy loading effect (React Native specific)
-  useEffect(() => {
-    if (!lazy || isVisible) return;
+        // Use the centralized image optimization utility
+        return optimizeImageUrl(originalUri, quality);
+      },
+      [quality, source],
+    );
 
-    // Simple timeout-based approach for React Native
-    // In a production app, you might use a more sophisticated intersection observer
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
+    // Cache management
+    const getCachedUri = useCallback((): string | null => {
+      if (!cacheKey || typeof source === 'number') return null;
+      return imageCache.get(cacheKey);
+    }, [cacheKey, source]);
 
-    return () => clearTimeout(timer);
-  }, [lazy, isVisible]);
+    const setCachedUri = useCallback(
+      (uri: string): void => {
+        if (!cacheKey || typeof source === 'number') return;
+        imageCache.set(cacheKey, uri);
+      },
+      [cacheKey, source],
+    );
 
-  // Layout-based visibility detection for better lazy loading
-  const handleLayout = useCallback((event: LayoutChangeEvent) => {
-    if (!lazy) return;
-    
-    const { y } = event.nativeEvent.layout;
-    const windowHeight = Dimensions.get('window').height;
-    
-    // If component is within viewport or close to it, make it visible
-    if (y < windowHeight + 200) { // 200px buffer
-      setIsVisible(true);
+    // Viewport-based lazy loading effect (React Native specific)
+    useEffect(() => {
+      if (!lazy || isVisible) return;
+
+      // Simple timeout-based approach for React Native
+      // In a production app, you might use a more sophisticated intersection observer
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }, [lazy, isVisible]);
+
+    // Layout-based visibility detection for better lazy loading
+    const handleLayout = useCallback(
+      (event: LayoutChangeEvent) => {
+        if (!lazy) return;
+
+        const { y } = event.nativeEvent.layout;
+        const windowHeight = Dimensions.get('window').height;
+
+        // If component is within viewport or close to it, make it visible
+        if (y < windowHeight + 200) {
+          // 200px buffer
+          setIsVisible(true);
+        }
+      },
+      [lazy],
+    );
+
+    // Handle load completion
+    const handleLoad = useCallback(() => {
+      setIsLoading(false);
+
+      // Animate in
+      opacity.value = withTiming(1, { duration: 300 });
+      scale.value = withTiming(1, { duration: 300 });
+
+      if (blur) {
+        blurRadius.value = withTiming(0, { duration: 500 });
+      }
+
+      // Cache the loaded image
+      if (typeof source === 'object' && source.uri) {
+        setCachedUri(source.uri);
+      }
+
+      runOnJS(() => onLoad?.())();
+    }, [blur, opacity, scale, blurRadius, onLoad, setCachedUri, source]);
+
+    // Handle load error
+    const handleError = useCallback(() => {
+      setIsLoading(false);
+      setHasError(true);
+      runOnJS(() => onError?.())();
+    }, [onError]);
+
+    // Memory optimization: Add cleanup function
+    useEffect(() => {
+      addCleanupFunction(() => {
+        setIsLoading(true);
+        setHasError(false);
+        opacity.value = 0;
+        scale.value = 0.95;
+        blurRadius.value = blur ? 10 : 0;
+      });
+    }, [addCleanupFunction, opacity, scale, blurRadius, blur]);
+
+    // Determine image source with caching and optimization
+    const imageSource = useMemo(() => {
+      if (hasError && fallbackSource) return fallbackSource;
+      if (typeof source === 'number') return source;
+
+      // Check cache first
+      const cachedUri = getCachedUri();
+      if (cachedUri) {
+        return { uri: cachedUri };
+      }
+
+      // Use optimized URI
+      const optimizedUri = getOptimizedUri(source.uri);
+      return { uri: optimizedUri };
+    }, [hasError, fallbackSource, source, getCachedUri, getOptimizedUri]);
+
+    // Don't render anything if lazy loading and not visible
+    if (lazy && !isVisible) {
+      return (
+        <View
+          ref={containerRef}
+          style={[styles.container, containerStyle as ViewStyle]}
+          onLayout={handleLayout}
+        >
+          <View style={[styles.placeholder, containerStyle as ViewStyle]}>
+            {placeholder || <View style={styles.defaultPlaceholder} />}
+          </View>
+        </View>
+      );
     }
-  }, [lazy]);
 
-  // Handle load completion
-  const handleLoad = useCallback(() => {
-    setIsLoading(false);
-    
-    // Animate in
-    opacity.value = withTiming(1, { duration: 300 });
-    scale.value = withTiming(1, { duration: 300 });
-    
-    if (blur) {
-      blurRadius.value = withTiming(0, { duration: 500 });
-    }
-
-    // Cache the loaded image
-    if (typeof source === 'object' && source.uri) {
-      setCachedUri(source.uri);
-    }
-
-    runOnJS(() => onLoad?.())();
-  }, [blur, opacity, scale, blurRadius, onLoad, setCachedUri, source]);
-
-  // Handle load error
-  const handleError = useCallback(() => {
-    setIsLoading(false);
-    setHasError(true);
-    runOnJS(() => onError?.())();
-  }, [onError]);
-
-  // Memory optimization: Add cleanup function
-  useEffect(() => {
-    addCleanupFunction(() => {
-      setIsLoading(true);
-      setHasError(false);
-      opacity.value = 0;
-      scale.value = 0.95;
-      blurRadius.value = blur ? 10 : 0;
-    });
-  }, [addCleanupFunction, opacity, scale, blurRadius, blur]);
-
-  // Determine image source with caching and optimization
-  const imageSource = useMemo(() => {
-    if (hasError && fallbackSource) return fallbackSource;
-    if (typeof source === 'number') return source;
-
-    // Check cache first
-    const cachedUri = getCachedUri();
-    if (cachedUri) {
-      return { uri: cachedUri };
-    }
-
-    // Use optimized URI
-    const optimizedUri = getOptimizedUri(source.uri);
-    return { uri: optimizedUri };
-  }, [hasError, fallbackSource, source, getCachedUri, getOptimizedUri]);
-
-  // Don't render anything if lazy loading and not visible
-  if (lazy && !isVisible) {
     return (
-      <View 
-        ref={containerRef} 
+      <View
+        ref={containerRef}
         style={[styles.container, containerStyle as ViewStyle]}
         onLayout={handleLayout}
       >
-        <View style={[styles.placeholder, containerStyle as ViewStyle]}>
-          {placeholder || <View style={styles.defaultPlaceholder} />}
-        </View>
+        {isLoading && (
+          <View style={[styles.placeholder, containerStyle as ViewStyle]}>
+            {placeholder || <View style={styles.defaultPlaceholder} />}
+          </View>
+        )}
+
+        <Animated.View
+          style={[
+            animatedStyle,
+            { position: isLoading ? 'absolute' : 'relative' },
+          ]}
+        >
+          <Animated.View style={blurStyle}>
+            <Image
+              source={imageSource}
+              style={[styles.image, style]}
+              onLoad={handleLoad}
+              onError={handleError}
+              resizeMode={resizeMode}
+              accessible={!!accessibilityLabel}
+              accessibilityLabel={accessibilityLabel}
+              progressiveRenderingEnabled={progressive}
+              fadeDuration={300}
+            />
+          </Animated.View>
+        </Animated.View>
       </View>
     );
-  }
-
-  return (
-    <View 
-      ref={containerRef} 
-      style={[styles.container, containerStyle as ViewStyle]}
-      onLayout={handleLayout}
-    >
-      {isLoading && (
-        <View style={[styles.placeholder, containerStyle as ViewStyle]}>
-          {placeholder || <View style={styles.defaultPlaceholder} />}
-        </View>
-      )}
-      
-      <Animated.View style={[animatedStyle, { position: isLoading ? 'absolute' : 'relative' }]}>
-        <Animated.View style={blurStyle}>
-          <Image
-            source={imageSource}
-            style={[styles.image, style]}
-            onLoad={handleLoad}
-            onError={handleError}
-            resizeMode={resizeMode}
-            accessible={!!accessibilityLabel}
-            accessibilityLabel={accessibilityLabel}
-            progressiveRenderingEnabled={progressive}
-            fadeDuration={300}
-          />
-        </Animated.View>
-      </Animated.View>
-    </View>
-  );
-});
+  },
+);
 
 OptimizedImage.displayName = 'OptimizedImage';
 
-const getThemedOptimizedImageStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
-  container: {
-    overflow: 'hidden',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  placeholder: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  defaultPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.surfaceDark,
-    borderRadius: BorderRadius.md,
-  },
-});
+const getThemedOptimizedImageStyles = (
+  colors: typeof import('@/constants/Colors').Colors.light,
+) =>
+  StyleSheet.create({
+    container: {
+      overflow: 'hidden',
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+    },
+    placeholder: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    defaultPlaceholder: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: colors.surfaceDark,
+      borderRadius: BorderRadius.md,
+    },
+  });
 
 export { OptimizedImage, ImageCache };

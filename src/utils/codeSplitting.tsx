@@ -4,7 +4,9 @@ import { ErrorBoundary } from '../../components/ui/ErrorBoundary';
 import { performanceMonitor } from './performance';
 
 // Loading component for code splitting
-const LoadingFallback: React.FC<{ name?: string }> = ({ name = 'Component' }) => (
+const LoadingFallback: React.FC<{ name?: string }> = ({
+  name = 'Component',
+}) => (
   <View style={styles.loadingContainer}>
     <ActivityIndicator size="large" color="#3b82f6" />
     <Text style={styles.loadingText}>Loading {name}...</Text>
@@ -12,14 +14,16 @@ const LoadingFallback: React.FC<{ name?: string }> = ({ name = 'Component' }) =>
 );
 
 // Error fallback for code splitting
-const ErrorFallback: React.FC<{ error?: Error; name?: string; onRetry?: () => void }> = ({ 
-  error, 
-  name = 'Component',
-  onRetry 
-}) => (
+const ErrorFallback: React.FC<{
+  error?: Error;
+  name?: string;
+  onRetry?: () => void;
+}> = ({ error, name = 'Component', onRetry }) => (
   <View style={styles.errorContainer}>
     <Text style={styles.errorTitle}>Failed to load {name}</Text>
-    <Text style={styles.errorMessage}>{error?.message || 'Unknown error occurred'}</Text>
+    <Text style={styles.errorMessage}>
+      {error?.message || 'Unknown error occurred'}
+    </Text>
     {onRetry && (
       <Text style={styles.retryButton} onPress={onRetry}>
         Tap to retry
@@ -34,10 +38,13 @@ export function withLazyLoading<T extends object>(
   componentName: string,
   options?: {
     fallback?: React.ComponentType;
-    errorFallback?: React.ComponentType<{ error?: Error; onRetry?: () => void }>;
+    errorFallback?: React.ComponentType<{
+      error?: Error;
+      onRetry?: () => void;
+    }>;
     preload?: boolean;
     priority?: 'high' | 'normal' | 'low';
-  }
+  },
 ) {
   // Track loading performance
   const trackLoadingPerformance = (loadTime: number, success: boolean) => {
@@ -45,18 +52,18 @@ export function withLazyLoading<T extends object>(
       'code-splitting-load-time',
       loadTime,
       { good: 500, needsImprovement: 1000 },
-      { 
+      {
         component: componentName,
         success,
-        priority: options?.priority || 'normal'
-      }
+        priority: options?.priority || 'normal',
+      },
     );
   };
 
   // Enhanced import function with performance tracking
   const enhancedImportFn = async () => {
     const startTime = Date.now();
-    
+
     try {
       const module = await importFn();
       const loadTime = Date.now() - startTime;
@@ -65,18 +72,18 @@ export function withLazyLoading<T extends object>(
     } catch (error) {
       const loadTime = Date.now() - startTime;
       trackLoadingPerformance(loadTime, false);
-      
+
       // Track error
       performanceMonitor.trackCustomMetric(
         'code-splitting-error',
         1,
         { good: 0, needsImprovement: 0.05 },
-        { 
+        {
           component: componentName,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        }
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
       );
-      
+
       throw error;
     }
   };
@@ -87,18 +94,31 @@ export function withLazyLoading<T extends object>(
     const [retryKey, setRetryKey] = React.useState(0);
 
     const handleRetry = React.useCallback(() => {
-      setRetryKey(prev => prev + 1);
+      setRetryKey((prev) => prev + 1);
     }, []);
 
-    const FallbackComponent = options?.fallback || (() => <LoadingFallback name={componentName} />);
-    const ErrorFallbackComponent = options?.errorFallback || 
-      ((errorProps: any) => <ErrorFallback {...errorProps} name={componentName} onRetry={handleRetry} />);
+    const FallbackComponent =
+      options?.fallback || (() => <LoadingFallback name={componentName} />);
+    const ErrorFallbackComponent =
+      options?.errorFallback ||
+      ((errorProps: any) => (
+        <ErrorFallback
+          {...errorProps}
+          name={componentName}
+          onRetry={handleRetry}
+        />
+      ));
 
     return (
       <ErrorBoundary
-        fallback={(error) => <ErrorFallbackComponent error={error} onRetry={handleRetry} />}
+        fallback={(error) => (
+          <ErrorFallbackComponent error={error} onRetry={handleRetry} />
+        )}
         onError={(error) => {
-          console.error(`Error in lazy-loaded component ${componentName}:`, error);
+          console.error(
+            `Error in lazy-loaded component ${componentName}:`,
+            error,
+          );
         }}
       >
         <Suspense fallback={<FallbackComponent />} key={retryKey}>
@@ -113,11 +133,14 @@ export function withLazyLoading<T extends object>(
   // Preload if specified
   if (options?.preload) {
     // Preload after a short delay to not block initial render
-    setTimeout(() => {
-      enhancedImportFn().catch(() => {
-        // Ignore preload errors
-      });
-    }, options.priority === 'high' ? 100 : 1000);
+    setTimeout(
+      () => {
+        enhancedImportFn().catch(() => {
+          // Ignore preload errors
+        });
+      },
+      options.priority === 'high' ? 100 : 1000,
+    );
   }
 
   // Attach preload method
@@ -129,11 +152,11 @@ export function withLazyLoading<T extends object>(
 // Route-based lazy loading for Expo Router
 export const createLazyRoute = (
   importFn: () => Promise<{ default: ComponentType<any> }>,
-  routeName: string
+  routeName: string,
 ) => {
   return withLazyLoading(importFn, routeName, {
     priority: 'high',
-    preload: false
+    preload: false,
   });
 };
 
@@ -141,11 +164,11 @@ export const createLazyRoute = (
 export const createLazyComponent = (
   importFn: () => Promise<{ default: ComponentType<any> }>,
   componentName: string,
-  priority: 'high' | 'normal' | 'low' = 'normal'
+  priority: 'high' | 'normal' | 'low' = 'normal',
 ) => {
   return withLazyLoading(importFn, componentName, {
     priority,
-    preload: priority === 'high'
+    preload: priority === 'high',
   });
 };
 
@@ -155,18 +178,18 @@ export class ResourcePreloader {
 
   static preloadComponent<T>(
     key: string,
-    importFn: () => Promise<{ default: ComponentType<T> }>
+    importFn: () => Promise<{ default: ComponentType<T> }>,
   ): Promise<{ default: ComponentType<T> }> {
     if (!this.preloadPromises.has(key)) {
-      const promise = importFn().catch(error => {
+      const promise = importFn().catch((error) => {
         // Remove failed preload from cache
         this.preloadPromises.delete(key);
         throw error;
       });
-      
+
       this.preloadPromises.set(key, promise);
     }
-    
+
     return this.preloadPromises.get(key)!;
   }
 
@@ -178,10 +201,10 @@ export class ResourcePreloader {
         img.onerror = reject;
         img.src = url;
       });
-      
+
       this.preloadPromises.set(`image:${url}`, promise);
     }
-    
+
     return this.preloadPromises.get(`image:${url}`)!;
   }
 
@@ -196,13 +219,13 @@ export class ResourcePreloader {
         link.href = url;
         link.onload = () => resolve();
         link.onerror = reject;
-        
+
         document.head.appendChild(link);
       });
-      
+
       this.preloadPromises.set(`font:${fontFamily}`, promise);
     }
-    
+
     return this.preloadPromises.get(`font:${fontFamily}`)!;
   }
 
@@ -213,47 +236,58 @@ export class ResourcePreloader {
   static getCacheStats() {
     return {
       cachedResources: this.preloadPromises.size,
-      resources: Array.from(this.preloadPromises.keys())
+      resources: Array.from(this.preloadPromises.keys()),
     };
   }
 }
 
 // Hook for managing component loading states
 export function useComponentLoader() {
-  const [loadingComponents, setLoadingComponents] = React.useState<Set<string>>(new Set());
+  const [loadingComponents, setLoadingComponents] = React.useState<Set<string>>(
+    new Set(),
+  );
   const [errors, setErrors] = React.useState<Map<string, Error>>(new Map());
 
   const startLoading = React.useCallback((componentName: string) => {
-    setLoadingComponents(prev => new Set([...prev, componentName]));
-    setErrors(prev => {
+    setLoadingComponents((prev) => new Set([...prev, componentName]));
+    setErrors((prev) => {
       const newErrors = new Map(prev);
       newErrors.delete(componentName);
       return newErrors;
     });
   }, []);
 
-  const finishLoading = React.useCallback((componentName: string, error?: Error) => {
-    setLoadingComponents(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(componentName);
-      return newSet;
-    });
+  const finishLoading = React.useCallback(
+    (componentName: string, error?: Error) => {
+      setLoadingComponents((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(componentName);
+        return newSet;
+      });
 
-    if (error) {
-      setErrors(prev => new Map([...prev, [componentName, error]]));
-    }
-  }, []);
+      if (error) {
+        setErrors((prev) => new Map([...prev, [componentName, error]]));
+      }
+    },
+    [],
+  );
 
-  const isLoading = React.useCallback((componentName: string) => {
-    return loadingComponents.has(componentName);
-  }, [loadingComponents]);
+  const isLoading = React.useCallback(
+    (componentName: string) => {
+      return loadingComponents.has(componentName);
+    },
+    [loadingComponents],
+  );
 
-  const getError = React.useCallback((componentName: string) => {
-    return errors.get(componentName);
-  }, [errors]);
+  const getError = React.useCallback(
+    (componentName: string) => {
+      return errors.get(componentName);
+    },
+    [errors],
+  );
 
   const retry = React.useCallback((componentName: string) => {
-    setErrors(prev => {
+    setErrors((prev) => {
       const newErrors = new Map(prev);
       newErrors.delete(componentName);
       return newErrors;
@@ -267,7 +301,7 @@ export function useComponentLoader() {
     getError,
     retry,
     loadingComponents: Array.from(loadingComponents),
-    errorCount: errors.size
+    errorCount: errors.size,
   };
 }
 

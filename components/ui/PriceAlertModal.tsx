@@ -1,6 +1,6 @@
 /**
  * Price Alert Modal - Core Business Feature
- * 
+ *
  * Modal for users to set up price alerts on cars they're interested in.
  * Key for user retention and conversion.
  */
@@ -43,7 +43,11 @@ interface PriceAlertModalProps {
   };
 }
 
-export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps) {
+export function PriceAlertModal({
+  visible,
+  onClose,
+  car,
+}: PriceAlertModalProps) {
   const { colors } = useThemeColors();
   const { user } = useAuth();
   const [targetPrice, setTargetPrice] = useState('');
@@ -89,7 +93,7 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
     if (target >= car.price) {
       Alert.alert(
         'Price Too High',
-        'Target price should be lower than the current price for a price drop alert.'
+        'Target price should be lower than the current price for a price drop alert.',
       );
       return;
     }
@@ -97,22 +101,17 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
     setLoading(true);
 
     try {
-      await priceTrackingService.createPriceAlert(
-        user.id,
-        car.id,
-        target,
-        {
-          make: car.make,
-          model: car.model,
-          year: car.year,
-          currentPrice: car.price,
-        }
-      );
+      await priceTrackingService.createPriceAlert(user.id, car.id, target, {
+        make: car.make,
+        model: car.model,
+        year: car.year,
+        currentPrice: car.price,
+      });
 
       Alert.alert(
         'Alert Created!',
         `We'll notify you when the ${carTitle} drops to $${target.toLocaleString()} or below.`,
-        [{ text: 'OK', onPress: onClose }]
+        [{ text: 'OK', onPress: onClose }],
       );
 
       setTargetPrice('');
@@ -128,19 +127,31 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
     const currentPrice = car.price;
     return [
       { label: '5% off', price: Math.round(currentPrice * 0.95) },
-      { label: '10% off', price: Math.round(currentPrice * 0.90) },
+      { label: '10% off', price: Math.round(currentPrice * 0.9) },
       { label: '15% off', price: Math.round(currentPrice * 0.85) },
     ];
   };
 
   const getPriceTrendIcon = () => {
     if (!priceTrend) return null;
-    
+
     switch (priceTrend.trend) {
       case 'down':
-        return <MaterialCommunityIcons name="trending-down" color={colors.success} size={16} />;
+        return (
+          <MaterialCommunityIcons
+            name="trending-down"
+            color={colors.success}
+            size={16}
+          />
+        );
       case 'up':
-        return <MaterialCommunityIcons name="trending-up" color={colors.error} size={16} />;
+        return (
+          <MaterialCommunityIcons
+            name="trending-up"
+            color={colors.error}
+            size={16}
+          />
+        );
       default:
         return <DollarSign color={colors.textSecondary} size={16} />;
     }
@@ -148,7 +159,7 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
 
   const getPriceTrendText = () => {
     if (!priceTrend) return 'Loading trend...';
-    
+
     const changeText = priceTrend.changePercent.toFixed(1);
     switch (priceTrend.trend) {
       case 'down':
@@ -162,7 +173,7 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
 
   const getRecommendationColor = () => {
     if (!marketInsights) return colors.textSecondary;
-    
+
     switch (marketInsights.recommendation) {
       case 'good_deal':
         return colors.success;
@@ -175,7 +186,7 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
 
   const getRecommendationText = () => {
     if (!marketInsights) return 'Analyzing market...';
-    
+
     switch (marketInsights.recommendation) {
       case 'good_deal':
         return 'Great deal compared to market average';
@@ -209,8 +220,10 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
           {/* Current Price */}
           <View style={styles.currentPriceCard}>
             <Text style={styles.currentPriceLabel}>Current Price</Text>
-            <Text style={styles.currentPrice}>${car.price.toLocaleString()}</Text>
-            
+            <Text style={styles.currentPrice}>
+              ${car.price.toLocaleString()}
+            </Text>
+
             {/* Price Trend */}
             <View style={styles.priceTrend}>
               {getPriceTrendIcon()}
@@ -225,18 +238,27 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
               <View style={styles.marketInsight}>
                 <View style={styles.marketInsightLeft}>
                   <Star color={getRecommendationColor()} size={16} />
-                  <Text style={[styles.marketInsightText, { color: getRecommendationColor() }]}>
+                  <Text
+                    style={[
+                      styles.marketInsightText,
+                      { color: getRecommendationColor() },
+                    ]}
+                  >
                     {getRecommendationText()}
                   </Text>
                 </View>
               </View>
               <View style={styles.marketStats}>
                 <View style={styles.marketStat}>
-                  <Text style={styles.marketStatValue}>${marketInsights.averagePrice.toLocaleString()}</Text>
+                  <Text style={styles.marketStatValue}>
+                    ${marketInsights.averagePrice.toLocaleString()}
+                  </Text>
                   <Text style={styles.marketStatLabel}>Market Avg</Text>
                 </View>
                 <View style={styles.marketStat}>
-                  <Text style={styles.marketStatValue}>{marketInsights.totalListings}</Text>
+                  <Text style={styles.marketStatValue}>
+                    {marketInsights.totalListings}
+                  </Text>
                   <Text style={styles.marketStatLabel}>Similar Cars</Text>
                 </View>
               </View>
@@ -249,7 +271,7 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
             <Text style={styles.sectionDescription}>
               We'll notify you when the price drops to your target or below.
             </Text>
-            
+
             <View style={styles.priceInputContainer}>
               <Text style={styles.priceInputPrefix}>$</Text>
               <TextInput
@@ -273,8 +295,12 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
                     style={styles.suggestedPrice}
                     onPress={() => setTargetPrice(suggestion.price.toString())}
                   >
-                    <Text style={styles.suggestedPriceLabel}>{suggestion.label}</Text>
-                    <Text style={styles.suggestedPriceValue}>${suggestion.price.toLocaleString()}</Text>
+                    <Text style={styles.suggestedPriceLabel}>
+                      {suggestion.label}
+                    </Text>
+                    <Text style={styles.suggestedPriceValue}>
+                      ${suggestion.price.toLocaleString()}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -288,10 +314,18 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
               <Text style={styles.howItWorksTitle}>How Price Alerts Work</Text>
             </View>
             <View style={styles.howItWorksSteps}>
-              <Text style={styles.howItWorksStep}>• We monitor the price daily</Text>
-              <Text style={styles.howItWorksStep}>• Get notified instantly when price drops</Text>
-              <Text style={styles.howItWorksStep}>• Contact the dealer immediately</Text>
-              <Text style={styles.howItWorksStep}>• Cancel anytime from your alerts</Text>
+              <Text style={styles.howItWorksStep}>
+                • We monitor the price daily
+              </Text>
+              <Text style={styles.howItWorksStep}>
+                • Get notified instantly when price drops
+              </Text>
+              <Text style={styles.howItWorksStep}>
+                • Contact the dealer immediately
+              </Text>
+              <Text style={styles.howItWorksStep}>
+                • Cancel anytime from your alerts
+              </Text>
             </View>
           </View>
         </ScrollView>
@@ -313,200 +347,201 @@ export function PriceAlertModal({ visible, onClose, car }: PriceAlertModalProps)
   );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    paddingTop: Platform.OS === 'ios' ? 60 : Spacing.lg,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerTitle: {
-    ...Typography.title,
-    color: colors.text,
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-  },
-  closeButton: {
-    padding: Spacing.sm,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: Spacing.lg,
-  },
-  currentPriceCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    marginVertical: Spacing.md,
-    alignItems: 'center',
-    ...Shadows.sm,
-  },
-  currentPriceLabel: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-    marginBottom: 4,
-  },
-  currentPrice: {
-    ...Typography.heading,
-    color: colors.primary,
-    fontWeight: '700',
-    marginBottom: Spacing.sm,
-  },
-  priceTrend: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  priceTrendText: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-  },
-  marketInsightsCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    marginBottom: Spacing.md,
-    ...Shadows.sm,
-  },
-  marketInsight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.md,
-  },
-  marketInsightLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  marketInsightText: {
-    ...Typography.body,
-    fontWeight: '500',
-  },
-  marketStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  marketStat: {
-    alignItems: 'center',
-  },
-  marketStatValue: {
-    ...Typography.subtitle,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  marketStatLabel: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginVertical: Spacing.md,
-  },
-  sectionTitle: {
-    ...Typography.subtitle,
-    color: colors.text,
-    marginBottom: Spacing.sm,
-  },
-  sectionDescription: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-    marginBottom: Spacing.lg,
-  },
-  priceInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.md,
-    backgroundColor: colors.white,
-  },
-  priceInputPrefix: {
-    ...Typography.body,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  priceInput: {
-    flex: 1,
-    paddingVertical: Spacing.md,
-    paddingLeft: Spacing.xs,
-    ...Typography.body,
-    color: colors.text,
-  },
-  suggestedPrices: {
-    marginTop: Spacing.lg,
-  },
-  suggestedPricesLabel: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-    marginBottom: Spacing.sm,
-  },
-  suggestedPricesRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  suggestedPrice: {
-    flex: 1,
-    backgroundColor: colors.neutral100,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    alignItems: 'center',
-  },
-  suggestedPriceLabel: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-    marginBottom: 4,
-  },
-  suggestedPriceValue: {
-    ...Typography.body,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  howItWorksCard: {
-    backgroundColor: colors.primaryLight,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    marginVertical: Spacing.md,
-  },
-  howItWorksHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  howItWorksTitle: {
-    ...Typography.subtitle,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  howItWorksSteps: {
-    gap: Spacing.xs,
-  },
-  howItWorksStep: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-  },
-  footer: {
-    padding: Spacing.lg,
-    paddingBottom: Platform.OS === 'ios' ? 34 : Spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  createButton: {
-    width: '100%',
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: Spacing.lg,
+      paddingVertical: Spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      paddingTop: Platform.OS === 'ios' ? 60 : Spacing.lg,
+    },
+    headerContent: {
+      flex: 1,
+    },
+    headerTitle: {
+      ...Typography.title,
+      color: colors.text,
+      marginBottom: 4,
+    },
+    headerSubtitle: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+    },
+    closeButton: {
+      padding: Spacing.sm,
+    },
+    content: {
+      flex: 1,
+      paddingHorizontal: Spacing.lg,
+    },
+    currentPriceCard: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      marginVertical: Spacing.md,
+      alignItems: 'center',
+      ...Shadows.sm,
+    },
+    currentPriceLabel: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+      marginBottom: 4,
+    },
+    currentPrice: {
+      ...Typography.heading,
+      color: colors.primary,
+      fontWeight: '700',
+      marginBottom: Spacing.sm,
+    },
+    priceTrend: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.xs,
+    },
+    priceTrendText: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+    },
+    marketInsightsCard: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      marginBottom: Spacing.md,
+      ...Shadows.sm,
+    },
+    marketInsight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: Spacing.md,
+    },
+    marketInsightLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.sm,
+    },
+    marketInsightText: {
+      ...Typography.body,
+      fontWeight: '500',
+    },
+    marketStats: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    marketStat: {
+      alignItems: 'center',
+    },
+    marketStatValue: {
+      ...Typography.subtitle,
+      color: colors.text,
+      fontWeight: '600',
+    },
+    marketStatLabel: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+    },
+    section: {
+      marginVertical: Spacing.md,
+    },
+    sectionTitle: {
+      ...Typography.subtitle,
+      color: colors.text,
+      marginBottom: Spacing.sm,
+    },
+    sectionDescription: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+      marginBottom: Spacing.lg,
+    },
+    priceInputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: BorderRadius.md,
+      paddingHorizontal: Spacing.md,
+      backgroundColor: colors.white,
+    },
+    priceInputPrefix: {
+      ...Typography.body,
+      color: colors.text,
+      fontWeight: '600',
+    },
+    priceInput: {
+      flex: 1,
+      paddingVertical: Spacing.md,
+      paddingLeft: Spacing.xs,
+      ...Typography.body,
+      color: colors.text,
+    },
+    suggestedPrices: {
+      marginTop: Spacing.lg,
+    },
+    suggestedPricesLabel: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+      marginBottom: Spacing.sm,
+    },
+    suggestedPricesRow: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+    },
+    suggestedPrice: {
+      flex: 1,
+      backgroundColor: colors.neutral100,
+      borderRadius: BorderRadius.md,
+      padding: Spacing.md,
+      alignItems: 'center',
+    },
+    suggestedPriceLabel: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+      marginBottom: 4,
+    },
+    suggestedPriceValue: {
+      ...Typography.body,
+      color: colors.text,
+      fontWeight: '600',
+    },
+    howItWorksCard: {
+      backgroundColor: colors.primaryLight,
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      marginVertical: Spacing.md,
+    },
+    howItWorksHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.sm,
+      marginBottom: Spacing.md,
+    },
+    howItWorksTitle: {
+      ...Typography.subtitle,
+      color: colors.text,
+      fontWeight: '600',
+    },
+    howItWorksSteps: {
+      gap: Spacing.xs,
+    },
+    howItWorksStep: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+    },
+    footer: {
+      padding: Spacing.lg,
+      paddingBottom: Platform.OS === 'ios' ? 34 : Spacing.lg,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    createButton: {
+      width: '100%',
+    },
+  });

@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+} from 'react';
 import {
   View,
   Text,
@@ -15,11 +21,24 @@ import {
 } from 'react-native';
 
 import DesignSystem from '@/constants/DesignSystem';
-import { BaseFormInput, SearchInput } from '@/components/ui/UnifiedFormComponents';
-import { CategoryChip, FilterButton, ViewToggle } from '@/components/ui/SharedComponents';
+import {
+  BaseFormInput,
+  SearchInput,
+} from '@/components/ui/UnifiedFormComponents';
+import {
+  CategoryChip,
+  FilterButton,
+  ViewToggle,
+} from '@/components/ui/SharedComponents';
 import { Button } from '@/components/ui/Button';
 import { useDebounce } from '@/hooks/useDebounce';
-import { Search, Filter, X, Check, Settings } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  Filter,
+  X,
+  Check,
+  Settings,
+} from '@/utils/ultra-optimized-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -59,36 +78,36 @@ export interface UnifiedSearchFilterProps {
   searchValue?: string;
   onSearchChange?: (value: string) => void;
   enableSearch?: boolean;
-  
+
   // Filter configuration
   filterCategories?: FilterCategory[];
   activeFilters?: Partial<SearchFilters>;
   onFiltersChange?: (filters: Partial<SearchFilters>) => void;
   enableFilters?: boolean;
-  
+
   // Sort configuration
   sortOptions?: FilterOption[];
   enableSort?: boolean;
-  
+
   // View mode configuration
   viewMode?: 'grid' | 'list';
   onViewModeChange?: (mode: 'grid' | 'list') => void;
   enableViewToggle?: boolean;
-  
+
   // Quick filters
   quickFilters?: FilterOption[];
   enableQuickFilters?: boolean;
-  
+
   // Results summary
   resultsCount?: number;
   resultsLabel?: string;
   showResultsCount?: boolean;
-  
+
   // UI customization
   variant?: 'compact' | 'expanded' | 'floating';
   showClearAll?: boolean;
   containerStyle?: ViewStyle;
-  
+
   // Callbacks
   onClearAll?: () => void;
   onFilterModalOpen?: () => void;
@@ -100,39 +119,43 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
   searchValue = '',
   onSearchChange,
   enableSearch = true,
-  
+
   filterCategories = [],
   activeFilters = {},
   onFiltersChange,
   enableFilters = true,
-  
+
   sortOptions = [],
   enableSort = true,
-  
+
   viewMode = 'grid',
   onViewModeChange,
   enableViewToggle = true,
-  
+
   quickFilters = [],
   enableQuickFilters = true,
-  
+
   resultsCount = 0,
   resultsLabel = 'items',
   showResultsCount = true,
-  
+
   variant = 'expanded',
   showClearAll = true,
   containerStyle,
-  
+
   onClearAll,
   onFilterModalOpen,
   onFilterModalClose,
 }) => {
   const colorScheme = useColorScheme();
-  const colors = colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light;
+  const colors =
+    colorScheme === 'dark'
+      ? DesignSystem.Colors.dark
+      : DesignSystem.Colors.light;
   const spacing = DesignSystem.Spacing;
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [localFilters, setLocalFilters] = useState<Partial<SearchFilters>>(activeFilters);
+  const [localFilters, setLocalFilters] =
+    useState<Partial<SearchFilters>>(activeFilters);
   const [searchTerm, setSearchTerm] = useState(searchValue);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -145,30 +168,36 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
   }, [debouncedSearchTerm, onSearchChange, searchValue]);
 
   // Handle filter changes
-  const handleFilterChange = useCallback((categoryId: string, value: any) => {
-    const newFilters = {
-      ...localFilters,
-      categories: {
-        ...localFilters.categories,
-        [categoryId]: value,
-      },
-    };
-    setLocalFilters(newFilters);
-    onFiltersChange?.(newFilters);
-  }, [localFilters, onFiltersChange]);
+  const handleFilterChange = useCallback(
+    (categoryId: string, value: any) => {
+      const newFilters = {
+        ...localFilters,
+        categories: {
+          ...localFilters.categories,
+          [categoryId]: value,
+        },
+      };
+      setLocalFilters(newFilters);
+      onFiltersChange?.(newFilters);
+    },
+    [localFilters, onFiltersChange],
+  );
 
   // Handle quick filter selection
-  const handleQuickFilterPress = useCallback((filter: FilterOption) => {
-    const newFilters = {
-      ...localFilters,
-      categories: {
-        ...localFilters.categories,
-        [filter.id]: filter.value,
-      },
-    };
-    setLocalFilters(newFilters);
-    onFiltersChange?.(newFilters);
-  }, [localFilters, onFiltersChange]);
+  const handleQuickFilterPress = useCallback(
+    (filter: FilterOption) => {
+      const newFilters = {
+        ...localFilters,
+        categories: {
+          ...localFilters.categories,
+          [filter.id]: filter.value,
+        },
+      };
+      setLocalFilters(newFilters);
+      onFiltersChange?.(newFilters);
+    },
+    [localFilters, onFiltersChange],
+  );
 
   // Handle clear all
   const handleClearAll = useCallback(() => {
@@ -186,15 +215,18 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
   }, [viewMode, onFiltersChange, onClearAll]);
 
   // Handle sort change
-  const handleSortChange = useCallback((sortBy: string, sortOrder: 'asc' | 'desc') => {
-    const newFilters = {
-      ...localFilters,
-      sortBy,
-      sortOrder,
-    };
-    setLocalFilters(newFilters);
-    onFiltersChange?.(newFilters);
-  }, [localFilters, onFiltersChange]);
+  const handleSortChange = useCallback(
+    (sortBy: string, sortOrder: 'asc' | 'desc') => {
+      const newFilters = {
+        ...localFilters,
+        sortBy,
+        sortOrder,
+      };
+      setLocalFilters(newFilters);
+      onFiltersChange?.(newFilters);
+    },
+    [localFilters, onFiltersChange],
+  );
 
   // Filter modal animations
   const openFilterModal = useCallback(() => {
@@ -222,7 +254,7 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (localFilters.categories) {
-      Object.values(localFilters.categories).forEach(value => {
+      Object.values(localFilters.categories).forEach((value) => {
         if (value && (Array.isArray(value) ? value.length > 0 : true)) {
           count++;
         }
@@ -263,16 +295,20 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
             </Text>
             <View style={styles.filterOptions}>
               {category.options.map((option) => {
-                const isSelected = Array.isArray(activeValue) && activeValue.includes(option.value);
+                const isSelected =
+                  Array.isArray(activeValue) &&
+                  activeValue.includes(option.value);
                 return (
                   <CategoryChip
                     key={option.id}
                     text={option.label}
                     isActive={isSelected}
                     onPress={() => {
-                      const currentValues = Array.isArray(activeValue) ? activeValue : [];
+                      const currentValues = Array.isArray(activeValue)
+                        ? activeValue
+                        : [];
                       const newValues = isSelected
-                        ? currentValues.filter(v => v !== option.value)
+                        ? currentValues.filter((v) => v !== option.value)
                         : [...currentValues, option.value];
                       handleFilterChange(category.id, newValues);
                     }}
@@ -312,20 +348,30 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
         <View style={[styles.compactControls, { flexDirection: 'row' }]}>
           {enableFilters && (
             <TouchableOpacity
-              style={[styles.compactButton, { backgroundColor: colors.surface }]}
+              style={[
+                styles.compactButton,
+                { backgroundColor: colors.surface },
+              ]}
               onPress={openFilterModal}
             >
               <Settings color={colors.text} size={18} />
               {activeFilterCount > 0 && (
-                <View style={[styles.filterBadge, { backgroundColor: colors.primary }]}>
-                  <Text style={[styles.filterBadgeText, { color: colors.white }]}>
+                <View
+                  style={[
+                    styles.filterBadge,
+                    { backgroundColor: colors.primary },
+                  ]}
+                >
+                  <Text
+                    style={[styles.filterBadgeText, { color: colors.white }]}
+                  >
                     {activeFilterCount}
                   </Text>
                 </View>
               )}
             </TouchableOpacity>
           )}
-          
+
           {enableViewToggle && onViewModeChange && (
             <ViewToggle
               viewMode={viewMode}
@@ -346,7 +392,7 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
             isActive={activeFilterCount > 0}
           />
         )}
-        
+
         {enableSort && sortOptions.length > 0 && (
           <FilterButton
             text="Sort"
@@ -354,12 +400,9 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
             icon={<ChevronDown color={colors.text} size={16} />}
           />
         )}
-        
+
         {enableViewToggle && onViewModeChange && (
-          <ViewToggle
-            viewMode={viewMode}
-            onViewModeChange={onViewModeChange}
-          />
+          <ViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
         )}
       </View>
     );
@@ -397,7 +440,12 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
     if (!showResultsCount) return null;
 
     return (
-      <View style={[styles.resultsHeader, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+      <View
+        style={[
+          styles.resultsHeader,
+          { flexDirection: 'row', justifyContent: 'space-between' },
+        ]}
+      >
         <Text style={[styles.resultsCount, { color: colors.text }]}>
           {resultsCount} {resultsLabel}
         </Text>
@@ -439,7 +487,9 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
               },
             ]}
           >
-            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+            <View
+              style={[styles.modalHeader, { borderBottomColor: colors.border }]}
+            >
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 Filters
               </Text>
@@ -452,7 +502,9 @@ export const UnifiedSearchFilter: React.FC<UnifiedSearchFilterProps> = ({
               {filterCategories.map(renderFilterCategory)}
             </ScrollView>
 
-            <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
+            <View
+              style={[styles.modalFooter, { borderTopColor: colors.border }]}
+            >
               <Button
                 title="Clear All"
                 onPress={handleClearAll}
@@ -596,13 +648,16 @@ const styles = StyleSheet.create({
 });
 
 // Utility hooks for search and filter state management
-export const useSearchFilters = (initialFilters: Partial<SearchFilters> = {}) => {
-  const [filters, setFilters] = useState<Partial<SearchFilters>>(initialFilters);
+export const useSearchFilters = (
+  initialFilters: Partial<SearchFilters> = {},
+) => {
+  const [filters, setFilters] =
+    useState<Partial<SearchFilters>>(initialFilters);
   const [searchTerm, setSearchTerm] = useState(initialFilters.searchTerm || '');
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const updateFilters = useCallback((newFilters: Partial<SearchFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+    setFilters((prev) => ({ ...prev, ...newFilters }));
   }, []);
 
   const clearFilters = useCallback(() => {
@@ -611,9 +666,11 @@ export const useSearchFilters = (initialFilters: Partial<SearchFilters> = {}) =>
   }, [initialFilters]);
 
   const hasActiveFilters = useMemo(() => {
-    return Object.values(filters.categories || {}).some(value => 
-      value && (Array.isArray(value) ? value.length > 0 : true)
-    ) || debouncedSearchTerm.length > 0;
+    return (
+      Object.values(filters.categories || {}).some(
+        (value) => value && (Array.isArray(value) ? value.length > 0 : true),
+      ) || debouncedSearchTerm.length > 0
+    );
   }, [filters.categories, debouncedSearchTerm]);
 
   return {

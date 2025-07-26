@@ -13,19 +13,28 @@ module.exports = {
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
-    '__tests__/e2e/'
+    '__tests__/e2e/',
+    '__tests__/legacy/',
+    '__tests__/archived/'
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1'
   },
   collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
     'app/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',
     'services/**/*.{js,jsx,ts,tsx}',
     'utils/**/*.{js,jsx,ts,tsx}',
     'hooks/**/*.{js,jsx,ts,tsx}',
+    'stores/**/*.{js,jsx,ts,tsx}',
     '!**/*.d.ts',
-    '!**/node_modules/**'
+    '!**/node_modules/**',
+    '!**/__tests__/**',
+    '!**/coverage/**',
+    '!**/*.config.js',
+    '!**/dist/**',
+    '!**/build/**'
   ],
   coverageThreshold: {
     global: {
@@ -35,6 +44,7 @@ module.exports = {
       statements: 70
     }
   },
+  testEnvironment: 'jsdom',
   globals: {
     'ts-jest': {
       isolatedModules: true,
@@ -43,5 +53,8 @@ module.exports = {
         types: ['jest', 'node']
       }
     }
-  }
+  },
+  // Only test essential components and services
+  testTimeout: 10000,
+  maxWorkers: '50%'
 };

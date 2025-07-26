@@ -12,7 +12,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Search, Sparkles, ArrowRight, Award, TrendingUp } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  Sparkles,
+  ArrowRight,
+  Award,
+  TrendingUp,
+} from '@/utils/ultra-optimized-icons';
 import { Car as CarIcon } from '@/utils/ultra-optimized-icons';
 
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -32,7 +38,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { colors } = useThemeColors();
   const { user } = useAuth();
-  
+
   // Services
   const carDataService = CarDataService.getInstance();
   const recommendationEngine = SimpleRecommendationEngine.getInstance();
@@ -42,7 +48,9 @@ export default function HomeScreen() {
   const [featuredCars, setFeaturedCars] = useState<Car[]>([]);
   const [recommendedCars, setRecommendedCars] = useState<Car[]>([]);
   const [recentCars, setRecentCars] = useState<Car[]>([]);
-  const [popularMakes, setPopularMakes] = useState<Array<{ make: string; count: number }>>([]);
+  const [popularMakes, setPopularMakes] = useState<
+    Array<{ make: string; count: number }>
+  >([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
@@ -54,29 +62,23 @@ export default function HomeScreen() {
   const loadInitialData = async () => {
     try {
       setLoading(true);
-      
-      const [
-        featured,
-        recommendations,
-        recent,
-        makes,
-        suggestions
-      ] = await Promise.all([
-        carDataService.getFeaturedCars(6),
-        user 
-          ? loadPersonalizedRecommendations()
-          : recommendationEngine.getNewUserRecommendations(8),
-        carDataService.getRecentCars(6),
-        carDataService.getPopularMakes(),
-        preferencesService.getSearchSuggestions()
-      ]);
+
+      const [featured, recommendations, recent, makes, suggestions] =
+        await Promise.all([
+          carDataService.getFeaturedCars(6),
+          user
+            ? loadPersonalizedRecommendations()
+            : recommendationEngine.getNewUserRecommendations(8),
+          carDataService.getRecentCars(6),
+          carDataService.getPopularMakes(),
+          preferencesService.getSearchSuggestions(),
+        ]);
 
       setFeaturedCars(featured);
       setRecommendedCars(recommendations);
       setRecentCars(recent);
       setPopularMakes(makes.slice(0, 6));
       setSearchSuggestions(suggestions);
-      
     } catch (error) {
       console.error('Error loading initial data:', error);
       Alert.alert('Error', 'Failed to load data. Please try again.');
@@ -91,14 +93,14 @@ export default function HomeScreen() {
 
       const [preferences, behavior] = await Promise.all([
         preferencesService.getPreferences(),
-        preferencesService.getBehavior()
+        preferencesService.getBehavior(),
       ]);
 
       const result = await recommendationEngine.getRecommendations(
         user.id,
         preferences,
         behavior,
-        8
+        8,
       );
 
       return result.cars;
@@ -125,7 +127,7 @@ export default function HomeScreen() {
       carId: car.id,
       make: car.make,
       priceRange: { min: car.price * 0.9, max: car.price * 1.1 },
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     router.push(`/car/${car.id}`);
@@ -134,14 +136,14 @@ export default function HomeScreen() {
   const handleMakePress = (make: string) => {
     router.push({
       pathname: '/(tabs)/search',
-      params: { make }
+      params: { make },
     });
   };
 
   const handleViewAllPress = (section: string) => {
     router.push({
       pathname: '/(tabs)/search',
-      params: { section }
+      params: { section },
     });
   };
 
@@ -149,7 +151,7 @@ export default function HomeScreen() {
     title: string,
     cars: Car[],
     sectionKey: string,
-    showViewAll: boolean = true
+    showViewAll: boolean = true,
   ) => (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
@@ -168,7 +170,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         )}
       </View>
-      
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -222,10 +224,12 @@ export default function HomeScreen() {
           <TouchableOpacity
             key={index}
             style={[styles.suggestionChip, { backgroundColor: colors.surface }]}
-            onPress={() => router.push({
-              pathname: '/(tabs)/search',
-              params: { query: suggestion }
-            })}
+            onPress={() =>
+              router.push({
+                pathname: '/(tabs)/search',
+                params: { query: suggestion },
+              })
+            }
           >
             <Text style={[styles.suggestionText, { color: colors.text }]}>
               {suggestion}
@@ -238,7 +242,9 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
           <LoadingSpinner />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
@@ -250,7 +256,9 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -270,14 +278,19 @@ export default function HomeScreen() {
               <Text style={styles.subtitleText}>
                 Discover amazing cars tailored just for you
               </Text>
-              
+
               {/* Search Button */}
               <TouchableOpacity
                 style={styles.searchButton}
                 onPress={handleSearchPress}
               >
                 <Search size={20} color={colors.textSecondary} />
-                <Text style={[styles.searchPlaceholder, { color: colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.searchPlaceholder,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   Search by make, model, or price...
                 </Text>
                 <Sparkles size={20} color={colors.primary} />
@@ -287,7 +300,9 @@ export default function HomeScreen() {
         </View>
 
         {/* Quick Stats */}
-        <View style={[styles.statsContainer, { backgroundColor: colors.surface }]}>
+        <View
+          style={[styles.statsContainer, { backgroundColor: colors.surface }]}
+        >
           <View style={styles.statItem}>
             <TrendingUp size={20} color={colors.primary} />
             <Text style={[styles.statNumber, { color: colors.text }]}>
@@ -321,28 +336,23 @@ export default function HomeScreen() {
         {renderSearchSuggestions()}
 
         {/* Featured Cars */}
-        {featuredCars.length > 0 && renderCarSection(
-          'Featured Cars',
-          featuredCars,
-          'featured'
-        )}
+        {featuredCars.length > 0 &&
+          renderCarSection('Featured Cars', featuredCars, 'featured')}
 
         {/* Personalized Recommendations */}
-        {recommendedCars.length > 0 && renderCarSection(
-          user ? 'Recommended for You' : 'Popular Choices',
-          recommendedCars,
-          'recommended'
-        )}
+        {recommendedCars.length > 0 &&
+          renderCarSection(
+            user ? 'Recommended for You' : 'Popular Choices',
+            recommendedCars,
+            'recommended',
+          )}
 
         {/* Popular Makes */}
         {renderPopularMakes()}
 
         {/* Recent Listings */}
-        {recentCars.length > 0 && renderCarSection(
-          'Latest Listings',
-          recentCars,
-          'recent'
-        )}
+        {recentCars.length > 0 &&
+          renderCarSection('Latest Listings', recentCars, 'recent')}
       </ScrollView>
     </SafeAreaView>
   );

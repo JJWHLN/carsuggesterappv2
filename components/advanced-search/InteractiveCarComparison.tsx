@@ -9,18 +9,18 @@ import {
   Dimensions,
 } from 'react-native';
 import { useThemeColors } from '@/hooks/useTheme';
-import { 
-  Car, 
-  X, 
-  Plus, 
-  ArrowRight, 
-  Star, 
-  DollarSign, 
-  Fuel, 
-  Gauge, 
+import {
+  Car,
+  X,
+  Plus,
+  ArrowRight,
+  Star,
+  DollarSign,
+  Fuel,
+  Gauge,
   Calendar,
   Shield,
-  Award
+  Award,
 } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
@@ -54,19 +54,18 @@ interface InteractiveCarComparisonProps {
   maxComparisons?: number;
 }
 
-export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> = ({
-  onAddCar,
-  onRemoveCar,
-  onCarSelect,
-  maxComparisons = 3,
-}) => {
+export const InteractiveCarComparison: React.FC<
+  InteractiveCarComparisonProps
+> = ({ onAddCar, onRemoveCar, onCarSelect, maxComparisons = 3 }) => {
   const { colors } = useThemeColors();
   const styles = getThemedStyles(colors);
 
   // State
   const [comparisonCars, setComparisonCars] = useState<ComparisonCar[]>([]);
   const [draggedCard, setDraggedCard] = useState<string | null>(null);
-  const [highlightedProperty, setHighlightedProperty] = useState<string | null>(null);
+  const [highlightedProperty, setHighlightedProperty] = useState<string | null>(
+    null,
+  );
 
   // Animation values
   const slideAnimation = useRef(new Animated.Value(0)).current;
@@ -88,11 +87,11 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
         mileage: 15000,
         transmission: 'Automatic',
         safety: 5,
-        warranty: '3 years'
+        warranty: '3 years',
       },
       features: ['Leather Seats', 'Navigation', 'Backup Camera', 'Bluetooth'],
       pros: ['Excellent handling', 'Premium interior', 'Strong resale value'],
-      cons: ['High maintenance cost', 'Firm ride quality']
+      cons: ['High maintenance cost', 'Firm ride quality'],
     },
     {
       id: '2',
@@ -108,11 +107,16 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
         mileage: 12000,
         transmission: 'Automatic',
         safety: 5,
-        warranty: '4 years'
+        warranty: '4 years',
       },
-      features: ['Leather Seats', 'Navigation', 'Panoramic Roof', 'Premium Audio'],
+      features: [
+        'Leather Seats',
+        'Navigation',
+        'Panoramic Roof',
+        'Premium Audio',
+      ],
       pros: ['Luxurious interior', 'Smooth ride', 'Advanced tech'],
-      cons: ['Expensive options', 'Complex infotainment']
+      cons: ['Expensive options', 'Complex infotainment'],
     },
     {
       id: '3',
@@ -128,12 +132,17 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
         mileage: 18000,
         transmission: 'Automatic',
         safety: 5,
-        warranty: '4 years'
+        warranty: '4 years',
       },
-      features: ['Leather Seats', 'Virtual Cockpit', 'Quattro AWD', 'LED Lights'],
+      features: [
+        'Leather Seats',
+        'Virtual Cockpit',
+        'Quattro AWD',
+        'LED Lights',
+      ],
       pros: ['Great AWD system', 'High-tech interior', 'Refined driving'],
-      cons: ['Premium fuel required', 'Limited rear space']
-    }
+      cons: ['Premium fuel required', 'Limited rear space'],
+    },
   ];
 
   // Initialize with sample cars
@@ -161,7 +170,7 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
           toValue: 0,
           duration: 200,
           useNativeDriver: true,
-        })
+        }),
       ]).start();
     }
   }, [highlightedProperty, highlightAnimation]);
@@ -170,48 +179,54 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
   const handleAddCar = useCallback(() => {
     if (comparisonCars.length < maxComparisons) {
       const availableCars = mockCars.filter(
-        car => !comparisonCars.find(c => c.id === car.id)
+        (car) => !comparisonCars.find((c) => c.id === car.id),
       );
       if (availableCars.length > 0) {
-        setComparisonCars(prev => [...prev, availableCars[0]]);
+        setComparisonCars((prev) => [...prev, availableCars[0]]);
       }
     }
     onAddCar();
   }, [comparisonCars, maxComparisons, onAddCar]);
 
-  const handleRemoveCar = useCallback((carId: string) => {
-    setComparisonCars(prev => prev.filter(car => car.id !== carId));
-    onRemoveCar(carId);
-  }, [onRemoveCar]);
+  const handleRemoveCar = useCallback(
+    (carId: string) => {
+      setComparisonCars((prev) => prev.filter((car) => car.id !== carId));
+      onRemoveCar(carId);
+    },
+    [onRemoveCar],
+  );
 
   const handlePropertyHighlight = useCallback((property: string) => {
     setHighlightedProperty(property);
     setTimeout(() => setHighlightedProperty(null), 1000);
   }, []);
 
-  const getBestValue = useCallback((property: string): string | null => {
-    if (comparisonCars.length === 0) return null;
+  const getBestValue = useCallback(
+    (property: string): string | null => {
+      if (comparisonCars.length === 0) return null;
 
-    switch (property) {
-      case 'price':
-        const cheapest = comparisonCars.reduce((prev, current) => 
-          prev.price < current.price ? prev : current
-        );
-        return cheapest.id;
-      case 'rating':
-        const highest = comparisonCars.reduce((prev, current) => 
-          prev.rating > current.rating ? prev : current
-        );
-        return highest.id;
-      case 'mileage':
-        const lowest = comparisonCars.reduce((prev, current) => 
-          prev.specs.mileage < current.specs.mileage ? prev : current
-        );
-        return lowest.id;
-      default:
-        return null;
-    }
-  }, [comparisonCars]);
+      switch (property) {
+        case 'price':
+          const cheapest = comparisonCars.reduce((prev, current) =>
+            prev.price < current.price ? prev : current,
+          );
+          return cheapest.id;
+        case 'rating':
+          const highest = comparisonCars.reduce((prev, current) =>
+            prev.rating > current.rating ? prev : current,
+          );
+          return highest.id;
+        case 'mileage':
+          const lowest = comparisonCars.reduce((prev, current) =>
+            prev.specs.mileage < current.specs.mileage ? prev : current,
+          );
+          return lowest.id;
+        default:
+          return null;
+      }
+    },
+    [comparisonCars],
+  );
 
   const renderComparisonHeader = () => (
     <View style={styles.headerContainer}>
@@ -222,9 +237,9 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
           {comparisonCars.length} of {maxComparisons} cars selected
         </Text>
       </View>
-      
+
       {comparisonCars.length < maxComparisons && (
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.addButton}
           onPress={handleAddCar}
           activeOpacity={0.7}
@@ -253,11 +268,11 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
                 translateY: slideAnimation.interpolate({
                   inputRange: [0, 1],
                   outputRange: [50, 0],
-                })
-              }
+                }),
+              },
             ],
             opacity: slideAnimation,
-          }
+          },
         ]}
       >
         {/* Car Header */}
@@ -269,7 +284,7 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
           >
             <X size={16} color={colors.error} />
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.carTitleContainer}
             onPress={() => onCarSelect(car.id)}
@@ -284,27 +299,33 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
         <TouchableOpacity
           style={[
             styles.propertySection,
-            isBestPrice && styles.bestValueSection
+            isBestPrice && styles.bestValueSection,
           ]}
           onPress={() => handlePropertyHighlight('price')}
           activeOpacity={0.7}
         >
           <View style={styles.propertyHeader}>
-            <DollarSign size={16} color={isBestPrice ? colors.success : colors.textSecondary} />
-            <Text style={[
-              styles.propertyLabel,
-              isBestPrice && styles.bestValueLabel
-            ]}>Price</Text>
+            <DollarSign
+              size={16}
+              color={isBestPrice ? colors.success : colors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.propertyLabel,
+                isBestPrice && styles.bestValueLabel,
+              ]}
+            >
+              Price
+            </Text>
             {isBestPrice && (
               <View style={styles.bestBadge}>
                 <Award size={12} color={colors.background} />
               </View>
             )}
           </View>
-          <Text style={[
-            styles.propertyValue,
-            isBestPrice && styles.bestValueText
-          ]}>
+          <Text
+            style={[styles.propertyValue, isBestPrice && styles.bestValueText]}
+          >
             €{car.price.toLocaleString()}
           </Text>
         </TouchableOpacity>
@@ -313,27 +334,33 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
         <TouchableOpacity
           style={[
             styles.propertySection,
-            isBestRating && styles.bestValueSection
+            isBestRating && styles.bestValueSection,
           ]}
           onPress={() => handlePropertyHighlight('rating')}
           activeOpacity={0.7}
         >
           <View style={styles.propertyHeader}>
-            <Star size={16} color={isBestRating ? colors.success : colors.textSecondary} />
-            <Text style={[
-              styles.propertyLabel,
-              isBestRating && styles.bestValueLabel
-            ]}>Rating</Text>
+            <Star
+              size={16}
+              color={isBestRating ? colors.success : colors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.propertyLabel,
+                isBestRating && styles.bestValueLabel,
+              ]}
+            >
+              Rating
+            </Text>
             {isBestRating && (
               <View style={styles.bestBadge}>
                 <Award size={12} color={colors.background} />
               </View>
             )}
           </View>
-          <Text style={[
-            styles.propertyValue,
-            isBestRating && styles.bestValueText
-          ]}>
+          <Text
+            style={[styles.propertyValue, isBestRating && styles.bestValueText]}
+          >
             {car.rating}/5.0
           </Text>
         </TouchableOpacity>
@@ -353,22 +380,22 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
           </View>
 
           <TouchableOpacity
-            style={[
-              styles.specItem,
-              isBestMileage && styles.bestValueSection
-            ]}
+            style={[styles.specItem, isBestMileage && styles.bestValueSection]}
             onPress={() => handlePropertyHighlight('mileage')}
             activeOpacity={0.7}
           >
-            <Calendar size={14} color={isBestMileage ? colors.success : colors.textSecondary} />
-            <Text style={[
-              styles.specLabel,
-              isBestMileage && styles.bestValueLabel
-            ]}>Mileage</Text>
-            <Text style={[
-              styles.specValue,
-              isBestMileage && styles.bestValueText
-            ]}>
+            <Calendar
+              size={14}
+              color={isBestMileage ? colors.success : colors.textSecondary}
+            />
+            <Text
+              style={[styles.specLabel, isBestMileage && styles.bestValueLabel]}
+            >
+              Mileage
+            </Text>
+            <Text
+              style={[styles.specValue, isBestMileage && styles.bestValueText]}
+            >
               {car.specs.mileage.toLocaleString()} km
             </Text>
             {isBestMileage && (
@@ -390,14 +417,18 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
           <View style={styles.prosContainer}>
             <Text style={styles.prosConsTitle}>Pros</Text>
             {car.pros.map((pro, proIndex) => (
-              <Text key={proIndex} style={styles.proText}>• {pro}</Text>
+              <Text key={proIndex} style={styles.proText}>
+                • {pro}
+              </Text>
             ))}
           </View>
 
           <View style={styles.consContainer}>
             <Text style={styles.prosConsTitle}>Cons</Text>
             {car.cons.map((con, conIndex) => (
-              <Text key={conIndex} style={styles.conText}>• {con}</Text>
+              <Text key={conIndex} style={styles.conText}>
+                • {con}
+              </Text>
             ))}
           </View>
         </View>
@@ -438,7 +469,7 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
   return (
     <View style={styles.container}>
       {renderComparisonHeader()}
-      
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -446,7 +477,7 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
         style={styles.scrollView}
       >
         {comparisonCars.map((car, index) => renderCarCard(car, index))}
-        
+
         {comparisonCars.length < maxComparisons && (
           <TouchableOpacity
             style={styles.addCardPlaceholder}
@@ -462,251 +493,252 @@ export const InteractiveCarComparison: React.FC<InteractiveCarComparisonProps> =
   );
 };
 
-const getThemedStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-    marginTop: 4,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 4,
-  },
-  addButtonText: {
-    color: colors.background,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContainer: {
-    padding: 16,
-    gap: 16,
-  },
-  carCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 16,
-    width: width * 0.8,
-    borderWidth: 1,
-    borderColor: colors.border,
-    elevation: 3,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-  },
-  carHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  removeButton: {
-    padding: 4,
-    backgroundColor: colors.errorLight,
-    borderRadius: 12,
-  },
-  carTitleContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  carTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-  },
-  carSubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  propertySection: {
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: colors.surfaceVariant,
-    marginBottom: 8,
-    position: 'relative',
-  },
-  bestValueSection: {
-    backgroundColor: colors.successLight,
-    borderWidth: 1,
-    borderColor: colors.success,
-  },
-  propertyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  propertyLabel: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    flex: 1,
-  },
-  bestValueLabel: {
-    color: colors.success,
-    fontWeight: '600',
-  },
-  propertyValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  bestValueText: {
-    color: colors.success,
-  },
-  bestBadge: {
-    backgroundColor: colors.success,
-    borderRadius: 10,
-    padding: 2,
-  },
-  specsContainer: {
-    gap: 8,
-    marginBottom: 16,
-  },
-  specItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    backgroundColor: colors.surfaceVariant,
-    borderRadius: 8,
-    gap: 8,
-    position: 'relative',
-  },
-  specLabel: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    minWidth: 60,
-  },
-  specValue: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-    flex: 1,
-    textAlign: 'right',
-  },
-  prosConsContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
-  },
-  prosContainer: {
-    flex: 1,
-  },
-  consContainer: {
-    flex: 1,
-  },
-  prosConsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  proText: {
-    fontSize: 12,
-    color: colors.success,
-    marginBottom: 2,
-  },
-  conText: {
-    fontSize: 12,
-    color: colors.error,
-    marginBottom: 2,
-  },
-  viewDetailsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primaryLight,
-    paddingVertical: 12,
-    borderRadius: 8,
-    gap: 8,
-  },
-  viewDetailsText: {
-    color: colors.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  addCardPlaceholder: {
-    width: width * 0.6,
-    height: 200,
-    backgroundColor: colors.surfaceVariant,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  addCardText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 24,
-  },
-  startButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
-    gap: 8,
-  },
-  startButtonText: {
-    color: colors.background,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
+const getThemedStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerContent: {
+      flex: 1,
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.text,
+      marginTop: 4,
+    },
+    headerSubtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginTop: 2,
+    },
+    addButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      gap: 4,
+    },
+    addButtonText: {
+      color: colors.background,
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContainer: {
+      padding: 16,
+      gap: 16,
+    },
+    carCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      width: width * 0.8,
+      borderWidth: 1,
+      borderColor: colors.border,
+      elevation: 3,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+    },
+    carHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: 16,
+    },
+    removeButton: {
+      padding: 4,
+      backgroundColor: colors.errorLight,
+      borderRadius: 12,
+    },
+    carTitleContainer: {
+      flex: 1,
+      alignItems: 'center',
+    },
+    carTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+      textAlign: 'center',
+    },
+    carSubtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginTop: 2,
+    },
+    propertySection: {
+      padding: 12,
+      borderRadius: 12,
+      backgroundColor: colors.surfaceVariant,
+      marginBottom: 8,
+      position: 'relative',
+    },
+    bestValueSection: {
+      backgroundColor: colors.successLight,
+      borderWidth: 1,
+      borderColor: colors.success,
+    },
+    propertyHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 4,
+    },
+    propertyLabel: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      flex: 1,
+    },
+    bestValueLabel: {
+      color: colors.success,
+      fontWeight: '600',
+    },
+    propertyValue: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    bestValueText: {
+      color: colors.success,
+    },
+    bestBadge: {
+      backgroundColor: colors.success,
+      borderRadius: 10,
+      padding: 2,
+    },
+    specsContainer: {
+      gap: 8,
+      marginBottom: 16,
+    },
+    specItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 8,
+      backgroundColor: colors.surfaceVariant,
+      borderRadius: 8,
+      gap: 8,
+      position: 'relative',
+    },
+    specLabel: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      minWidth: 60,
+    },
+    specValue: {
+      fontSize: 14,
+      color: colors.text,
+      fontWeight: '500',
+      flex: 1,
+      textAlign: 'right',
+    },
+    prosConsContainer: {
+      flexDirection: 'row',
+      gap: 12,
+      marginBottom: 16,
+    },
+    prosContainer: {
+      flex: 1,
+    },
+    consContainer: {
+      flex: 1,
+    },
+    prosConsTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    proText: {
+      fontSize: 12,
+      color: colors.success,
+      marginBottom: 2,
+    },
+    conText: {
+      fontSize: 12,
+      color: colors.error,
+      marginBottom: 2,
+    },
+    viewDetailsButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.primaryLight,
+      paddingVertical: 12,
+      borderRadius: 8,
+      gap: 8,
+    },
+    viewDetailsText: {
+      color: colors.primary,
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    addCardPlaceholder: {
+      width: width * 0.6,
+      height: 200,
+      backgroundColor: colors.surfaceVariant,
+      borderRadius: 16,
+      borderWidth: 2,
+      borderColor: colors.border,
+      borderStyle: 'dashed',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+    },
+    addCardText: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      fontWeight: '500',
+    },
+    emptyContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 32,
+    },
+    emptyTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.text,
+      marginTop: 16,
+      marginBottom: 8,
+    },
+    emptySubtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 20,
+      marginBottom: 24,
+    },
+    startButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+      borderRadius: 24,
+      gap: 8,
+    },
+    startButtonText: {
+      color: colors.background,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });
 
 export default InteractiveCarComparison;

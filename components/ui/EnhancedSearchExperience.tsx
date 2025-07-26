@@ -13,7 +13,13 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/Colors';
+import {
+  Colors,
+  Typography,
+  Spacing,
+  BorderRadius,
+  Shadows,
+} from '@/constants/Colors';
 import { AnimatedBadge, QuickFilters } from './AnimatedBadge';
 import { SearchHistoryManager } from './SearchHistoryManager';
 import { ModernSearchBar } from './ModernSearchBar';
@@ -54,12 +60,22 @@ export const EnhancedSearchExperience: React.FC<EnhancedSearchProps> = ({
 
   // Quick filter options
   const quickFilterOptions = [
-    { id: 'priceRange', label: 'Under €30k', value: '0-30000', category: 'price' },
+    {
+      id: 'priceRange',
+      label: 'Under €30k',
+      value: '0-30000',
+      category: 'price',
+    },
     { id: 'fuelType', label: 'Electric', value: 'electric', category: 'fuel' },
     { id: 'fuelType', label: 'Hybrid', value: 'hybrid', category: 'fuel' },
     { id: 'bodyType', label: 'SUV', value: 'suv', category: 'body' },
     { id: 'bodyType', label: 'Sedan', value: 'sedan', category: 'body' },
-    { id: 'transmission', label: 'Automatic', value: 'automatic', category: 'transmission' },
+    {
+      id: 'transmission',
+      label: 'Automatic',
+      value: 'automatic',
+      category: 'transmission',
+    },
   ];
 
   // Advanced filter categories
@@ -123,64 +139,68 @@ export const EnhancedSearchExperience: React.FC<EnhancedSearchProps> = ({
   }, [filters]);
 
   const handleQuickFilterPress = (category: string, value: string) => {
-    setFilters(prev => {
+    setFilters((prev) => {
       const newFilters = { ...prev };
-      
+
       if (category === 'price') {
-        newFilters.priceRange = newFilters.priceRange === value ? undefined : value;
+        newFilters.priceRange =
+          newFilters.priceRange === value ? undefined : value;
       } else if (category === 'fuel') {
         const currentFuel = newFilters.fuelType || [];
         if (currentFuel.includes(value)) {
-          newFilters.fuelType = currentFuel.filter(f => f !== value);
+          newFilters.fuelType = currentFuel.filter((f) => f !== value);
         } else {
           newFilters.fuelType = [...currentFuel, value];
         }
       } else if (category === 'transmission') {
-        newFilters.transmission = newFilters.transmission === value ? undefined : value;
+        newFilters.transmission =
+          newFilters.transmission === value ? undefined : value;
       } else if (category === 'body') {
         const currentBody = newFilters.bodyType || [];
         if (currentBody.includes(value)) {
-          newFilters.bodyType = currentBody.filter(b => b !== value);
+          newFilters.bodyType = currentBody.filter((b) => b !== value);
         } else {
           newFilters.bodyType = [...currentBody, value];
         }
       }
-      
+
       return newFilters;
     });
   };
 
   const handleAdvancedFilterPress = (category: string, value: string) => {
-    setFilters(prev => {
+    setFilters((prev) => {
       const newFilters = { ...prev };
-      
+
       if (category === 'priceRange') {
-        newFilters.priceRange = newFilters.priceRange === value ? undefined : value;
+        newFilters.priceRange =
+          newFilters.priceRange === value ? undefined : value;
       } else if (category === 'fuelType') {
         const currentFuel = newFilters.fuelType || [];
         if (currentFuel.includes(value)) {
-          newFilters.fuelType = currentFuel.filter(f => f !== value);
+          newFilters.fuelType = currentFuel.filter((f) => f !== value);
         } else {
           newFilters.fuelType = [...currentFuel, value];
         }
       } else if (category === 'transmission') {
-        newFilters.transmission = newFilters.transmission === value ? undefined : value;
+        newFilters.transmission =
+          newFilters.transmission === value ? undefined : value;
       } else if (category === 'brand') {
         const currentBrand = newFilters.brand || [];
         if (currentBrand.includes(value)) {
-          newFilters.brand = currentBrand.filter(b => b !== value);
+          newFilters.brand = currentBrand.filter((b) => b !== value);
         } else {
           newFilters.brand = [...currentBrand, value];
         }
       } else if (category === 'bodyType') {
         const currentBody = newFilters.bodyType || [];
         if (currentBody.includes(value)) {
-          newFilters.bodyType = currentBody.filter(b => b !== value);
+          newFilters.bodyType = currentBody.filter((b) => b !== value);
         } else {
           newFilters.bodyType = [...currentBody, value];
         }
       }
-      
+
       return newFilters;
     });
   };
@@ -234,10 +254,12 @@ export const EnhancedSearchExperience: React.FC<EnhancedSearchProps> = ({
 
   const getAdvancedFilterActive = (category: string, value: string) => {
     if (category === 'priceRange') return filters.priceRange === value;
-    if (category === 'fuelType') return filters.fuelType?.includes(value) || false;
+    if (category === 'fuelType')
+      return filters.fuelType?.includes(value) || false;
     if (category === 'transmission') return filters.transmission === value;
     if (category === 'brand') return filters.brand?.includes(value) || false;
-    if (category === 'bodyType') return filters.bodyType?.includes(value) || false;
+    if (category === 'bodyType')
+      return filters.bodyType?.includes(value) || false;
     return false;
   };
 
@@ -255,7 +277,7 @@ export const EnhancedSearchExperience: React.FC<EnhancedSearchProps> = ({
           onBlur={handleSearchBlur}
           placeholder="Search cars, brands, models..."
         />
-        
+
         {/* Filter Toggle Button */}
         <TouchableOpacity
           style={[
@@ -264,9 +286,13 @@ export const EnhancedSearchExperience: React.FC<EnhancedSearchProps> = ({
           ]}
           onPress={toggleFilters}
         >
-          <SlidersHorizontal 
-            size={20} 
-            color={activeFilterCount > 0 ? Colors.light.textInverse : Colors.light.text} 
+          <SlidersHorizontal
+            size={20}
+            color={
+              activeFilterCount > 0
+                ? Colors.light.textInverse
+                : Colors.light.text
+            }
           />
           {activeFilterCount > 0 && (
             <View style={styles.filterBadge}>
@@ -278,7 +304,7 @@ export const EnhancedSearchExperience: React.FC<EnhancedSearchProps> = ({
 
       {/* Quick Filters */}
       <QuickFilters
-        filters={quickFilterOptions.map(filter => ({
+        filters={quickFilterOptions.map((filter) => ({
           ...filter,
           active: getQuickFilterActive(filter.category, filter.value),
         }))}
@@ -290,17 +316,19 @@ export const EnhancedSearchExperience: React.FC<EnhancedSearchProps> = ({
       {/* Advanced Filters */}
       <Animated.View style={[styles.advancedFilters, filtersAnimatedStyle]}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {advancedFilters.map(category => (
+          {advancedFilters.map((category) => (
             <View key={category.id} style={styles.filterCategory}>
               <Text style={styles.filterCategoryTitle}>{category.label}</Text>
               <View style={styles.filterOptions}>
-                {category.options.map(option => (
+                {category.options.map((option) => (
                   <AnimatedBadge
                     key={option.value}
                     active={getAdvancedFilterActive(category.id, option.value)}
                     variant="outline"
                     size="medium"
-                    onPress={() => handleAdvancedFilterPress(category.id, option.value)}
+                    onPress={() =>
+                      handleAdvancedFilterPress(category.id, option.value)
+                    }
                     style={styles.filterOption}
                   >
                     {option.label}

@@ -23,9 +23,19 @@ import { OptimizedImage } from './ui/OptimizedImage';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Car } from '@/types/database';
 import { formatPrice, formatMileage } from '@/utils/dataTransformers';
-import { 
-  MapPin, Heart, Star, Eye, Clock, Fuel, Settings, 
-  Award, TrendingUp, Sparkles, Crown, Shield 
+import {
+  MapPin,
+  Heart,
+  Star,
+  Eye,
+  Clock,
+  Fuel,
+  Settings,
+  Award,
+  TrendingUp,
+  Sparkles,
+  Crown,
+  Shield,
 } from '@/utils/ultra-optimized-icons';
 import { BorderRadius, Spacing, Typography, Shadows } from '@/constants/Colors';
 
@@ -44,223 +54,240 @@ interface UltraPremiumCarCardProps {
   variant?: 'compact' | 'standard' | 'featured';
 }
 
-export const UltraPremiumCarCard = memo<UltraPremiumCarCardProps>(({
-  car,
-  onPress,
-  onSave,
-  onShare,
-  isSaved = false,
-  isFeatured = false,
-  isPremiumListing = false,
-  style,
-  variant = 'standard',
-}) => {
-  const { colors } = useThemeColors();
-  const [isLiked, setIsLiked] = useState(isSaved);
-  const [viewCount] = useState(Math.floor(Math.random() * 2000) + 100);
-  
-  // Animation values
-  const scale = useSharedValue(1);
-  const elevation = useSharedValue(0);
-  const heartScale = useSharedValue(1);
-  
-  const styles = getThemedStyles(colors, variant);
+export const UltraPremiumCarCard = memo<UltraPremiumCarCardProps>(
+  ({
+    car,
+    onPress,
+    onSave,
+    onShare,
+    isSaved = false,
+    isFeatured = false,
+    isPremiumListing = false,
+    style,
+    variant = 'standard',
+  }) => {
+    const { colors } = useThemeColors();
+    const [isLiked, setIsLiked] = useState(isSaved);
+    const [viewCount] = useState(Math.floor(Math.random() * 2000) + 100);
 
-  const handlePress = useCallback(async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    scale.value = withSpring(0.98, { stiffness: 400 }, () => {
-      scale.value = withSpring(1);
-    });
-    runOnJS(onPress)();
-  }, [onPress]);
+    // Animation values
+    const scale = useSharedValue(1);
+    const elevation = useSharedValue(0);
+    const heartScale = useSharedValue(1);
 
-  const handleLike = useCallback(async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    heartScale.value = withSpring(1.3, { stiffness: 300 }, () => {
-      heartScale.value = withSpring(1);
-    });
-    setIsLiked(prev => !prev);
-    onSave?.();
-  }, [onSave]);
+    const styles = getThemedStyles(colors, variant);
 
-  const handlePressIn = () => {
-    scale.value = withTiming(0.95, { duration: 150 });
-    elevation.value = withTiming(12, { duration: 150 });
-  };
+    const handlePress = useCallback(async () => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      scale.value = withSpring(0.98, { stiffness: 400 }, () => {
+        scale.value = withSpring(1);
+      });
+      runOnJS(onPress)();
+    }, [onPress]);
 
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { stiffness: 300 });
-    elevation.value = withTiming(4, { duration: 200 });
-  };
+    const handleLike = useCallback(async () => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      heartScale.value = withSpring(1.3, { stiffness: 300 }, () => {
+        heartScale.value = withSpring(1);
+      });
+      setIsLiked((prev) => !prev);
+      onSave?.();
+    }, [onSave]);
 
-  // Animated styles
-  const animatedCardStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    elevation: elevation.value,
-    shadowOpacity: interpolate(elevation.value, [0, 12], [0.1, 0.3]),
-  }));
+    const handlePressIn = () => {
+      scale.value = withTiming(0.95, { duration: 150 });
+      elevation.value = withTiming(12, { duration: 150 });
+    };
 
-  const animatedHeartStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: heartScale.value }],
-  }));
+    const handlePressOut = () => {
+      scale.value = withSpring(1, { stiffness: 300 });
+      elevation.value = withTiming(4, { duration: 200 });
+    };
 
-  // Calculate rating and views (mock data for demo)
-  const rating = (Math.random() * 2 + 3); // 3-5 star range
-  const reviews = Math.floor(Math.random() * 100 + 10);
+    // Animated styles
+    const animatedCardStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: scale.value }],
+      elevation: elevation.value,
+      shadowOpacity: interpolate(elevation.value, [0, 12], [0.1, 0.3]),
+    }));
 
-  return (
-    <Animated.View style={[styles.container, style, animatedCardStyle]}>
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={handlePress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        style={styles.touchable}
-      >
-        {/* Premium badges */}
-        <View style={styles.badgeContainer}>
-          {isFeatured && (
-            <View style={[styles.badge, styles.featuredBadge]}>
-              <Crown size={12} color={colors.white} />
-              <Text style={styles.badgeText}>Featured</Text>
-            </View>
-          )}
-          {isPremiumListing && (
-            <View style={[styles.badge, styles.premiumBadge]}>
-              <Shield size={12} color={colors.white} />
-              <Text style={styles.badgeText}>Premium</Text>
-            </View>
-          )}
-          {(car.year >= new Date().getFullYear() - 1) && (
-            <View style={[styles.badge, styles.newBadge]}>
-              <Sparkles size={12} color={colors.white} />
-              <Text style={styles.badgeText}>New</Text>
-            </View>
-          )}
-        </View>
+    const animatedHeartStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: heartScale.value }],
+    }));
 
-        {/* Image with gradient overlay */}
-        <View style={styles.imageContainer}>
-          <OptimizedImage
-            source={{ uri: car.images?.[0] || 'https://via.placeholder.com/400x240/f0f0f0/ccc?text=Car' }}
-            style={styles.image}
-            placeholder="https://via.placeholder.com/400x240/f0f0f0/ccc?text=Car"
-          />
-          
-          {/* Gradient overlay for better text readability */}
-          <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.4)']}
-            style={styles.imageOverlay}
-          />
-          
-          {/* Action buttons */}
-          <View style={styles.actionButtons}>
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: colors.white }]}
-              onPress={handleLike}
-            >
-              <Animated.View style={animatedHeartStyle}>
-                <Heart 
-                  size={18} 
-                  color={isLiked ? '#FF4757' : colors.textSecondary}
-                  fill={isLiked ? '#FF4757' : 'none'}
-                />
-              </Animated.View>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: colors.white }]}
-              onPress={onShare}
-            >
-              <Eye size={18} color={colors.textSecondary} />
-            </TouchableOpacity>
-          </View>
+    // Calculate rating and views (mock data for demo)
+    const rating = Math.random() * 2 + 3; // 3-5 star range
+    const reviews = Math.floor(Math.random() * 100 + 10);
 
-          {/* Views counter */}
-          <View style={styles.viewsContainer}>
-            <BlurView intensity={60} style={styles.viewsBlur}>
-              <Eye size={12} color={colors.white} />
-              <Text style={styles.viewsText}>{viewCount.toLocaleString()}</Text>
-            </BlurView>
-          </View>
-        </View>
-
-        {/* Card content */}
-        <View style={styles.content}>
-          {/* Title and year */}
-          <View style={styles.titleRow}>
-            <Text style={styles.title} numberOfLines={1}>
-              {car.year} {car.make} {car.model}
-            </Text>
-            {(car.fuel_type === 'Electric' || car.fuel_type === 'Hybrid') && (
-              <View style={styles.electricBadge}>
-                <Text style={styles.electricText}>EV</Text>
+    return (
+      <Animated.View style={[styles.container, style, animatedCardStyle]}>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={handlePress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={styles.touchable}
+        >
+          {/* Premium badges */}
+          <View style={styles.badgeContainer}>
+            {isFeatured && (
+              <View style={[styles.badge, styles.featuredBadge]}>
+                <Crown size={12} color={colors.white} />
+                <Text style={styles.badgeText}>Featured</Text>
+              </View>
+            )}
+            {isPremiumListing && (
+              <View style={[styles.badge, styles.premiumBadge]}>
+                <Shield size={12} color={colors.white} />
+                <Text style={styles.badgeText}>Premium</Text>
+              </View>
+            )}
+            {car.year >= new Date().getFullYear() - 1 && (
+              <View style={[styles.badge, styles.newBadge]}>
+                <Sparkles size={12} color={colors.white} />
+                <Text style={styles.badgeText}>New</Text>
               </View>
             )}
           </View>
 
-          {/* Subtitle */}
-          <Text style={styles.subtitle} numberOfLines={1}>
-            {car.condition || 'Premium Vehicle'}
-          </Text>
+          {/* Image with gradient overlay */}
+          <View style={styles.imageContainer}>
+            <OptimizedImage
+              source={{
+                uri:
+                  car.images?.[0] ||
+                  'https://via.placeholder.com/400x240/f0f0f0/ccc?text=Car',
+              }}
+              style={styles.image}
+              placeholder="https://via.placeholder.com/400x240/f0f0f0/ccc?text=Car"
+            />
 
-          {/* Key specs */}
-          <View style={styles.specsRow}>
-            <View style={styles.spec}>
-              <MapPin size={14} color={colors.textSecondary} />
-              <Text style={styles.specText}>{car.mileage ? formatMileage(car.mileage) : 'N/A'}</Text>
+            {/* Gradient overlay for better text readability */}
+            <LinearGradient
+              colors={['transparent', 'rgba(0,0,0,0.4)']}
+              style={styles.imageOverlay}
+            />
+
+            {/* Action buttons */}
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                style={[styles.actionButton, { backgroundColor: colors.white }]}
+                onPress={handleLike}
+              >
+                <Animated.View style={animatedHeartStyle}>
+                  <Heart
+                    size={18}
+                    color={isLiked ? '#FF4757' : colors.textSecondary}
+                    fill={isLiked ? '#FF4757' : 'none'}
+                  />
+                </Animated.View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.actionButton, { backgroundColor: colors.white }]}
+                onPress={onShare}
+              >
+                <Eye size={18} color={colors.textSecondary} />
+              </TouchableOpacity>
             </View>
-            <View style={styles.spec}>
-              <Fuel size={14} color={colors.textSecondary} />
-              <Text style={styles.specText}>{car.fuel_type || 'Gas'}</Text>
-            </View>
-            <View style={styles.spec}>
-              <Settings size={14} color={colors.textSecondary} />
-              <Text style={styles.specText}>{car.transmission || 'Auto'}</Text>
+
+            {/* Views counter */}
+            <View style={styles.viewsContainer}>
+              <BlurView intensity={60} style={styles.viewsBlur}>
+                <Eye size={12} color={colors.white} />
+                <Text style={styles.viewsText}>
+                  {viewCount.toLocaleString()}
+                </Text>
+              </BlurView>
             </View>
           </View>
 
-          {/* Rating and reviews */}
-          <View style={styles.ratingRow}>
-            <View style={styles.rating}>
-              <Star size={14} color="#FFD700" fill="#FFD700" />
-              <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
-              <Text style={styles.reviewCount}>({reviews})</Text>
+          {/* Card content */}
+          <View style={styles.content}>
+            {/* Title and year */}
+            <View style={styles.titleRow}>
+              <Text style={styles.title} numberOfLines={1}>
+                {car.year} {car.make} {car.model}
+              </Text>
+              {(car.fuel_type === 'Electric' || car.fuel_type === 'Hybrid') && (
+                <View style={styles.electricBadge}>
+                  <Text style={styles.electricText}>EV</Text>
+                </View>
+              )}
             </View>
-            <View style={styles.trending}>
-              <TrendingUp size={14} color={colors.primary} />
-              <Text style={styles.trendingText}>Hot</Text>
-            </View>
-          </View>
 
-          {/* Price */}
-          <View style={styles.priceRow}>
-            <Text style={styles.price}>{formatPrice(car.price)}</Text>
-            {/* Mock original price for demo */}
-            {Math.random() > 0.7 && (
-              <Text style={styles.originalPrice}>{formatPrice(car.price * 1.1)}</Text>
-            )}
-          </View>
+            {/* Subtitle */}
+            <Text style={styles.subtitle} numberOfLines={1}>
+              {car.condition || 'Premium Vehicle'}
+            </Text>
 
-          {/* Location and time */}
-          <View style={styles.metaRow}>
-            <View style={styles.location}>
-              <MapPin size={12} color={colors.textSecondary} />
-              <Text style={styles.locationText}>{car.location || 'Local Area'}</Text>
+            {/* Key specs */}
+            <View style={styles.specsRow}>
+              <View style={styles.spec}>
+                <MapPin size={14} color={colors.textSecondary} />
+                <Text style={styles.specText}>
+                  {car.mileage ? formatMileage(car.mileage) : 'N/A'}
+                </Text>
+              </View>
+              <View style={styles.spec}>
+                <Fuel size={14} color={colors.textSecondary} />
+                <Text style={styles.specText}>{car.fuel_type || 'Gas'}</Text>
+              </View>
+              <View style={styles.spec}>
+                <Settings size={14} color={colors.textSecondary} />
+                <Text style={styles.specText}>
+                  {car.transmission || 'Auto'}
+                </Text>
+              </View>
             </View>
-            <View style={styles.time}>
-              <Clock size={12} color={colors.textSecondary} />
-              <Text style={styles.timeText}>2d ago</Text>
+
+            {/* Rating and reviews */}
+            <View style={styles.ratingRow}>
+              <View style={styles.rating}>
+                <Star size={14} color="#FFD700" fill="#FFD700" />
+                <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
+                <Text style={styles.reviewCount}>({reviews})</Text>
+              </View>
+              <View style={styles.trending}>
+                <TrendingUp size={14} color={colors.primary} />
+                <Text style={styles.trendingText}>Hot</Text>
+              </View>
+            </View>
+
+            {/* Price */}
+            <View style={styles.priceRow}>
+              <Text style={styles.price}>{formatPrice(car.price)}</Text>
+              {/* Mock original price for demo */}
+              {Math.random() > 0.7 && (
+                <Text style={styles.originalPrice}>
+                  {formatPrice(car.price * 1.1)}
+                </Text>
+              )}
+            </View>
+
+            {/* Location and time */}
+            <View style={styles.metaRow}>
+              <View style={styles.location}>
+                <MapPin size={12} color={colors.textSecondary} />
+                <Text style={styles.locationText}>
+                  {car.location || 'Local Area'}
+                </Text>
+              </View>
+              <View style={styles.time}>
+                <Clock size={12} color={colors.textSecondary} />
+                <Text style={styles.timeText}>2d ago</Text>
+              </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-});
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  },
+);
 
 const getThemedStyles = (colors: any, variant: string) => {
-  const baseCardWidth = variant === 'featured' ? width - Spacing.lg * 2 : cardWidth;
+  const baseCardWidth =
+    variant === 'featured' ? width - Spacing.lg * 2 : cardWidth;
   const baseHeight = variant === 'featured' ? 400 : 340;
 
   return StyleSheet.create({

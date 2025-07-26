@@ -15,15 +15,15 @@ import { ModernButton } from '@/components/ui/ModernButton';
 import { Card } from '@/components/ui/Card';
 import { useThemeColors } from '@/hooks/useTheme';
 import { formatPrice } from '@/utils/dataTransformers';
-import { 
-  X, 
-  Filter, 
-  DollarSign, 
-  Calendar, 
-  Gauge, 
-  Fuel, 
-  Settings, 
-  MapPin 
+import {
+  X,
+  Filter,
+  DollarSign,
+  Calendar,
+  Gauge,
+  Fuel,
+  Settings,
+  MapPin,
 } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
@@ -48,56 +48,93 @@ interface AdvancedSearchFiltersProps {
 }
 
 const POPULAR_MAKES = [
-  'Toyota', 'Honda', 'Ford', 'Chevrolet', 'Nissan', 'BMW', 'Mercedes-Benz',
-  'Audi', 'Volkswagen', 'Hyundai', 'Kia', 'Mazda', 'Subaru', 'Lexus'
+  'Toyota',
+  'Honda',
+  'Ford',
+  'Chevrolet',
+  'Nissan',
+  'BMW',
+  'Mercedes-Benz',
+  'Audi',
+  'Volkswagen',
+  'Hyundai',
+  'Kia',
+  'Mazda',
+  'Subaru',
+  'Lexus',
 ];
 
 const BODY_TYPES = [
-  'Sedan', 'SUV', 'Hatchback', 'Coupe', 'Convertible', 'Wagon', 
-  'Pickup Truck', 'Van', 'Crossover'
+  'Sedan',
+  'SUV',
+  'Hatchback',
+  'Coupe',
+  'Convertible',
+  'Wagon',
+  'Pickup Truck',
+  'Van',
+  'Crossover',
 ];
 
 const FUEL_TYPES = [
-  'Gasoline', 'Hybrid', 'Electric', 'Diesel', 'Plug-in Hybrid'
+  'Gasoline',
+  'Hybrid',
+  'Electric',
+  'Diesel',
+  'Plug-in Hybrid',
 ];
 
-const TRANSMISSIONS = [
-  'Automatic', 'Manual', 'CVT'
-];
+const TRANSMISSIONS = ['Automatic', 'Manual', 'CVT'];
 
-const CONDITIONS = [
-  'New', 'Used', 'Certified Pre-Owned'
-];
+const CONDITIONS = ['New', 'Used', 'Certified Pre-Owned'];
 
 export default function AdvancedSearchFiltersModal({
   visible,
   onClose,
   onApplyFilters,
-  initialFilters = {}
+  initialFilters = {},
 }: AdvancedSearchFiltersProps) {
   const { colors } = useThemeColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
 
   // Filter state
   const [priceMin, setPriceMin] = useState(initialFilters.priceRange?.min || 0);
-  const [priceMax, setPriceMax] = useState(initialFilters.priceRange?.max || 100000);
+  const [priceMax, setPriceMax] = useState(
+    initialFilters.priceRange?.max || 100000,
+  );
   const [yearMin, setYearMin] = useState(initialFilters.yearRange?.min || 2000);
-  const [yearMax, setYearMax] = useState(initialFilters.yearRange?.max || new Date().getFullYear());
-  const [mileageMin, setMileageMin] = useState(initialFilters.mileageRange?.min || 0);
-  const [mileageMax, setMileageMax] = useState(initialFilters.mileageRange?.max || 200000);
-  const [selectedMakes, setSelectedMakes] = useState<string[]>(initialFilters.makes || []);
-  const [selectedBodyTypes, setSelectedBodyTypes] = useState<string[]>(initialFilters.bodyTypes || []);
-  const [selectedFuelTypes, setSelectedFuelTypes] = useState<string[]>(initialFilters.fuelTypes || []);
-  const [selectedTransmissions, setSelectedTransmissions] = useState<string[]>(initialFilters.transmissions || []);
-  const [selectedConditions, setSelectedConditions] = useState<string[]>(initialFilters.conditions || []);
+  const [yearMax, setYearMax] = useState(
+    initialFilters.yearRange?.max || new Date().getFullYear(),
+  );
+  const [mileageMin, setMileageMin] = useState(
+    initialFilters.mileageRange?.min || 0,
+  );
+  const [mileageMax, setMileageMax] = useState(
+    initialFilters.mileageRange?.max || 200000,
+  );
+  const [selectedMakes, setSelectedMakes] = useState<string[]>(
+    initialFilters.makes || [],
+  );
+  const [selectedBodyTypes, setSelectedBodyTypes] = useState<string[]>(
+    initialFilters.bodyTypes || [],
+  );
+  const [selectedFuelTypes, setSelectedFuelTypes] = useState<string[]>(
+    initialFilters.fuelTypes || [],
+  );
+  const [selectedTransmissions, setSelectedTransmissions] = useState<string[]>(
+    initialFilters.transmissions || [],
+  );
+  const [selectedConditions, setSelectedConditions] = useState<string[]>(
+    initialFilters.conditions || [],
+  );
 
   const handleToggleSelection = (
-    item: string, 
-    selectedItems: string[], 
-    setSelectedItems: (items: string[]) => void
+    item: string,
+    selectedItems: string[],
+    setSelectedItems: (items: string[]) => void,
   ) => {
     if (selectedItems.includes(item)) {
-      setSelectedItems(selectedItems.filter(i => i !== item));
+      setSelectedItems(selectedItems.filter((i) => i !== item));
     } else {
       setSelectedItems([...selectedItems, item]);
     }
@@ -127,9 +164,9 @@ export default function AdvancedSearchFiltersModal({
       fuelTypes: selectedFuelTypes,
       transmissions: selectedTransmissions,
       conditions: selectedConditions,
-      location: '' // TODO: Add location picker
+      location: '', // TODO: Add location picker
     };
-    
+
     onApplyFilters(filters);
     onClose();
   };
@@ -165,8 +202,15 @@ export default function AdvancedSearchFiltersModal({
               Advanced Filters
             </Text>
             {activeFiltersCount > 0 && (
-              <View style={[styles.filtersBadge, { backgroundColor: colors.primary }]}>
-                <Text style={styles.filtersBadgeText}>{activeFiltersCount}</Text>
+              <View
+                style={[
+                  styles.filtersBadge,
+                  { backgroundColor: colors.primary },
+                ]}
+              >
+                <Text style={styles.filtersBadgeText}>
+                  {activeFiltersCount}
+                </Text>
               </View>
             )}
           </View>
@@ -175,7 +219,7 @@ export default function AdvancedSearchFiltersModal({
           </TouchableOpacity>
         </View>
 
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -187,7 +231,7 @@ export default function AdvancedSearchFiltersModal({
                 Price Range
               </Text>
             </View>
-            
+
             <View style={styles.rangeDisplay}>
               <Text style={[styles.rangeText, { color: colors.primary }]}>
                 {formatPrice(priceMin)} - {formatPrice(priceMax)}
@@ -196,15 +240,20 @@ export default function AdvancedSearchFiltersModal({
 
             <View style={styles.rangeInputContainer}>
               <View style={styles.rangeInput}>
-                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.inputLabel, { color: colors.textSecondary }]}
+                >
                   Minimum
                 </Text>
                 <TextInput
-                  style={[styles.textInput, { 
-                    backgroundColor: colors.surface,
-                    color: colors.text,
-                    borderColor: colors.border 
-                  }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
                   value={priceMin.toString()}
                   onChangeText={(text) => {
                     const value = parseInt(text) || 0;
@@ -217,15 +266,20 @@ export default function AdvancedSearchFiltersModal({
               </View>
 
               <View style={styles.rangeInput}>
-                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.inputLabel, { color: colors.textSecondary }]}
+                >
                   Maximum
                 </Text>
                 <TextInput
-                  style={[styles.textInput, { 
-                    backgroundColor: colors.surface,
-                    color: colors.text,
-                    borderColor: colors.border 
-                  }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
                   value={priceMax.toString()}
                   onChangeText={(text) => {
                     const value = parseInt(text) || 100000;
@@ -247,7 +301,7 @@ export default function AdvancedSearchFiltersModal({
                 Year Range
               </Text>
             </View>
-            
+
             <View style={styles.rangeDisplay}>
               <Text style={[styles.rangeText, { color: colors.primary }]}>
                 {yearMin} - {yearMax}
@@ -256,15 +310,20 @@ export default function AdvancedSearchFiltersModal({
 
             <View style={styles.rangeInputContainer}>
               <View style={styles.rangeInput}>
-                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.inputLabel, { color: colors.textSecondary }]}
+                >
                   From Year
                 </Text>
                 <TextInput
-                  style={[styles.textInput, { 
-                    backgroundColor: colors.surface,
-                    color: colors.text,
-                    borderColor: colors.border 
-                  }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
                   value={yearMin.toString()}
                   onChangeText={(text) => {
                     const value = parseInt(text) || 2000;
@@ -277,19 +336,29 @@ export default function AdvancedSearchFiltersModal({
               </View>
 
               <View style={styles.rangeInput}>
-                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.inputLabel, { color: colors.textSecondary }]}
+                >
                   To Year
                 </Text>
                 <TextInput
-                  style={[styles.textInput, { 
-                    backgroundColor: colors.surface,
-                    color: colors.text,
-                    borderColor: colors.border 
-                  }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
                   value={yearMax.toString()}
                   onChangeText={(text) => {
                     const value = parseInt(text) || new Date().getFullYear();
-                    setYearMax(Math.max(yearMin + 1, Math.min(value, new Date().getFullYear() + 1)));
+                    setYearMax(
+                      Math.max(
+                        yearMin + 1,
+                        Math.min(value, new Date().getFullYear() + 1),
+                      ),
+                    );
                   }}
                   placeholder={new Date().getFullYear().toString()}
                   placeholderTextColor={colors.textSecondary}
@@ -307,28 +376,36 @@ export default function AdvancedSearchFiltersModal({
                 Mileage Range
               </Text>
             </View>
-            
+
             <View style={styles.rangeDisplay}>
               <Text style={[styles.rangeText, { color: colors.primary }]}>
-                {mileageMin.toLocaleString()} - {mileageMax.toLocaleString()} miles
+                {mileageMin.toLocaleString()} - {mileageMax.toLocaleString()}{' '}
+                miles
               </Text>
             </View>
 
             <View style={styles.rangeInputContainer}>
               <View style={styles.rangeInput}>
-                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.inputLabel, { color: colors.textSecondary }]}
+                >
                   Min Mileage
                 </Text>
                 <TextInput
-                  style={[styles.textInput, { 
-                    backgroundColor: colors.surface,
-                    color: colors.text,
-                    borderColor: colors.border 
-                  }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
                   value={mileageMin.toString()}
                   onChangeText={(text) => {
                     const value = parseInt(text) || 0;
-                    setMileageMin(Math.max(0, Math.min(value, mileageMax - 5000)));
+                    setMileageMin(
+                      Math.max(0, Math.min(value, mileageMax - 5000)),
+                    );
                   }}
                   placeholder="0"
                   placeholderTextColor={colors.textSecondary}
@@ -337,15 +414,20 @@ export default function AdvancedSearchFiltersModal({
               </View>
 
               <View style={styles.rangeInput}>
-                <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.inputLabel, { color: colors.textSecondary }]}
+                >
                   Max Mileage
                 </Text>
                 <TextInput
-                  style={[styles.textInput, { 
-                    backgroundColor: colors.surface,
-                    color: colors.text,
-                    borderColor: colors.border 
-                  }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
                   value={mileageMax.toString()}
                   onChangeText={(text) => {
                     const value = parseInt(text) || 200000;
@@ -366,37 +448,43 @@ export default function AdvancedSearchFiltersModal({
                 Car Makes
               </Text>
               {selectedMakes.length > 0 && (
-                <Text style={[styles.selectionCount, { color: colors.primary }]}>
+                <Text
+                  style={[styles.selectionCount, { color: colors.primary }]}
+                >
                   {selectedMakes.length} selected
                 </Text>
               )}
             </View>
-            
+
             <View style={styles.chipContainer}>
-              {POPULAR_MAKES.map(make => (
+              {POPULAR_MAKES.map((make) => (
                 <TouchableOpacity
                   key={make}
                   style={[
                     styles.chip,
                     {
-                      backgroundColor: selectedMakes.includes(make) 
-                        ? colors.primary 
+                      backgroundColor: selectedMakes.includes(make)
+                        ? colors.primary
                         : colors.surface,
-                      borderColor: selectedMakes.includes(make) 
-                        ? colors.primary 
+                      borderColor: selectedMakes.includes(make)
+                        ? colors.primary
                         : colors.border,
-                    }
+                    },
                   ]}
-                  onPress={() => handleToggleSelection(make, selectedMakes, setSelectedMakes)}
+                  onPress={() =>
+                    handleToggleSelection(make, selectedMakes, setSelectedMakes)
+                  }
                 >
-                  <Text style={[
-                    styles.chipText,
-                    { 
-                      color: selectedMakes.includes(make) 
-                        ? 'white' 
-                        : colors.text 
-                    }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.chipText,
+                      {
+                        color: selectedMakes.includes(make)
+                          ? 'white'
+                          : colors.text,
+                      },
+                    ]}
+                  >
                     {make}
                   </Text>
                 </TouchableOpacity>
@@ -411,37 +499,47 @@ export default function AdvancedSearchFiltersModal({
                 Body Types
               </Text>
               {selectedBodyTypes.length > 0 && (
-                <Text style={[styles.selectionCount, { color: colors.primary }]}>
+                <Text
+                  style={[styles.selectionCount, { color: colors.primary }]}
+                >
                   {selectedBodyTypes.length} selected
                 </Text>
               )}
             </View>
-            
+
             <View style={styles.chipContainer}>
-              {BODY_TYPES.map(type => (
+              {BODY_TYPES.map((type) => (
                 <TouchableOpacity
                   key={type}
                   style={[
                     styles.chip,
                     {
-                      backgroundColor: selectedBodyTypes.includes(type) 
-                        ? colors.primary 
+                      backgroundColor: selectedBodyTypes.includes(type)
+                        ? colors.primary
                         : colors.surface,
-                      borderColor: selectedBodyTypes.includes(type) 
-                        ? colors.primary 
+                      borderColor: selectedBodyTypes.includes(type)
+                        ? colors.primary
                         : colors.border,
-                    }
+                    },
                   ]}
-                  onPress={() => handleToggleSelection(type, selectedBodyTypes, setSelectedBodyTypes)}
+                  onPress={() =>
+                    handleToggleSelection(
+                      type,
+                      selectedBodyTypes,
+                      setSelectedBodyTypes,
+                    )
+                  }
                 >
-                  <Text style={[
-                    styles.chipText,
-                    { 
-                      color: selectedBodyTypes.includes(type) 
-                        ? 'white' 
-                        : colors.text 
-                    }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.chipText,
+                      {
+                        color: selectedBodyTypes.includes(type)
+                          ? 'white'
+                          : colors.text,
+                      },
+                    ]}
+                  >
                     {type}
                   </Text>
                 </TouchableOpacity>
@@ -457,37 +555,47 @@ export default function AdvancedSearchFiltersModal({
                 Fuel Types
               </Text>
               {selectedFuelTypes.length > 0 && (
-                <Text style={[styles.selectionCount, { color: colors.primary }]}>
+                <Text
+                  style={[styles.selectionCount, { color: colors.primary }]}
+                >
                   {selectedFuelTypes.length} selected
                 </Text>
               )}
             </View>
-            
+
             <View style={styles.chipContainer}>
-              {FUEL_TYPES.map(fuel => (
+              {FUEL_TYPES.map((fuel) => (
                 <TouchableOpacity
                   key={fuel}
                   style={[
                     styles.chip,
                     {
-                      backgroundColor: selectedFuelTypes.includes(fuel) 
-                        ? colors.primary 
+                      backgroundColor: selectedFuelTypes.includes(fuel)
+                        ? colors.primary
                         : colors.surface,
-                      borderColor: selectedFuelTypes.includes(fuel) 
-                        ? colors.primary 
+                      borderColor: selectedFuelTypes.includes(fuel)
+                        ? colors.primary
                         : colors.border,
-                    }
+                    },
                   ]}
-                  onPress={() => handleToggleSelection(fuel, selectedFuelTypes, setSelectedFuelTypes)}
+                  onPress={() =>
+                    handleToggleSelection(
+                      fuel,
+                      selectedFuelTypes,
+                      setSelectedFuelTypes,
+                    )
+                  }
                 >
-                  <Text style={[
-                    styles.chipText,
-                    { 
-                      color: selectedFuelTypes.includes(fuel) 
-                        ? 'white' 
-                        : colors.text 
-                    }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.chipText,
+                      {
+                        color: selectedFuelTypes.includes(fuel)
+                          ? 'white'
+                          : colors.text,
+                      },
+                    ]}
+                  >
                     {fuel}
                   </Text>
                 </TouchableOpacity>
@@ -503,37 +611,49 @@ export default function AdvancedSearchFiltersModal({
                 Transmission
               </Text>
               {selectedTransmissions.length > 0 && (
-                <Text style={[styles.selectionCount, { color: colors.primary }]}>
+                <Text
+                  style={[styles.selectionCount, { color: colors.primary }]}
+                >
                   {selectedTransmissions.length} selected
                 </Text>
               )}
             </View>
-            
+
             <View style={styles.chipContainer}>
-              {TRANSMISSIONS.map(transmission => (
+              {TRANSMISSIONS.map((transmission) => (
                 <TouchableOpacity
                   key={transmission}
                   style={[
                     styles.chip,
                     {
-                      backgroundColor: selectedTransmissions.includes(transmission) 
-                        ? colors.primary 
+                      backgroundColor: selectedTransmissions.includes(
+                        transmission,
+                      )
+                        ? colors.primary
                         : colors.surface,
-                      borderColor: selectedTransmissions.includes(transmission) 
-                        ? colors.primary 
+                      borderColor: selectedTransmissions.includes(transmission)
+                        ? colors.primary
                         : colors.border,
-                    }
+                    },
                   ]}
-                  onPress={() => handleToggleSelection(transmission, selectedTransmissions, setSelectedTransmissions)}
+                  onPress={() =>
+                    handleToggleSelection(
+                      transmission,
+                      selectedTransmissions,
+                      setSelectedTransmissions,
+                    )
+                  }
                 >
-                  <Text style={[
-                    styles.chipText,
-                    { 
-                      color: selectedTransmissions.includes(transmission) 
-                        ? 'white' 
-                        : colors.text 
-                    }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.chipText,
+                      {
+                        color: selectedTransmissions.includes(transmission)
+                          ? 'white'
+                          : colors.text,
+                      },
+                    ]}
+                  >
                     {transmission}
                   </Text>
                 </TouchableOpacity>
@@ -548,37 +668,47 @@ export default function AdvancedSearchFiltersModal({
                 Condition
               </Text>
               {selectedConditions.length > 0 && (
-                <Text style={[styles.selectionCount, { color: colors.primary }]}>
+                <Text
+                  style={[styles.selectionCount, { color: colors.primary }]}
+                >
                   {selectedConditions.length} selected
                 </Text>
               )}
             </View>
-            
+
             <View style={styles.chipContainer}>
-              {CONDITIONS.map(condition => (
+              {CONDITIONS.map((condition) => (
                 <TouchableOpacity
                   key={condition}
                   style={[
                     styles.chip,
                     {
-                      backgroundColor: selectedConditions.includes(condition) 
-                        ? colors.primary 
+                      backgroundColor: selectedConditions.includes(condition)
+                        ? colors.primary
                         : colors.surface,
-                      borderColor: selectedConditions.includes(condition) 
-                        ? colors.primary 
+                      borderColor: selectedConditions.includes(condition)
+                        ? colors.primary
                         : colors.border,
-                    }
+                    },
                   ]}
-                  onPress={() => handleToggleSelection(condition, selectedConditions, setSelectedConditions)}
+                  onPress={() =>
+                    handleToggleSelection(
+                      condition,
+                      selectedConditions,
+                      setSelectedConditions,
+                    )
+                  }
                 >
-                  <Text style={[
-                    styles.chipText,
-                    { 
-                      color: selectedConditions.includes(condition) 
-                        ? 'white' 
-                        : colors.text 
-                    }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.chipText,
+                      {
+                        color: selectedConditions.includes(condition)
+                          ? 'white'
+                          : colors.text,
+                      },
+                    ]}
+                  >
                     {condition}
                   </Text>
                 </TouchableOpacity>
@@ -607,131 +737,132 @@ export default function AdvancedSearchFiltersModal({
   );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginLeft: 8,
-  },
-  filtersBadge: {
-    marginLeft: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-    minWidth: 24,
-    alignItems: 'center',
-  },
-  filtersBadgeText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  filterSection: {
-    marginBottom: 20,
-    padding: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    flex: 1,
-    marginLeft: 8,
-  },
-  selectionCount: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  rangeDisplay: {
-    alignItems: 'center',
-    paddingVertical: 12,
-    marginBottom: 16,
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-  },
-  rangeText: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  sliderContainer: {
-    marginBottom: 16,
-  },
-  sliderLabel: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  slider: {
-    height: 40,
-  },
-  chipContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    marginBottom: 8,
-  },
-  chipText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    padding: 16,
-    gap: 12,
-    borderTopWidth: 1,
-  },
-  clearButton: {
-    flex: 1,
-  },
-  applyButton: {
-    flex: 2,
-  },
-  rangeInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  rangeInput: {
-    flex: 1,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  textInput: {
-    height: 48,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      marginLeft: 8,
+    },
+    filtersBadge: {
+      marginLeft: 8,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 12,
+      minWidth: 24,
+      alignItems: 'center',
+    },
+    filtersBadgeText: {
+      color: 'white',
+      fontSize: 12,
+      fontWeight: '700',
+    },
+    scrollContent: {
+      padding: 16,
+      paddingBottom: 32,
+    },
+    filterSection: {
+      marginBottom: 20,
+      padding: 16,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      flex: 1,
+      marginLeft: 8,
+    },
+    selectionCount: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    rangeDisplay: {
+      alignItems: 'center',
+      paddingVertical: 12,
+      marginBottom: 16,
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+    },
+    rangeText: {
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    sliderContainer: {
+      marginBottom: 16,
+    },
+    sliderLabel: {
+      fontSize: 14,
+      marginBottom: 8,
+    },
+    slider: {
+      height: 40,
+    },
+    chipContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    chip: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+      marginBottom: 8,
+    },
+    chipText: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    footer: {
+      flexDirection: 'row',
+      padding: 16,
+      gap: 12,
+      borderTopWidth: 1,
+    },
+    clearButton: {
+      flex: 1,
+    },
+    applyButton: {
+      flex: 2,
+    },
+    rangeInputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 16,
+    },
+    rangeInput: {
+      flex: 1,
+    },
+    inputLabel: {
+      fontSize: 14,
+      fontWeight: '500',
+      marginBottom: 8,
+    },
+    textInput: {
+      height: 48,
+      borderWidth: 1,
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      fontSize: 16,
+    },
+  });

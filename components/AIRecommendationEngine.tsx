@@ -20,10 +20,23 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 
-import { 
-  Sparkles, TrendingUp, Award, Star, Heart, Eye,
-  Car, DollarSign, Gauge, Fuel, Users, Crown,
-  ArrowRight, RefreshCw, Zap, Award as Target
+import {
+  Sparkles,
+  TrendingUp,
+  Award,
+  Star,
+  Heart,
+  Eye,
+  Car,
+  DollarSign,
+  Gauge,
+  Fuel,
+  Users,
+  Crown,
+  ArrowRight,
+  RefreshCw,
+  Zap,
+  Award as Target,
 } from '@/utils/ultra-optimized-icons';
 import { UltraPremiumCarCard } from '@/components/UltraPremiumCarCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -96,7 +109,7 @@ interface AIRecommendationEngineProps {
 // Simulated AI engine - In production, this would connect to ML services
 class AIRecommendationEngine {
   private static instance: AIRecommendationEngine;
-  
+
   static getInstance(): AIRecommendationEngine {
     if (!AIRecommendationEngine.instance) {
       AIRecommendationEngine.instance = new AIRecommendationEngine();
@@ -107,20 +120,25 @@ class AIRecommendationEngine {
   async generateRecommendations(
     preferences: UserPreferences,
     availableCars: CarType[],
-    userHistory?: any[]
+    userHistory?: any[],
   ): Promise<CarRecommendation[]> {
     // Simulate ML processing time
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const recommendations: CarRecommendation[] = [];
 
     for (const car of availableCars) {
-      const score = this.calculateRecommendationScore(car, preferences, userHistory);
+      const score = this.calculateRecommendationScore(
+        car,
+        preferences,
+        userHistory,
+      );
       const reasons = this.generateReasons(car, preferences, score);
       const confidence = this.calculateConfidence(score, car);
       const category = this.categorizeRecommendation(score, car);
-      
-      if (score.overall > 0.3) { // Minimum threshold
+
+      if (score.overall > 0.3) {
+        // Minimum threshold
         recommendations.push({
           car,
           score,
@@ -135,14 +153,17 @@ class AIRecommendationEngine {
 
     // Sort by overall score and confidence
     return recommendations
-      .sort((a, b) => (b.score.overall * b.confidence) - (a.score.overall * a.confidence))
+      .sort(
+        (a, b) =>
+          b.score.overall * b.confidence - a.score.overall * a.confidence,
+      )
       .slice(0, 12); // Top 12 recommendations
   }
 
   private calculateRecommendationScore(
     car: CarType,
     preferences: UserPreferences,
-    userHistory?: any[]
+    userHistory?: any[],
   ): RecommendationScore {
     const priceMatch = this.scorePriceMatch(car.price, preferences.budgetRange);
     const featureMatch = this.scoreFeatureMatch(car, preferences);
@@ -151,14 +172,13 @@ class AIRecommendationEngine {
     const trendingScore = this.scoreTrendingFactor(car);
     const popularityScore = this.scorePopularity(car);
 
-    const overall = (
+    const overall =
       priceMatch * 0.25 +
-      featureMatch * 0.20 +
-      lifestyleMatch * 0.20 +
+      featureMatch * 0.2 +
+      lifestyleMatch * 0.2 +
       locationMatch * 0.15 +
-      trendingScore * 0.10 +
-      popularityScore * 0.10
-    );
+      trendingScore * 0.1 +
+      popularityScore * 0.1;
 
     return {
       overall,
@@ -171,26 +191,32 @@ class AIRecommendationEngine {
     };
   }
 
-  private scorePriceMatch(price: number, budgetRange: [number, number]): number {
+  private scorePriceMatch(
+    price: number,
+    budgetRange: [number, number],
+  ): number {
     const [min, max] = budgetRange;
     if (price < min) return Math.max(0, 1 - (min - price) / min);
     if (price > max) return Math.max(0, 1 - (price - max) / max);
-    
+
     // Sweet spot is 80-90% of budget
     const sweetSpotStart = max * 0.8;
     const sweetSpotEnd = max * 0.9;
-    
+
     if (price >= sweetSpotStart && price <= sweetSpotEnd) return 1.0;
-    
+
     // Linear interpolation for other ranges
     if (price < sweetSpotStart) {
-      return 0.7 + (price - min) / (sweetSpotStart - min) * 0.3;
+      return 0.7 + ((price - min) / (sweetSpotStart - min)) * 0.3;
     } else {
-      return 1.0 - (price - sweetSpotEnd) / (max - sweetSpotEnd) * 0.2;
+      return 1.0 - ((price - sweetSpotEnd) / (max - sweetSpotEnd)) * 0.2;
     }
   }
 
-  private scoreFeatureMatch(car: CarType, preferences: UserPreferences): number {
+  private scoreFeatureMatch(
+    car: CarType,
+    preferences: UserPreferences,
+  ): number {
     let score = 0;
     let totalFactors = 0;
 
@@ -228,27 +254,43 @@ class AIRecommendationEngine {
     return totalFactors > 0 ? score / totalFactors : 0;
   }
 
-  private scoreLifestyleMatch(car: CarType, preferences: UserPreferences): number {
+  private scoreLifestyleMatch(
+    car: CarType,
+    preferences: UserPreferences,
+  ): number {
     let score = 0;
 
     // Family considerations
     if (preferences.lifestyle.hasFamily) {
-      const familyFriendly = ['suv', 'minivan', 'wagon'].includes(car.condition?.toLowerCase() || '');
+      const familyFriendly = ['suv', 'minivan', 'wagon'].includes(
+        car.condition?.toLowerCase() || '',
+      );
       score += familyFriendly ? 0.3 : 0.1;
     } else {
-      const sporty = ['coupe', 'convertible', 'sports'].includes(car.condition?.toLowerCase() || '');
+      const sporty = ['coupe', 'convertible', 'sports'].includes(
+        car.condition?.toLowerCase() || '',
+      );
       score += sporty ? 0.3 : 0.2;
     }
 
     // Environmental consciousness
     if (preferences.lifestyle.environmentallyConscious) {
-      const ecoFriendly = ['electric', 'hybrid', 'plugin-hybrid'].includes(car.fuel_type || '');
+      const ecoFriendly = ['electric', 'hybrid', 'plugin-hybrid'].includes(
+        car.fuel_type || '',
+      );
       score += ecoFriendly ? 0.4 : 0.1;
     }
 
     // Luxury orientation
     if (preferences.lifestyle.luxuryOriented) {
-      const luxuryBrands = ['bmw', 'mercedes', 'audi', 'lexus', 'tesla', 'porsche'];
+      const luxuryBrands = [
+        'bmw',
+        'mercedes',
+        'audi',
+        'lexus',
+        'tesla',
+        'porsche',
+      ];
       const isLuxury = luxuryBrands.includes(car.make.toLowerCase());
       score += isLuxury ? 0.3 : 0.1;
     }
@@ -256,24 +298,32 @@ class AIRecommendationEngine {
     return Math.min(score, 1.0);
   }
 
-  private scoreLocationMatch(car: CarType, preferences: UserPreferences): number {
+  private scoreLocationMatch(
+    car: CarType,
+    preferences: UserPreferences,
+  ): number {
     // Simulate distance calculation
     const distance = Math.random() * 200; // 0-200 miles
     const maxDistance = 100; // User's preferred max distance
-    
+
     if (distance <= maxDistance) {
       return 1.0 - (distance / maxDistance) * 0.5; // Max 0.5 penalty for distance
     }
-    
-    return Math.max(0.2, 1.0 - (distance / 300)); // Minimum 0.2 for very far cars
+
+    return Math.max(0.2, 1.0 - distance / 300); // Minimum 0.2 for very far cars
   }
 
   private scoreTrendingFactor(car: CarType): number {
     // Simulate trending score based on model popularity, recent searches, etc.
-    const trendingModels = ['tesla model 3', 'toyota rav4', 'honda cr-v', 'ford f-150'];
+    const trendingModels = [
+      'tesla model 3',
+      'toyota rav4',
+      'honda cr-v',
+      'ford f-150',
+    ];
     const carModel = `${car.make} ${car.model}`.toLowerCase();
-    
-    const isTrending = trendingModels.some(model => carModel.includes(model));
+
+    const isTrending = trendingModels.some((model) => carModel.includes(model));
     return isTrending ? 0.8 + Math.random() * 0.2 : Math.random() * 0.6;
   }
 
@@ -282,17 +332,20 @@ class AIRecommendationEngine {
     const viewCount = Math.random() * 5000;
     const saveCount = Math.random() * 500;
     const inquiryCount = Math.random() * 50;
-    
-    const popularityScore = (
+
+    const popularityScore =
       Math.min(viewCount / 5000, 1) * 0.5 +
       Math.min(saveCount / 500, 1) * 0.3 +
-      Math.min(inquiryCount / 50, 1) * 0.2
-    );
-    
+      Math.min(inquiryCount / 50, 1) * 0.2;
+
     return popularityScore;
   }
 
-  private generateReasons(car: CarType, preferences: UserPreferences, score: RecommendationScore): string[] {
+  private generateReasons(
+    car: CarType,
+    preferences: UserPreferences,
+    score: RecommendationScore,
+  ): string[] {
     const reasons: string[] = [];
 
     if (score.priceMatch > 0.8) {
@@ -317,7 +370,10 @@ class AIRecommendationEngine {
       reasons.push('Located near you');
     }
 
-    if (car.fuel_type === 'electric' && preferences.lifestyle.environmentallyConscious) {
+    if (
+      car.fuel_type === 'electric' &&
+      preferences.lifestyle.environmentallyConscious
+    ) {
       reasons.push('Eco-friendly electric vehicle');
     }
 
@@ -332,19 +388,25 @@ class AIRecommendationEngine {
     return reasons.slice(0, 3); // Top 3 reasons
   }
 
-  private calculateConfidence(score: RecommendationScore, car: CarType): number {
+  private calculateConfidence(
+    score: RecommendationScore,
+    car: CarType,
+  ): number {
     // Higher confidence for cars with more complete data and higher overall scores
     let confidence = score.overall;
-    
+
     // Boost confidence for complete car data
     if (car.images && car.images.length > 3) confidence += 0.1;
     if (car.description) confidence += 0.05;
     if (car.features && car.features.length > 0) confidence += 0.05;
-    
+
     return Math.min(confidence, 0.99); // Max 99% confidence
   }
 
-  private categorizeRecommendation(score: RecommendationScore, car: CarType): CarRecommendation['category'] {
+  private categorizeRecommendation(
+    score: RecommendationScore,
+    car: CarType,
+  ): CarRecommendation['category'] {
     if (score.overall > 0.8) return 'perfect_match';
     if (score.priceMatch > 0.8 && score.overall > 0.6) return 'great_value';
     if (score.trendingScore > 0.7) return 'trending';
@@ -359,7 +421,7 @@ class AIRecommendationEngine {
 
   private getDealInfo(car: CarType): CarRecommendation['dealInfo'] {
     const isHotDeal = Math.random() > 0.7; // 30% chance of being a hot deal
-    
+
     if (isHotDeal) {
       return {
         isHotDeal: true,
@@ -367,7 +429,7 @@ class AIRecommendationEngine {
         originalPrice: car.price * (1.05 + Math.random() * 0.1), // 5-15% higher
       };
     }
-    
+
     return {
       isHotDeal: false,
       timeLeft: '',
@@ -375,7 +437,9 @@ class AIRecommendationEngine {
   }
 }
 
-export const AIRecommendationEngine_Component: React.FC<AIRecommendationEngineProps> = ({
+export const AIRecommendationEngine_Component: React.FC<
+  AIRecommendationEngineProps
+> = ({
   userPreferences,
   onCarPress,
   onRefreshRecommendations,
@@ -385,82 +449,96 @@ export const AIRecommendationEngine_Component: React.FC<AIRecommendationEnginePr
   const { user } = useAuth();
   const styles = getThemedStyles(colors);
 
-  const [recommendations, setRecommendations] = useState<CarRecommendation[]>([]);
+  const [recommendations, setRecommendations] = useState<CarRecommendation[]>(
+    [],
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const aiEngine = useMemo(() => AIRecommendationEngine.getInstance(), []);
 
   // Mock car data for demonstration
-  const mockCars: CarType[] = useMemo(() => [
-    {
-      id: '1',
-      make: 'Toyota',
-      model: 'RAV4',
-      year: 2023,
-      price: 32000,
-      mileage: 15000,
-      location: 'Seattle, WA',
-      images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80'],
-      created_at: '2024-01-01',
-      fuel_type: 'gasoline',
-      transmission: 'automatic',
-    },
-    {
-      id: '2',
-      make: 'Tesla',
-      model: 'Model 3',
-      year: 2024,
-      price: 45000,
-      mileage: 5000,
-      location: 'San Francisco, CA',
-      images: ['https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80'],
-      created_at: '2024-01-02',
-      fuel_type: 'electric',
-      transmission: 'automatic',
-    },
-    {
-      id: '3',
-      make: 'Honda',
-      model: 'CR-V',
-      year: 2022,
-      price: 28000,
-      mileage: 25000,
-      location: 'Portland, OR',
-      images: ['https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800&q=80'],
-      created_at: '2024-01-03',
-      fuel_type: 'gasoline',
-      transmission: 'automatic',
-    },
-    // Add more mock cars...
-  ], []);
+  const mockCars: CarType[] = useMemo(
+    () => [
+      {
+        id: '1',
+        make: 'Toyota',
+        model: 'RAV4',
+        year: 2023,
+        price: 32000,
+        mileage: 15000,
+        location: 'Seattle, WA',
+        images: [
+          'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80',
+        ],
+        created_at: '2024-01-01',
+        fuel_type: 'gasoline',
+        transmission: 'automatic',
+      },
+      {
+        id: '2',
+        make: 'Tesla',
+        model: 'Model 3',
+        year: 2024,
+        price: 45000,
+        mileage: 5000,
+        location: 'San Francisco, CA',
+        images: [
+          'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80',
+        ],
+        created_at: '2024-01-02',
+        fuel_type: 'electric',
+        transmission: 'automatic',
+      },
+      {
+        id: '3',
+        make: 'Honda',
+        model: 'CR-V',
+        year: 2022,
+        price: 28000,
+        mileage: 25000,
+        location: 'Portland, OR',
+        images: [
+          'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800&q=80',
+        ],
+        created_at: '2024-01-03',
+        fuel_type: 'gasoline',
+        transmission: 'automatic',
+      },
+      // Add more mock cars...
+    ],
+    [],
+  );
 
-  const defaultPreferences: UserPreferences = useMemo(() => ({
-    budgetRange: [25000, 50000],
-    preferredMakes: ['toyota', 'honda', 'tesla'],
-    bodyTypes: ['suv', 'sedan'],
-    fuelTypes: ['gasoline', 'electric', 'hybrid'],
-    features: ['bluetooth', 'backup_camera', 'navigation'],
-    maxMileage: 30000,
-    minYear: 2020,
-    location: {
-      city: 'Seattle',
-      state: 'WA',
-      coordinates: [47.6062, -122.3321],
-    },
-    drivingHabits: {
-      dailyMiles: 25,
-      primaryUse: 'commuting',
-      terrainType: 'mixed',
-    },
-    lifestyle: {
-      hasFamily: false,
-      petOwner: false,
-      environmentallyConscious: true,
-      technologyEnthusiast: true,
-      luxuryOriented: false,
-    },
-  }), []);
+  const defaultPreferences: UserPreferences = useMemo(
+    () => ({
+      budgetRange: [25000, 50000],
+      preferredMakes: ['toyota', 'honda', 'tesla'],
+      bodyTypes: ['suv', 'sedan'],
+      fuelTypes: ['gasoline', 'electric', 'hybrid'],
+      features: ['bluetooth', 'backup_camera', 'navigation'],
+      maxMileage: 30000,
+      minYear: 2020,
+      location: {
+        city: 'Seattle',
+        state: 'WA',
+        coordinates: [47.6062, -122.3321],
+      },
+      drivingHabits: {
+        dailyMiles: 25,
+        primaryUse: 'commuting',
+        terrainType: 'mixed',
+      },
+      lifestyle: {
+        hasFamily: false,
+        petOwner: false,
+        environmentallyConscious: true,
+        technologyEnthusiast: true,
+        luxuryOriented: false,
+      },
+    }),
+    [],
+  );
 
   const loadRecommendations = useCallback(async () => {
     setLoading(true);
@@ -468,10 +546,10 @@ export const AIRecommendationEngine_Component: React.FC<AIRecommendationEnginePr
 
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      
+
       const prefs = userPreferences || defaultPreferences;
       const recs = await aiEngine.generateRecommendations(prefs, mockCars);
-      
+
       setRecommendations(recs.slice(0, maxRecommendations));
     } catch (err) {
       setError('Failed to generate recommendations. Please try again.');
@@ -479,7 +557,13 @@ export const AIRecommendationEngine_Component: React.FC<AIRecommendationEnginePr
     } finally {
       setLoading(false);
     }
-  }, [userPreferences, defaultPreferences, aiEngine, mockCars, maxRecommendations]);
+  }, [
+    userPreferences,
+    defaultPreferences,
+    aiEngine,
+    mockCars,
+    maxRecommendations,
+  ]);
 
   useEffect(() => {
     loadRecommendations();
@@ -491,7 +575,10 @@ export const AIRecommendationEngine_Component: React.FC<AIRecommendationEnginePr
     loadRecommendations();
   }, [onRefreshRecommendations, loadRecommendations]);
 
-  const renderRecommendationCard = (recommendation: CarRecommendation, index: number) => {
+  const renderRecommendationCard = (
+    recommendation: CarRecommendation,
+    index: number,
+  ) => {
     const categoryConfig = {
       perfect_match: { icon: Target, color: '#10B981', label: 'Perfect Match' },
       great_value: { icon: DollarSign, color: '#3B82F6', label: 'Great Value' },
@@ -516,18 +603,22 @@ export const AIRecommendationEngine_Component: React.FC<AIRecommendationEnginePr
 
         {/* Confidence Indicator */}
         <View style={styles.confidenceContainer}>
-          <Text style={[styles.confidenceText, { color: colors.textSecondary }]}>
+          <Text
+            style={[styles.confidenceText, { color: colors.textSecondary }]}
+          >
             {Math.round(recommendation.confidence * 100)}% match
           </Text>
-          <View style={[styles.confidenceBar, { backgroundColor: colors.border }]}>
-            <View 
+          <View
+            style={[styles.confidenceBar, { backgroundColor: colors.border }]}
+          >
+            <View
               style={[
                 styles.confidenceFill,
-                { 
+                {
                   backgroundColor: config.color,
-                  width: `${recommendation.confidence * 100}%`
-                }
-              ]} 
+                  width: `${recommendation.confidence * 100}%`,
+                },
+              ]}
             />
           </View>
         </View>
@@ -549,7 +640,9 @@ export const AIRecommendationEngine_Component: React.FC<AIRecommendationEnginePr
           {recommendation.reasons.map((reason, idx) => (
             <View key={idx} style={styles.reasonItem}>
               <Sparkles size={12} color={config.color} />
-              <Text style={[styles.reasonText, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.reasonText, { color: colors.textSecondary }]}
+              >
                 {reason}
               </Text>
             </View>

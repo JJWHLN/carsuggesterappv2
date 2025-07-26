@@ -15,7 +15,12 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { ModelCard } from '@/components/ModelCard'; // Using ModelCard for brand's models
-import { currentColors, Spacing, Typography, BorderRadius } from '@/constants/Colors';
+import {
+  currentColors,
+  Spacing,
+  Typography,
+  BorderRadius,
+} from '@/constants/Colors';
 import { useApi } from '@/hooks/useApi';
 import { fetchBrandById, fetchCarModels, ApiError } from '@/services/api';
 import { Brand as BrandType, CarModel as CarModelType } from '@/types/database';
@@ -29,25 +34,22 @@ export default function BrandDetailScreen() {
     data: brand,
     loading: brandLoading,
     error: brandError,
-    refetch: refetchBrand
-  } = useApi<BrandType | null>(
-    async () => {
-      if (!id) return null;
-      try {
-        return await fetchBrandById(id);
-      } catch (e) {
-        if (e instanceof ApiError) throw new Error(e.userFriendlyMessage);
-        throw e;
-      }
-    },
-    [id]
-  );
+    refetch: refetchBrand,
+  } = useApi<BrandType | null>(async () => {
+    if (!id) return null;
+    try {
+      return await fetchBrandById(id);
+    } catch (e) {
+      if (e instanceof ApiError) throw new Error(e.userFriendlyMessage);
+      throw e;
+    }
+  }, [id]);
 
   const {
     data: models,
     loading: modelsLoading,
     error: modelsError,
-    refetch: refetchModels
+    refetch: refetchModels,
   } = useApi<CarModelType[]>(
     async () => {
       if (!brand?.name) return []; // Don't fetch if brand name isn't available
@@ -59,7 +61,7 @@ export default function BrandDetailScreen() {
         throw e;
       }
     },
-    [brand?.name] // Re-fetch if brand name changes (after brand is loaded)
+    [brand?.name], // Re-fetch if brand name changes (after brand is loaded)
   );
 
   const handleBack = () => {
@@ -99,7 +101,8 @@ export default function BrandDetailScreen() {
   const displayError = brandError || (brand && modelsError);
   const errorMessage = brandError || modelsError || 'Brand or models not found';
 
-  if (displayError && !brand) { // Show error only if brand itself failed to load or no brand and models error
+  if (displayError && !brand) {
+    // Show error only if brand itself failed to load or no brand and models error
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
@@ -119,31 +122,42 @@ export default function BrandDetailScreen() {
     );
   }
 
-  if (!brand) { // Should be caught by loading or error state, but as a fallback
+  if (!brand) {
+    // Should be caught by loading or error state, but as a fallback
     return (
       <SafeAreaView style={styles.container}>
-         <View style={styles.header}>
+        <View style={styles.header}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <ArrowLeft color={currentColors.text} size={24} />
           </TouchableOpacity>
         </View>
         <View style={styles.loadingContainer}>
-           <Text style={styles.loadingText}>Brand not found.</Text>
+          <Text style={styles.loadingText}>Brand not found.</Text>
         </View>
       </SafeAreaView>
-    )
+    );
   }
 
   // Mock data for founded and headquarters as it's not in the BrandType
   const foundedYear = brand.name === 'Toyota' ? 1937 : (brand.id % 50) + 1970; // Example mock
-  const headquartersLocation = brand.name === 'Toyota' ? 'Toyota City, Japan' : 'Global City, World'; // Example mock
+  const headquartersLocation =
+    brand.name === 'Toyota' ? 'Toyota City, Japan' : 'Global City, World'; // Example mock
   // Mock popular models based on brand name, not in DB type
-  const popularModels = brand.name ? [`${brand.name} Model S`, `${brand.name} Model X`, `${brand.name} Roadster`] : [];
+  const popularModels = brand.name
+    ? [
+        `${brand.name} Model S`,
+        `${brand.name} Model X`,
+        `${brand.name} Roadster`,
+      ]
+    : [];
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Custom header View removed, native header is used */}
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Brand Header */}
         <View style={styles.brandHeader}>
           <Image
@@ -152,7 +166,9 @@ export default function BrandDetailScreen() {
             resizeMode="contain"
           />
           <Text style={styles.brandName}>{brand.name}</Text>
-          {brand.description && <Text style={styles.brandDescription}>{brand.description}</Text>}
+          {brand.description && (
+            <Text style={styles.brandDescription}>{brand.description}</Text>
+          )}
         </View>
 
         {/* Brand Info - Using mock data for fields not in BrandType */}
@@ -205,9 +221,11 @@ export default function BrandDetailScreen() {
               </Text>
             )}
           </View>
-          
+
           {modelsLoading && !models && <LoadingSpinner />}
-          {modelsError && !modelsLoading && <ErrorState message={modelsError} onRetry={refetchModels} />}
+          {modelsError && !modelsLoading && (
+            <ErrorState message={modelsError} onRetry={refetchModels} />
+          )}
           {models && models.length > 0 ? (
             <FlatList
               data={models}
@@ -217,10 +235,13 @@ export default function BrandDetailScreen() {
               showsVerticalScrollIndicator={false}
             />
           ) : (
-            !modelsLoading && !modelsError && (
+            !modelsLoading &&
+            !modelsError && (
               <View style={styles.emptyState}>
                 <Car color={currentColors.textSecondary} size={48} />
-                <Text style={styles.emptyText}>No models currently listed for {brand.name}</Text>
+                <Text style={styles.emptyText}>
+                  No models currently listed for {brand.name}
+                </Text>
               </View>
             )
           )}
@@ -235,7 +256,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: currentColors.background,
   },
-  header: { // Add back the missing header style
+  header: {
+    // Add back the missing header style
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.md,
@@ -243,7 +265,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: currentColors.border,
   },
-  backButton: { // Add back the missing backButton style
+  backButton: {
+    // Add back the missing backButton style
     padding: Spacing.sm,
     marginRight: Spacing.md,
   },

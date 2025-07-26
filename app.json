@@ -1,4 +1,3 @@
-
 {
   "expo": {
     "name": "CarSuggester",
@@ -14,9 +13,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "platforms": ["ios", "android"],
     "ios": {
       "supportsTablet": true
@@ -30,10 +27,7 @@
       "typedRoutes": true,
       "turboModules": true
     },
-    "plugins": [
-      "expo-router",
-      "expo-font"
-    ],
+    "plugins": ["expo-router", "expo-font"],
     "sdkVersion": "52.0.0"
   }
 }

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Plus, GitCompare } from 'lucide-react-native';
-import { 
-  ComparisonProvider, 
-  useComparison, 
+import {
+  ComparisonProvider,
+  useComparison,
   useIsCarInComparison,
   useCanAddCar,
-  ExtendedCar 
+  ExtendedCar,
 } from '../features/comparison';
 import { Car } from '../features/recommendations/types';
 
@@ -38,12 +38,27 @@ const extendCarData = (car: Car): ExtendedCar => ({
     frontalCrash: Math.min(5, car.safetyRating + Math.floor(Math.random() * 2)),
     sideCrash: Math.min(5, car.safetyRating + Math.floor(Math.random() * 2)),
     rollover: Math.min(5, car.safetyRating + Math.floor(Math.random() * 2)),
-    pedestrianSafety: Math.min(5, car.safetyRating + Math.floor(Math.random() * 2)),
+    pedestrianSafety: Math.min(
+      5,
+      car.safetyRating + Math.floor(Math.random() * 2),
+    ),
   },
   featuresByCategory: {
-    'Safety': car.features.filter(f => f.toLowerCase().includes('safety') || f.toLowerCase().includes('assist')),
-    'Technology': car.features.filter(f => f.toLowerCase().includes('bluetooth') || f.toLowerCase().includes('navigation')),
-    'Comfort': car.features.filter(f => !f.toLowerCase().includes('safety') && !f.toLowerCase().includes('bluetooth')),
+    Safety: car.features.filter(
+      (f) =>
+        f.toLowerCase().includes('safety') ||
+        f.toLowerCase().includes('assist'),
+    ),
+    Technology: car.features.filter(
+      (f) =>
+        f.toLowerCase().includes('bluetooth') ||
+        f.toLowerCase().includes('navigation'),
+    ),
+    Comfort: car.features.filter(
+      (f) =>
+        !f.toLowerCase().includes('safety') &&
+        !f.toLowerCase().includes('bluetooth'),
+    ),
   },
   warranty: {
     basic: '3 years/36,000 miles',
@@ -56,9 +71,9 @@ const extendCarData = (car: Car): ExtendedCar => ({
   resaleValue: Math.floor(Math.random() * 20) + 55,
 });
 
-const CarCard: React.FC<{ car: Car; onNavigateToComparison: () => void }> = ({ 
-  car, 
-  onNavigateToComparison 
+const CarCard: React.FC<{ car: Car; onNavigateToComparison: () => void }> = ({
+  car,
+  onNavigateToComparison,
 }) => {
   const { actions } = useComparison();
   const isInComparison = useIsCarInComparison(car.id);
@@ -88,30 +103,38 @@ const CarCard: React.FC<{ car: Car; onNavigateToComparison: () => void }> = ({
           ${car.price.toLocaleString()}
         </Text>
       </View>
-      
+
       <View className="flex-row justify-between items-center mb-3">
-        <Text className="text-sm text-gray-600">
-          {car.fuelEfficiency} MPG
-        </Text>
+        <Text className="text-sm text-gray-600">{car.fuelEfficiency} MPG</Text>
         <View className="flex-row">
           {[...Array(5)].map((_, i) => (
-            <Text key={i} className={i < car.safetyRating ? 'text-yellow-400' : 'text-gray-300'}>
+            <Text
+              key={i}
+              className={
+                i < car.safetyRating ? 'text-yellow-400' : 'text-gray-300'
+              }
+            >
               ⭐
             </Text>
           ))}
         </View>
       </View>
-      
+
       {car.features.length > 0 && (
         <View className="flex-row flex-wrap mb-3">
           {car.features.slice(0, 3).map((feature, index) => (
-            <View key={index} className="bg-blue-100 rounded-full px-2 py-1 mr-2 mb-1">
+            <View
+              key={index}
+              className="bg-blue-100 rounded-full px-2 py-1 mr-2 mb-1"
+            >
               <Text className="text-xs text-blue-700">{feature}</Text>
             </View>
           ))}
           {car.features.length > 3 && (
             <View className="bg-gray-100 rounded-full px-2 py-1">
-              <Text className="text-xs text-gray-600">+{car.features.length - 3} more</Text>
+              <Text className="text-xs text-gray-600">
+                +{car.features.length - 3} more
+              </Text>
             </View>
           )}
         </View>
@@ -122,45 +145,54 @@ const CarCard: React.FC<{ car: Car; onNavigateToComparison: () => void }> = ({
           onPress={handleToggleComparison}
           disabled={!canAddCar && !isInComparison}
           className={`flex-1 flex-row items-center justify-center py-2 px-4 rounded-lg ${
-            isInComparison 
-              ? 'bg-green-100 border border-green-200' 
-              : canAddCar 
-                ? 'bg-blue-100 border border-blue-200' 
+            isInComparison
+              ? 'bg-green-100 border border-green-200'
+              : canAddCar
+                ? 'bg-blue-100 border border-blue-200'
                 : 'bg-gray-100 border border-gray-200'
           }`}
         >
           {isInComparison ? (
             <>
-              <Text className="text-green-700 font-medium text-sm mr-1">✓ Added</Text>
+              <Text className="text-green-700 font-medium text-sm mr-1">
+                ✓ Added
+              </Text>
             </>
           ) : (
             <>
-              <Plus size={16} className={canAddCar ? 'text-blue-600' : 'text-gray-400'} />
-              <Text className={`font-medium text-sm ml-1 ${
-                canAddCar ? 'text-blue-700' : 'text-gray-400'
-              }`}>
+              <Plus
+                size={16}
+                className={canAddCar ? 'text-blue-600' : 'text-gray-400'}
+              />
+              <Text
+                className={`font-medium text-sm ml-1 ${
+                  canAddCar ? 'text-blue-700' : 'text-gray-400'
+                }`}
+              >
                 Compare
               </Text>
             </>
           )}
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           onPress={onNavigateToComparison}
           className="px-4 py-2 rounded-lg bg-gray-100 border border-gray-200"
         >
-          <Text className="text-gray-700 font-medium text-sm">View Details</Text>
+          <Text className="text-gray-700 font-medium text-sm">
+            View Details
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-const ComparisonFloat: React.FC<{ onNavigateToComparison: () => void }> = ({ 
-  onNavigateToComparison 
+const ComparisonFloat: React.FC<{ onNavigateToComparison: () => void }> = ({
+  onNavigateToComparison,
 }) => {
   const { state } = useComparison();
-  
+
   if (comparison.comparisonCars.length === 0) return null;
 
   return (
@@ -171,16 +203,17 @@ const ComparisonFloat: React.FC<{ onNavigateToComparison: () => void }> = ({
       >
         <GitCompare size={20} className="text-white mr-2" />
         <Text className="text-white font-semibold">
-          Compare {comparison.comparisonCars.length} Car{comparison.comparisonCars.length > 1 ? 's' : ''}
+          Compare {comparison.comparisonCars.length} Car
+          {comparison.comparisonCars.length > 1 ? 's' : ''}
         </Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-const CarListWithComparisonContent: React.FC<CarListWithComparisonProps> = ({ 
-  cars, 
-  onNavigateToComparison 
+const CarListWithComparisonContent: React.FC<CarListWithComparisonProps> = ({
+  cars,
+  onNavigateToComparison,
 }) => {
   return (
     <View className="flex-1 bg-gray-50">
@@ -188,22 +221,24 @@ const CarListWithComparisonContent: React.FC<CarListWithComparisonProps> = ({
         <Text className="text-2xl font-bold text-gray-900 mb-6">
           Available Cars
         </Text>
-        
-        {cars.map(car => (
-          <CarCard 
-            key={car.id} 
-            car={car} 
+
+        {cars.map((car) => (
+          <CarCard
+            key={car.id}
+            car={car}
             onNavigateToComparison={onNavigateToComparison}
           />
         ))}
       </ScrollView>
-      
+
       <ComparisonFloat onNavigateToComparison={onNavigateToComparison} />
     </View>
   );
 };
 
-export const CarListWithComparison: React.FC<CarListWithComparisonProps> = (props) => {
+export const CarListWithComparison: React.FC<CarListWithComparisonProps> = (
+  props,
+) => {
   return (
     <ComparisonProvider>
       <CarListWithComparisonContent {...props} />
@@ -214,7 +249,7 @@ export const CarListWithComparison: React.FC<CarListWithComparisonProps> = (prop
 // Example usage component
 export const ComparisonExample: React.FC = () => {
   const [showComparison, setShowComparison] = useState(false);
-  
+
   // Mock cars data
   const mockCars: Car[] = [
     {

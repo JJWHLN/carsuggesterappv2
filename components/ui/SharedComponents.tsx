@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Typography, Spacing, BorderRadius } from '@/constants/Colors';
@@ -16,14 +22,14 @@ interface CategoryChipProps {
   style?: ViewStyle;
 }
 
-export const CategoryChip: React.FC<CategoryChipProps> = ({ 
-  text, 
-  isActive = false, 
-  onPress, 
-  style 
+export const CategoryChip: React.FC<CategoryChipProps> = ({
+  text,
+  isActive = false,
+  onPress,
+  style,
 }) => {
   const { colors } = useThemeColors();
-  
+
   return (
     <TouchableOpacity
       style={[
@@ -36,7 +42,7 @@ export const CategoryChip: React.FC<CategoryChipProps> = ({
           borderWidth: 1,
           marginRight: Spacing.sm,
         },
-        style
+        style,
       ]}
       onPress={onPress}
       disabled={!onPress}
@@ -60,25 +66,29 @@ interface LoadingContainerProps {
   children?: React.ReactNode;
 }
 
-export const LoadingContainer: React.FC<LoadingContainerProps> = ({ 
-  text = "Loading...", 
-  children 
+export const LoadingContainer: React.FC<LoadingContainerProps> = ({
+  text = 'Loading...',
+  children,
 }) => {
   const { colors } = useThemeColors();
-  
+
   return (
-    <View style={{
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: Spacing.md,
-      backgroundColor: colors.background,
-    }}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: Spacing.md,
+        backgroundColor: colors.background,
+      }}
+    >
       {children}
-      <Text style={{
-        ...Typography.body,
-        color: colors.textSecondary,
-      }}>
+      <Text
+        style={{
+          ...Typography.body,
+          color: colors.textSecondary,
+        }}
+      >
         {text}
       </Text>
     </View>
@@ -97,38 +107,44 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   title,
   subtitle,
   onViewAll,
-  viewAllText = "View All"
+  viewAllText = 'View All',
 }) => {
   const { colors } = useThemeColors();
-  
+
   return (
-    <View style={{
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      marginBottom: Spacing.lg,
-    }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: Spacing.lg,
+      }}
+    >
       <View style={{ flex: 1 }}>
-        <Text style={{
-          ...Typography.h2,
-          color: colors.text,
-          fontWeight: '700',
-          marginBottom: subtitle ? Spacing.xs : 0,
-        }}>
+        <Text
+          style={{
+            ...Typography.h2,
+            color: colors.text,
+            fontWeight: '700',
+            marginBottom: subtitle ? Spacing.xs : 0,
+          }}
+        >
           {title}
         </Text>
         {subtitle && (
-          <Text style={{
-            ...Typography.body,
-            color: colors.textSecondary,
-          }}>
+          <Text
+            style={{
+              ...Typography.body,
+              color: colors.textSecondary,
+            }}
+          >
             {subtitle}
           </Text>
         )}
       </View>
-      
+
       {onViewAll && (
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onViewAll}
           style={{
             flexDirection: 'row',
@@ -136,11 +152,13 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
             gap: Spacing.xs,
           }}
         >
-          <Text style={{
-            ...Typography.body,
-            color: colors.primary,
-            fontWeight: '600',
-          }}>
+          <Text
+            style={{
+              ...Typography.body,
+              color: colors.primary,
+              fontWeight: '600',
+            }}
+          >
             {viewAllText}
           </Text>
           <ChevronRight color={colors.primary} size={16} />
@@ -158,42 +176,50 @@ interface BadgeProps {
   textStyle?: TextStyle;
 }
 
-export const Badge: React.FC<BadgeProps> = ({ 
-  text, 
-  variant = 'primary', 
+export const Badge: React.FC<BadgeProps> = ({
+  text,
+  variant = 'primary',
   style,
-  textStyle 
+  textStyle,
 }) => {
   const { colors } = useThemeColors();
-  
+
   const getBackgroundColor = () => {
     switch (variant) {
-      case 'success': return colors.success;
-      case 'warning': return colors.warning;
-      case 'error': return colors.error;
-      default: return colors.primary;
+      case 'success':
+        return colors.success;
+      case 'warning':
+        return colors.warning;
+      case 'error':
+        return colors.error;
+      default:
+        return colors.primary;
     }
   };
-  
+
   return (
-    <View style={[
-      {
-        backgroundColor: getBackgroundColor(),
-        paddingHorizontal: Spacing.sm,
-        paddingVertical: Spacing.xs,
-        borderRadius: BorderRadius.sm,
-      },
-      style
-    ]}>
-      <Text style={[
+    <View
+      style={[
         {
-          ...Typography.caption,
-          color: colors.white,
-          fontWeight: '600',
-          fontSize: 10,
+          backgroundColor: getBackgroundColor(),
+          paddingHorizontal: Spacing.sm,
+          paddingVertical: Spacing.xs,
+          borderRadius: BorderRadius.sm,
         },
-        textStyle
-      ]}>
+        style,
+      ]}
+    >
+      <Text
+        style={[
+          {
+            ...Typography.caption,
+            color: colors.white,
+            fontWeight: '600',
+            fontSize: 10,
+          },
+          textStyle,
+        ]}
+      >
         {text}
       </Text>
     </View>
@@ -214,11 +240,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   subtitle,
   children,
   gradientColors,
-  style
+  style,
 }) => {
   const { colors } = useThemeColors();
-  const defaultGradientColors: [string, string] = gradientColors || [colors.primary, colors.primaryHover];
-  
+  const defaultGradientColors: [string, string] = gradientColors || [
+    colors.primary,
+    colors.primaryHover,
+  ];
+
   return (
     <LinearGradient
       colors={defaultGradientColors}
@@ -229,38 +258,44 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           paddingHorizontal: Spacing.lg,
           justifyContent: 'center',
         },
-        style
+        style,
       ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <View style={{
-        alignItems: 'center',
-        width: '100%',
-      }}>
-        <Text style={{
-          ...Typography.heroTitle,
-          color: colors.white,
-          textAlign: 'center',
-          marginBottom: Spacing.md,
-          fontWeight: '800',
-        }}>
-          {title}
-        </Text>
-        
-        {subtitle && (
-          <Text style={{
-            ...Typography.bodyLarge,
+      <View
+        style={{
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        <Text
+          style={{
+            ...Typography.heroTitle,
             color: colors.white,
             textAlign: 'center',
-            marginBottom: Spacing.xl,
-            opacity: 0.95,
-            lineHeight: 26,
-          }}>
+            marginBottom: Spacing.md,
+            fontWeight: '800',
+          }}
+        >
+          {title}
+        </Text>
+
+        {subtitle && (
+          <Text
+            style={{
+              ...Typography.bodyLarge,
+              color: colors.white,
+              textAlign: 'center',
+              marginBottom: Spacing.xl,
+              opacity: 0.95,
+              lineHeight: 26,
+            }}
+          >
             {subtitle}
           </Text>
         )}
-        
+
         {children}
       </View>
     </LinearGradient>
@@ -279,19 +314,21 @@ export const ViewToggle: React.FC<ViewToggleProps> = ({
   viewMode,
   onViewModeChange,
   gridIcon,
-  listIcon
+  listIcon,
 }) => {
   const { colors } = useThemeColors();
-  
+
   return (
-    <View style={{
-      flexDirection: 'row',
-      backgroundColor: colors.surface,
-      borderRadius: BorderRadius.lg,
-      borderWidth: 1,
-      borderColor: colors.border,
-      overflow: 'hidden',
-    }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        backgroundColor: colors.surface,
+        borderRadius: BorderRadius.lg,
+        borderWidth: 1,
+        borderColor: colors.border,
+        overflow: 'hidden',
+      }}
+    >
       <TouchableOpacity
         style={{
           paddingHorizontal: Spacing.md,
@@ -302,7 +339,7 @@ export const ViewToggle: React.FC<ViewToggleProps> = ({
       >
         {gridIcon}
       </TouchableOpacity>
-      
+
       <TouchableOpacity
         style={{
           paddingHorizontal: Spacing.md,
@@ -329,10 +366,10 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
   text,
   onPress,
   icon,
-  isActive = false
+  isActive = false,
 }) => {
   const { colors } = useThemeColors();
-  
+
   return (
     <TouchableOpacity
       style={{
@@ -349,11 +386,13 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
       onPress={onPress}
     >
       {icon}
-      <Text style={{
-        ...Typography.caption,
-        color: isActive ? colors.primary : colors.text,
-        fontWeight: '500',
-      }}>
+      <Text
+        style={{
+          ...Typography.caption,
+          color: isActive ? colors.primary : colors.text,
+          fontWeight: '500',
+        }}
+      >
         {text}
       </Text>
     </TouchableOpacity>
@@ -370,27 +409,34 @@ interface ResultsHeaderProps {
 export const ResultsHeader: React.FC<ResultsHeaderProps> = ({
   count,
   itemType,
-  location
+  location,
 }) => {
   const { colors } = useThemeColors();
-  
+
   return (
-    <View style={{
-      paddingHorizontal: Spacing.lg,
-      paddingVertical: Spacing.md,
-      backgroundColor: colors.background,
-    }}>
-      <Text style={{
-        ...Typography.subtitle,
-        color: colors.text,
-        fontWeight: '700',
-      }}>
-        {count} {itemType}{count !== 1 ? 's' : ''} {location ? `in ${location}` : 'available'}
+    <View
+      style={{
+        paddingHorizontal: Spacing.lg,
+        paddingVertical: Spacing.md,
+        backgroundColor: colors.background,
+      }}
+    >
+      <Text
+        style={{
+          ...Typography.subtitle,
+          color: colors.text,
+          fontWeight: '700',
+        }}
+      >
+        {count} {itemType}
+        {count !== 1 ? 's' : ''} {location ? `in ${location}` : 'available'}
       </Text>
-      <Text style={{
-        ...Typography.caption,
-        color: colors.textSecondary,
-      }}>
+      <Text
+        style={{
+          ...Typography.caption,
+          color: colors.textSecondary,
+        }}
+      >
         Updated recently
       </Text>
     </View>

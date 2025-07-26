@@ -39,7 +39,10 @@ function EnhancedSignInScreen() {
 
   const handleEmailSignIn = async () => {
     if (!email || !password) {
-      Alert.alert('Missing Information', 'Please enter both email and password.');
+      Alert.alert(
+        'Missing Information',
+        'Please enter both email and password.',
+      );
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
@@ -50,8 +53,8 @@ function EnhancedSignInScreen() {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error: any) {
       Alert.alert(
-        'Sign In Failed', 
-        error.message || 'Please check your credentials and try again.'
+        'Sign In Failed',
+        error.message || 'Please check your credentials and try again.',
       );
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -85,7 +88,8 @@ function EnhancedSignInScreen() {
       logger.error(`${provider} sign-in error:`, error);
       Alert.alert(
         'Sign In Failed',
-        error.message || `Failed to sign in with ${provider}. Please try again.`
+        error.message ||
+          `Failed to sign in with ${provider}. Please try again.`,
       );
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -97,7 +101,7 @@ function EnhancedSignInScreen() {
     if (!provider.available) return null;
 
     const isLoading = socialLoading === provider.id;
-    
+
     return (
       <TouchableOpacity
         key={provider.id}
@@ -106,7 +110,7 @@ function EnhancedSignInScreen() {
           {
             backgroundColor: colors.cardBackground,
             borderColor: colors.border,
-          }
+          },
         ]}
         onPress={() => handleSocialSignIn(provider.id)}
         disabled={isLoading || loading}
@@ -127,7 +131,9 @@ function EnhancedSignInScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
@@ -152,7 +158,7 @@ function EnhancedSignInScreen() {
         {/* Social Sign-In Options */}
         <View style={styles.socialSection}>
           {authProviders
-            .filter(provider => provider.id !== 'email')
+            .filter((provider) => provider.id !== 'email')
             .map(renderSocialButton)}
         </View>
 
@@ -195,7 +201,11 @@ function EnhancedSignInScreen() {
               )}
             </TouchableOpacity>
             <TextInput
-              style={[styles.input, styles.passwordInput, { color: colors.text }]}
+              style={[
+                styles.input,
+                styles.passwordInput,
+                { color: colors.text },
+              ]}
               placeholder="Password"
               placeholderTextColor={colors.textSecondary}
               value={password}
@@ -211,14 +221,16 @@ function EnhancedSignInScreen() {
             onPress={() => router.push('/auth/forgot-password')}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.forgotPasswordText, { color: colors.primary }]}>
+            <Text
+              style={[styles.forgotPasswordText, { color: colors.primary }]}
+            >
               Forgot your password?
             </Text>
           </TouchableOpacity>
 
-          <Button 
-            title="Sign In" 
-            onPress={handleEmailSignIn} 
+          <Button
+            title="Sign In"
+            onPress={handleEmailSignIn}
             loading={loading}
             disabled={socialLoading !== null}
             style={styles.signInButton}
@@ -248,19 +260,25 @@ function EnhancedSignInScreen() {
           <View style={styles.benefitsList}>
             <View style={styles.benefitItem}>
               <Text style={styles.benefitIcon}>🔔</Text>
-              <Text style={[styles.benefitText, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.benefitText, { color: colors.textSecondary }]}
+              >
                 Get alerts for price drops and new listings
               </Text>
             </View>
             <View style={styles.benefitItem}>
               <Text style={styles.benefitIcon}>💾</Text>
-              <Text style={[styles.benefitText, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.benefitText, { color: colors.textSecondary }]}
+              >
                 Save your favorite cars and searches
               </Text>
             </View>
             <View style={styles.benefitItem}>
               <Text style={styles.benefitIcon}>🎯</Text>
-              <Text style={[styles.benefitText, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.benefitText, { color: colors.textSecondary }]}
+              >
                 Get personalized car recommendations
               </Text>
             </View>

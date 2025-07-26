@@ -10,39 +10,43 @@ interface AnimatedPressableProps extends PressableProps {
   hapticFeedback?: boolean;
 }
 
-const AnimatedPressable = memo<AnimatedPressableProps>(({
-  children,
-  onPressIn,
-  onPressOut,
-  pressedScaleValue = 0.95,
-  animationDuration = 150,
-  hapticFeedback = true,
-  ...props
-}) => {
-  const { scaleIn, scaleOut, animatedStyle } = useScaleAnimation(1, pressedScaleValue, animationDuration);
+const AnimatedPressable = memo<AnimatedPressableProps>(
+  ({
+    children,
+    onPressIn,
+    onPressOut,
+    pressedScaleValue = 0.95,
+    animationDuration = 150,
+    hapticFeedback = true,
+    ...props
+  }) => {
+    const { scaleIn, scaleOut, animatedStyle } = useScaleAnimation(
+      1,
+      pressedScaleValue,
+      animationDuration,
+    );
 
-  const handlePressIn = (event: any) => {
-    scaleOut();
-    onPressIn?.(event);
-  };
+    const handlePressIn = (event: any) => {
+      scaleOut();
+      onPressIn?.(event);
+    };
 
-  const handlePressOut = (event: any) => {
-    scaleIn();
-    onPressOut?.(event);
-  };
+    const handlePressOut = (event: any) => {
+      scaleIn();
+      onPressOut?.(event);
+    };
 
-  return (
-    <Pressable
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      {...props}
-    >
-      <Animated.View style={animatedStyle}>
-        {children}
-      </Animated.View>
-    </Pressable>
-  );
-});
+    return (
+      <Pressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        {...props}
+      >
+        <Animated.View style={animatedStyle}>{children}</Animated.View>
+      </Pressable>
+    );
+  },
+);
 
 AnimatedPressable.displayName = 'AnimatedPressable';
 

@@ -1,12 +1,12 @@
 /**
  * Advanced Search Interface Component
- * 
+ *
  * Phase 2 Week 9 - Advanced Features & Platform Expansion
  * Day 1-2 Implementation
- * 
+ *
  * Integrates:
  * - SemanticSearchEngine
- * - VoiceSearchService  
+ * - VoiceSearchService
  * - PersonalizationEngine
  * - CrossPlatformOptimizationService
  */
@@ -25,9 +25,15 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import SemanticSearchEngine, { SearchResponse } from '../../services/advanced/SemanticSearchEngine';
-import VoiceSearchService, { VoiceSearchResult } from '../../services/advanced/VoiceSearchService';
-import PersonalizationEngine, { RecommendationResponse } from '../../services/advanced/PersonalizationEngine';
+import SemanticSearchEngine, {
+  SearchResponse,
+} from '../../services/advanced/SemanticSearchEngine';
+import VoiceSearchService, {
+  VoiceSearchResult,
+} from '../../services/advanced/VoiceSearchService';
+import PersonalizationEngine, {
+  RecommendationResponse,
+} from '../../services/advanced/PersonalizationEngine';
 import CrossPlatformOptimizationService from '../../services/advanced/CrossPlatformOptimizationService';
 import { useTheme } from '../../hooks/useTheme';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -73,37 +79,40 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
   const voiceSearch = VoiceSearchService.getInstance();
   const personalization = PersonalizationEngine.getInstance();
   const platformOptimization = CrossPlatformOptimizationService.getInstance();
-  
+
   // Theme and platform
   const { colors, isDark } = useTheme();
   const platformCapabilities = platformOptimization.getPlatformCapabilities();
   const adaptiveUI = platformOptimization.getAdaptiveUI();
-  
+
   // State
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchResponse | null>(null);
-  const [recommendations, setRecommendations] = useState<RecommendationResponse | null>(null);
+  const [searchResults, setSearchResults] = useState<SearchResponse | null>(
+    null,
+  );
+  const [recommendations, setRecommendations] =
+    useState<RecommendationResponse | null>(null);
   const [filters, setFilters] = useState<SearchFilter[]>([]);
   const [showFilters, setShowFiltersModal] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  
+
   // Refs
   const searchInputRef = useRef<TextInput>(null);
   const suggestionOpacity = useRef(new Animated.Value(0)).current;
   const voicePulse = useRef(new Animated.Value(1)).current;
-  
+
   // Debounced search
   const debouncedQuery = useDebounce(query, 300);
-  
+
   // Initialize component
   useEffect(() => {
     initializeAdvancedSearch();
   }, []);
-  
+
   // Handle query changes
   useEffect(() => {
     if (debouncedQuery.trim().length > 2) {
@@ -113,12 +122,12 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
       setShowSuggestions(false);
     }
   }, [debouncedQuery]);
-  
+
   // Check voice availability
   useEffect(() => {
     checkVoiceAvailability();
   }, []);
-  
+
   /**
    * Initialize advanced search features
    */
@@ -172,19 +181,18 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
           ],
         },
       ];
-      
+
       setFilters(defaultFilters);
-      
+
       // Load personalized recommendations if enabled
       if (showRecommendations && userId !== 'guest') {
         await loadPersonalizedRecommendations();
       }
-      
     } catch (error) {
       console.error('Advanced search initialization error:', error);
     }
   };
-  
+
   /**
    * Check voice search availability
    */
@@ -197,19 +205,20 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
       setVoiceEnabled(false);
     }
   };
-  
+
   /**
    * Handle search suggestions
    */
   const handleSearchSuggestions = async (searchQuery: string) => {
     try {
       // Get personalized suggestions
-      const personalizedSuggestions = await personalization.getPersonalizedSearchSuggestions(
-        userId,
-        searchQuery,
-        5
-      );
-      
+      const personalizedSuggestions =
+        await personalization.getPersonalizedSearchSuggestions(
+          userId,
+          searchQuery,
+          5,
+        );
+
       // Get semantic suggestions (mock implementation since method doesn't exist)
       const semanticSuggestions = [
         `${searchQuery} cars`,
@@ -218,102 +227,109 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
         `best ${searchQuery}`,
         `affordable ${searchQuery}`,
       ];
-      
+
       // Combine and format suggestions
       const allSuggestions: SearchSuggestion[] = [
-        ...personalizedSuggestions.map(s => ({
+        ...personalizedSuggestions.map((s) => ({
           text: s.suggestion,
           type: 'personalized' as const,
           score: s.score,
           icon: 'person',
         })),
-        ...semanticSuggestions.slice(0, 5).map(s => ({
+        ...semanticSuggestions.slice(0, 5).map((s) => ({
           text: s,
           type: 'suggestion' as const,
           score: 0.8,
           icon: 'search',
         })),
       ];
-      
+
       // Sort by score and remove duplicates
       const uniqueSuggestions = allSuggestions
-        .filter((suggestion, index, self) => 
-          self.findIndex(s => s.text.toLowerCase() === suggestion.text.toLowerCase()) === index
+        .filter(
+          (suggestion, index, self) =>
+            self.findIndex(
+              (s) => s.text.toLowerCase() === suggestion.text.toLowerCase(),
+            ) === index,
         )
         .sort((a, b) => b.score - a.score)
         .slice(0, 8);
-      
+
       setSuggestions(uniqueSuggestions);
       setShowSuggestions(uniqueSuggestions.length > 0);
-      
+
       // Animate suggestions
       Animated.timing(suggestionOpacity, {
         toValue: uniqueSuggestions.length > 0 ? 1 : 0,
         duration: 200,
         useNativeDriver: true,
       }).start();
-      
     } catch (error) {
       console.error('Search suggestions error:', error);
     }
   };
-  
+
   /**
    * Handle text search
    */
   const handleSearch = async (searchQuery?: string) => {
     const finalQuery = searchQuery || query.trim();
-    
+
     if (!finalQuery) return;
-    
+
     try {
       setIsSearching(true);
       setShowSuggestions(false);
-      
+
       // Track search interaction
       await personalization.trackInteraction(userId, 'search', {
         query: finalQuery,
         timestamp: new Date(),
         context: 'advanced_search',
       });
-      
+
       // Perform semantic search
       const results = await semanticSearch.search(finalQuery, {
         sessionId: `advanced_${userId}_${Date.now()}`,
         userId,
       });
-      
+
       setSearchResults(results);
-      
+
       if (onSearchResults) {
         onSearchResults(results);
       }
-      
+
       // Clear input focus on mobile
       if (searchInputRef.current && Platform.OS !== ('web' as any)) {
         searchInputRef.current.blur();
       }
-      
     } catch (error) {
       console.error('Search error:', error);
-      Alert.alert('Search Error', 'Unable to perform search. Please try again.');
+      Alert.alert(
+        'Search Error',
+        'Unable to perform search. Please try again.',
+      );
     } finally {
       setIsSearching(false);
     }
   };
-  
+
   /**
    * Handle voice search
    */
   const handleVoiceSearch = async () => {
     if (!voiceEnabled) {
-      Alert.alert('Voice Search', 'Voice search is not available on this device.');
+      Alert.alert(
+        'Voice Search',
+        'Voice search is not available on this device.',
+      );
       return;
     }
-    
+
     try {
       setIsListening(true);
-      
+
       // Start voice pulse animation
       Animated.loop(
         Animated.sequence([
@@ -327,19 +343,19 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
             duration: 800,
             useNativeDriver: true,
           }),
-        ])
+        ]),
       ).start();
-      
+
       // Start listening
       await voiceSearch.startListening(
         async (result: VoiceSearchResult) => {
           setIsListening(false);
           voicePulse.stopAnimation();
           voicePulse.setValue(1);
-          
+
           if (result.transcript) {
             setQuery(result.transcript);
-            
+
             // Perform search with voice result
             if (result.searchResults) {
               setSearchResults(result.searchResults);
@@ -349,14 +365,14 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
             } else {
               await handleSearch(result.transcript);
             }
-            
+
             if (onVoiceResults) {
               onVoiceResults(result);
             }
-            
+
             // Provide voice feedback
             await voiceSearch.provideFeedback(
-              `Found ${result.searchResults?.results.length || 0} results for ${result.transcript}`
+              `Found ${result.searchResults?.results.length || 0} results for ${result.transcript}`,
             );
           }
         },
@@ -366,9 +382,9 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
           voicePulse.setValue(1);
           console.error('Voice search error:', error);
           Alert.alert('Voice Search Error', error.message);
-        }
+        },
       );
-      
+
       // Auto-stop after 10 seconds
       setTimeout(async () => {
         if (isListening) {
@@ -378,7 +394,6 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
           voicePulse.setValue(1);
         }
       }, 10000);
-      
     } catch (error) {
       setIsListening(false);
       voicePulse.stopAnimation();
@@ -387,7 +402,7 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
       Alert.alert('Voice Search Error', 'Unable to start voice search.');
     }
   };
-  
+
   /**
    * Stop voice search
    */
@@ -401,7 +416,7 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
       console.error('Stop voice search error:', error);
     }
   };
-  
+
   /**
    * Load personalized recommendations
    */
@@ -414,18 +429,17 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
         includeExplanations: true,
         diversityFactor: 0.7,
       });
-      
+
       setRecommendations(recs);
-      
+
       if (onRecommendations) {
         onRecommendations(recs);
       }
-      
     } catch (error) {
       console.error('Recommendations loading error:', error);
     }
   };
-  
+
   /**
    * Handle suggestion selection
    */
@@ -434,54 +448,62 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
     setShowSuggestions(false);
     handleSearch(suggestion.text);
   };
-  
+
   /**
    * Get active filters
    */
   const getActiveFilters = () => {
     const activeFilters: Record<string, any> = {};
-    filters.forEach(filter => {
-      if (filter.value !== 'all' && filter.value !== null && filter.value !== undefined) {
+    filters.forEach((filter) => {
+      if (
+        filter.value !== 'all' &&
+        filter.value !== null &&
+        filter.value !== undefined
+      ) {
         activeFilters[filter.key] = filter.value;
       }
     });
     return activeFilters;
   };
-  
+
   /**
    * Update filter value
    */
   const updateFilter = (key: string, value: any) => {
-    setFilters(prev => prev.map(filter => 
-      filter.key === key ? { ...filter, value } : filter
-    ));
+    setFilters((prev) =>
+      prev.map((filter) =>
+        filter.key === key ? { ...filter, value } : filter,
+      ),
+    );
   };
-  
+
   /**
    * Clear all filters
    */
   const clearFilters = () => {
-    setFilters(prev => prev.map(filter => ({
-      ...filter,
-      value: filter.type === 'range' ? [0, 100000] : 'all',
-    })));
+    setFilters((prev) =>
+      prev.map((filter) => ({
+        ...filter,
+        value: filter.type === 'range' ? [0, 100000] : 'all',
+      })),
+    );
   };
-  
+
   // Get platform-optimized styles
   const styles = getStyles(colors, adaptiveUI);
-  
+
   return (
     <View style={styles.container}>
       {/* Search Input Section */}
       <View style={styles.searchSection}>
         <View style={styles.searchInputContainer}>
-          <Ionicons 
-            name="search" 
-            size={adaptiveUI.components.fontSize.medium + 4} 
-            color={colors.textMuted} 
-            style={styles.searchIcon} 
+          <Ionicons
+            name="search"
+            size={adaptiveUI.components.fontSize.medium + 4}
+            color={colors.textMuted}
+            style={styles.searchIcon}
           />
-          
+
           <TextInput
             ref={searchInputRef}
             style={styles.searchInput}
@@ -494,7 +516,7 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
             autoCapitalize="none"
             autoCorrect={false}
           />
-          
+
           {query.length > 0 && (
             <TouchableOpacity
               style={styles.clearButton}
@@ -504,27 +526,36 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
                 setShowSuggestions(false);
               }}
             >
-              <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+              <Ionicons
+                name="close-circle"
+                size={20}
+                color={colors.textMuted}
+              />
             </TouchableOpacity>
           )}
-          
+
           {voiceEnabled && (
             <TouchableOpacity
               style={styles.voiceButton}
               onPress={isListening ? stopVoiceSearch : handleVoiceSearch}
               disabled={isSearching}
             >
-              <Animated.View style={[styles.voiceButtonInner, { transform: [{ scale: voicePulse }] }]}>
-                <Ionicons 
-                  name={isListening ? "stop" : "mic"} 
-                  size={adaptiveUI.components.fontSize.medium + 2} 
-                  color={isListening ? colors.error : colors.primary} 
+              <Animated.View
+                style={[
+                  styles.voiceButtonInner,
+                  { transform: [{ scale: voicePulse }] },
+                ]}
+              >
+                <Ionicons
+                  name={isListening ? 'stop' : 'mic'}
+                  size={adaptiveUI.components.fontSize.medium + 2}
+                  color={isListening ? colors.error : colors.primary}
                 />
               </Animated.View>
             </TouchableOpacity>
           )}
         </View>
-        
+
         {/* Filter Toggle */}
         {enableFilters && (
           <TouchableOpacity
@@ -536,21 +567,30 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
           </TouchableOpacity>
         )}
       </View>
-      
+
       {/* Search Suggestions */}
       {showSuggestions && suggestions.length > 0 && (
-        <Animated.View style={[styles.suggestionsContainer, { opacity: suggestionOpacity }]}>
-          <ScrollView style={styles.suggestionsList} keyboardShouldPersistTaps="handled">
+        <Animated.View
+          style={[styles.suggestionsContainer, { opacity: suggestionOpacity }]}
+        >
+          <ScrollView
+            style={styles.suggestionsList}
+            keyboardShouldPersistTaps="handled"
+          >
             {suggestions.map((suggestion, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.suggestionItem}
                 onPress={() => handleSuggestionSelect(suggestion)}
               >
-                <Ionicons 
-                  name={suggestion.icon as any || 'search'} 
-                  size={16} 
-                  color={suggestion.type === 'personalized' ? colors.primary : colors.textMuted} 
+                <Ionicons
+                  name={(suggestion.icon as any) || 'search'}
+                  size={16}
+                  color={
+                    suggestion.type === 'personalized'
+                      ? colors.primary
+                      : colors.textMuted
+                  }
                 />
                 <Text style={styles.suggestionText}>{suggestion.text}</Text>
                 {suggestion.type === 'personalized' && (
@@ -563,7 +603,7 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
           </ScrollView>
         </Animated.View>
       )}
-      
+
       {/* Search Status */}
       {isSearching && (
         <View style={styles.searchStatus}>
@@ -572,7 +612,7 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
           </Text>
         </View>
       )}
-      
+
       {isListening && (
         <View style={styles.voiceStatus}>
           <Text style={styles.voiceStatusText}>
@@ -590,7 +630,7 @@ const AdvancedSearchInterface: React.FC<AdvancedSearchInterfaceProps> = ({
 const getStyles = (colors: any, adaptiveUI: any) => {
   const { width } = Dimensions.get('window');
   const isTablet = width > 768;
-  
+
   return StyleSheet.create({
     container: {
       backgroundColor: colors.background,

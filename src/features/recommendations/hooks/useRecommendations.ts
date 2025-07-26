@@ -5,7 +5,7 @@ import { getRecommendations } from '../RecommendationEngine';
 export function useRecommendations(
   cars: Car[],
   userPreferences: UserPreferences,
-  userBehavior: UserBehavior
+  userBehavior: UserBehavior,
 ) {
   return useCallback(() => {
     return getRecommendations(cars, userPreferences, userBehavior);

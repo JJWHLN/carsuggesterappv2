@@ -1,7 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Car, Users, TrendingUp, DollarSign } from '@/utils/ultra-optimized-icons';
+import {
+  Car,
+  Users,
+  TrendingUp,
+  DollarSign,
+} from '@/utils/ultra-optimized-icons';
 
 interface StatsSectionProps {
   stats?: {
@@ -58,7 +63,9 @@ const StatsSection: React.FC<StatsSectionProps> = ({ stats }) => {
       <View style={styles.statsGrid}>
         {statItems.map((stat, index) => (
           <View key={index} style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}>
+            <View
+              style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}
+            >
               {stat.icon}
             </View>
             <Text style={styles.statValue}>{stat.value}</Text>
@@ -70,59 +77,60 @@ const StatsSection: React.FC<StatsSectionProps> = ({ stats }) => {
   );
 };
 
-const getThemedStyles = (colors: any) => StyleSheet.create({
-  statsSection: {
-    marginVertical: 16,
-    paddingHorizontal: 16,
-  },
-  statsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  statCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    flex: 1,
-    minWidth: '22%',
-    borderWidth: 1,
-    borderColor: colors.border,
-    elevation: 1,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-  },
-  statIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  statLabel: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 14,
-  },
-});
+const getThemedStyles = (colors: any) =>
+  StyleSheet.create({
+    statsSection: {
+      marginVertical: 16,
+      paddingHorizontal: 16,
+    },
+    statsTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 16,
+      textAlign: 'center',
+    },
+    statsGrid: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    statCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      alignItems: 'center',
+      flex: 1,
+      minWidth: '22%',
+      borderWidth: 1,
+      borderColor: colors.border,
+      elevation: 1,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+    },
+    statIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 8,
+    },
+    statValue: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+      marginBottom: 2,
+    },
+    statLabel: {
+      fontSize: 11,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 14,
+    },
+  });
 
 export default StatsSection;

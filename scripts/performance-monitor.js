@@ -52,9 +52,7 @@ function analyzeDependencies() {
   // Check for heavy dependencies
   const heavyDeps = [
     'react-native-vector-icons',
-    '@tensorflow/tfjs',
-    'react-native-svg',
-    'framer-motion'
+    'react-native-svg'
   ];
   
   const foundHeavyDeps = heavyDeps.filter(dep => dependencies[dep]);
@@ -80,8 +78,8 @@ function analyzeDependencies() {
     },
     {
       category: 'Animation libraries',
-      packages: ['react-native-reanimated', 'framer-motion', 'lottie-react-native'],
-      found: Object.keys(dependencies).filter(dep => ['react-native-reanimated', 'framer-motion', 'lottie-react-native'].includes(dep))
+      packages: ['react-native-reanimated', 'lottie-react-native'],
+      found: Object.keys(dependencies).filter(dep => ['react-native-reanimated', 'lottie-react-native'].includes(dep))
     }
   ];
   

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { useQuery } from 'react-query';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Bell, 
+import { useQuery } from '@tanstack/react-query';
+import {
+  BarChart3,
+  TrendingUp,
+  Bell,
   Star,
-  Activity
+  Activity,
 } from 'lucide-react-native';
 import { PriceHistory } from './PriceHistory';
 import { MarketInsights } from './MarketInsights';
@@ -29,7 +29,7 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
   make,
   model,
   year,
-  currentPrice
+  currentPrice,
 }) => {
   const [activeView, setActiveView] = useState<ActiveView>('overview');
 
@@ -39,12 +39,12 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
     {
       staleTime: 5 * 60 * 1000, // 5 minutes
       cacheTime: 30 * 60 * 1000, // 30 minutes
-    }
+    },
   );
 
-  const TabButton: React.FC<{ 
-    view: ActiveView; 
-    label: string; 
+  const TabButton: React.FC<{
+    view: ActiveView;
+    label: string;
     icon: React.ComponentType<any>;
     badge?: string;
   }> = ({ view, label, icon: IconComponent, badge }) => (
@@ -55,9 +55,9 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
       }`}
     >
       <View className="relative">
-        <IconComponent 
-          size={20} 
-          className={activeView === view ? 'text-blue-600' : 'text-gray-600'} 
+        <IconComponent
+          size={20}
+          className={activeView === view ? 'text-blue-600' : 'text-gray-600'}
         />
         {badge && (
           <View className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full items-center justify-center">
@@ -65,9 +65,11 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
           </View>
         )}
       </View>
-      <Text className={`text-xs mt-1 ${
-        activeView === view ? 'text-blue-600' : 'text-gray-600'
-      }`}>
+      <Text
+        className={`text-xs mt-1 ${
+          activeView === view ? 'text-blue-600' : 'text-gray-600'
+        }`}
+      >
         {label}
       </Text>
     </TouchableOpacity>
@@ -115,29 +117,33 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
                 <Text className="text-lg font-semibold text-gray-900 mb-4">
                   Price Summary
                 </Text>
-                
+
                 <View className="flex-row justify-between items-center mb-3">
                   <Text className="text-gray-600">Current Price</Text>
                   <Text className="text-2xl font-bold text-gray-900">
                     ${currentPrice.toLocaleString()}
                   </Text>
                 </View>
-                
+
                 <View className="flex-row justify-between items-center mb-3">
                   <Text className="text-gray-600">Market Average</Text>
                   <Text className="text-lg font-semibold text-gray-700">
                     ${priceData.data.marketAverage.toLocaleString()}
                   </Text>
                 </View>
-                
+
                 <View className="flex-row justify-between items-center">
                   <Text className="text-gray-600">30-Day Change</Text>
-                  <Text className={`font-semibold ${
-                    priceData.data.priceChange30d >= 0 ? 'text-red-600' : 'text-green-600'
-                  }`}>
-                    {priceData.data.priceChange30d >= 0 ? '+' : ''}
-                    ${priceData.data.priceChange30d.toLocaleString()} 
-                    ({priceData.data.priceChangePercent30d.toFixed(1)}%)
+                  <Text
+                    className={`font-semibold ${
+                      priceData.data.priceChange30d >= 0
+                        ? 'text-red-600'
+                        : 'text-green-600'
+                    }`}
+                  >
+                    {priceData.data.priceChange30d >= 0 ? '+' : ''}$
+                    {priceData.data.priceChange30d.toLocaleString()}(
+                    {priceData.data.priceChangePercent30d.toFixed(1)}%)
                   </Text>
                 </View>
               </View>
@@ -148,27 +154,39 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
                   <Text className="text-lg font-semibold text-gray-900">
                     Deal Rating
                   </Text>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={() => setActiveView('rating')}
                     className="px-3 py-1 bg-blue-100 rounded-full"
                   >
-                    <Text className="text-blue-600 text-sm font-medium">View Details</Text>
+                    <Text className="text-blue-600 text-sm font-medium">
+                      View Details
+                    </Text>
                   </TouchableOpacity>
                 </View>
-                
+
                 <View className="flex-row items-center">
-                  <View className={`w-12 h-12 rounded-full items-center justify-center mr-3 ${
-                    priceData.dealRating.rating === 'Great' ? 'bg-green-100' :
-                    priceData.dealRating.rating === 'Good' ? 'bg-blue-100' :
-                    priceData.dealRating.rating === 'Fair' ? 'bg-yellow-100' :
-                    'bg-red-100'
-                  }`}>
-                    <Text className={`font-bold ${
-                      priceData.dealRating.rating === 'Great' ? 'text-green-600' :
-                      priceData.dealRating.rating === 'Good' ? 'text-blue-600' :
-                      priceData.dealRating.rating === 'Fair' ? 'text-yellow-600' :
-                      'text-red-600'
-                    }`}>
+                  <View
+                    className={`w-12 h-12 rounded-full items-center justify-center mr-3 ${
+                      priceData.dealRating.rating === 'Great'
+                        ? 'bg-green-100'
+                        : priceData.dealRating.rating === 'Good'
+                          ? 'bg-blue-100'
+                          : priceData.dealRating.rating === 'Fair'
+                            ? 'bg-yellow-100'
+                            : 'bg-red-100'
+                    }`}
+                  >
+                    <Text
+                      className={`font-bold ${
+                        priceData.dealRating.rating === 'Great'
+                          ? 'text-green-600'
+                          : priceData.dealRating.rating === 'Good'
+                            ? 'text-blue-600'
+                            : priceData.dealRating.rating === 'Fair'
+                              ? 'text-yellow-600'
+                              : 'text-red-600'
+                      }`}
+                    >
                       {priceData.dealRating.score}
                     </Text>
                   </View>
@@ -189,14 +207,16 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
                   <Text className="text-lg font-semibold text-gray-900">
                     Market Snapshot
                   </Text>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={() => setActiveView('insights')}
                     className="px-3 py-1 bg-blue-100 rounded-full"
                   >
-                    <Text className="text-blue-600 text-sm font-medium">View All</Text>
+                    <Text className="text-blue-600 text-sm font-medium">
+                      View All
+                    </Text>
                   </TouchableOpacity>
                 </View>
-                
+
                 <View className="space-y-3">
                   <View className="flex-row justify-between items-center">
                     <Text className="text-gray-600">Available Listings</Text>
@@ -204,26 +224,34 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
                       {priceData.insights.supply.totalListings}
                     </Text>
                   </View>
-                  
+
                   <View className="flex-row justify-between items-center">
                     <Text className="text-gray-600">Avg. Days on Market</Text>
                     <Text className="font-semibold text-gray-900">
                       {priceData.insights.supply.averageDaysOnMarket} days
                     </Text>
                   </View>
-                  
+
                   <View className="flex-row justify-between items-center">
                     <Text className="text-gray-600">Demand Level</Text>
-                    <View className={`px-3 py-1 rounded-full ${
-                      priceData.insights.demand.demandTrend === 'high' ? 'bg-red-100' :
-                      priceData.insights.demand.demandTrend === 'medium' ? 'bg-yellow-100' :
-                      'bg-green-100'
-                    }`}>
-                      <Text className={`text-sm font-medium ${
-                        priceData.insights.demand.demandTrend === 'high' ? 'text-red-700' :
-                        priceData.insights.demand.demandTrend === 'medium' ? 'text-yellow-700' :
-                        'text-green-700'
-                      }`}>
+                    <View
+                      className={`px-3 py-1 rounded-full ${
+                        priceData.insights.demand.demandTrend === 'high'
+                          ? 'bg-red-100'
+                          : priceData.insights.demand.demandTrend === 'medium'
+                            ? 'bg-yellow-100'
+                            : 'bg-green-100'
+                      }`}
+                    >
+                      <Text
+                        className={`text-sm font-medium ${
+                          priceData.insights.demand.demandTrend === 'high'
+                            ? 'text-red-700'
+                            : priceData.insights.demand.demandTrend === 'medium'
+                              ? 'text-yellow-700'
+                              : 'text-green-700'
+                        }`}
+                      >
                         {priceData.insights.demand.demandTrend.toUpperCase()}
                       </Text>
                     </View>
@@ -235,24 +263,19 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
         )}
 
         {activeView === 'history' && (
-          <PriceHistory 
-            carId={carId} 
-            make={make} 
-            model={model} 
-            year={year} 
-          />
+          <PriceHistory carId={carId} make={make} model={model} year={year} />
         )}
 
         {activeView === 'insights' && priceData && (
-          <MarketInsights 
-            insights={priceData.insights} 
-            similarCars={priceData.similarCars} 
+          <MarketInsights
+            insights={priceData.insights}
+            similarCars={priceData.similarCars}
           />
         )}
 
         {activeView === 'rating' && priceData && (
           <ScrollView>
-            <DealRating 
+            <DealRating
               dealRating={priceData.dealRating}
               currentPrice={currentPrice}
               marketAverage={priceData.data.marketAverage}
@@ -265,10 +288,7 @@ export const PricingDashboard: React.FC<PricingDashboardProps> = ({
         )}
 
         {activeView === 'alerts' && (
-          <PriceAlerts 
-            carId={carId} 
-            currentPrice={currentPrice} 
-          />
+          <PriceAlerts carId={carId} currentPrice={currentPrice} />
         )}
       </View>
     </View>

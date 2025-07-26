@@ -11,16 +11,30 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, useNavigation } from 'expo-router'; // Import useNavigation
+import { useUnifiedDataFetching } from '@/hooks/useUnifiedDataFetching';
 
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Button } from '@/components/ui/Button';
-import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors'; // Removed currentColors
+import {
+  Spacing,
+  Typography,
+  BorderRadius,
+  Shadows as ColorsShadows,
+} from '@/constants/Colors'; // Removed currentColors
 import { useThemeColors } from '@/hooks/useTheme'; // Import useThemeColors
 import { OptimizedImage } from '@/components/ui/OptimizedImage'; // Import OptimizedImage
 import { fetchCarModelById } from '@/services/api';
-import { useApi } from '@/hooks/useApi';
-import { ArrowLeft, Star, Award, TrendingUp, Heart, Car, Fuel, Settings } from '@/utils/ultra-optimized-icons';
+import {
+  ArrowLeft,
+  Star,
+  Award,
+  TrendingUp,
+  Heart,
+  Car,
+  Fuel,
+  Settings,
+} from '@/utils/ultra-optimized-icons';
 // import { getImageUrl } from '@/utils/formatters'; // No longer needed if OptimizedImage handles fallbacks
 
 const { width } = Dimensions.get('window');
@@ -33,10 +47,15 @@ export default function ModelDetailScreen() {
   const [isSaved, setIsSaved] = useState(false);
   const navigation = useNavigation();
 
-  const { data: model, loading, error, refetch } = useApi(
-    () => fetchCarModelById(id!),
-    [id]
-  );
+  const {
+    data: model,
+    loading,
+    error,
+    refetch,
+  } = useUnifiedDataFetching(() => fetchCarModelById(id!), [id], {
+    initialLoad: true,
+    enabled: true,
+  });
 
   const handleSave = () => {
     setIsSaved(!isSaved);
@@ -66,7 +85,9 @@ export default function ModelDetailScreen() {
             onPress={handleSave}
             style={styles.headerActionButtonWithPadding}
             accessibilityRole="button"
-            accessibilityLabel={isSaved ? "Unsave this model" : "Save this model"}
+            accessibilityLabel={
+              isSaved ? 'Unsave this model' : 'Save this model'
+            }
             accessibilityState={{ selected: isSaved }}
           >
             <Heart
@@ -78,7 +99,16 @@ export default function ModelDetailScreen() {
         </View>
       ),
     });
-  }, [navigation, model, isSaved, handleSave, handleShare, colors, styles.headerActionsContainer, styles.headerActionButtonWithPadding]); // Added colors and specific styles to dependency array
+  }, [
+    navigation,
+    model,
+    isSaved,
+    handleSave,
+    handleShare,
+    colors,
+    styles.headerActionsContainer,
+    styles.headerActionButtonWithPadding,
+  ]); // Added colors and specific styles to dependency array
 
   if (loading) {
     return (
@@ -96,17 +126,17 @@ export default function ModelDetailScreen() {
     return (
       <SafeAreaView style={styles.container}>
         {/* No custom header needed here */}
-        <ErrorState
-          message={error || 'Model not found'}
-          onRetry={refetch}
-        />
+        <ErrorState message={error || 'Model not found'} onRetry={refetch} />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <OptimizedImage
           source={{ uri: model.image_url || '' }} // Pass URI directly
           style={styles.heroImage} // Ensure heroImage style has defined height/width
@@ -116,9 +146,13 @@ export default function ModelDetailScreen() {
         />
         <View style={styles.content}>
           <View style={styles.modelInfo}>
-            <Text style={styles.brandName}>{model.brands?.name || 'Unknown Brand'}</Text>
+            <Text style={styles.brandName}>
+              {model.brands?.name || 'Unknown Brand'}
+            </Text>
             <Text style={styles.modelName}>{model.name}</Text>
-            {model.year && <Text style={styles.modelYear}>{model.year} Model Year</Text>}
+            {model.year && (
+              <Text style={styles.modelYear}>{model.year} Model Year</Text>
+            )}
           </View>
 
           {model.category && model.category.length > 0 && (
@@ -190,121 +224,124 @@ export default function ModelDetailScreen() {
 }
 
 // Convert styles to a function of colors
-const getThemedStyles = (colors: typeof import('@/constants/Colors').Colors.light) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  headerActionsContainer: {
-    flexDirection: 'row',
-    marginRight: Platform.OS === 'ios' ? 0 : Spacing.md,
-  },
-  headerActionButtonWithPadding: {
-    padding: Spacing.sm,
-  },
-  heroImage: {
-    width: '100%',
-    height: 300,
-    backgroundColor: colors.surfaceDark,
-  },
-  content: {
-    padding: Spacing.lg,
-  },
-  modelInfo: {
-    marginBottom: Spacing.xl,
-  },
-  brandName: {
-    ...Typography.body,
-    color: colors.primary,
-    fontWeight: '600',
-    marginBottom: Spacing.xs,
-  },
-  modelName: {
-    ...Typography.h1,
-    color: colors.text,
-    marginBottom: Spacing.sm,
-  },
-  modelYear: {
-    ...Typography.body,
-    color: colors.textSecondary,
-  },
-  section: {
-    marginBottom: Spacing.xl,
-  },
-  sectionTitle: {
-    ...Typography.subtitle,
-    color: colors.text,
-    marginBottom: Spacing.md,
-  },
-  description: {
-    ...Typography.body,
-    color: colors.textSecondary,
-    lineHeight: 24,
-  },
-  categoriesSection: {
-    marginBottom: Spacing.xl,
-  },
-  categoriesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  categoryTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.full,
-    gap: Spacing.xs,
-  },
-  categoryText: {
-    ...Typography.caption,
-    color: colors.primary, // Or a contrast text color for primaryLight
-    fontWeight: '500',
-  },
-  featuresGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.md,
-  },
-  featureItem: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: colors.surface,
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    alignItems: 'center',
-    ...ColorsShadows.sm, // Consider if Shadows need theming
-  },
-  featureLabel: {
-    ...Typography.caption,
-    color: colors.textSecondary,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.xs,
-  },
-  featureValue: {
-    ...Typography.caption,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  actionsSection: {
-    gap: Spacing.md,
-    marginTop: Spacing.lg,
-  },
-  actionButton: {}, // Can add common styles for action buttons if needed
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.md,
-    backgroundColor: colors.background, // Themed background for loading
-  },
-  loadingText: {
-    ...Typography.body,
-    color: colors.textSecondary,
-  },
-});
+const getThemedStyles = (
+  colors: typeof import('@/constants/Colors').Colors.light,
+) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    headerActionsContainer: {
+      flexDirection: 'row',
+      marginRight: Platform.OS === 'ios' ? 0 : Spacing.md,
+    },
+    headerActionButtonWithPadding: {
+      padding: Spacing.sm,
+    },
+    heroImage: {
+      width: '100%',
+      height: 300,
+      backgroundColor: colors.surfaceDark,
+    },
+    content: {
+      padding: Spacing.lg,
+    },
+    modelInfo: {
+      marginBottom: Spacing.xl,
+    },
+    brandName: {
+      ...Typography.body,
+      color: colors.primary,
+      fontWeight: '600',
+      marginBottom: Spacing.xs,
+    },
+    modelName: {
+      ...Typography.h1,
+      color: colors.text,
+      marginBottom: Spacing.sm,
+    },
+    modelYear: {
+      ...Typography.body,
+      color: colors.textSecondary,
+    },
+    section: {
+      marginBottom: Spacing.xl,
+    },
+    sectionTitle: {
+      ...Typography.subtitle,
+      color: colors.text,
+      marginBottom: Spacing.md,
+    },
+    description: {
+      ...Typography.body,
+      color: colors.textSecondary,
+      lineHeight: 24,
+    },
+    categoriesSection: {
+      marginBottom: Spacing.xl,
+    },
+    categoriesContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.sm,
+    },
+    categoryTag: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.primaryLight,
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.sm,
+      borderRadius: BorderRadius.full,
+      gap: Spacing.xs,
+    },
+    categoryText: {
+      ...Typography.caption,
+      color: colors.primary, // Or a contrast text color for primaryLight
+      fontWeight: '500',
+    },
+    featuresGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.md,
+    },
+    featureItem: {
+      flex: 1,
+      minWidth: '45%',
+      backgroundColor: colors.surface,
+      padding: Spacing.lg,
+      borderRadius: BorderRadius.lg,
+      alignItems: 'center',
+      ...ColorsShadows.sm, // Consider if Shadows need theming
+    },
+    featureLabel: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+      marginTop: Spacing.sm,
+      marginBottom: Spacing.xs,
+    },
+    featureValue: {
+      ...Typography.caption,
+      color: colors.text,
+      fontWeight: '600',
+    },
+    actionsSection: {
+      gap: Spacing.md,
+      marginTop: Spacing.lg,
+    },
+    actionButton: {}, // Can add common styles for action buttons if needed
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: Spacing.md,
+      backgroundColor: colors.background, // Themed background for loading
+    },
+    loadingText: {
+      ...Typography.body,
+      color: colors.textSecondary,
+    },
+  });

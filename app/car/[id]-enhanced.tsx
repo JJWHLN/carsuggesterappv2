@@ -27,20 +27,25 @@ import CarDataService from '@/services/core/CarDataService';
 import SimpleBookmarksService from '@/services/core/SimpleBookmarksService';
 import UserPreferencesService from '@/services/core/UserPreferencesService';
 import { Car } from '@/types/database';
-import { formatPrice, formatMileage, formatCondition, formatFuelType } from '@/utils/dataTransformers';
-import { 
-  ArrowLeft, 
-  Heart, 
-  MapPin, 
-  Calendar, 
-  Fuel, 
-  Settings, 
-  Star, 
-  Mail, 
-  Phone, 
+import {
+  formatPrice,
+  formatMileage,
+  formatCondition,
+  formatFuelType,
+} from '@/utils/dataTransformers';
+import {
+  ArrowLeft,
+  Heart,
+  MapPin,
+  Calendar,
+  Fuel,
+  Settings,
+  Star,
+  Mail,
+  Phone,
   Share,
   MessageCircle,
-  ExternalLink
+  ExternalLink,
 } from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
@@ -80,12 +85,12 @@ export default function CarDetailScreen() {
         carId: car.id,
         make: car.make,
         priceRange: { min: car.price * 0.9, max: car.price * 1.1 },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       // Check bookmark status
       checkBookmarkStatus();
-      
+
       // Load similar cars
       loadSimilarCars();
     }
@@ -97,7 +102,7 @@ export default function CarDetailScreen() {
       setError(null);
 
       const carData = await carDataService.getCarById(id as string);
-      
+
       if (!carData) {
         setError('Car not found');
         return;
@@ -114,7 +119,7 @@ export default function CarDetailScreen() {
 
   const checkBookmarkStatus = async () => {
     if (!car) return;
-    
+
     try {
       const bookmarked = await bookmarksService.isBookmarked(car.id, user?.id);
       setIsBookmarked(bookmarked);
@@ -155,12 +160,12 @@ export default function CarDetailScreen() {
         const success = await bookmarksService.removeBookmark(car.id, user?.id);
         if (success) {
           setIsBookmarked(false);
-          
+
           preferencesService.trackBehaviorEvent({
             type: 'unsave',
             carId: car.id,
             make: car.make,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
 
           Alert.alert('Removed', 'Car removed from your saved cars.');
@@ -169,12 +174,12 @@ export default function CarDetailScreen() {
         const success = await bookmarksService.addBookmark(car.id, user?.id);
         if (success) {
           setIsBookmarked(true);
-          
+
           preferencesService.trackBehaviorEvent({
             type: 'save',
             carId: car.id,
             make: car.make,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
 
           Alert.alert('Saved', 'Car added to your saved cars.');
@@ -196,7 +201,7 @@ export default function CarDetailScreen() {
       type: 'contact_dealer',
       carId: car.id,
       make: car.make,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     Alert.alert(
@@ -204,20 +209,20 @@ export default function CarDetailScreen() {
       `Contact ${car.dealer.name} about this ${car.year} ${car.make} ${car.model}?`,
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Call', 
+        {
+          text: 'Call',
           onPress: () => {
             // In a real app, you'd have dealer phone number
             Alert.alert('Call Dealer', 'Dealer contact feature coming soon!');
-          }
+          },
         },
-        { 
-          text: 'Email', 
+        {
+          text: 'Email',
           onPress: () => {
             Alert.alert('Email Dealer', 'Dealer email feature coming soon!');
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
 
@@ -228,7 +233,7 @@ export default function CarDetailScreen() {
       type: 'share',
       carId: car.id,
       make: car.make,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     Alert.alert('Share Car', 'Share functionality coming soon!');
@@ -240,7 +245,9 @@ export default function CarDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
           <LoadingSpinner />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
@@ -253,21 +260,28 @@ export default function CarDetailScreen() {
 
   if (error || !car) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <ErrorState
           title="Car Not Found"
-          message={error || "This car listing could not be found"}
+          message={error || 'This car listing could not be found'}
         />
       </SafeAreaView>
     );
   }
 
-  const images = car.images && car.images.length > 0 
-    ? car.images 
-    : ['https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=800'];
+  const images =
+    car.images && car.images.length > 0
+      ? car.images
+      : [
+          'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=800',
+        ];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -281,7 +295,7 @@ export default function CarDetailScreen() {
             style={styles.heroImage}
             accessibilityLabel={`Photo of ${car.year} ${car.make} ${car.model}`}
           />
-          
+
           {/* Header Overlay */}
           <LinearGradient
             colors={['transparent', 'rgba(0,0,0,0.3)']}
@@ -289,30 +303,41 @@ export default function CarDetailScreen() {
           >
             <View style={styles.headerButtons}>
               <TouchableOpacity
-                style={[styles.headerButton, { backgroundColor: 'rgba(255,255,255,0.9)' }]}
+                style={[
+                  styles.headerButton,
+                  { backgroundColor: 'rgba(255,255,255,0.9)' },
+                ]}
                 onPress={handleBack}
               >
                 <ArrowLeft size={24} color={colors.text} />
               </TouchableOpacity>
-              
+
               <View style={styles.headerRightButtons}>
                 <TouchableOpacity
-                  style={[styles.headerButton, { backgroundColor: 'rgba(255,255,255,0.9)' }]}
+                  style={[
+                    styles.headerButton,
+                    { backgroundColor: 'rgba(255,255,255,0.9)' },
+                  ]}
                   onPress={handleShare}
                 >
                   <Share size={20} color={colors.text} />
                 </TouchableOpacity>
-                
+
                 <TouchableOpacity
-                  style={[styles.headerButton, { 
-                    backgroundColor: isBookmarked ? colors.primary : 'rgba(255,255,255,0.9)' 
-                  }]}
+                  style={[
+                    styles.headerButton,
+                    {
+                      backgroundColor: isBookmarked
+                        ? colors.primary
+                        : 'rgba(255,255,255,0.9)',
+                    },
+                  ]}
                   onPress={handleBookmarkToggle}
                   disabled={bookmarkLoading}
                 >
-                  <Heart 
-                    size={20} 
-                    color={isBookmarked ? 'white' : colors.text} 
+                  <Heart
+                    size={20}
+                    color={isBookmarked ? 'white' : colors.text}
                     fill={isBookmarked}
                   />
                 </TouchableOpacity>
@@ -350,18 +375,20 @@ export default function CarDetailScreen() {
                 {formatMileage(car.mileage)}
               </Text>
             </View>
-            
+
             <View style={styles.statItem}>
               <MapPin size={16} color={colors.textSecondary} />
               <Text style={[styles.statText, { color: colors.textSecondary }]}>
                 {car.location}
               </Text>
             </View>
-            
+
             {car.condition && (
               <View style={styles.statItem}>
                 <Settings size={16} color={colors.textSecondary} />
-                <Text style={[styles.statText, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.statText, { color: colors.textSecondary }]}
+                >
                   {formatCondition(car.condition)}
                 </Text>
               </View>
@@ -374,7 +401,9 @@ export default function CarDetailScreen() {
               <Text style={[styles.sectionTitle, { color: colors.text }]}>
                 Description
               </Text>
-              <Text style={[styles.description, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.description, { color: colors.textSecondary }]}
+              >
                 {car.description}
               </Text>
             </Card>
@@ -387,16 +416,20 @@ export default function CarDetailScreen() {
             </Text>
             <View style={styles.detailsGrid}>
               <View style={styles.detailRow}>
-                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.textSecondary }]}
+                >
                   Year
                 </Text>
                 <Text style={[styles.detailValue, { color: colors.text }]}>
                   {car.year}
                 </Text>
               </View>
-              
+
               <View style={styles.detailRow}>
-                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.textSecondary }]}
+                >
                   Mileage
                 </Text>
                 <Text style={[styles.detailValue, { color: colors.text }]}>
@@ -406,7 +439,12 @@ export default function CarDetailScreen() {
 
               {car.fuel_type && (
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.detailLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     Fuel Type
                   </Text>
                   <Text style={[styles.detailValue, { color: colors.text }]}>
@@ -417,7 +455,12 @@ export default function CarDetailScreen() {
 
               {car.transmission && (
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.detailLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     Transmission
                   </Text>
                   <Text style={[styles.detailValue, { color: colors.text }]}>
@@ -428,7 +471,12 @@ export default function CarDetailScreen() {
 
               {car.exterior_color && (
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.detailLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     Exterior Color
                   </Text>
                   <Text style={[styles.detailValue, { color: colors.text }]}>
@@ -439,7 +487,12 @@ export default function CarDetailScreen() {
 
               {car.interior_color && (
                 <View style={styles.detailRow}>
-                  <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.detailLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     Interior Color
                   </Text>
                   <Text style={[styles.detailValue, { color: colors.text }]}>
@@ -458,7 +511,13 @@ export default function CarDetailScreen() {
               </Text>
               <View style={styles.featuresContainer}>
                 {car.features.map((feature, index) => (
-                  <View key={index} style={[styles.featureChip, { backgroundColor: colors.surface }]}>
+                  <View
+                    key={index}
+                    style={[
+                      styles.featureChip,
+                      { backgroundColor: colors.surface },
+                    ]}
+                  >
                     <Text style={[styles.featureText, { color: colors.text }]}>
                       {feature}
                     </Text>
@@ -480,13 +539,18 @@ export default function CarDetailScreen() {
                     {car.dealer.name}
                   </Text>
                   {car.dealer.verified && (
-                    <View style={[styles.verifiedBadge, { backgroundColor: colors.primary }]}>
+                    <View
+                      style={[
+                        styles.verifiedBadge,
+                        { backgroundColor: colors.primary },
+                      ]}
+                    >
                       <Star size={12} color="white" />
                       <Text style={styles.verifiedText}>Verified</Text>
                     </View>
                   )}
                 </View>
-                
+
                 <Button
                   title="Contact Dealer"
                   onPress={handleContactDealer}
@@ -527,176 +591,177 @@ export default function CarDetailScreen() {
   );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-  },
-  scrollContent: {
-    paddingBottom: 32,
-  },
-  imageSection: {
-    position: 'relative',
-    height: height * 0.4,
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  headerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 100,
-    justifyContent: 'flex-end',
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerRightButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  imageIndicator: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  imageIndicatorText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  contentSection: {
-    padding: 16,
-  },
-  titleSection: {
-    marginBottom: 16,
-  },
-  carTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  carPrice: {
-    fontSize: 28,
-    fontWeight: '800',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 24,
-    paddingVertical: 16,
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statText: {
-    fontSize: 12,
-    marginTop: 4,
-  },
-  sectionCard: {
-    marginBottom: 16,
-    padding: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 12,
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  detailsGrid: {
-    gap: 12,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  detailLabel: {
-    fontSize: 14,
-  },
-  detailValue: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  featuresContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  featureChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  featureText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  dealerInfo: {
-    gap: 12,
-  },
-  dealerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  dealerName: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  verifiedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  verifiedText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: '600',
-    marginLeft: 4,
-  },
-  contactButton: {
-    marginTop: 8,
-  },
-  similarCarsContainer: {
-    paddingLeft: 4,
-  },
-  similarCarItem: {
-    width: width * 0.6,
-    marginRight: 16,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      marginTop: 16,
+      fontSize: 16,
+    },
+    scrollContent: {
+      paddingBottom: 32,
+    },
+    imageSection: {
+      position: 'relative',
+      height: height * 0.4,
+    },
+    heroImage: {
+      width: '100%',
+      height: '100%',
+      resizeMode: 'cover',
+    },
+    headerOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 100,
+      justifyContent: 'flex-end',
+    },
+    headerButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingBottom: 16,
+    },
+    headerButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    headerRightButtons: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    imageIndicator: {
+      position: 'absolute',
+      bottom: 16,
+      right: 16,
+      backgroundColor: 'rgba(0,0,0,0.6)',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    imageIndicatorText: {
+      color: 'white',
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    contentSection: {
+      padding: 16,
+    },
+    titleSection: {
+      marginBottom: 16,
+    },
+    carTitle: {
+      fontSize: 24,
+      fontWeight: '700',
+      marginBottom: 8,
+    },
+    carPrice: {
+      fontSize: 28,
+      fontWeight: '800',
+    },
+    statsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginBottom: 24,
+      paddingVertical: 16,
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+    },
+    statItem: {
+      alignItems: 'center',
+    },
+    statText: {
+      fontSize: 12,
+      marginTop: 4,
+    },
+    sectionCard: {
+      marginBottom: 16,
+      padding: 16,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      marginBottom: 12,
+    },
+    description: {
+      fontSize: 16,
+      lineHeight: 24,
+    },
+    detailsGrid: {
+      gap: 12,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    detailLabel: {
+      fontSize: 14,
+    },
+    detailValue: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    featuresContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    featureChip: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+    },
+    featureText: {
+      fontSize: 12,
+      fontWeight: '500',
+    },
+    dealerInfo: {
+      gap: 12,
+    },
+    dealerHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    dealerName: {
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    verifiedBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    verifiedText: {
+      color: 'white',
+      fontSize: 10,
+      fontWeight: '600',
+      marginLeft: 4,
+    },
+    contactButton: {
+      marginTop: 8,
+    },
+    similarCarsContainer: {
+      paddingLeft: 4,
+    },
+    similarCarItem: {
+      width: width * 0.6,
+      marginRight: 16,
+    },
+  });

@@ -1,5 +1,17 @@
-import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, {
+  useMemo,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import { usePerformanceMonitor } from '../../src/utils/performance';
 import { Car } from '../../src/features/recommendations/types';
 import { OptimizedImage } from './OptimizedImage';
@@ -48,15 +60,11 @@ const CarPrice = React.memo<{
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(price);
   }, [price]);
 
-  return (
-    <Text style={styles.price}>
-      {formattedPrice}
-    </Text>
-  );
+  return <Text style={styles.price}>{formattedPrice}</Text>;
 });
 
 const CarSpecs = React.memo<{
@@ -85,117 +93,118 @@ const FavoriteButton = React.memo<{
 ));
 
 // Main optimized car card component
-export const OptimizedCarCard = React.memo<OptimizedCarCardProps>(({
-  car,
-  onPress,
-  onFavorite,
-  isFavorited = false,
-  style,
-  index = 0,
-  priority = false
-}) => {
-  const { trackRender } = usePerformanceMonitor();
-  const renderStartTime = useRef<number>();
-  
-  // Track render performance
-  useEffect(() => {
-    renderStartTime.current = Date.now();
-    return () => {
-      if (renderStartTime.current) {
-        const renderTime = Date.now() - renderStartTime.current;
-        trackRender(`CarCard-${car.id}`, renderTime);
-      }
-    };
-  });
-
-  // Memoized handlers to prevent unnecessary re-renders
-  const handlePress = useCallback(() => {
-    onPress(car);
-  }, [car, onPress]);
-
-  const handleFavorite = useCallback(() => {
-    onFavorite?.(car.id);
-  }, [car.id, onFavorite]);
-
-  // Memoize image source
-  const imageSource = useMemo(() => {
-    // Generate a placeholder car image URL based on car details
-    const carImageUrl = `https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&auto=format&fit=crop&q=60&ixlib=rb-4.0.3`;
-    return carImageUrl;
-  }, [car.make, car.model, car.year]);
-
-  // Memoize the entire card content
-  const cardContent = useMemo(() => (
-    <>
-      <CarImage 
-        source={imageSource}
-        alt={`${car.year} ${car.make} ${car.model}`}
-        priority={priority || index < 5}
-      />
-      
-      <View style={styles.cardContent}>
-        <View style={styles.headerRow}>
-          <CarTitle 
-            make={car.make}
-            model={car.model}
-            year={car.year}
-          />
-          
-          {onFavorite && (
-            <FavoriteButton
-              isFavorited={isFavorited}
-              onPress={handleFavorite}
-            />
-          )}
-        </View>
-        
-        <CarPrice price={car.price} />
-        
-        <CarSpecs 
-          fuelEfficiency={car.fuelEfficiency}
-          safetyRating={car.safetyRating}
-        />
-        
-        <Text style={styles.bodyStyle} numberOfLines={1}>
-          {car.bodyStyle}
-        </Text>
-      </View>
-    </>
-  ), [
-    imageSource,
-    car.year,
-    car.make,
-    car.model,
-    car.price,
-    car.fuelEfficiency,
-    car.safetyRating,
-    car.bodyStyle,
-    isFavorited,
-    handleFavorite,
+export const OptimizedCarCard = React.memo<OptimizedCarCardProps>(
+  ({
+    car,
+    onPress,
     onFavorite,
-    priority,
-    index
-  ]);
+    isFavorited = false,
+    style,
+    index = 0,
+    priority = false,
+  }) => {
+    const { trackRender } = usePerformanceMonitor();
+    const renderStartTime = useRef<number>();
 
-  return (
-    <TouchableOpacity
-      style={[styles.card, style]}
-      onPress={handlePress}
-      activeOpacity={0.8}
-    >
-      {cardContent}
-    </TouchableOpacity>
-  );
-});
+    // Track render performance
+    useEffect(() => {
+      renderStartTime.current = Date.now();
+      return () => {
+        if (renderStartTime.current) {
+          const renderTime = Date.now() - renderStartTime.current;
+          trackRender(`CarCard-${car.id}`, renderTime);
+        }
+      };
+    });
+
+    // Memoized handlers to prevent unnecessary re-renders
+    const handlePress = useCallback(() => {
+      onPress(car);
+    }, [car, onPress]);
+
+    const handleFavorite = useCallback(() => {
+      onFavorite?.(car.id);
+    }, [car.id, onFavorite]);
+
+    // Memoize image source
+    const imageSource = useMemo(() => {
+      // Generate a placeholder car image URL based on car details
+      const carImageUrl = `https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&auto=format&fit=crop&q=60&ixlib=rb-4.0.3`;
+      return carImageUrl;
+    }, [car.make, car.model, car.year]);
+
+    // Memoize the entire card content
+    const cardContent = useMemo(
+      () => (
+        <>
+          <CarImage
+            source={imageSource}
+            alt={`${car.year} ${car.make} ${car.model}`}
+            priority={priority || index < 5}
+          />
+
+          <View style={styles.cardContent}>
+            <View style={styles.headerRow}>
+              <CarTitle make={car.make} model={car.model} year={car.year} />
+
+              {onFavorite && (
+                <FavoriteButton
+                  isFavorited={isFavorited}
+                  onPress={handleFavorite}
+                />
+              )}
+            </View>
+
+            <CarPrice price={car.price} />
+
+            <CarSpecs
+              fuelEfficiency={car.fuelEfficiency}
+              safetyRating={car.safetyRating}
+            />
+
+            <Text style={styles.bodyStyle} numberOfLines={1}>
+              {car.bodyStyle}
+            </Text>
+          </View>
+        </>
+      ),
+      [
+        imageSource,
+        car.year,
+        car.make,
+        car.model,
+        car.price,
+        car.fuelEfficiency,
+        car.safetyRating,
+        car.bodyStyle,
+        isFavorited,
+        handleFavorite,
+        onFavorite,
+        priority,
+        index,
+      ],
+    );
+
+    return (
+      <TouchableOpacity
+        style={[styles.card, style]}
+        onPress={handlePress}
+        activeOpacity={0.8}
+      >
+        {cardContent}
+      </TouchableOpacity>
+    );
+  },
+);
 
 OptimizedCarCard.displayName = 'OptimizedCarCard';
 
 // Custom hook for managing car card interactions
 export function useCarCardInteractions() {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
-  
+
   const toggleFavorite = useCallback((carId: string) => {
-    setFavorites(prev => {
+    setFavorites((prev) => {
       const newFavorites = new Set(prev);
       if (newFavorites.has(carId)) {
         newFavorites.delete(carId);
@@ -206,14 +215,17 @@ export function useCarCardInteractions() {
     });
   }, []);
 
-  const isFavorited = useCallback((carId: string) => {
-    return favorites.has(carId);
-  }, [favorites]);
+  const isFavorited = useCallback(
+    (carId: string) => {
+      return favorites.has(carId);
+    },
+    [favorites],
+  );
 
   return {
     toggleFavorite,
     isFavorited,
-    favorites: Array.from(favorites)
+    favorites: Array.from(favorites),
   };
 }
 

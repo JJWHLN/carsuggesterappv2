@@ -21,7 +21,13 @@ import { SecurityService } from '@/services/securityService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius } from '@/constants/Colors';
-import { Users, Car, TrendingUp, CheckCircle, ArrowLeft } from '@/utils/ultra-optimized-icons';
+import {
+  Users,
+  Car,
+  TrendingUp,
+  CheckCircle,
+  ArrowLeft,
+} from '@/utils/ultra-optimized-icons';
 
 export default function AdminScreen() {
   const { colors } = useThemeColors();
@@ -69,36 +75,36 @@ export default function AdminScreen() {
     if (!user) return;
 
     const roles = ['user', 'dealer', 'admin'];
-    const roleOptions = roles.filter(role => role !== currentRole);
+    const roleOptions = roles.filter((role) => role !== currentRole);
 
-    Alert.alert(
-      'Change User Role',
-      `Select new role for user:`,
-      [
-        ...roleOptions.map(role => ({
-          text: role.charAt(0).toUpperCase() + role.slice(1),
-          onPress: async () => {
-            try {
-              await SecurityService.updateUserRole(user.id, userId, role as any);
-              loadAdminData(); // Refresh data
-              Alert.alert('Success', `User role updated to ${role}`);
-            } catch (err: any) {
-              Alert.alert('Error', err.message);
-            }
-          },
-        })),
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+    Alert.alert('Change User Role', `Select new role for user:`, [
+      ...roleOptions.map((role) => ({
+        text: role.charAt(0).toUpperCase() + role.slice(1),
+        onPress: async () => {
+          try {
+            await SecurityService.updateUserRole(user.id, userId, role as any);
+            loadAdminData(); // Refresh data
+            Alert.alert('Success', `User role updated to ${role}`);
+          } catch (err: any) {
+            Alert.alert('Error', err.message);
+          }
+        },
+      })),
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
   const StatCard = ({ title, value, icon: Icon, color }: any) => (
     <Card style={styles.statCard}>
-      <View style={[styles.statIconContainer, { backgroundColor: color + '20' }]}>
+      <View
+        style={[styles.statIconContainer, { backgroundColor: color + '20' }]}
+      >
         <Icon color={color} size={24} />
       </View>
       <Text style={[styles.statValue, { color: colors.text }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{title}</Text>
+      <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+        {title}
+      </Text>
     </Card>
   );
 
@@ -106,9 +112,18 @@ export default function AdminScreen() {
     <Card style={styles.userCard}>
       <View style={styles.userInfo}>
         <View style={styles.userHeader}>
-          <Text style={[styles.userEmail, { color: colors.text }]}>{userData.email}</Text>
-          <View style={[styles.roleBadge, { backgroundColor: getRoleColor(userData.role) + '20' }]}>
-            <Text style={[styles.roleText, { color: getRoleColor(userData.role) }]}>
+          <Text style={[styles.userEmail, { color: colors.text }]}>
+            {userData.email}
+          </Text>
+          <View
+            style={[
+              styles.roleBadge,
+              { backgroundColor: getRoleColor(userData.role) + '20' },
+            ]}
+          >
+            <Text
+              style={[styles.roleText, { color: getRoleColor(userData.role) }]}
+            >
               {userData.role.toUpperCase()}
             </Text>
           </View>
@@ -128,7 +143,9 @@ export default function AdminScreen() {
 
   const ActivityItem = ({ activity }: { activity: any }) => (
     <View style={styles.activityItem}>
-      <View style={[styles.activityIcon, { backgroundColor: colors.primaryLight }]}>
+      <View
+        style={[styles.activityIcon, { backgroundColor: colors.primaryLight }]}
+      >
         {activity.type === 'review' ? (
           <FileText color={colors.primary} size={16} />
         ) : (
@@ -136,12 +153,17 @@ export default function AdminScreen() {
         )}
       </View>
       <View style={styles.activityContent}>
-        <Text style={[styles.activityTitle, { color: colors.text }]} numberOfLines={1}>
+        <Text
+          style={[styles.activityTitle, { color: colors.text }]}
+          numberOfLines={1}
+        >
           {activity.title}
         </Text>
         <Text style={[styles.activityMeta, { color: colors.textSecondary }]}>
-          {activity.type === 'review' ? `Review by ${activity.author}` : `Listing - ${activity.status}`} • {' '}
-          {new Date(activity.created_at).toLocaleDateString()}
+          {activity.type === 'review'
+            ? `Review by ${activity.author}`
+            : `Listing - ${activity.status}`}{' '}
+          • {new Date(activity.created_at).toLocaleDateString()}
         </Text>
       </View>
     </View>
@@ -149,16 +171,22 @@ export default function AdminScreen() {
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'admin': return colors.error;
-      case 'dealer': return colors.warning;
-      case 'user': return colors.success;
-      default: return colors.textSecondary;
+      case 'admin':
+        return colors.error;
+      case 'dealer':
+        return colors.warning;
+      case 'user':
+        return colors.success;
+      default:
+        return colors.textSecondary;
     }
   };
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
           <LoadingSpinner color={colors.primary} />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
@@ -171,7 +199,9 @@ export default function AdminScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <ErrorState
           title="Access Denied"
           message={error}
@@ -183,7 +213,9 @@ export default function AdminScreen() {
 
   return (
     <RoleGate requiredRoles={['admin']} requireAuth={true}>
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <ScrollView
           style={styles.scrollView}
           refreshControl={
@@ -192,17 +224,24 @@ export default function AdminScreen() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.backButton}
+            >
               <ArrowLeft color={colors.text} size={24} />
             </TouchableOpacity>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>Admin Dashboard</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              Admin Dashboard
+            </Text>
             <View style={styles.placeholder} />
           </View>
 
           {/* Stats Overview */}
           {stats && (
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Platform Overview</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                Platform Overview
+              </Text>
               <View style={styles.statsGrid}>
                 <StatCard
                   title="Total Users"
@@ -232,13 +271,23 @@ export default function AdminScreen() {
 
               {/* Role Distribution */}
               <View style={styles.roleDistribution}>
-                <Text style={[styles.subsectionTitle, { color: colors.text }]}>Users by Role</Text>
+                <Text style={[styles.subsectionTitle, { color: colors.text }]}>
+                  Users by Role
+                </Text>
                 <View style={styles.roleStats}>
                   {Object.entries(stats.users.byRole).map(([role, count]) => (
                     <View key={role} style={styles.roleStatItem}>
-                      <View style={[styles.roleStatDot, { backgroundColor: getRoleColor(role) }]} />
-                      <Text style={[styles.roleStatText, { color: colors.text }]}>
-                        {role.charAt(0).toUpperCase() + role.slice(1)}: {count as number}
+                      <View
+                        style={[
+                          styles.roleStatDot,
+                          { backgroundColor: getRoleColor(role) },
+                        ]}
+                      />
+                      <Text
+                        style={[styles.roleStatText, { color: colors.text }]}
+                      >
+                        {role.charAt(0).toUpperCase() + role.slice(1)}:{' '}
+                        {count as number}
                       </Text>
                     </View>
                   ))}
@@ -249,14 +298,18 @@ export default function AdminScreen() {
 
           {/* User Management */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>User Management</Text>
-            {users.slice(0, 10).map(userData => (
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              User Management
+            </Text>
+            {users.slice(0, 10).map((userData) => (
               <UserItem key={userData.id} user={userData} />
             ))}
             {users.length > 10 && (
               <Button
                 title={`View All ${users.length} Users`}
-                onPress={() => {/* Navigate to full user management */}}
+                onPress={() => {
+                  /* Navigate to full user management */
+                }}
                 variant="outline"
                 style={styles.viewAllButton}
               />
@@ -265,14 +318,21 @@ export default function AdminScreen() {
 
           {/* Recent Activity */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Activity</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Recent Activity
+            </Text>
             <Card style={styles.activityCard}>
               {recentActivity.length > 0 ? (
                 recentActivity.map((activity, index) => (
-                  <ActivityItem key={`${activity.type}-${activity.id}`} activity={activity} />
+                  <ActivityItem
+                    key={`${activity.type}-${activity.id}`}
+                    activity={activity}
+                  />
                 ))
               ) : (
-                <Text style={[styles.noActivity, { color: colors.textSecondary }]}>
+                <Text
+                  style={[styles.noActivity, { color: colors.textSecondary }]}
+                >
                   No recent activity
                 </Text>
               )}

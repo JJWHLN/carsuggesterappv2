@@ -10,7 +10,14 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors } from '@/hooks/useTheme';
 import { DealershipMetrics } from '@/types/database';
-import { TrendingUp, Users, Award, Star, CheckCircle, MapPin } from '@/utils/ultra-optimized-icons';
+import {
+  TrendingUp,
+  Users,
+  Award,
+  Star,
+  CheckCircle,
+  MapPin,
+} from '@/utils/ultra-optimized-icons';
 
 interface DealershipDashboardProps {
   metrics: DealershipMetrics;
@@ -86,10 +93,12 @@ export const DealershipDashboard: React.FC<DealershipDashboardProps> = ({
           style={styles.scoreCircle}
         >
           <Star color={colors.white} size={24} fill={colors.white} />
-          <Text style={styles.scoreValue}>{metrics.overall_score.toFixed(1)}</Text>
+          <Text style={styles.scoreValue}>
+            {metrics.overall_score.toFixed(1)}
+          </Text>
           <Text style={styles.scoreMax}>/5.0</Text>
         </LinearGradient>
-        
+
         <View style={styles.scoreDetails}>
           <Text style={styles.scoreGrade}>{grade}</Text>
           <Text style={styles.reviewCount}>
@@ -112,22 +121,27 @@ export const DealershipDashboard: React.FC<DealershipDashboardProps> = ({
             <category.icon color={colors.textSecondary} size={16} />
             <Text style={styles.categoryText}>{category.label}</Text>
           </View>
-          
+
           <View style={styles.categoryRating}>
             <View style={styles.progressContainer}>
               <View style={styles.progressTrack}>
-                <View 
+                <View
                   style={[
-                    styles.progressFill, 
-                    { 
+                    styles.progressFill,
+                    {
                       width: `${(category.value / 5) * 100}%`,
-                      backgroundColor: getScoreColor(category.value)
-                    }
-                  ]} 
+                      backgroundColor: getScoreColor(category.value),
+                    },
+                  ]}
                 />
               </View>
             </View>
-            <Text style={[styles.categoryValue, { color: getScoreColor(category.value) }]}>
+            <Text
+              style={[
+                styles.categoryValue,
+                { color: getScoreColor(category.value) },
+              ]}
+            >
               {category.value.toFixed(1)}
             </Text>
           </View>
@@ -144,7 +158,11 @@ export const DealershipDashboard: React.FC<DealershipDashboardProps> = ({
           <View style={styles.dealerNameRow}>
             <Text style={styles.dealerName}>{dealerName}</Text>
             {verified && (
-              <CheckCircle color={colors.success} size={20} fill={colors.success} />
+              <CheckCircle
+                color={colors.success}
+                size={20}
+                fill={colors.success}
+              />
             )}
           </View>
           <View style={styles.locationRow}>
@@ -156,14 +174,10 @@ export const DealershipDashboard: React.FC<DealershipDashboardProps> = ({
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Overall Score */}
-        <View style={styles.section}>
-          {renderOverallScore()}
-        </View>
+        <View style={styles.section}>{renderOverallScore()}</View>
 
         {/* Category Breakdown */}
-        <View style={styles.section}>
-          {renderCategoryBreakdown()}
-        </View>
+        <View style={styles.section}>{renderCategoryBreakdown()}</View>
 
         {/* Quick Stats */}
         <View style={styles.section}>
@@ -174,7 +188,7 @@ export const DealershipDashboard: React.FC<DealershipDashboardProps> = ({
               <Text style={styles.statValue}>{metrics.review_count}</Text>
               <Text style={styles.statLabel}>Expert Reviews</Text>
             </View>
-            
+
             <View style={styles.statCard}>
               <TrendingUp color={colors.success} size={20} />
               <Text style={styles.statValue}>
@@ -182,7 +196,7 @@ export const DealershipDashboard: React.FC<DealershipDashboardProps> = ({
               </Text>
               <Text style={styles.statLabel}>Recommend Rate</Text>
             </View>
-            
+
             <View style={styles.statCard}>
               <Award color={colors.warning} size={20} />
               <Text style={styles.statValue}>
@@ -196,13 +210,19 @@ export const DealershipDashboard: React.FC<DealershipDashboardProps> = ({
         {/* Action Buttons */}
         <View style={styles.actionContainer}>
           {onViewAllReviews && (
-            <TouchableOpacity style={styles.primaryButton} onPress={onViewAllReviews}>
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={onViewAllReviews}
+            >
               <Text style={styles.primaryButtonText}>View All Reviews</Text>
             </TouchableOpacity>
           )}
-          
+
           {onViewDetails && (
-            <TouchableOpacity style={styles.secondaryButton} onPress={onViewDetails}>
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              onPress={onViewDetails}
+            >
               <Text style={styles.secondaryButtonText}>Detailed Analysis</Text>
             </TouchableOpacity>
           )}
@@ -212,208 +232,209 @@ export const DealershipDashboard: React.FC<DealershipDashboardProps> = ({
   );
 };
 
-const getStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  
-  // Header
-  header: {
-    backgroundColor: colors.surface,
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  dealerInfo: {
-    gap: 8,
-  },
-  dealerNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  dealerName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  locationText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
 
-  // Content
-  content: {
-    flex: 1,
-  },
-  section: {
-    backgroundColor: colors.surface,
-    margin: 16,
-    borderRadius: 12,
-    padding: 20,
-    elevation: 2,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 16,
-  },
+    // Header
+    header: {
+      backgroundColor: colors.surface,
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    dealerInfo: {
+      gap: 8,
+    },
+    dealerNameRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    dealerName: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    locationRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    locationText: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
 
-  // Overall Score
-  overallScoreContainer: {
-    alignItems: 'center',
-    gap: 16,
-  },
-  scoreCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 8,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-  },
-  scoreValue: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.white,
-  },
-  scoreMax: {
-    fontSize: 12,
-    color: colors.white,
-    opacity: 0.8,
-  },
-  scoreDetails: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  scoreGrade: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  reviewCount: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  recommendationRate: {
-    fontSize: 14,
-    color: colors.success,
-    fontWeight: '500',
-  },
+    // Content
+    content: {
+      flex: 1,
+    },
+    section: {
+      backgroundColor: colors.surface,
+      margin: 16,
+      borderRadius: 12,
+      padding: 20,
+      elevation: 2,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 16,
+    },
 
-  // Category Breakdown
-  categoryContainer: {
-    gap: 12,
-  },
-  categoryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 16,
-  },
-  categoryLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-  },
-  categoryText: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  categoryRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-  },
-  progressContainer: {
-    flex: 1,
-  },
-  progressTrack: {
-    height: 6,
-    backgroundColor: colors.border,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 3,
-  },
-  categoryValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    minWidth: 32,
-    textAlign: 'right',
-  },
+    // Overall Score
+    overallScoreContainer: {
+      alignItems: 'center',
+      gap: 16,
+    },
+    scoreCircle: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      alignItems: 'center',
+      justifyContent: 'center',
+      elevation: 8,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+    },
+    scoreValue: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: colors.white,
+    },
+    scoreMax: {
+      fontSize: 12,
+      color: colors.white,
+      opacity: 0.8,
+    },
+    scoreDetails: {
+      alignItems: 'center',
+      gap: 4,
+    },
+    scoreGrade: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    reviewCount: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
+    recommendationRate: {
+      fontSize: 14,
+      color: colors.success,
+      fontWeight: '500',
+    },
 
-  // Quick Stats
-  statsGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.primaryLight,
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    gap: 8,
-  },
-  statValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
+    // Category Breakdown
+    categoryContainer: {
+      gap: 12,
+    },
+    categoryRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: 16,
+    },
+    categoryLabel: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      flex: 1,
+    },
+    categoryText: {
+      fontSize: 14,
+      color: colors.text,
+      fontWeight: '500',
+    },
+    categoryRating: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      flex: 1,
+    },
+    progressContainer: {
+      flex: 1,
+    },
+    progressTrack: {
+      height: 6,
+      backgroundColor: colors.border,
+      borderRadius: 3,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: 3,
+    },
+    categoryValue: {
+      fontSize: 14,
+      fontWeight: '600',
+      minWidth: 32,
+      textAlign: 'right',
+    },
 
-  // Action Buttons
-  actionContainer: {
-    padding: 16,
-    gap: 12,
-  },
-  primaryButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  primaryButtonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  secondaryButton: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.primary,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
+    // Quick Stats
+    statsGrid: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.primaryLight,
+      borderRadius: 8,
+      padding: 16,
+      alignItems: 'center',
+      gap: 8,
+    },
+    statValue: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    statLabel: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      textAlign: 'center',
+    },
+
+    // Action Buttons
+    actionContainer: {
+      padding: 16,
+      gap: 12,
+    },
+    primaryButton: {
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      paddingVertical: 16,
+      alignItems: 'center',
+    },
+    primaryButtonText: {
+      color: colors.white,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    secondaryButton: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.primary,
+      paddingVertical: 16,
+      alignItems: 'center',
+    },
+    secondaryButtonText: {
+      color: colors.primary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });

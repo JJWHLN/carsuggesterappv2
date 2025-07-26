@@ -18,7 +18,15 @@ import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import AdvancedAnalyticsService from '@/services/advancedAnalytics';
 import * as Haptics from 'expo-haptics';
-import { TrendingUp, Users, Eye, Heart, Clock, Star, Zap } from '@/utils/ultra-optimized-icons';
+import {
+  TrendingUp,
+  Users,
+  Eye,
+  Heart,
+  Clock,
+  Star,
+  Zap,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -47,8 +55,12 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
   const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [analyticsService] = useState(() => AdvancedAnalyticsService.getInstance());
-  const [selectedTimeframe, setSelectedTimeframe] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
+  const [analyticsService] = useState(() =>
+    AdvancedAnalyticsService.getInstance(),
+  );
+  const [selectedTimeframe, setSelectedTimeframe] = useState<
+    '1h' | '24h' | '7d' | '30d'
+  >('24h');
   const styles = useMemo(() => getThemedStyles(colors), [colors]);
 
   const loadAnalytics = useCallback(async () => {
@@ -73,14 +85,28 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
           { name: 'Honda', views: Math.floor(Math.random() * 2500) + 800 },
         ],
         userEngagement: Array.from({ length: 7 }, (_, i) => ({
-          date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short' }),
+          date: new Date(
+            Date.now() - (6 - i) * 24 * 60 * 60 * 1000,
+          ).toLocaleDateString('en-US', { weekday: 'short' }),
           engagement: Math.floor(Math.random() * 100) + 50,
         })),
         searchTrends: [
-          { query: 'electric cars', count: Math.floor(Math.random() * 1000) + 500 },
-          { query: 'luxury sedan', count: Math.floor(Math.random() * 800) + 400 },
-          { query: 'compact SUV', count: Math.floor(Math.random() * 600) + 300 },
-          { query: 'hybrid vehicles', count: Math.floor(Math.random() * 500) + 250 },
+          {
+            query: 'electric cars',
+            count: Math.floor(Math.random() * 1000) + 500,
+          },
+          {
+            query: 'luxury sedan',
+            count: Math.floor(Math.random() * 800) + 400,
+          },
+          {
+            query: 'compact SUV',
+            count: Math.floor(Math.random() * 600) + 300,
+          },
+          {
+            query: 'hybrid vehicles',
+            count: Math.floor(Math.random() * 500) + 250,
+          },
         ],
       };
 
@@ -92,7 +118,6 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
         timeframe: selectedTimeframe,
         timestamp: Date.now(),
       });
-
     } catch (error) {
       logger.error('Error loading analytics:', error);
       Alert.alert('Error', 'Failed to load analytics data');
@@ -111,15 +136,21 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
     await loadAnalytics();
   }, [loadAnalytics]);
 
-  const handleTimeframeChange = useCallback((timeframe: '1h' | '24h' | '7d' | '30d') => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setSelectedTimeframe(timeframe);
-  }, []);
+  const handleTimeframeChange = useCallback(
+    (timeframe: '1h' | '24h' | '7d' | '30d') => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setSelectedTimeframe(timeframe);
+    },
+    [],
+  );
 
-  const handleMetricPress = useCallback((metric: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onMetricPress?.(metric);
-  }, [onMetricPress]);
+  const handleMetricPress = useCallback(
+    (metric: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      onMetricPress?.(metric);
+    },
+    [onMetricPress],
+  );
 
   const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -136,40 +167,41 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
     return num.toString();
   }, []);
 
-  const renderMetricCard = useCallback((
-    title: string,
-    value: string | number,
-    icon: React.ReactNode,
-    gradient: [string, string],
-    change?: string,
-    onPress?: () => void
-  ) => (
-    <TouchableOpacity
-      style={styles.metricCard}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <LinearGradient
-        colors={gradient}
-        style={styles.metricGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+  const renderMetricCard = useCallback(
+    (
+      title: string,
+      value: string | number,
+      icon: React.ReactNode,
+      gradient: [string, string],
+      change?: string,
+      onPress?: () => void,
+    ) => (
+      <TouchableOpacity
+        style={styles.metricCard}
+        onPress={onPress}
+        activeOpacity={0.8}
       >
-        <View style={styles.metricIcon}>
-          {icon}
-        </View>
-        <Text style={styles.metricValue}>
-          {typeof value === 'number' ? formatNumber(value) : value}
-        </Text>
-        <Text style={styles.metricTitle}>{title}</Text>
-        {change && (
-          <Text style={[styles.metricChange, { color: colors.success }]}>
-            {change}
+        <LinearGradient
+          colors={gradient}
+          style={styles.metricGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.metricIcon}>{icon}</View>
+          <Text style={styles.metricValue}>
+            {typeof value === 'number' ? formatNumber(value) : value}
           </Text>
-        )}
-      </LinearGradient>
-    </TouchableOpacity>
-  ), [styles, colors, formatNumber, handleMetricPress]);
+          <Text style={styles.metricTitle}>{title}</Text>
+          {change && (
+            <Text style={[styles.metricChange, { color: colors.success }]}>
+              {change}
+            </Text>
+          )}
+        </LinearGradient>
+      </TouchableOpacity>
+    ),
+    [styles, colors, formatNumber, handleMetricPress],
+  );
 
   if (loading) {
     return (
@@ -227,14 +259,25 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
             style={[
               styles.timeframeButton,
               selectedTimeframe === timeframe && styles.timeframeButtonActive,
-              { borderColor: colors.border, backgroundColor: selectedTimeframe === timeframe ? colors.primary : colors.background }
+              {
+                borderColor: colors.border,
+                backgroundColor:
+                  selectedTimeframe === timeframe
+                    ? colors.primary
+                    : colors.background,
+              },
             ]}
             onPress={() => handleTimeframeChange(timeframe)}
           >
             <Text
               style={[
                 styles.timeframeText,
-                { color: selectedTimeframe === timeframe ? colors.white : colors.text }
+                {
+                  color:
+                    selectedTimeframe === timeframe
+                      ? colors.white
+                      : colors.text,
+                },
               ]}
             >
               {timeframe}
@@ -251,70 +294,70 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
           <Users color="white" size={20} />,
           ['#3b82f6', '#1d4ed8'],
           '+12.5%',
-          () => handleMetricPress('total_users')
+          () => handleMetricPress('total_users'),
         )}
-        
+
         {renderMetricCard(
           'Active Users',
           metrics.activeUsers,
           <Zap color="white" size={20} />,
           ['#10b981', '#059669'],
           '+8.2%',
-          () => handleMetricPress('active_users')
+          () => handleMetricPress('active_users'),
         )}
-        
+
         {renderMetricCard(
           'Car Views',
           metrics.carViews,
           <Eye color="white" size={20} />,
           ['#f59e0b', '#d97706'],
           '+15.3%',
-          () => handleMetricPress('car_views')
+          () => handleMetricPress('car_views'),
         )}
-        
+
         {renderMetricCard(
           'Favorites',
           metrics.favorites,
           <Heart color="white" size={20} />,
           ['#ef4444', '#dc2626'],
           '+22.1%',
-          () => handleMetricPress('favorites')
+          () => handleMetricPress('favorites'),
         )}
-        
+
         {renderMetricCard(
           'Searches',
           metrics.searchQueries,
           <Star color="white" size={20} />,
           ['#8b5cf6', '#7c3aed'],
           '+18.7%',
-          () => handleMetricPress('searches')
+          () => handleMetricPress('searches'),
         )}
-        
+
         {renderMetricCard(
           'Conversion',
           `${metrics.conversionRate.toFixed(1)}%`,
           <TrendingUp color="white" size={20} />,
           ['#06b6d4', '#0891b2'],
           '+2.1%',
-          () => handleMetricPress('conversion')
+          () => handleMetricPress('conversion'),
         )}
-        
+
         {renderMetricCard(
           'Avg. Session',
           formatTime(metrics.averageSessionTime),
           <Clock color="white" size={20} />,
           ['#84cc16', '#65a30d'],
           '+45s',
-          () => handleMetricPress('session_time')
+          () => handleMetricPress('session_time'),
         )}
-        
+
         {renderMetricCard(
           'Engagement',
           `${Math.round(metrics.userEngagement.reduce((sum, d) => sum + d.engagement, 0) / metrics.userEngagement.length)}%`,
           <Zap color="white" size={20} />,
           ['#f97316', '#ea580c'],
           '+5.8%',
-          () => handleMetricPress('engagement')
+          () => handleMetricPress('engagement'),
         )}
       </View>
 
@@ -337,7 +380,7 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
                   {
                     backgroundColor: colors.primary,
                     height: `${(data.engagement / 100) * 100}%`,
-                  }
+                  },
                 ]}
               />
               <Text style={[styles.chartLabel, { color: colors.textMuted }]}>
@@ -370,19 +413,23 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
                 <Text style={[styles.brandName, { color: colors.text }]}>
                   {brand.name}
                 </Text>
-                <View style={[styles.brandBar, { backgroundColor: colors.border }]}>
+                <View
+                  style={[styles.brandBar, { backgroundColor: colors.border }]}
+                >
                   <View
                     style={[
                       styles.brandBarFill,
                       {
                         backgroundColor: colors.primary,
-                        width: `${(brand.views / Math.max(...metrics.topBrands.map(b => b.views))) * 100}%`
-                      }
+                        width: `${(brand.views / Math.max(...metrics.topBrands.map((b) => b.views))) * 100}%`,
+                      },
                     ]}
                   />
                 </View>
               </View>
-              <Text style={[styles.brandViews, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.brandViews, { color: colors.textSecondary }]}
+              >
                 {formatNumber(brand.views)}
               </Text>
             </View>
@@ -404,7 +451,9 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
           {metrics.searchTrends.map((trend, index) => (
             <View key={trend.query} style={styles.searchTrendItem}>
               <View style={styles.searchTrendRank}>
-                <Text style={[styles.searchTrendRankText, { color: colors.white }]}>
+                <Text
+                  style={[styles.searchTrendRankText, { color: colors.white }]}
+                >
                   {index + 1}
                 </Text>
               </View>
@@ -412,18 +461,28 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
                 <Text style={[styles.searchTrendQuery, { color: colors.text }]}>
                   {trend.query}
                 </Text>
-                <Text style={[styles.searchTrendCount, { color: colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.searchTrendCount,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   {formatNumber(trend.count)} searches
                 </Text>
               </View>
-              <View style={[styles.searchTrendBar, { backgroundColor: colors.border }]}>
+              <View
+                style={[
+                  styles.searchTrendBar,
+                  { backgroundColor: colors.border },
+                ]}
+              >
                 <View
                   style={[
                     styles.searchTrendBarFill,
                     {
                       backgroundColor: colors.primary,
-                      width: `${(trend.count / Math.max(...metrics.searchTrends.map(t => t.count))) * 100}%`
-                    }
+                      width: `${(trend.count / Math.max(...metrics.searchTrends.map((t) => t.count))) * 100}%`,
+                    },
                   ]}
                 />
               </View>
@@ -438,7 +497,10 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
           title="Export Report"
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            Alert.alert('Export', 'Analytics report export feature coming soon!');
+            Alert.alert(
+              'Export',
+              'Analytics report export feature coming soon!',
+            );
           }}
           style={styles.actionButton}
         />
@@ -456,228 +518,229 @@ const RealTimeAnalyticsDashboard: React.FC<RealTimeAnalyticsDashboardProps> = ({
   );
 };
 
-const getThemedStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  headerGradient: {
-    paddingHorizontal: 20,
-    paddingVertical: 24,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
-  headerContent: {
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: 'white',
-    marginTop: 8,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: 'white',
-    opacity: 0.9,
-    marginTop: 4,
-  },
-  timeframeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 24,
-    paddingHorizontal: 20,
-    gap: 8,
-  },
-  timeframeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  timeframeButtonActive: {
-    // Active styles handled by backgroundColor prop
-  },
-  timeframeText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  metricsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 20,
-    gap: 12,
-    marginBottom: 24,
-  },
-  metricCard: {
-    width: (width - 52) / 2, // Account for padding and gap
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  metricGradient: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  metricIcon: {
-    marginBottom: 8,
-  },
-  metricValue: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: 'white',
-    textAlign: 'center',
-  },
-  metricTitle: {
-    fontSize: 12,
-    color: 'white',
-    opacity: 0.9,
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  metricChange: {
-    fontSize: 11,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginTop: 4,
-    color: 'white',
-  },
-  chartCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-    padding: 16,
-  },
-  chartHeader: {
-    marginBottom: 16,
-  },
-  chartTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  chartSubtitle: {
-    fontSize: 14,
-    marginTop: 2,
-  },
-  simpleChart: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    height: 120,
-    paddingVertical: 16,
-  },
-  chartBar: {
-    flex: 1,
-    alignItems: 'center',
-    marginHorizontal: 4,
-  },
-  chartBarFill: {
-    width: '80%',
-    borderRadius: 4,
-    minHeight: 8,
-  },
-  chartLabel: {
-    fontSize: 10,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  brandsChart: {
-    gap: 16,
-  },
-  brandItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  brandRank: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#3b82f6',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandRankText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  brandContent: {
-    flex: 1,
-  },
-  brandName: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  brandBar: {
-    height: 6,
-    borderRadius: 3,
-  },
-  brandBarFill: {
-    height: '100%',
-    borderRadius: 3,
-  },
-  brandViews: {
-    fontSize: 12,
-    fontWeight: '500',
-    minWidth: 40,
-    textAlign: 'right',
-  },
-  searchTrends: {
-    gap: 12,
-  },
-  searchTrendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  searchTrendRank: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#3b82f6',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchTrendRankText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  searchTrendContent: {
-    flex: 1,
-  },
-  searchTrendQuery: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  searchTrendCount: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  searchTrendBar: {
-    width: 60,
-    height: 4,
-    borderRadius: 2,
-  },
-  searchTrendBarFill: {
-    height: '100%',
-    borderRadius: 2,
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingBottom: 32,
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-  },
-  errorText: {
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
+const getThemedStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      marginBottom: 24,
+    },
+    headerGradient: {
+      paddingHorizontal: 20,
+      paddingVertical: 24,
+      borderBottomLeftRadius: 20,
+      borderBottomRightRadius: 20,
+    },
+    headerContent: {
+      alignItems: 'center',
+    },
+    headerTitle: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: 'white',
+      marginTop: 8,
+    },
+    headerSubtitle: {
+      fontSize: 14,
+      color: 'white',
+      opacity: 0.9,
+      marginTop: 4,
+    },
+    timeframeContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginBottom: 24,
+      paddingHorizontal: 20,
+      gap: 8,
+    },
+    timeframeButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+    },
+    timeframeButtonActive: {
+      // Active styles handled by backgroundColor prop
+    },
+    timeframeText: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    metricsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      paddingHorizontal: 20,
+      gap: 12,
+      marginBottom: 24,
+    },
+    metricCard: {
+      width: (width - 52) / 2, // Account for padding and gap
+      borderRadius: 16,
+      overflow: 'hidden',
+    },
+    metricGradient: {
+      padding: 16,
+      alignItems: 'center',
+    },
+    metricIcon: {
+      marginBottom: 8,
+    },
+    metricValue: {
+      fontSize: 24,
+      fontWeight: '800',
+      color: 'white',
+      textAlign: 'center',
+    },
+    metricTitle: {
+      fontSize: 12,
+      color: 'white',
+      opacity: 0.9,
+      textAlign: 'center',
+      marginTop: 4,
+    },
+    metricChange: {
+      fontSize: 11,
+      fontWeight: '600',
+      textAlign: 'center',
+      marginTop: 4,
+      color: 'white',
+    },
+    chartCard: {
+      marginHorizontal: 20,
+      marginBottom: 20,
+      padding: 16,
+    },
+    chartHeader: {
+      marginBottom: 16,
+    },
+    chartTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    chartSubtitle: {
+      fontSize: 14,
+      marginTop: 2,
+    },
+    simpleChart: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+      height: 120,
+      paddingVertical: 16,
+    },
+    chartBar: {
+      flex: 1,
+      alignItems: 'center',
+      marginHorizontal: 4,
+    },
+    chartBarFill: {
+      width: '80%',
+      borderRadius: 4,
+      minHeight: 8,
+    },
+    chartLabel: {
+      fontSize: 10,
+      marginTop: 8,
+      textAlign: 'center',
+    },
+    brandsChart: {
+      gap: 16,
+    },
+    brandItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    brandRank: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: '#3b82f6',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    brandRankText: {
+      fontSize: 12,
+      fontWeight: '700',
+    },
+    brandContent: {
+      flex: 1,
+    },
+    brandName: {
+      fontSize: 14,
+      fontWeight: '600',
+      marginBottom: 4,
+    },
+    brandBar: {
+      height: 6,
+      borderRadius: 3,
+    },
+    brandBarFill: {
+      height: '100%',
+      borderRadius: 3,
+    },
+    brandViews: {
+      fontSize: 12,
+      fontWeight: '500',
+      minWidth: 40,
+      textAlign: 'right',
+    },
+    searchTrends: {
+      gap: 12,
+    },
+    searchTrendItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    searchTrendRank: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: '#3b82f6',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    searchTrendRankText: {
+      fontSize: 12,
+      fontWeight: '700',
+    },
+    searchTrendContent: {
+      flex: 1,
+    },
+    searchTrendQuery: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    searchTrendCount: {
+      fontSize: 12,
+      marginTop: 2,
+    },
+    searchTrendBar: {
+      width: 60,
+      height: 4,
+      borderRadius: 2,
+    },
+    searchTrendBarFill: {
+      height: '100%',
+      borderRadius: 2,
+    },
+    actionsContainer: {
+      flexDirection: 'row',
+      paddingHorizontal: 20,
+      paddingBottom: 32,
+      gap: 12,
+    },
+    actionButton: {
+      flex: 1,
+    },
+    errorText: {
+      textAlign: 'center',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });
 
 export { RealTimeAnalyticsDashboard };

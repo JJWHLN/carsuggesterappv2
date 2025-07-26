@@ -51,7 +51,7 @@ export const OptimizedImageV2: React.FC<OptimizedImageV2Props> = ({
   // Optimize image URL for performance
   const optimizedSource = React.useMemo(() => {
     if (typeof source === 'number') return source;
-    
+
     const optimizedUri = optimizeImageUrl(source.uri, quality);
     return { uri: optimizedUri };
   }, [source, quality]);
@@ -59,9 +59,13 @@ export const OptimizedImageV2: React.FC<OptimizedImageV2Props> = ({
   // Preload image based on priority
   useEffect(() => {
     if (typeof optimizedSource === 'object' && optimizedSource.uri) {
-      const preloadDelay = preloadPriority === 'high' ? 0 : 
-                          preloadPriority === 'normal' ? 100 : 200;
-      
+      const preloadDelay =
+        preloadPriority === 'high'
+          ? 0
+          : preloadPriority === 'normal'
+            ? 100
+            : 200;
+
       const timeoutId = setTimeout(() => {
         Image.prefetch(optimizedSource.uri).catch(() => {
           // Fail silently, the main image load will handle errors
@@ -74,13 +78,18 @@ export const OptimizedImageV2: React.FC<OptimizedImageV2Props> = ({
 
       return () => clearTimeout(timeoutId);
     }
-  }, [optimizedSource, preloadPriority, enableMemoryOptimization, addCleanupFunction]);
+  }, [
+    optimizedSource,
+    preloadPriority,
+    enableMemoryOptimization,
+    addCleanupFunction,
+  ]);
 
   // Handle successful image load
   const handleLoad = useCallback(() => {
     setIsLoaded(true);
     setHasError(false);
-    
+
     Animated.timing(opacity, {
       toValue: 1,
       duration: fadeInDuration,
@@ -107,18 +116,25 @@ export const OptimizedImageV2: React.FC<OptimizedImageV2Props> = ({
 
   // Calculate responsive dimensions
   const responsiveStyle = React.useMemo(() => {
-    const flatStyle = style ? (Array.isArray(style) ? Object.assign({}, ...style) : style) : {};
+    const flatStyle = style
+      ? Array.isArray(style)
+        ? Object.assign({}, ...style)
+        : style
+      : {};
     const pixelRatio = PixelRatio.get();
-    
+
     // Optimize for device pixel ratio
     if (flatStyle.width && typeof flatStyle.width === 'number') {
-      const optimizedWidth = Math.min(flatStyle.width * pixelRatio, screenWidth);
+      const optimizedWidth = Math.min(
+        flatStyle.width * pixelRatio,
+        screenWidth,
+      );
       return {
         ...flatStyle,
         width: optimizedWidth / pixelRatio, // Scale back down for display
       };
     }
-    
+
     return flatStyle;
   }, [style]);
 
@@ -130,41 +146,40 @@ export const OptimizedImageV2: React.FC<OptimizedImageV2Props> = ({
           {placeholder}
         </View>
       )}
-      
+
       {/* Optimized Image */}
       {!hasError && (
         <Animated.Image
           {...props}
           source={optimizedSource}
-          style={[
-            responsiveStyle,
-            { opacity: isLoaded ? opacity : 0 }
-          ]}
+          style={[responsiveStyle, { opacity: isLoaded ? opacity : 0 }]}
           onLoad={handleLoad}
           onError={handleError}
         />
       )}
-      
+
       {/* Error fallback */}
       {hasError && (
-        <View 
+        <View
           style={[
-            responsiveStyle, 
-            { 
+            responsiveStyle,
+            {
               backgroundColor: '#f0f0f0',
               justifyContent: 'center',
               alignItems: 'center',
               minHeight: 100,
-            }
+            },
           ]}
         >
           {/* You can customize this error state */}
-          <View style={{ 
-            width: 40, 
-            height: 40, 
-            backgroundColor: '#ccc', 
-            borderRadius: 20 
-          }} />
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              backgroundColor: '#ccc',
+              borderRadius: 20,
+            }}
+          />
         </View>
       )}
     </View>

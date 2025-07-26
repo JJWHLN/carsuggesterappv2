@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors } from '@/hooks/useTheme';
@@ -67,7 +62,7 @@ export const CSScoreDisplay: React.FC<CSScoreDisplayProps> = ({
           <Text style={styles.scoreMax}>/100</Text>
         </View>
       </LinearGradient>
-      
+
       <View style={styles.scoreInfo}>
         <Text style={styles.scoreBrand}>CS Score</Text>
         <Text style={styles.scoreGrade}>{grade}</Text>
@@ -79,10 +74,30 @@ export const CSScoreDisplay: React.FC<CSScoreDisplayProps> = ({
     if (!breakdown || !showBreakdown) return null;
 
     const categories = [
-      { key: 'performance', label: 'Performance', icon: Zap, value: breakdown.performance },
-      { key: 'value', label: 'Value', icon: TrendingUp, value: breakdown.value },
-      { key: 'reliability', label: 'Reliability', icon: Shield, value: breakdown.reliability },
-      { key: 'features', label: 'Features', icon: Star, value: breakdown.features },
+      {
+        key: 'performance',
+        label: 'Performance',
+        icon: Zap,
+        value: breakdown.performance,
+      },
+      {
+        key: 'value',
+        label: 'Value',
+        icon: TrendingUp,
+        value: breakdown.value,
+      },
+      {
+        key: 'reliability',
+        label: 'Reliability',
+        icon: Shield,
+        value: breakdown.reliability,
+      },
+      {
+        key: 'features',
+        label: 'Features',
+        icon: Star,
+        value: breakdown.features,
+      },
       { key: 'design', label: 'Design', icon: Award, value: breakdown.design },
     ];
 
@@ -96,25 +111,28 @@ export const CSScoreDisplay: React.FC<CSScoreDisplayProps> = ({
             </TouchableOpacity>
           )}
         </View>
-        
+
         <View style={styles.breakdownGrid}>
           {categories.map((category) => (
             <View key={category.key} style={styles.breakdownItem}>
               <View style={styles.breakdownItemHeader}>
-                <category.icon color={getScoreColor(category.value)} size={16} />
+                <category.icon
+                  color={getScoreColor(category.value)}
+                  size={16}
+                />
                 <Text style={styles.breakdownLabel}>{category.label}</Text>
               </View>
-              
+
               <View style={styles.progressContainer}>
                 <View style={styles.progressTrack}>
-                  <View 
+                  <View
                     style={[
-                      styles.progressFill, 
-                      { 
+                      styles.progressFill,
+                      {
                         width: `${category.value}%`,
-                        backgroundColor: getScoreColor(category.value)
-                      }
-                    ]} 
+                        backgroundColor: getScoreColor(category.value),
+                      },
+                    ]}
                   />
                 </View>
                 <Text style={styles.breakdownValue}>{category.value}</Text>
@@ -142,7 +160,7 @@ export const CSScoreDisplay: React.FC<CSScoreDisplayProps> = ({
     <View style={styles.container}>
       {renderScoreCircle()}
       {renderBreakdown()}
-      
+
       {!showBreakdown && onInfoPress && (
         <TouchableOpacity onPress={onInfoPress} style={styles.learnMoreButton}>
           <Text style={styles.learnMoreText}>Learn about CS Score</Text>
@@ -156,13 +174,13 @@ export const CSScoreDisplay: React.FC<CSScoreDisplayProps> = ({
 const getStyles = (colors: any, size: 'small' | 'medium' | 'large') => {
   const isLarge = size === 'large';
   const isSmall = size === 'small';
-  
+
   return StyleSheet.create({
     container: {
       alignItems: 'center',
       gap: 16,
     },
-    
+
     // Small Size
     smallContainer: {
       flexDirection: 'row',

@@ -12,13 +12,29 @@ import { useLocalSearchParams, router } from 'expo-router';
 
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { currentColors, Spacing, Typography, BorderRadius } from '@/constants/Colors';
-import { formatFullDate, transformDatabaseReviewToReview } from '@/utils/dataTransformers';
+import {
+  currentColors,
+  Spacing,
+  Typography,
+  BorderRadius,
+} from '@/constants/Colors';
+import {
+  formatFullDate,
+  transformDatabaseReviewToReview,
+} from '@/utils/dataTransformers';
 import { useApi } from '@/hooks/useApi';
 import { fetchReviewById, SupabaseError } from '@/services/supabaseService';
 import { Review as ReviewType, DatabaseReview } from '@/types/database'; // Import Review type
 import { getImageUrl } from '@/utils/formatters';
-import { ArrowLeft, Star, Calendar, User, Award, TrendingUp, Gauge } from '@/utils/ultra-optimized-icons';
+import {
+  ArrowLeft,
+  Star,
+  Calendar,
+  User,
+  Award,
+  TrendingUp,
+  Gauge,
+} from '@/utils/ultra-optimized-icons';
 
 export default function ReviewDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -27,22 +43,21 @@ export default function ReviewDetailScreen() {
     data: rawReviewData,
     loading,
     error,
-    refetch
-  } = useApi<DatabaseReview | null>(
-    async () => {
-      if (!id) return null;
-      try {
-        return await fetchReviewById(id);
-      } catch (e) {
-        if (e instanceof SupabaseError) throw new Error(e.message); // useApi expects Error
-        throw e;
-      }
-    },
-    [id]
-  );
+    refetch,
+  } = useApi<DatabaseReview | null>(async () => {
+    if (!id) return null;
+    try {
+      return await fetchReviewById(id);
+    } catch (e) {
+      if (e instanceof SupabaseError) throw new Error(e.message); // useApi expects Error
+      throw e;
+    }
+  }, [id]);
 
   // Transform data once fetched
-  const review: ReviewType | null = rawReviewData ? transformDatabaseReviewToReview(rawReviewData) : null;
+  const review: ReviewType | null = rawReviewData
+    ? transformDatabaseReviewToReview(rawReviewData)
+    : null;
 
   const handleBack = () => {
     router.back();
@@ -53,7 +68,9 @@ export default function ReviewDetailScreen() {
       <Star
         key={index}
         size={20}
-        color={index < rating ? currentColors.accentGreen : currentColors.border}
+        color={
+          index < rating ? currentColors.accentGreen : currentColors.border
+        }
         fill={index < rating ? currentColors.accentGreen : 'transparent'}
       />
     ));
@@ -61,24 +78,37 @@ export default function ReviewDetailScreen() {
 
   const getSectionIcon = (sectionType: string) => {
     switch (sectionType) {
-      case 'performance': return <TrendingUp color={currentColors.primary} size={20} />;
-      case 'exterior': return <Palette color={currentColors.primary} size={20} />;
-      case 'interior': return <Package color={currentColors.primary} size={20} />;
-      case 'tech': return <Smartphone color={currentColors.primary} size={20} />;
-      case 'practicality': return <Gauge color={currentColors.primary} size={20} />;
-      default: return <Award color={currentColors.primary} size={20} />;
+      case 'performance':
+        return <TrendingUp color={currentColors.primary} size={20} />;
+      case 'exterior':
+        return <Palette color={currentColors.primary} size={20} />;
+      case 'interior':
+        return <Package color={currentColors.primary} size={20} />;
+      case 'tech':
+        return <Smartphone color={currentColors.primary} size={20} />;
+      case 'practicality':
+        return <Gauge color={currentColors.primary} size={20} />;
+      default:
+        return <Award color={currentColors.primary} size={20} />;
     }
   };
 
   const getSectionTitle = (sectionType: string) => {
     switch (sectionType) {
-      case 'performance': return 'Performance & Driving';
-      case 'exterior': return 'Exterior Design';
-      case 'interior': return 'Interior & Comfort';
-      case 'tech': return 'Technology & Features';
-      case 'practicality': return 'Practicality & Efficiency';
-      case 'verdict': return 'Final Verdict';
-      default: return sectionType.charAt(0).toUpperCase() + sectionType.slice(1);
+      case 'performance':
+        return 'Performance & Driving';
+      case 'exterior':
+        return 'Exterior Design';
+      case 'interior':
+        return 'Interior & Comfort';
+      case 'tech':
+        return 'Technology & Features';
+      case 'practicality':
+        return 'Practicality & Efficiency';
+      case 'verdict':
+        return 'Final Verdict';
+      default:
+        return sectionType.charAt(0).toUpperCase() + sectionType.slice(1);
     }
   };
 
@@ -108,7 +138,10 @@ export default function ReviewDetailScreen() {
         </View>
         <ErrorState
           title="Error Loading Review"
-          message={error || 'Review details could not be loaded or the review was not found.'}
+          message={
+            error ||
+            'Review details could not be loaded or the review was not found.'
+          }
           onRetry={refetch}
         />
       </SafeAreaView>
@@ -122,7 +155,10 @@ export default function ReviewDetailScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Custom header View removed, native header is used */}
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Hero Image */}
         {review.images && review.images.length > 0 && review.images[0] && (
           <Image
@@ -139,26 +175,36 @@ export default function ReviewDetailScreen() {
               {review.car_year} {review.car_make} {review.car_model}
             </Text>
             <Text style={styles.reviewTitle}>{review.title}</Text>
-            
+
             <View style={styles.reviewMeta}>
               <View style={styles.rating}>
                 {renderStars(review.rating)}
                 <Text style={styles.ratingText}>{review.rating}/5</Text>
               </View>
-              
+
               {review.cs_score && (
                 <View style={styles.csScore}>
                   <Award color={currentColors.accentGreen} size={16} />
-                  <Text style={styles.csScoreText}>CS Score: {review.cs_score}/100</Text>
+                  <Text style={styles.csScoreText}>
+                    CS Score: {review.cs_score}/100
+                  </Text>
                 </View>
               )}
             </View>
 
             <View style={styles.authorInfo}>
               <User color={currentColors.textSecondary} size={16} />
-              <Text style={[styles.authorText, { marginLeft: Spacing.sm }]}>By {review.author}</Text>
-              <Calendar color={currentColors.textSecondary} size={16} style={{ marginLeft: Spacing.sm }} />
-              <Text style={[styles.dateText, { marginLeft: Spacing.sm }]}>{formatFullDate(review.created_at)}</Text>
+              <Text style={[styles.authorText, { marginLeft: Spacing.sm }]}>
+                By {review.author}
+              </Text>
+              <Calendar
+                color={currentColors.textSecondary}
+                size={16}
+                style={{ marginLeft: Spacing.sm }}
+              />
+              <Text style={[styles.dateText, { marginLeft: Spacing.sm }]}>
+                {formatFullDate(review.created_at)}
+              </Text>
             </View>
           </View>
 
@@ -180,30 +226,34 @@ export default function ReviewDetailScreen() {
           </View>
 
           {/* Detailed Review Sections from review.sections */}
-          {review.sections && Object.entries(review.sections).map(([sectionType, content]) => {
-            // Skip summary as it's handled above, or if content is empty
-            if (!content || sectionType.toLowerCase() === 'summary') return null;
-            
-            return (
-              <View key={sectionType} style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  {getSectionIcon(sectionType)}
-                  <Text style={styles.sectionTitle}>{getSectionTitle(sectionType)}</Text>
+          {review.sections &&
+            Object.entries(review.sections).map(([sectionType, content]) => {
+              // Skip summary as it's handled above, or if content is empty
+              if (!content || sectionType.toLowerCase() === 'summary')
+                return null;
+
+              return (
+                <View key={sectionType} style={styles.section}>
+                  <View style={styles.sectionHeader}>
+                    {getSectionIcon(sectionType)}
+                    <Text style={styles.sectionTitle}>
+                      {getSectionTitle(sectionType)}
+                    </Text>
+                  </View>
+                  <Text style={styles.sectionContent}>{content as string}</Text>
                 </View>
-                <Text style={styles.sectionContent}>{content as string}</Text>
-              </View>
-            );
-          })}
+              );
+            })}
 
           {/* Fallback for main content if sections are not detailed */}
           {!review.sections && (
-             <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Award color={currentColors.primary} size={20} />
-                  <Text style={styles.sectionTitle}>Full Review</Text>
-                </View>
-                <Text style={styles.sectionContent}>{mainContentText}</Text>
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Award color={currentColors.primary} size={20} />
+                <Text style={styles.sectionTitle}>Full Review</Text>
               </View>
+              <Text style={styles.sectionContent}>{mainContentText}</Text>
+            </View>
           )}
         </View>
       </ScrollView>

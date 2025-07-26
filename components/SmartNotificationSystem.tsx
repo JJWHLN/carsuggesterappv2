@@ -21,10 +21,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { 
-  AlertTriangle, TrendingUp, DollarSign, Star, Clock,
-  MapPin, Car, Sparkles, Eye, Heart, MessageCircle as Bell, X,
-  ArrowRight, Filter, Settings as SettingsIcon
+import {
+  AlertTriangle,
+  TrendingUp,
+  DollarSign,
+  Star,
+  Clock,
+  MapPin,
+  Car,
+  Sparkles,
+  Eye,
+  Heart,
+  MessageCircle as Bell,
+  X,
+  ArrowRight,
+  Filter,
+  Settings as SettingsIcon,
 } from '@/utils/ultra-optimized-icons';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
@@ -41,7 +53,13 @@ const NotificationAPI = {
 
 interface SmartNotification {
   id: string;
-  type: 'price_drop' | 'new_listing' | 'saved_search' | 'recommendation' | 'deal_alert' | 'market_insight';
+  type:
+    | 'price_drop'
+    | 'new_listing'
+    | 'saved_search'
+    | 'recommendation'
+    | 'deal_alert'
+    | 'market_insight';
   title: string;
   message: string;
   timestamp: Date;
@@ -245,11 +263,16 @@ class SmartNotificationEngine {
     // - New listings matching user criteria
     // - Market trends and insights
     // - Deal expirations
-    
+
     console.log('Smart notification monitoring started');
   }
 
-  async createNotification(notification: Omit<SmartNotification, 'id' | 'timestamp' | 'read' | 'dismissed'>) {
+  async createNotification(
+    notification: Omit<
+      SmartNotification,
+      'id' | 'timestamp' | 'read' | 'dismissed'
+    >,
+  ) {
     const newNotification: SmartNotification = {
       ...notification,
       id: Date.now().toString(),
@@ -273,9 +296,9 @@ class SmartNotificationEngine {
 
     const now = new Date();
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    
+
     const { start, end } = this.preferences.quietHours;
-    
+
     // Simple time comparison (doesn't handle midnight crossover)
     return currentTime < start || currentTime > end;
   }
@@ -294,26 +317,30 @@ class SmartNotificationEngine {
   }
 
   getNotifications(): SmartNotification[] {
-    return this.notifications.filter(n => !n.dismissed);
+    return this.notifications.filter((n) => !n.dismissed);
   }
 
   getUnreadCount(): number {
-    return this.notifications.filter(n => !n.read && !n.dismissed).length;
+    return this.notifications.filter((n) => !n.read && !n.dismissed).length;
   }
 
   markAsRead(notificationId: string) {
-    const notification = this.notifications.find(n => n.id === notificationId);
+    const notification = this.notifications.find(
+      (n) => n.id === notificationId,
+    );
     if (notification) {
       notification.read = true;
     }
   }
 
   markAllAsRead() {
-    this.notifications.forEach(n => n.read = true);
+    this.notifications.forEach((n) => (n.read = true));
   }
 
   dismissNotification(notificationId: string) {
-    const notification = this.notifications.find(n => n.id === notificationId);
+    const notification = this.notifications.find(
+      (n) => n.id === notificationId,
+    );
     if (notification) {
       notification.dismissed = true;
     }
@@ -321,9 +348,12 @@ class SmartNotificationEngine {
 
   async updatePreferences(newPreferences: Partial<NotificationPreferences>) {
     this.preferences = { ...this.preferences, ...newPreferences };
-    
+
     try {
-      await AsyncStorage.setItem('notification_preferences', JSON.stringify(this.preferences));
+      await AsyncStorage.setItem(
+        'notification_preferences',
+        JSON.stringify(this.preferences),
+      );
     } catch (error) {
       console.error('Failed to save notification preferences:', error);
     }
@@ -334,12 +364,9 @@ class SmartNotificationEngine {
   }
 }
 
-export const SmartNotificationSystem: React.FC<SmartNotificationSystemProps> = ({
-  visible,
-  onClose,
-  onNotificationPress,
-  onSettingsPress,
-}) => {
+export const SmartNotificationSystem: React.FC<
+  SmartNotificationSystemProps
+> = ({ visible, onClose, onNotificationPress, onSettingsPress }) => {
   const { colors } = useThemeColors();
   const { user } = useAuth();
   const styles = getThemedStyles(colors);
@@ -356,29 +383,35 @@ export const SmartNotificationSystem: React.FC<SmartNotificationSystemProps> = (
   const loadNotifications = useCallback(() => {
     const notifs = engine.getNotifications();
     const unread = engine.getUnreadCount();
-    
+
     setNotifications(notifs);
     setUnreadCount(unread);
   }, [engine]);
 
-  const handleNotificationPress = useCallback(async (notification: SmartNotification) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    engine.markAsRead(notification.id);
-    loadNotifications();
-    onNotificationPress(notification);
-  }, [engine, loadNotifications, onNotificationPress]);
+  const handleNotificationPress = useCallback(
+    async (notification: SmartNotification) => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-  const handleDismiss = useCallback(async (notificationId: string) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
-    engine.dismissNotification(notificationId);
-    loadNotifications();
-  }, [engine, loadNotifications]);
+      engine.markAsRead(notification.id);
+      loadNotifications();
+      onNotificationPress(notification);
+    },
+    [engine, loadNotifications, onNotificationPress],
+  );
+
+  const handleDismiss = useCallback(
+    async (notificationId: string) => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+      engine.dismissNotification(notificationId);
+      loadNotifications();
+    },
+    [engine, loadNotifications],
+  );
 
   const handleMarkAllRead = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
+
     engine.markAllAsRead();
     loadNotifications();
   }, [engine, loadNotifications]);
@@ -396,9 +429,15 @@ export const SmartNotificationSystem: React.FC<SmartNotificationSystemProps> = (
     return `${days}d ago`;
   };
 
-  const renderNotification = ({ item, index }: { item: SmartNotification; index: number }) => {
+  const renderNotification = ({
+    item,
+    index,
+  }: {
+    item: SmartNotification;
+    index: number;
+  }) => {
     const Icon = item.icon;
-    
+
     return (
       <Animated.View
         entering={FadeIn.delay(index * 50).springify()}
@@ -409,33 +448,61 @@ export const SmartNotificationSystem: React.FC<SmartNotificationSystemProps> = (
           style={[
             styles.notification,
             !item.read && styles.notificationUnread,
-            { backgroundColor: item.read ? colors.cardBackground : colors.cardBackground + 'CC' }
+            {
+              backgroundColor: item.read
+                ? colors.cardBackground
+                : colors.cardBackground + 'CC',
+            },
           ]}
           onPress={() => handleNotificationPress(item)}
           activeOpacity={0.7}
         >
           {/* Priority Indicator */}
           {item.priority === 'high' && (
-            <View style={[styles.priorityIndicator, { backgroundColor: item.color }]} />
+            <View
+              style={[
+                styles.priorityIndicator,
+                { backgroundColor: item.color },
+              ]}
+            />
           )}
 
           {/* Icon */}
-          <View style={[styles.iconContainer, { backgroundColor: item.color + '20' }]}>
+          <View
+            style={[
+              styles.iconContainer,
+              { backgroundColor: item.color + '20' },
+            ]}
+          >
             <Icon size={20} color={item.color} />
           </View>
 
           {/* Content */}
           <View style={styles.notificationContent}>
             <View style={styles.notificationHeader}>
-              <Text style={[styles.notificationTitle, { color: colors.text }]} numberOfLines={1}>
+              <Text
+                style={[styles.notificationTitle, { color: colors.text }]}
+                numberOfLines={1}
+              >
                 {item.title}
               </Text>
-              <Text style={[styles.notificationTime, { color: colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.notificationTime,
+                  { color: colors.textSecondary },
+                ]}
+              >
                 {getTimeAgo(item.timestamp)}
               </Text>
             </View>
-            
-            <Text style={[styles.notificationMessage, { color: colors.textSecondary }]} numberOfLines={2}>
+
+            <Text
+              style={[
+                styles.notificationMessage,
+                { color: colors.textSecondary },
+              ]}
+              numberOfLines={2}
+            >
               {item.message}
             </Text>
 
@@ -453,7 +520,12 @@ export const SmartNotificationSystem: React.FC<SmartNotificationSystemProps> = (
             {item.type === 'deal_alert' && item.data?.dealEndTime && (
               <View style={styles.countdownContainer}>
                 <Clock size={12} color={colors.textSecondary} />
-                <Text style={[styles.countdownText, { color: colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.countdownText,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   Expires in 2 days
                 </Text>
               </View>
@@ -490,27 +562,35 @@ export const SmartNotificationSystem: React.FC<SmartNotificationSystemProps> = (
             Smart Notifications
           </Text>
           {unreadCount > 0 && (
-            <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
+            <View
+              style={[styles.unreadBadge, { backgroundColor: colors.primary }]}
+            >
               <Text style={styles.unreadBadgeText}>
                 {unreadCount > 99 ? '99+' : unreadCount}
               </Text>
             </View>
           )}
         </View>
-        
+
         <View style={styles.headerRight}>
           {unreadCount > 0 && (
-            <TouchableOpacity onPress={handleMarkAllRead} style={styles.markAllButton}>
+            <TouchableOpacity
+              onPress={handleMarkAllRead}
+              style={styles.markAllButton}
+            >
               <Text style={[styles.markAllText, { color: colors.primary }]}>
                 Mark all read
               </Text>
             </TouchableOpacity>
           )}
-          
-          <TouchableOpacity onPress={onSettingsPress} style={styles.settingsButton}>
+
+          <TouchableOpacity
+            onPress={onSettingsPress}
+            style={styles.settingsButton}
+          >
             <SettingsIcon size={20} color={colors.textSecondary} />
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <X size={24} color={colors.textSecondary} />
           </TouchableOpacity>
@@ -531,7 +611,9 @@ export const SmartNotificationSystem: React.FC<SmartNotificationSystemProps> = (
             <Text style={[styles.emptyTitle, { color: colors.text }]}>
               No notifications yet
             </Text>
-            <Text style={[styles.emptyMessage, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.emptyMessage, { color: colors.textSecondary }]}
+            >
               We'll notify you about price drops, new matches, and deals
             </Text>
           </View>

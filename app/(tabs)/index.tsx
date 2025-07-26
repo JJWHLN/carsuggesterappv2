@@ -13,7 +13,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { Search, Sparkles, ArrowRight, Car, Award } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  Sparkles,
+  ArrowRight,
+  Car,
+  Award,
+} from '@/utils/ultra-optimized-icons';
 import { Users, Zap, Crown, TrendingUp } from '@/utils/ultra-optimized-icons';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -26,14 +32,17 @@ import { PremiumHeroSection } from '@/components/PremiumHeroSection';
 import { ModernHeroSection } from '@/components/ModernHeroSection';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { UnifiedSearchFilter, useSearchFilters } from '@/components/ui/UnifiedSearchFilter';
+import {
+  UnifiedSearchFilter,
+  useSearchFilters,
+} from '@/components/ui/UnifiedSearchFilter';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
 import { useCarData, useSearch, useUserProfile } from '@/stores';
 import { useThemeColors } from '@/hooks/useTheme';
-import { useApi } from '@/hooks/useApi';
 import { fetchCarModels, fetchPopularBrands } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { useUnifiedDataFetching } from '@/hooks/useUnifiedDataFetching';
 
 const { width, height } = Dimensions.get('window');
 
@@ -41,7 +50,7 @@ function HomeScreen() {
   const { colors } = useThemeColors();
   const { layout, cards, buttons } = useDesignTokens();
   const { user } = useAuth();
-  
+
   // Use unified search/filter hook
   const {
     filters,
@@ -63,15 +72,21 @@ function HomeScreen() {
     data: featuredCars,
     loading: featuredCarsLoading,
     error: featuredCarsError,
-    refetch: refetchFeaturedCars
-  } = useApi(() => fetchCarModels({ limit: 6 }), []);
+    refetch: refetchFeaturedCars,
+  } = useUnifiedDataFetching(() => fetchCarModels({ limit: 6 }), [], {
+    initialLoad: true,
+    enabled: true,
+  });
 
   const {
     data: popularBrands,
     loading: popularBrandsLoading,
     error: popularBrandsError,
-    refetch: refetchPopularBrands
-  } = useApi(() => fetchPopularBrands(8), []);
+    refetch: refetchPopularBrands,
+  } = useUnifiedDataFetching(() => fetchPopularBrands(8), [], {
+    initialLoad: true,
+    enabled: true,
+  });
 
   const handleSearchPress = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -99,15 +114,22 @@ function HomeScreen() {
 
   if (featuredCarsLoading && !featuredCars) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <LoadingState />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+      >
         {/* Modern Hero Section */}
         <ModernHeroSection
           onSearchPress={handleSearchPress}
@@ -115,124 +137,234 @@ function HomeScreen() {
         />
 
         {/* Stats Section */}
-        <View style={[styles.statsSection, { backgroundColor: colors.cardBackground }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Platform Statistics</Text>
+        <View
+          style={[
+            styles.statsSection,
+            { backgroundColor: colors.cardBackground },
+          ]}
+        >
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Platform Statistics
+          </Text>
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
-              <View style={[styles.statIcon, { backgroundColor: colors.background }]}>
+              <View
+                style={[
+                  styles.statIcon,
+                  { backgroundColor: colors.background },
+                ]}
+              >
                 <Car color={colors.primary} size={28} />
               </View>
-              <Text style={[styles.statNumber, { color: colors.text }]}>Live</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Car Listings</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                Live
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                Car Listings
+              </Text>
             </View>
             <View style={styles.statCard}>
-              <View style={[styles.statIcon, { backgroundColor: colors.background }]}>
+              <View
+                style={[
+                  styles.statIcon,
+                  { backgroundColor: colors.background },
+                ]}
+              >
                 <Users color="#3B82F6" size={28} />
               </View>
-              <Text style={[styles.statNumber, { color: colors.text }]}>Active</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Dealer Network</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                Active
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                Dealer Network
+              </Text>
             </View>
             <View style={styles.statCard}>
-              <View style={[styles.statIcon, { backgroundColor: colors.background }]}>
+              <View
+                style={[
+                  styles.statIcon,
+                  { backgroundColor: colors.background },
+                ]}
+              >
                 <Award color="#F59E0B" size={28} />
               </View>
-              <Text style={[styles.statNumber, { color: colors.text }]}>Real</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>User Reviews</Text>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                Real
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                User Reviews
+              </Text>
             </View>
           </View>
         </View>
 
         {/* Instagram-Style Stories Section */}
         <View style={styles.storiesSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Popular Right Now</Text>
-          <ScrollView 
-            horizontal 
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Popular Right Now
+          </Text>
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.storiesContainer}
           >
-            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('new-arrivals')}>
+            <TouchableOpacity
+              style={styles.storyItem}
+              onPress={() => handleCategoryPress('new-arrivals')}
+            >
               <LinearGradient
                 colors={['#FF6B6B', '#4ECDC4']}
                 style={styles.storyGradient}
               >
                 <Car color="white" size={28} />
               </LinearGradient>
-              <Text style={[styles.storyText, { color: colors.text }]}>New</Text>
+              <Text style={[styles.storyText, { color: colors.text }]}>
+                New
+              </Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('electric')}>
+
+            <TouchableOpacity
+              style={styles.storyItem}
+              onPress={() => handleCategoryPress('electric')}
+            >
               <LinearGradient
                 colors={['#A8E6CF', '#56CC9D']}
                 style={styles.storyGradient}
               >
                 <Zap color="white" size={28} />
               </LinearGradient>
-              <Text style={[styles.storyText, { color: colors.text }]}>Electric</Text>
+              <Text style={[styles.storyText, { color: colors.text }]}>
+                Electric
+              </Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('luxury')}>
+
+            <TouchableOpacity
+              style={styles.storyItem}
+              onPress={() => handleCategoryPress('luxury')}
+            >
               <LinearGradient
                 colors={['#FFD93D', '#FF6B35']}
                 style={styles.storyGradient}
               >
                 <Crown color="white" size={28} />
               </LinearGradient>
-              <Text style={[styles.storyText, { color: colors.text }]}>Luxury</Text>
+              <Text style={[styles.storyText, { color: colors.text }]}>
+                Luxury
+              </Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('sports')}>
+
+            <TouchableOpacity
+              style={styles.storyItem}
+              onPress={() => handleCategoryPress('sports')}
+            >
               <LinearGradient
                 colors={['#FF8E53', '#FF6B6B']}
                 style={styles.storyGradient}
               >
                 <TrendingUp color="white" size={28} />
               </LinearGradient>
-              <Text style={[styles.storyText, { color: colors.text }]}>Sports</Text>
+              <Text style={[styles.storyText, { color: colors.text }]}>
+                Sports
+              </Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('family')}>
+
+            <TouchableOpacity
+              style={styles.storyItem}
+              onPress={() => handleCategoryPress('family')}
+            >
               <LinearGradient
                 colors={['#667eea', '#764ba2']}
                 style={styles.storyGradient}
               >
                 <Users color="white" size={28} />
               </LinearGradient>
-              <Text style={[styles.storyText, { color: colors.text }]}>Family</Text>
+              <Text style={[styles.storyText, { color: colors.text }]}>
+                Family
+              </Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.storyItem} onPress={() => handleCategoryPress('deals')}>
+
+            <TouchableOpacity
+              style={styles.storyItem}
+              onPress={() => handleCategoryPress('deals')}
+            >
               <LinearGradient
                 colors={['#f093fb', '#f5576c']}
                 style={styles.storyGradient}
               >
                 <Award color="white" size={28} />
               </LinearGradient>
-              <Text style={[styles.storyText, { color: colors.text }]}>Deals</Text>
+              <Text style={[styles.storyText, { color: colors.text }]}>
+                Deals
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
 
         {/* Zillow-Inspired Quick Filters */}
         <View style={styles.quickFiltersSection}>
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filtersContainer}
           >
-            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.primary }]}>
-              <Text style={[styles.filterChipText, { color: colors.white }]}>Under $30k</Text>
+            <TouchableOpacity
+              style={[styles.filterChip, { backgroundColor: colors.primary }]}
+            >
+              <Text style={[styles.filterChipText, { color: colors.white }]}>
+                Under $30k
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
-              <Text style={[styles.filterChipText, { color: colors.text }]}>Electric</Text>
+            <TouchableOpacity
+              style={[
+                styles.filterChip,
+                {
+                  backgroundColor: colors.cardBackground,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <Text style={[styles.filterChipText, { color: colors.text }]}>
+                Electric
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
-              <Text style={[styles.filterChipText, { color: colors.text }]}>Low Mileage</Text>
+            <TouchableOpacity
+              style={[
+                styles.filterChip,
+                {
+                  backgroundColor: colors.cardBackground,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <Text style={[styles.filterChipText, { color: colors.text }]}>
+                Low Mileage
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
-              <Text style={[styles.filterChipText, { color: colors.text }]}>Certified</Text>
+            <TouchableOpacity
+              style={[
+                styles.filterChip,
+                {
+                  backgroundColor: colors.cardBackground,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <Text style={[styles.filterChipText, { color: colors.text }]}>
+                Certified
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
-              <Text style={[styles.filterChipText, { color: colors.text }]}>Near Me</Text>
+            <TouchableOpacity
+              style={[
+                styles.filterChip,
+                {
+                  backgroundColor: colors.cardBackground,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <Text style={[styles.filterChipText, { color: colors.text }]}>
+                Near Me
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -240,26 +372,30 @@ function HomeScreen() {
         {/* TikTok-Style Featured Cars Feed */}
         {featuredCarsError ? (
           <View style={styles.section}>
-            <ErrorState 
-              title="Could Not Load Cars" 
-              message={featuredCarsError} 
-              onRetry={refetchFeaturedCars} 
+            <ErrorState
+              title="Could Not Load Cars"
+              message={featuredCarsError}
+              onRetry={refetchFeaturedCars}
               retryText="Try Again"
             />
           </View>
         ) : (
           <View style={styles.featuredSection}>
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Featured Cars</Text>
-              <TouchableOpacity 
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                Featured Cars
+              </Text>
+              <TouchableOpacity
                 onPress={handleBrowseAllCars}
                 style={styles.seeAllButton}
               >
-                <Text style={[styles.seeAllText, { color: colors.primary }]}>See All</Text>
+                <Text style={[styles.seeAllText, { color: colors.primary }]}>
+                  See All
+                </Text>
                 <ArrowRight color={colors.primary} size={16} />
               </TouchableOpacity>
             </View>
-            
+
             {featuredCarsLoading ? (
               <LoadingState />
             ) : featuredCars && featuredCars.length > 0 ? (
@@ -273,7 +409,9 @@ function HomeScreen() {
                     isFeatured={index < 2} // First two are featured
                     isPremiumListing={Math.random() > 0.7} // Random premium listings
                     variant={index === 0 ? 'featured' : 'standard'}
-                    style={index === 0 ? styles.featuredCard : styles.standardCard}
+                    style={
+                      index === 0 ? styles.featuredCard : styles.standardCard
+                    }
                   />
                 ))}
               </View>
@@ -296,7 +434,9 @@ function HomeScreen() {
             end={{ x: 1, y: 1 }}
           >
             <Text style={styles.ctaTitle}>Ready to Find Your Dream Car?</Text>
-            <Text style={styles.ctaSubtitle}>Get personalized recommendations powered by AI</Text>
+            <Text style={styles.ctaSubtitle}>
+              Get personalized recommendations powered by AI
+            </Text>
             <Button
               title="Get My Recommendations"
               onPress={handleGetRecommendations}
@@ -333,7 +473,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     paddingHorizontal: 20,
   },
-  
+
   // Hero Section
   heroSection: {
     marginBottom: 20,
@@ -615,7 +755,7 @@ const styles = StyleSheet.create({
   carsContainer: {
     paddingBottom: 20,
   },
-  
+
   // Premium cards layout
   premiumCardsGrid: {
     flexDirection: 'row',

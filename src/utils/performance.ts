@@ -35,7 +35,7 @@ class ReactNativePerformanceMonitor {
   private init() {
     if (this.isInitialized) return;
     this.isInitialized = true;
-    
+
     this.trackAppStartTime();
     this.trackMemoryUsage();
     this.setupInteractionTracking();
@@ -47,9 +47,14 @@ class ReactNativePerformanceMonitor {
     this.addMetric({
       name: 'app-startup-time',
       value: startupTime,
-      rating: startupTime < 2000 ? 'good' : startupTime < 4000 ? 'needs-improvement' : 'poor',
+      rating:
+        startupTime < 2000
+          ? 'good'
+          : startupTime < 4000
+            ? 'needs-improvement'
+            : 'poor',
       timestamp: Date.now(),
-      metadata: { platform: Platform.OS }
+      metadata: { platform: Platform.OS },
     });
   }
 
@@ -63,12 +68,17 @@ class ReactNativePerformanceMonitor {
           this.addMetric({
             name: 'memory-usage',
             value: usedMemory,
-            rating: usedMemory < 50 ? 'good' : usedMemory < 100 ? 'needs-improvement' : 'poor',
+            rating:
+              usedMemory < 50
+                ? 'good'
+                : usedMemory < 100
+                  ? 'needs-improvement'
+                  : 'poor',
             timestamp: Date.now(),
-            metadata: { 
+            metadata: {
               total: memInfo.totalJSHeapSize / 1024 / 1024,
-              limit: memInfo.jsHeapSizeLimit / 1024 / 1024
-            }
+              limit: memInfo.jsHeapSizeLimit / 1024 / 1024,
+            },
           });
         }
       }
@@ -89,9 +99,14 @@ class ReactNativePerformanceMonitor {
         this.addMetric({
           name: 'interaction-response-time',
           value: responseTime,
-          rating: responseTime < 100 ? 'good' : responseTime < 300 ? 'needs-improvement' : 'poor',
+          rating:
+            responseTime < 100
+              ? 'good'
+              : responseTime < 300
+                ? 'needs-improvement'
+                : 'poor',
           timestamp: Date.now(),
-          metadata: { type: interactionType }
+          metadata: { type: interactionType },
         });
       }
       interactionStart = Date.now();
@@ -103,38 +118,44 @@ class ReactNativePerformanceMonitor {
 
   private addMetric(metric: PerformanceMetric) {
     this.metrics.push(metric);
-    
+
     // Keep only last 100 metrics to prevent memory leaks
     if (this.metrics.length > 100) {
       this.metrics = this.metrics.slice(-100);
     }
-    
+
     // Log critical metrics in development
     if (__DEV__ && metric.rating === 'poor') {
-      console.warn(`⚠️ Performance Issue: ${metric.name} = ${metric.value}ms`, metric.metadata);
+      console.warn(
+        `⚠️ Performance Issue: ${metric.name} = ${metric.value}ms`,
+        metric.metadata,
+      );
     }
   }
 
   // Public methods
   public trackCustomMetric(
-    name: string, 
-    value: number, 
+    name: string,
+    value: number,
     thresholds?: { good: number; needsImprovement: number },
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ) {
     const defaultThresholds = { good: 100, needsImprovement: 200 };
     const { good, needsImprovement } = { ...defaultThresholds, ...thresholds };
-    
-    const rating = 
-      value <= good ? 'good' :
-      value <= needsImprovement ? 'needs-improvement' : 'poor';
+
+    const rating =
+      value <= good
+        ? 'good'
+        : value <= needsImprovement
+          ? 'needs-improvement'
+          : 'poor';
 
     this.addMetric({
       name,
       value,
       rating,
       timestamp: Date.now(),
-      metadata
+      metadata,
     });
   }
 
@@ -143,7 +164,7 @@ class ReactNativePerformanceMonitor {
       `render-${componentName}`,
       renderTime,
       { good: 16, needsImprovement: 32 },
-      { component: componentName, target: '60fps' }
+      { component: componentName, target: '60fps' },
     );
   }
 
@@ -152,7 +173,7 @@ class ReactNativePerformanceMonitor {
       'navigation-time',
       navigationTime,
       { good: 300, needsImprovement: 600 },
-      { route: routeName }
+      { route: routeName },
     );
   }
 
@@ -161,7 +182,7 @@ class ReactNativePerformanceMonitor {
       'api-call-duration',
       duration,
       { good: 500, needsImprovement: 1000 },
-      { endpoint, success }
+      { endpoint, success },
     );
   }
 
@@ -170,7 +191,7 @@ class ReactNativePerformanceMonitor {
       'image-load-time',
       loadTime,
       { good: 500, needsImprovement: 1000 },
-      { source, size }
+      { source, size },
     );
   }
 
@@ -179,7 +200,7 @@ class ReactNativePerformanceMonitor {
   }
 
   public getMetricsByName(name: string): PerformanceMetric[] {
-    return this.metrics.filter(m => m.name === name);
+    return this.metrics.filter((m) => m.name === name);
   }
 
   public getReport(): PerformanceReport {
@@ -188,12 +209,12 @@ class ReactNativePerformanceMonitor {
       deviceInfo: {
         platform: Platform.OS,
         version: Platform.Version?.toString(),
-        memory: (global as any).performance?.memory?.usedJSHeapSize
+        memory: (global as any).performance?.memory?.usedJSHeapSize,
       },
       appInfo: {
         version: '1.0.0',
-        buildId: __DEV__ ? 'development' : 'production'
-      }
+        buildId: __DEV__ ? 'development' : 'production',
+      },
     };
   }
 
@@ -204,7 +225,7 @@ class ReactNativePerformanceMonitor {
   public getAverageMetric(name: string): number | null {
     const metrics = this.getMetricsByName(name);
     if (metrics.length === 0) return null;
-    
+
     return metrics.reduce((sum, m) => sum + m.value, 0) / metrics.length;
   }
 }
@@ -214,34 +235,55 @@ export const performanceMonitor = new ReactNativePerformanceMonitor();
 
 // React Hook for performance monitoring
 export function usePerformanceMonitor() {
-  const trackMetric = React.useCallback((
-    name: string, 
-    value: number, 
-    thresholds?: { good: number; needsImprovement: number },
-    metadata?: Record<string, any>
-  ) => {
-    performanceMonitor.trackCustomMetric(name, value, thresholds, metadata);
-  }, []);
+  const trackMetric = React.useCallback(
+    (
+      name: string,
+      value: number,
+      thresholds?: { good: number; needsImprovement: number },
+      metadata?: Record<string, any>,
+    ) => {
+      performanceMonitor.trackCustomMetric(name, value, thresholds, metadata);
+    },
+    [],
+  );
 
-  const trackRender = React.useCallback((componentName: string, renderTime: number) => {
-    performanceMonitor.trackRenderTime(componentName, renderTime);
-  }, []);
+  const trackRender = React.useCallback(
+    (componentName: string, renderTime: number) => {
+      performanceMonitor.trackRenderTime(componentName, renderTime);
+    },
+    [],
+  );
 
-  const trackNavigation = React.useCallback((routeName: string, navigationTime: number) => {
-    performanceMonitor.trackNavigationTime(routeName, navigationTime);
-  }, []);
+  const trackNavigation = React.useCallback(
+    (routeName: string, navigationTime: number) => {
+      performanceMonitor.trackNavigationTime(routeName, navigationTime);
+    },
+    [],
+  );
 
-  const trackAPI = React.useCallback((endpoint: string, duration: number, success: boolean) => {
-    performanceMonitor.trackAPICall(endpoint, duration, success);
-  }, []);
+  const trackAPI = React.useCallback(
+    (endpoint: string, duration: number, success: boolean) => {
+      performanceMonitor.trackAPICall(endpoint, duration, success);
+    },
+    [],
+  );
 
-  const trackImage = React.useCallback((source: string, loadTime: number, size?: number) => {
-    performanceMonitor.trackImageLoad(source, loadTime, size);
-  }, []);
+  const trackImage = React.useCallback(
+    (source: string, loadTime: number, size?: number) => {
+      performanceMonitor.trackImageLoad(source, loadTime, size);
+    },
+    [],
+  );
 
-  const getMetrics = React.useCallback(() => performanceMonitor.getMetrics(), []);
+  const getMetrics = React.useCallback(
+    () => performanceMonitor.getMetrics(),
+    [],
+  );
   const getReport = React.useCallback(() => performanceMonitor.getReport(), []);
-  const getAverage = React.useCallback((name: string) => performanceMonitor.getAverageMetric(name), []);
+  const getAverage = React.useCallback(
+    (name: string) => performanceMonitor.getAverageMetric(name),
+    [],
+  );
 
   return {
     trackMetric,
@@ -251,19 +293,19 @@ export function usePerformanceMonitor() {
     trackImage,
     getMetrics,
     getReport,
-    getAverage
+    getAverage,
   };
 }
 
 // Higher-order component for automatic performance tracking
 export function withPerformanceTracking<T extends object>(
   Component: React.ComponentType<T>,
-  componentName: string
+  componentName: string,
 ) {
   const WrappedComponent = React.memo<T>((props) => {
     const startTime = React.useRef<number>();
     const { trackRender } = usePerformanceMonitor();
-    
+
     React.useEffect(() => {
       startTime.current = Date.now();
     });
