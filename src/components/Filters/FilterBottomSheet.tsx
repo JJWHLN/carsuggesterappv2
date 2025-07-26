@@ -2,7 +2,10 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { X, Filter } from 'lucide-react-native';
 import { UnifiedFilterPanel as FilterPanel } from '@/components/ui/unified';
-import { SearchFilters, FilterPreset } from '../../features/recommendations/types/search';
+import {
+  SearchFilters,
+  FilterPreset,
+} from '../../features/recommendations/types/search';
 
 interface FilterBottomSheetProps {
   isVisible: boolean;
@@ -54,7 +57,11 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
     if (filters.transmission.length > 0) count++;
     if (filters.colors.length > 0) count++;
     if (filters.priceRange[0] > 0 || filters.priceRange[1] < 200000) count++;
-    if (filters.yearRange[0] > 2000 || filters.yearRange[1] < new Date().getFullYear()) count++;
+    if (
+      filters.yearRange[0] > 2000 ||
+      filters.yearRange[1] < new Date().getFullYear()
+    )
+      count++;
     if (filters.mileageRange[1] < 200000) count++;
     if (filters.features.length > 0) count++;
     if (filters.minSafetyRating > 0) count++;
@@ -68,9 +75,7 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
         <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
           <View className="flex-row items-center">
             <Filter size={20} className="text-gray-700 mr-2" />
-            <Text className="text-lg font-semibold text-gray-800">
-              Filters
-            </Text>
+            <Text className="text-lg font-semibold text-gray-800">Filters</Text>
             {hasActiveFilters() && (
               <View className="bg-green-500 rounded-full w-6 h-6 items-center justify-center ml-2">
                 <Text className="text-white text-xs font-bold">
@@ -79,7 +84,7 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
               </View>
             )}
           </View>
-          
+
           <TouchableOpacity
             onPress={onClose}
             className="p-2 rounded-full bg-gray-100"
@@ -89,7 +94,7 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
         </View>
 
         {/* Filter Content */}
-        <ScrollView 
+        <ScrollView
           className="flex-1 px-4"
           showsVerticalScrollIndicator={false}
         >
@@ -114,13 +119,15 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
             className="flex-1 py-3 rounded-lg border border-gray-300 items-center"
             disabled={!hasActiveFilters()}
           >
-            <Text className={`font-medium ${
-              hasActiveFilters() ? 'text-gray-700' : 'text-gray-400'
-            }`}>
+            <Text
+              className={`font-medium ${
+                hasActiveFilters() ? 'text-gray-700' : 'text-gray-400'
+              }`}
+            >
               Reset
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             onPress={onApply}
             className="flex-2 py-3 rounded-lg bg-green-500 items-center"

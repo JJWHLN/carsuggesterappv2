@@ -1,6 +1,6 @@
 /**
  * In-App Notifications Component
- * 
+ *
  * Displays price alerts, lead updates, and other notifications
  * within the app interface.
  */
@@ -19,7 +19,14 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
-import { Bell, Car, DollarSign, MessageCircle, Trash, CheckCircle } from '@/utils/ultra-optimized-icons';
+import {
+  Bell,
+  Car,
+  DollarSign,
+  MessageCircle,
+  Trash,
+  CheckCircle,
+} from '@/utils/ultra-optimized-icons';
 import { notificationService } from '@/services/NotificationService';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
@@ -74,55 +81,63 @@ export function InAppNotifications() {
     loadNotifications();
   }, [loadNotifications]);
 
-  const handleNotificationPress = useCallback(async (notification: Notification) => {
-    try {
-      // Mark as read if unread
-      if (!notification.isRead) {
-        await notificationService.markNotificationAsRead(notification.id);
-        setNotifications(prev =>
-          prev.map(n =>
-            n.id === notification.id ? { ...n, isRead: true } : n
-          )
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
+  const handleNotificationPress = useCallback(
+    async (notification: Notification) => {
+      try {
+        // Mark as read if unread
+        if (!notification.isRead) {
+          await notificationService.markNotificationAsRead(notification.id);
+          setNotifications((prev) =>
+            prev.map((n) =>
+              n.id === notification.id ? { ...n, isRead: true } : n,
+            ),
+          );
+          setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
 
-      // Navigate based on notification data
-      if (notification.data?.screen) {
-        router.push({
-          pathname: notification.data.screen,
-          params: notification.data.params || {},
-        });
+        // Navigate based on notification data
+        if (notification.data?.screen) {
+          router.push({
+            pathname: notification.data.screen,
+            params: notification.data.params || {},
+          });
+        }
+      } catch (error) {
+        logger.error('Failed to handle notification press', error);
       }
-    } catch (error) {
-      logger.error('Failed to handle notification press', error);
-    }
-  }, []);
+    },
+    [],
+  );
 
-  const handleDeleteNotification = useCallback(async (notificationId: string) => {
-    Alert.alert(
-      'Delete Notification',
-      'Are you sure you want to delete this notification?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Remove from local state
-              setNotifications(prev => prev.filter(n => n.id !== notificationId));
-              
-              // Note: In a real app, you'd also delete from the database
-              logger.info('Notification deleted', { notificationId });
-            } catch (error) {
-              logger.error('Failed to delete notification', error);
-            }
+  const handleDeleteNotification = useCallback(
+    async (notificationId: string) => {
+      Alert.alert(
+        'Delete Notification',
+        'Are you sure you want to delete this notification?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                // Remove from local state
+                setNotifications((prev) =>
+                  prev.filter((n) => n.id !== notificationId),
+                );
+
+                // Note: In a real app, you'd also delete from the database
+                logger.info('Notification deleted', { notificationId });
+              } catch (error) {
+                logger.error('Failed to delete notification', error);
+              }
+            },
           },
-        },
-      ]
-    );
-  }, []);
+        ],
+      );
+    },
+    [],
+  );
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -165,7 +180,11 @@ export function InAppNotifications() {
     <TouchableOpacity
       style={[
         styles.notificationCard,
-        { backgroundColor: item.isRead ? colors.cardBackground : getNotificationColor(item.type) }
+        {
+          backgroundColor: item.isRead
+            ? colors.cardBackground
+            : getNotificationColor(item.type),
+        },
       ]}
       onPress={() => handleNotificationPress(item)}
     >
@@ -176,10 +195,20 @@ export function InAppNotifications() {
               {getNotificationIcon(item.type)}
             </View>
             <View style={styles.notificationText}>
-              <Text style={[styles.notificationTitle, { opacity: item.isRead ? 0.7 : 1 }]}>
+              <Text
+                style={[
+                  styles.notificationTitle,
+                  { opacity: item.isRead ? 0.7 : 1 },
+                ]}
+              >
                 {item.title}
               </Text>
-              <Text style={[styles.notificationMessage, { opacity: item.isRead ? 0.6 : 0.8 }]}>
+              <Text
+                style={[
+                  styles.notificationMessage,
+                  { opacity: item.isRead ? 0.6 : 0.8 },
+                ]}
+              >
                 {item.message}
               </Text>
               <Text style={styles.notificationTime}>
@@ -187,7 +216,7 @@ export function InAppNotifications() {
               </Text>
             </View>
           </View>
-          
+
           <View style={styles.notificationActions}>
             {!item.isRead && <View style={styles.unreadDot} />}
             <TouchableOpacity
@@ -207,7 +236,8 @@ export function InAppNotifications() {
       <Bell color={colors.textMuted} size={48} />
       <Text style={styles.emptyTitle}>No Notifications</Text>
       <Text style={styles.emptyMessage}>
-        You'll see price alerts, lead updates, and other important notifications here.
+        You'll see price alerts, lead updates, and other important notifications
+        here.
       </Text>
     </View>
   );
@@ -253,7 +283,7 @@ export function InAppNotifications() {
         }
         contentContainerStyle={[
           styles.listContainer,
-          notifications.length === 0 && styles.listContainerEmpty
+          notifications.length === 0 && styles.listContainerEmpty,
         ]}
         showsVerticalScrollIndicator={false}
       />
@@ -261,118 +291,119 @@ export function InAppNotifications() {
   );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    ...Typography.title,
-    color: colors.text,
-  },
-  unreadBadge: {
-    backgroundColor: colors.error,
-    borderRadius: 12,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
-    minWidth: 24,
-    alignItems: 'center',
-  },
-  unreadText: {
-    ...Typography.caption,
-    color: colors.white,
-    fontWeight: '600',
-  },
-  listContainer: {
-    padding: Spacing.lg,
-    gap: Spacing.md,
-  },
-  listContainerEmpty: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  notificationCard: {
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    ...Shadows.sm,
-  },
-  notificationContent: {
-    flex: 1,
-  },
-  notificationHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-  },
-  notificationLeft: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.md,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Shadows.sm,
-  },
-  notificationText: {
-    flex: 1,
-  },
-  notificationTitle: {
-    ...Typography.subtitle,
-    color: colors.text,
-    marginBottom: 4,
-  },
-  notificationMessage: {
-    ...Typography.body,
-    color: colors.textSecondary,
-    marginBottom: Spacing.xs,
-  },
-  notificationTime: {
-    ...Typography.caption,
-    color: colors.textMuted,
-  },
-  notificationActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.primary,
-  },
-  deleteButton: {
-    padding: Spacing.xs,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: Spacing.xl * 2,
-  },
-  emptyTitle: {
-    ...Typography.title,
-    color: colors.text,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.sm,
-  },
-  emptyMessage: {
-    ...Typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    maxWidth: 280,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: Spacing.lg,
+      paddingVertical: Spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerTitle: {
+      ...Typography.title,
+      color: colors.text,
+    },
+    unreadBadge: {
+      backgroundColor: colors.error,
+      borderRadius: 12,
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: 4,
+      minWidth: 24,
+      alignItems: 'center',
+    },
+    unreadText: {
+      ...Typography.caption,
+      color: colors.white,
+      fontWeight: '600',
+    },
+    listContainer: {
+      padding: Spacing.lg,
+      gap: Spacing.md,
+    },
+    listContainerEmpty: {
+      flex: 1,
+      justifyContent: 'center',
+    },
+    notificationCard: {
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      ...Shadows.sm,
+    },
+    notificationContent: {
+      flex: 1,
+    },
+    notificationHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'space-between',
+    },
+    notificationLeft: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: Spacing.md,
+    },
+    iconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.white,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...Shadows.sm,
+    },
+    notificationText: {
+      flex: 1,
+    },
+    notificationTitle: {
+      ...Typography.subtitle,
+      color: colors.text,
+      marginBottom: 4,
+    },
+    notificationMessage: {
+      ...Typography.body,
+      color: colors.textSecondary,
+      marginBottom: Spacing.xs,
+    },
+    notificationTime: {
+      ...Typography.caption,
+      color: colors.textMuted,
+    },
+    notificationActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.sm,
+    },
+    unreadDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: colors.primary,
+    },
+    deleteButton: {
+      padding: Spacing.xs,
+    },
+    emptyState: {
+      alignItems: 'center',
+      paddingVertical: Spacing.xl * 2,
+    },
+    emptyTitle: {
+      ...Typography.title,
+      color: colors.text,
+      marginTop: Spacing.lg,
+      marginBottom: Spacing.sm,
+    },
+    emptyMessage: {
+      ...Typography.body,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      maxWidth: 280,
+    },
+  });

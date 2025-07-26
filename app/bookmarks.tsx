@@ -59,7 +59,7 @@ export default function BookmarksScreen() {
 
     try {
       await BookmarkService.removeBookmark(user.id, target);
-      setBookmarks(prev => prev.filter(b => b.id !== bookmarkId));
+      setBookmarks((prev) => prev.filter((b) => b.id !== bookmarkId));
     } catch (err: any) {
       logger.error('Error removing bookmark:', err);
     }
@@ -132,7 +132,9 @@ export default function BookmarksScreen() {
         />
         <TouchableOpacity
           style={[styles.removeButton, { backgroundColor: colors.error }]}
-          onPress={() => handleRemoveBookmark(car._bookmark.id, car._bookmark.target)}
+          onPress={() =>
+            handleRemoveBookmark(car._bookmark.id, car._bookmark.target)
+          }
         >
           <Trash2 color={colors.white} size={16} />
         </TouchableOpacity>
@@ -142,7 +144,9 @@ export default function BookmarksScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
           <LoadingSpinner color={colors.primary} />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
@@ -155,7 +159,9 @@ export default function BookmarksScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <ErrorState
           title="Failed to Load Bookmarks"
           message={error}
@@ -167,13 +173,20 @@ export default function BookmarksScreen() {
 
   return (
     <RoleGate requiredRoles={['user', 'dealer', 'admin']} requireAuth={true}>
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
             <ArrowLeft color={colors.text} size={24} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Saved Cars</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            Saved Cars
+          </Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -183,11 +196,16 @@ export default function BookmarksScreen() {
             title="No Saved Cars"
             subtitle="Start exploring and save cars you're interested in"
             action={
-              <TouchableOpacity 
-                style={[styles.browseButton, { backgroundColor: colors.primary }]}
+              <TouchableOpacity
+                style={[
+                  styles.browseButton,
+                  { backgroundColor: colors.primary },
+                ]}
                 onPress={() => router.push('/marketplace')}
               >
-                <Text style={[styles.browseButtonText, { color: colors.white }]}>
+                <Text
+                  style={[styles.browseButtonText, { color: colors.white }]}
+                >
                   Browse Cars
                 </Text>
               </TouchableOpacity>

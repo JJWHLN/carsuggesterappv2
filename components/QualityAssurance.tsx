@@ -11,7 +11,18 @@ import {
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors } from '@/hooks/useTheme';
-import { CheckCircle, AlertTriangle, Star, Clock, TrendingUp, Award, Users, Zap, Eye, X } from '@/utils/ultra-optimized-icons';
+import {
+  CheckCircle,
+  AlertTriangle,
+  Star,
+  Clock,
+  TrendingUp,
+  Award,
+  Users,
+  Zap,
+  Eye,
+  X,
+} from '@/utils/ultra-optimized-icons';
 
 interface QualityMetric {
   id: string;
@@ -48,7 +59,9 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
 }) => {
   const { colors } = useThemeColors();
   const styles = getStyles(colors);
-  const [activeSection, setActiveSection] = useState<'overview' | 'standards' | 'metrics'>('overview');
+  const [activeSection, setActiveSection] = useState<
+    'overview' | 'standards' | 'metrics'
+  >('overview');
 
   const qualityMetrics: QualityMetric[] = [
     {
@@ -151,7 +164,8 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         'Safety system testing',
         'Fuel economy validation',
       ],
-      verificationMethod: 'GPS tracking, photo documentation, performance data logging',
+      verificationMethod:
+        'GPS tracking, photo documentation, performance data logging',
       icon: Camera,
     },
     {
@@ -167,7 +181,8 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         'Customer service interaction testing',
         'Post-sale follow-up evaluation',
       ],
-      verificationMethod: 'Documented interactions, photo evidence, transaction records',
+      verificationMethod:
+        'Documented interactions, photo evidence, transaction records',
       icon: Users,
     },
     {
@@ -183,7 +198,8 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         'Background verification',
         'Performance monitoring',
       ],
-      verificationMethod: 'Credential verification, background checks, performance reviews',
+      verificationMethod:
+        'Credential verification, background checks, performance reviews',
       icon: Award,
     },
     {
@@ -199,7 +215,8 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         'Accessibility compliance',
         'SEO optimization',
       ],
-      verificationMethod: 'Editorial review board, automated quality checks, peer review',
+      verificationMethod:
+        'Editorial review board, automated quality checks, peer review',
       icon: FileText,
     },
     {
@@ -215,7 +232,8 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         'Error correction protocols',
         'Version control tracking',
       ],
-      verificationMethod: 'Automated data validation, manual audits, source verification',
+      verificationMethod:
+        'Automated data validation, manual audits, source verification',
       icon: BarChart3,
     },
     {
@@ -231,17 +249,22 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         'Consumer advocacy priority',
         'Privacy protection compliance',
       ],
-      verificationMethod: 'Ethics board review, public disclosure, audit trails',
+      verificationMethod:
+        'Ethics board review, public disclosure, audit trails',
       icon: Shield,
     },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'excellent': return colors.success;
-      case 'good': return colors.warning;
-      case 'needs-improvement': return colors.error;
-      default: return colors.textSecondary;
+      case 'excellent':
+        return colors.success;
+      case 'good':
+        return colors.warning;
+      case 'needs-improvement':
+        return colors.error;
+      default:
+        return colors.textSecondary;
     }
   };
 
@@ -273,11 +296,18 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         style={[styles.tab, activeSection === 'overview' && styles.activeTab]}
         onPress={() => setActiveSection('overview')}
       >
-        <TrendingUp color={activeSection === 'overview' ? colors.primary : colors.textSecondary} size={16} />
-        <Text style={[
-          styles.tabText,
-          activeSection === 'overview' && styles.activeTabText
-        ]}>
+        <TrendingUp
+          color={
+            activeSection === 'overview' ? colors.primary : colors.textSecondary
+          }
+          size={16}
+        />
+        <Text
+          style={[
+            styles.tabText,
+            activeSection === 'overview' && styles.activeTabText,
+          ]}
+        >
           Overview
         </Text>
       </TouchableOpacity>
@@ -286,11 +316,18 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         style={[styles.tab, activeSection === 'metrics' && styles.activeTab]}
         onPress={() => setActiveSection('metrics')}
       >
-        <BarChart3 color={activeSection === 'metrics' ? colors.primary : colors.textSecondary} size={16} />
-        <Text style={[
-          styles.tabText,
-          activeSection === 'metrics' && styles.activeTabText
-        ]}>
+        <BarChart3
+          color={
+            activeSection === 'metrics' ? colors.primary : colors.textSecondary
+          }
+          size={16}
+        />
+        <Text
+          style={[
+            styles.tabText,
+            activeSection === 'metrics' && styles.activeTabText,
+          ]}
+        >
           Metrics
         </Text>
       </TouchableOpacity>
@@ -299,11 +336,20 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
         style={[styles.tab, activeSection === 'standards' && styles.activeTab]}
         onPress={() => setActiveSection('standards')}
       >
-        <FileText color={activeSection === 'standards' ? colors.primary : colors.textSecondary} size={16} />
-        <Text style={[
-          styles.tabText,
-          activeSection === 'standards' && styles.activeTabText
-        ]}>
+        <FileText
+          color={
+            activeSection === 'standards'
+              ? colors.primary
+              : colors.textSecondary
+          }
+          size={16}
+        />
+        <Text
+          style={[
+            styles.tabText,
+            activeSection === 'standards' && styles.activeTabText,
+          ]}
+        >
           Standards
         </Text>
       </TouchableOpacity>
@@ -318,8 +364,9 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
           <Shield color={colors.primary} size={24} />
           <Text style={styles.commitmentTitle}>100% Quality Guarantee</Text>
           <Text style={styles.commitmentDescription}>
-            Every review meets our rigorous quality standards. We're committed to 
-            providing accurate, unbiased, and comprehensive automotive guidance.
+            Every review meets our rigorous quality standards. We're committed
+            to providing accurate, unbiased, and comprehensive automotive
+            guidance.
           </Text>
         </View>
       </View>
@@ -420,10 +467,17 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
               </View>
               <View style={styles.metricInfo}>
                 <Text style={styles.metricTitle}>{metric.title}</Text>
-                <Text style={styles.metricDescription}>{metric.description}</Text>
+                <Text style={styles.metricDescription}>
+                  {metric.description}
+                </Text>
               </View>
               <View style={styles.metricScore}>
-                <Text style={[styles.metricScoreText, { color: getStatusColor(metric.status) }]}>
+                <Text
+                  style={[
+                    styles.metricScoreText,
+                    { color: getStatusColor(metric.status) },
+                  ]}
+                >
                   {metric.score}%
                 </Text>
               </View>
@@ -456,7 +510,9 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
               <View style={styles.standardInfo}>
                 <Text style={styles.standardCategory}>{standard.category}</Text>
                 <Text style={styles.standardTitle}>{standard.title}</Text>
-                <Text style={styles.standardDescription}>{standard.description}</Text>
+                <Text style={styles.standardDescription}>
+                  {standard.description}
+                </Text>
               </View>
             </View>
 
@@ -472,7 +528,9 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
 
             <View style={styles.standardVerification}>
               <Text style={styles.verificationTitle}>Verification Method:</Text>
-              <Text style={styles.verificationText}>{standard.verificationMethod}</Text>
+              <Text style={styles.verificationText}>
+                {standard.verificationMethod}
+              </Text>
             </View>
           </View>
         ))}
@@ -520,7 +578,11 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
 
   if (showAsModal) {
     return (
-      <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+      <Modal
+        visible={visible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
         {content}
       </Modal>
     );
@@ -529,359 +591,360 @@ export const QualityAssurance: React.FC<QualityAssuranceProps> = ({
   return content;
 };
 
-const getStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
 
-  // Header
-  header: {
-    height: 140,
-  },
-  headerGradient: {
-    flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  headerContent: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    position: 'relative',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    color: colors.white,
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  headerSubtitle: {
-    color: colors.white,
-    fontSize: 16,
-    opacity: 0.9,
-  },
+    // Header
+    header: {
+      height: 140,
+    },
+    headerGradient: {
+      flex: 1,
+      paddingTop: 20,
+      paddingHorizontal: 20,
+      paddingBottom: 20,
+    },
+    headerContent: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      position: 'relative',
+    },
+    closeButton: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    headerTitle: {
+      color: colors.white,
+      fontSize: 24,
+      fontWeight: 'bold',
+    },
+    headerSubtitle: {
+      color: colors.white,
+      fontSize: 16,
+      opacity: 0.9,
+    },
 
-  // Tabs
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  tab: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    gap: 6,
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
-  },
-  tabText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  activeTabText: {
-    color: colors.primary,
-  },
+    // Tabs
+    tabContainer: {
+      flexDirection: 'row',
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    tab: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 16,
+      gap: 6,
+    },
+    activeTab: {
+      borderBottomWidth: 2,
+      borderBottomColor: colors.primary,
+    },
+    tabText: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      fontWeight: '500',
+    },
+    activeTabText: {
+      color: colors.primary,
+    },
 
-  // Content
-  content: {
-    flex: 1,
-  },
-  section: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 16,
-  },
+    // Content
+    content: {
+      flex: 1,
+    },
+    section: {
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 16,
+    },
 
-  // Commitment
-  commitmentCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    gap: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  commitmentTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    textAlign: 'center',
-  },
-  commitmentDescription: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-    textAlign: 'center',
-  },
+    // Commitment
+    commitmentCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      alignItems: 'center',
+      gap: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    commitmentTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.text,
+      textAlign: 'center',
+    },
+    commitmentDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+      textAlign: 'center',
+    },
 
-  // Highlights
-  highlightsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  highlightCard: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  highlightValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  highlightLabel: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
+    // Highlights
+    highlightsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    highlightCard: {
+      flex: 1,
+      minWidth: '45%',
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      alignItems: 'center',
+      gap: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    highlightValue: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    highlightLabel: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      textAlign: 'center',
+    },
 
-  // Process Steps
-  processSteps: {
-    gap: 16,
-  },
-  processStep: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  stepNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepNumberText: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  stepContent: {
-    flex: 1,
-  },
-  stepTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  stepDescription: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
+    // Process Steps
+    processSteps: {
+      gap: 16,
+    },
+    processStep: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 12,
+    },
+    stepNumber: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    stepNumberText: {
+      color: colors.white,
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
+    stepContent: {
+      flex: 1,
+    },
+    stepTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    stepDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+    },
 
-  // Metrics
-  metricCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  metricHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    marginBottom: 12,
-  },
-  metricIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  metricInfo: {
-    flex: 1,
-  },
-  metricTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  metricDescription: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-  metricScore: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  metricScoreText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  metricDetails: {
-    gap: 8,
-  },
-  metricDetail: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  metricDetailText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    flex: 1,
-  },
+    // Metrics
+    metricCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    metricHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 12,
+      marginBottom: 12,
+    },
+    metricIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.primaryLight,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    metricInfo: {
+      flex: 1,
+    },
+    metricTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    metricDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+    },
+    metricScore: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    metricScoreText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    metricDetails: {
+      gap: 8,
+    },
+    metricDetail: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    metricDetailText: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      flex: 1,
+    },
 
-  // Standards
-  standardCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  standardHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    marginBottom: 12,
-  },
-  standardIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  standardInfo: {
-    flex: 1,
-  },
-  standardCategory: {
-    fontSize: 12,
-    color: colors.primary,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  standardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  standardDescription: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-  standardRequirements: {
-    marginBottom: 12,
-  },
-  requirementsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 8,
-  },
-  requirement: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-    marginBottom: 4,
-  },
-  requirementText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    flex: 1,
-    lineHeight: 18,
-  },
-  standardVerification: {
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  verificationTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  verificationText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    lineHeight: 18,
-    fontStyle: 'italic',
-  },
+    // Standards
+    standardCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    standardHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 12,
+      marginBottom: 12,
+    },
+    standardIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.primaryLight,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    standardInfo: {
+      flex: 1,
+    },
+    standardCategory: {
+      fontSize: 12,
+      color: colors.primary,
+      fontWeight: '600',
+      marginBottom: 2,
+    },
+    standardTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    standardDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+    },
+    standardRequirements: {
+      marginBottom: 12,
+    },
+    requirementsTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 8,
+    },
+    requirement: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: 8,
+      marginBottom: 4,
+    },
+    requirementText: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      flex: 1,
+      lineHeight: 18,
+    },
+    standardVerification: {
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    verificationTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    verificationText: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      lineHeight: 18,
+      fontStyle: 'italic',
+    },
 
-  // Compact
-  compactContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  compactHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  compactTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-  },
-  compactBadge: {
-    backgroundColor: colors.success,
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  compactBadgeText: {
-    fontSize: 10,
-    color: colors.white,
-    fontWeight: '600',
-  },
-  compactDescription: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-});
+    // Compact
+    compactContainer: {
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    compactHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 4,
+    },
+    compactTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+      flex: 1,
+    },
+    compactBadge: {
+      backgroundColor: colors.success,
+      borderRadius: 10,
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+    },
+    compactBadgeText: {
+      fontSize: 10,
+      color: colors.white,
+      fontWeight: '600',
+    },
+    compactDescription: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
+  });
 
 export default QualityAssurance;

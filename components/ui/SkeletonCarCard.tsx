@@ -12,9 +12,9 @@ interface SkeletonCarCardProps {
   count?: number;
 }
 
-export const SkeletonCarCard: React.FC<SkeletonCarCardProps> = ({ 
-  variant = 'grid', 
-  count = 1 
+export const SkeletonCarCard: React.FC<SkeletonCarCardProps> = ({
+  variant = 'grid',
+  count = 1,
 }) => {
   const { colors } = useThemeColors();
 
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   wrapper: {
     marginBottom: Spacing.md,
   },
-  
+
   // Grid variant styles
   gridContainer: {
     width: CARD_WIDTH,

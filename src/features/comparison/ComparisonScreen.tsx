@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, Dimensions } from 'react-native';
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Text,
+  Dimensions,
+} from 'react-native';
 import { ArrowLeft, Plus, Settings } from 'lucide-react-native';
 import { useComparison } from '@/stores';
 import { ComparisonTable } from './ComparisonTable';
@@ -11,13 +17,15 @@ interface ComparisonScreenProps {
   initialCars?: ExtendedCar[];
 }
 
-const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({ 
-  navigation, 
-  initialCars = [] 
+const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
+  navigation,
+  initialCars = [],
 }) => {
   const comparison = useComparison();
   const [showDrawer, setShowDrawer] = useState(false);
-  const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+  const [screenWidth, setScreenWidth] = useState(
+    Dimensions.get('window').width,
+  );
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('mobile');
 
   // Handle screen orientation changes
@@ -37,7 +45,7 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
 
   // Load initial cars
   useEffect(() => {
-    initialCars.forEach(car => {
+    initialCars.forEach((car) => {
       comparison.addToComparison(car);
     });
   }, [initialCars, actions]);
@@ -53,7 +61,12 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
       bodyStyle: 'Sedan',
       fuelEfficiency: 32,
       brand: 'Toyota',
-      features: ['Backup Camera', 'Bluetooth', 'Navigation', 'Lane Keep Assist'],
+      features: [
+        'Backup Camera',
+        'Bluetooth',
+        'Navigation',
+        'Lane Keep Assist',
+      ],
       safetyRating: 5,
       images: [],
       msrp: 30000,
@@ -78,9 +91,18 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
         pedestrianSafety: 5,
       },
       featuresByCategory: {
-        'Safety': ['Lane Keep Assist', 'Automatic Emergency Braking', 'Blind Spot Monitor'],
-        'Technology': ['Navigation', 'Bluetooth', 'Apple CarPlay', 'Android Auto'],
-        'Comfort': ['Heated Seats', 'Dual-Zone Climate', 'Power Driver Seat'],
+        Safety: [
+          'Lane Keep Assist',
+          'Automatic Emergency Braking',
+          'Blind Spot Monitor',
+        ],
+        Technology: [
+          'Navigation',
+          'Bluetooth',
+          'Apple CarPlay',
+          'Android Auto',
+        ],
+        Comfort: ['Heated Seats', 'Dual-Zone Climate', 'Power Driver Seat'],
       },
       warranty: {
         basic: '3 years/36,000 miles',
@@ -101,7 +123,11 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
       bodyStyle: 'Sedan',
       fuelEfficiency: 35,
       brand: 'Honda',
-      features: ['Apple CarPlay', 'Lane Keeping Assist', 'Adaptive Cruise Control'],
+      features: [
+        'Apple CarPlay',
+        'Lane Keeping Assist',
+        'Adaptive Cruise Control',
+      ],
       safetyRating: 5,
       images: [],
       msrp: 28500,
@@ -126,9 +152,22 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
         pedestrianSafety: 4,
       },
       featuresByCategory: {
-        'Safety': ['Honda Sensing Suite', 'Collision Mitigation', 'Road Departure Mitigation'],
-        'Technology': ['Apple CarPlay', 'Android Auto', 'Wireless Charging', '8" Display'],
-        'Comfort': ['Heated/Ventilated Seats', 'Remote Start', '12-Way Power Seat'],
+        Safety: [
+          'Honda Sensing Suite',
+          'Collision Mitigation',
+          'Road Departure Mitigation',
+        ],
+        Technology: [
+          'Apple CarPlay',
+          'Android Auto',
+          'Wireless Charging',
+          '8" Display',
+        ],
+        Comfort: [
+          'Heated/Ventilated Seats',
+          'Remote Start',
+          '12-Way Power Seat',
+        ],
       },
       warranty: {
         basic: '3 years/36,000 miles',
@@ -172,11 +211,11 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
               <ArrowLeft size={20} className="text-gray-600" />
             </TouchableOpacity>
           )}
-          
+
           <Text className="text-xl font-bold text-gray-900">
             Car Comparison
           </Text>
-          
+
           {comparison.comparisonCars.length > 0 && (
             <View className="bg-green-500 rounded-full w-6 h-6 items-center justify-center ml-2">
               <Text className="text-white text-xs font-bold">
@@ -200,15 +239,19 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
       {/* Main Content */}
       {state.viewMode === 'mobile' && screenWidth < 768 ? (
         /* Mobile View - Swipeable Cards */
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           className="flex-1"
         >
           {comparison.comparisonCars.length > 0 ? (
             comparison.comparisonCars.map((car, index) => (
-              <View key={car.id} className="w-full px-4 py-6" style={{ width: screenWidth }}>
+              <View
+                key={car.id}
+                className="w-full px-4 py-6"
+                style={{ width: screenWidth }}
+              >
                 <View className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <View className="flex-row items-center justify-between mb-4">
                     <Text className="text-lg font-bold text-gray-900">
@@ -230,24 +273,30 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
                         ${car.price.toLocaleString()}
                       </Text>
                     </View>
-                    
+
                     <View className="flex-row justify-between">
                       <Text className="text-gray-600">Fuel Economy</Text>
-                      <Text className="font-semibold">{car.fuelEfficiency} MPG</Text>
+                      <Text className="font-semibold">
+                        {car.fuelEfficiency} MPG
+                      </Text>
                     </View>
-                    
+
                     <View className="flex-row justify-between">
                       <Text className="text-gray-600">Horsepower</Text>
                       <Text className="font-semibold">{car.horsepower} HP</Text>
                     </View>
-                    
+
                     <View className="flex-row justify-between">
                       <Text className="text-gray-600">Safety Rating</Text>
                       <View className="flex-row">
                         {[...Array(5)].map((_, i) => (
                           <Text
                             key={i}
-                            className={i < car.safetyRating ? 'text-yellow-400' : 'text-gray-300'}
+                            className={
+                              i < car.safetyRating
+                                ? 'text-yellow-400'
+                                : 'text-gray-300'
+                            }
                           >
                             ⭐
                           </Text>
@@ -271,7 +320,10 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
               </View>
             ))
           ) : (
-            <View className="flex-1 justify-center items-center px-8" style={{ width: screenWidth }}>
+            <View
+              className="flex-1 justify-center items-center px-8"
+              style={{ width: screenWidth }}
+            >
               <Text className="text-6xl mb-4">🚗</Text>
               <Text className="text-xl font-semibold text-gray-800 mb-2 text-center">
                 No Cars Selected
@@ -298,7 +350,7 @@ const ComparisonScreenContent: React.FC<ComparisonScreenProps> = ({
         <View className="absolute bottom-6 left-6 right-6">
           <TouchableOpacity
             onPress={() => {
-              mockCars.forEach(car => handleAddCar(car));
+              mockCars.forEach((car) => handleAddCar(car));
             }}
             className="bg-blue-500 rounded-lg py-4 items-center"
           >

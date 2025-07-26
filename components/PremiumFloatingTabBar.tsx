@@ -20,9 +20,17 @@ import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 
 import { useThemeColors } from '@/hooks/useTheme';
-import { 
-  Home, Search, Car, MessageCircle, User, Plus,
-  Heart, TrendingUp, MapPin, Settings
+import {
+  Home,
+  Search,
+  Car,
+  MessageCircle,
+  User,
+  Plus,
+  Heart,
+  TrendingUp,
+  MapPin,
+  Settings,
 } from '@/utils/ultra-optimized-icons';
 import { BorderRadius, Spacing, Shadows } from '@/constants/Colors';
 
@@ -41,7 +49,11 @@ interface FloatingTabBarProps {
 interface TabConfig {
   name: string;
   icon: React.ComponentType<{ size: number; color: string; fill?: string }>;
-  activeIcon?: React.ComponentType<{ size: number; color: string; fill?: string }>;
+  activeIcon?: React.ComponentType<{
+    size: number;
+    color: string;
+    fill?: string;
+  }>;
   label: string;
   gradient?: string[];
   special?: boolean;
@@ -81,192 +93,205 @@ const tabConfigs: Record<string, TabConfig> = {
   },
 };
 
-export const PremiumFloatingTabBar = memo<FloatingTabBarProps>(({
-  state,
-  descriptors,
-  navigation,
-  activeRoute,
-  onTabPress,
-}) => {
-  const { colors } = useThemeColors();
-  const styles = getThemedStyles(colors);
+export const PremiumFloatingTabBar = memo<FloatingTabBarProps>(
+  ({ state, descriptors, navigation, activeRoute, onTabPress }) => {
+    const { colors } = useThemeColors();
+    const styles = getThemedStyles(colors);
 
-  // Animation values
-  const activeIndex = useSharedValue(state.index);
-  const tabAnimations = state.routes.map(() => useSharedValue(0));
-  const specialButtonScale = useSharedValue(1);
-  const specialButtonRotation = useSharedValue(0);
+    // Animation values
+    const activeIndex = useSharedValue(state.index);
+    const tabAnimations = state.routes.map(() => useSharedValue(0));
+    const specialButtonScale = useSharedValue(1);
+    const specialButtonRotation = useSharedValue(0);
 
-  // Update active index when state changes
-  useEffect(() => {
-    activeIndex.value = withSpring(state.index, {
-      stiffness: 300,
-      damping: 30,
-    });
-    
-    // Animate tabs
-    tabAnimations.forEach((anim: any, index: number) => {
-      anim.value = withSpring(
-        index === state.index ? 1 : 0,
-        { stiffness: 400, damping: 30 }
-      );
-    });
+    // Update active index when state changes
+    useEffect(() => {
+      activeIndex.value = withSpring(state.index, {
+        stiffness: 300,
+        damping: 30,
+      });
 
-    // Special animation for center button
-    if (state.routes[state.index]?.name === 'marketplace') {
-      specialButtonScale.value = withSpring(1.1);
-      specialButtonRotation.value = withSpring(180);
-    } else {
-      specialButtonScale.value = withSpring(1);
-      specialButtonRotation.value = withSpring(0);
-    }
-  }, [state.index]);
+      // Animate tabs
+      tabAnimations.forEach((anim: any, index: number) => {
+        anim.value = withSpring(index === state.index ? 1 : 0, {
+          stiffness: 400,
+          damping: 30,
+        });
+      });
 
-  const handleTabPress = useCallback(async (routeName: string, index: number) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    if (onTabPress) {
-      onTabPress(routeName);
-    } else {
-      navigation.navigate(routeName);
-    }
-  }, [navigation, onTabPress]);
+      // Special animation for center button
+      if (state.routes[state.index]?.name === 'marketplace') {
+        specialButtonScale.value = withSpring(1.1);
+        specialButtonRotation.value = withSpring(180);
+      } else {
+        specialButtonScale.value = withSpring(1);
+        specialButtonRotation.value = withSpring(0);
+      }
+    }, [state.index]);
 
-  // Animated indicator style
-  const indicatorStyle = useAnimatedStyle(() => {
-    const tabWidth = tabBarWidth / state.routes.length;
-    return {
-      transform: [
-        {
-          translateX: interpolate(
-            activeIndex.value,
-            [0, state.routes.length - 1],
-            [0, tabWidth * (state.routes.length - 1)]
-          ),
-        },
-      ],
-    };
-  });
+    const handleTabPress = useCallback(
+      async (routeName: string, index: number) => {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-  const renderTab = (route: any, index: number) => {
-    const isFocused = state.index === index;
-    const config = tabConfigs[route.name] || tabConfigs.index;
-    const Icon = config.icon;
+        if (onTabPress) {
+          onTabPress(routeName);
+        } else {
+          navigation.navigate(routeName);
+        }
+      },
+      [navigation, onTabPress],
+    );
 
-    const animatedTabStyle = useAnimatedStyle(() => {
-      const scale = interpolate(tabAnimations[index].value, [0, 1], [0.9, 1]);
-      const translateY = interpolate(tabAnimations[index].value, [0, 1], [2, 0]);
-      
+    // Animated indicator style
+    const indicatorStyle = useAnimatedStyle(() => {
+      const tabWidth = tabBarWidth / state.routes.length;
       return {
         transform: [
-          { scale },
-          { translateY },
+          {
+            translateX: interpolate(
+              activeIndex.value,
+              [0, state.routes.length - 1],
+              [0, tabWidth * (state.routes.length - 1)],
+            ),
+          },
         ],
       };
     });
 
-    const animatedIconStyle = useAnimatedStyle(() => {
-      const iconScale = interpolate(tabAnimations[index].value, [0, 1], [1, 1.2]);
-      return {
-        transform: [{ scale: iconScale }],
-      };
-    });
+    const renderTab = (route: any, index: number) => {
+      const isFocused = state.index === index;
+      const config = tabConfigs[route.name] || tabConfigs.index;
+      const Icon = config.icon;
 
-    if (config.special) {
-      // Special center button with elevated design
-      const specialButtonStyle = useAnimatedStyle(() => {
+      const animatedTabStyle = useAnimatedStyle(() => {
+        const scale = interpolate(tabAnimations[index].value, [0, 1], [0.9, 1]);
+        const translateY = interpolate(
+          tabAnimations[index].value,
+          [0, 1],
+          [2, 0],
+        );
+
         return {
-          transform: [
-            { scale: specialButtonScale.value },
-            { rotate: `${specialButtonRotation.value}deg` },
-          ],
+          transform: [{ scale }, { translateY }],
         };
       });
 
-      return (
-        <Animated.View key={route.key} style={[styles.specialTab, animatedTabStyle]}>
-          <TouchableOpacity
-            style={styles.specialTabTouchable}
-            onPress={() => handleTabPress(route.name, index)}
-            activeOpacity={0.8}
+      const animatedIconStyle = useAnimatedStyle(() => {
+        const iconScale = interpolate(
+          tabAnimations[index].value,
+          [0, 1],
+          [1, 1.2],
+        );
+        return {
+          transform: [{ scale: iconScale }],
+        };
+      });
+
+      if (config.special) {
+        // Special center button with elevated design
+        const specialButtonStyle = useAnimatedStyle(() => {
+          return {
+            transform: [
+              { scale: specialButtonScale.value },
+              { rotate: `${specialButtonRotation.value}deg` },
+            ],
+          };
+        });
+
+        return (
+          <Animated.View
+            key={route.key}
+            style={[styles.specialTab, animatedTabStyle]}
           >
-            <Animated.View style={[styles.specialTabButton, specialButtonStyle]}>
-              <LinearGradient
-                colors={config.gradient?.[0] && config.gradient?.[1] ? [config.gradient[0], config.gradient[1]] : [colors.primary, colors.primaryHover]}
-                style={styles.specialTabGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+            <TouchableOpacity
+              style={styles.specialTabTouchable}
+              onPress={() => handleTabPress(route.name, index)}
+              activeOpacity={0.8}
+            >
+              <Animated.View
+                style={[styles.specialTabButton, specialButtonStyle]}
               >
-                <View style={styles.specialTabInner}>
-                  <Animated.View style={animatedIconStyle}>
-                    <Icon
-                      size={28}
-                      color={colors.white}
-                      fill={isFocused ? colors.white : 'none'}
-                    />
-                  </Animated.View>
-                  {isFocused && (
-                    <View style={styles.specialTabDot}>
-                      <View style={styles.specialTabDotInner} />
-                    </View>
-                  )}
-                </View>
-              </LinearGradient>
+                <LinearGradient
+                  colors={
+                    config.gradient?.[0] && config.gradient?.[1]
+                      ? [config.gradient[0], config.gradient[1]]
+                      : [colors.primary, colors.primaryHover]
+                  }
+                  style={styles.specialTabGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <View style={styles.specialTabInner}>
+                    <Animated.View style={animatedIconStyle}>
+                      <Icon
+                        size={28}
+                        color={colors.white}
+                        fill={isFocused ? colors.white : 'none'}
+                      />
+                    </Animated.View>
+                    {isFocused && (
+                      <View style={styles.specialTabDot}>
+                        <View style={styles.specialTabDotInner} />
+                      </View>
+                    )}
+                  </View>
+                </LinearGradient>
+              </Animated.View>
+            </TouchableOpacity>
+          </Animated.View>
+        );
+      }
+
+      return (
+        <Animated.View key={route.key} style={[styles.tab, animatedTabStyle]}>
+          <TouchableOpacity
+            style={styles.tabTouchable}
+            onPress={() => handleTabPress(route.name, index)}
+            activeOpacity={0.7}
+          >
+            <Animated.View style={[styles.tabContent, animatedIconStyle]}>
+              <Icon
+                size={24}
+                color={isFocused ? colors.primary : colors.textSecondary}
+                fill={isFocused ? colors.primary : 'none'}
+              />
+              {isFocused && <View style={styles.tabIndicatorDot} />}
             </Animated.View>
           </TouchableOpacity>
         </Animated.View>
       );
-    }
+    };
 
     return (
-      <Animated.View key={route.key} style={[styles.tab, animatedTabStyle]}>
-        <TouchableOpacity
-          style={styles.tabTouchable}
-          onPress={() => handleTabPress(route.name, index)}
-          activeOpacity={0.7}
-        >
-          <Animated.View style={[styles.tabContent, animatedIconStyle]}>
-            <Icon
-              size={24}
-              color={isFocused ? colors.primary : colors.textSecondary}
-              fill={isFocused ? colors.primary : 'none'}
-            />
-            {isFocused && (
-              <View style={styles.tabIndicatorDot} />
-            )}
-          </Animated.View>
-        </TouchableOpacity>
-      </Animated.View>
-    );
-  };
+      <View style={styles.container}>
+        {/* Background blur and shadow */}
+        <BlurView intensity={80} style={styles.blurBackground}>
+          <LinearGradient
+            colors={[
+              `${colors.white}E6`, // 90% opacity
+              `${colors.white}F0`, // 94% opacity
+            ]}
+            style={styles.gradientBackground}
+          />
+        </BlurView>
 
-  return (
-    <View style={styles.container}>
-      {/* Background blur and shadow */}
-      <BlurView intensity={80} style={styles.blurBackground}>
-        <LinearGradient
-          colors={[
-            `${colors.white}E6`, // 90% opacity
-            `${colors.white}F0`, // 94% opacity
-          ]}
-          style={styles.gradientBackground}
-        />
-      </BlurView>
+        {/* Tab content */}
+        <View style={styles.tabContainer}>
+          {/* Animated indicator */}
+          <Animated.View style={[styles.activeIndicator, indicatorStyle]} />
 
-      {/* Tab content */}
-      <View style={styles.tabContainer}>
-        {/* Animated indicator */}
-        <Animated.View style={[styles.activeIndicator, indicatorStyle]} />
-        
-        {/* Render all tabs */}
-        {state.routes.map((route: any, index: number) => renderTab(route, index))}
+          {/* Render all tabs */}
+          {state.routes.map((route: any, index: number) =>
+            renderTab(route, index),
+          )}
+        </View>
+
+        {/* Additional visual effects */}
+        <View style={styles.topBorder} />
       </View>
-
-      {/* Additional visual effects */}
-      <View style={styles.topBorder} />
-    </View>
-  );
-});
+    );
+  },
+);
 
 const getThemedStyles = (colors: any) => {
   return StyleSheet.create({

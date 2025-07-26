@@ -75,7 +75,9 @@ class DealerService {
 
   static async getDealerCars(dealerId: string, limit = 10) {
     try {
-      const response = await fetch(`/api/dealers/${dealerId}/inventory?limit=${limit}`);
+      const response = await fetch(
+        `/api/dealers/${dealerId}/inventory?limit=${limit}`,
+      );
       if (!response.ok) {
         throw new Error('Failed to fetch dealer inventory');
       }
@@ -114,7 +116,9 @@ export default function DealerDetailScreen() {
       const dealerData = await DealerService.getDealerById(id);
       setDealer(dealerData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dealer details');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load dealer details',
+      );
     } finally {
       setLoading(false);
     }
@@ -126,10 +130,10 @@ export default function DealerDetailScreen() {
 
   const handleCallDealer = async () => {
     if (!dealer?.phone) return;
-    
+
     const phoneUrl = `tel:${dealer.phone.replace(/[^0-9]/g, '')}`;
     const canOpen = await Linking.canOpenURL(phoneUrl);
-    
+
     if (canOpen) {
       await Linking.openURL(phoneUrl);
     } else {
@@ -139,10 +143,10 @@ export default function DealerDetailScreen() {
 
   const handleEmailDealer = async () => {
     if (!dealer?.email) return;
-    
+
     const emailUrl = `mailto:${dealer.email}`;
     const canOpen = await Linking.canOpenURL(emailUrl);
-    
+
     if (canOpen) {
       await Linking.openURL(emailUrl);
     } else {
@@ -152,9 +156,9 @@ export default function DealerDetailScreen() {
 
   const handleVisitWebsite = async () => {
     if (!dealer?.website) return;
-    
+
     const canOpen = await Linking.canOpenURL(dealer.website);
-    
+
     if (canOpen) {
       await Linking.openURL(dealer.website);
     } else {
@@ -176,10 +180,18 @@ export default function DealerDetailScreen() {
 
   const getCurrentDayHours = () => {
     if (!dealer?.businessHours) return null;
-    
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+    const days = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+    ];
     const currentDay = days[new Date().getDay()];
-    
+
     return dealer.businessHours[currentDay];
   };
 
@@ -222,7 +234,9 @@ export default function DealerDetailScreen() {
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Dealer Details</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          Dealer Details
+        </Text>
         <View style={styles.headerRight} />
       </View>
 
@@ -235,34 +249,43 @@ export default function DealerDetailScreen() {
               style={styles.dealerLogo}
             />
           )}
-          
+
           <View style={styles.dealerInfo}>
             <View style={styles.dealerTitleRow}>
               <Text style={[styles.dealerName, { color: colors.text }]}>
                 {dealer.name}
               </Text>
-              {dealer.verified && (
-                <Shield size={20} color={colors.primary} />
-              )}
+              {dealer.verified && <Shield size={20} color={colors.primary} />}
             </View>
-            
+
             <View style={styles.ratingRow}>
               <Star size={16} color="#FFB800" />
               <Text style={[styles.rating, { color: colors.text }]}>
                 {formatRating(dealer.rating)}
               </Text>
-              <Text style={[styles.reviewCount, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.reviewCount, { color: colors.textSecondary }]}
+              >
                 ({dealer.reviewCount} reviews)
               </Text>
             </View>
-            
+
             {currentHours && (
               <View style={styles.hoursRow}>
-                <Clock size={16} color={currentHours.isOpen ? '#10B981' : '#EF4444'} />
-                <Text style={[styles.hoursText, { 
-                  color: currentHours.isOpen ? '#10B981' : '#EF4444' 
-                }]}>
-                  {currentHours.isOpen ? 'Open' : 'Closed'} • {currentHours.open} - {currentHours.close}
+                <Clock
+                  size={16}
+                  color={currentHours.isOpen ? '#10B981' : '#EF4444'}
+                />
+                <Text
+                  style={[
+                    styles.hoursText,
+                    {
+                      color: currentHours.isOpen ? '#10B981' : '#EF4444',
+                    },
+                  ]}
+                >
+                  {currentHours.isOpen ? 'Open' : 'Closed'} •{' '}
+                  {currentHours.open} - {currentHours.close}
                 </Text>
               </View>
             )}
@@ -278,7 +301,7 @@ export default function DealerDetailScreen() {
             icon={<Phone size={20} color="white" />}
             style={styles.contactButton}
           />
-          
+
           <Button
             title="Email Dealer"
             onPress={handleEmailDealer}
@@ -290,7 +313,9 @@ export default function DealerDetailScreen() {
 
         {/* Location */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Location</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Location
+          </Text>
           <View style={styles.locationCard}>
             <MapPin size={20} color={colors.textSecondary} />
             <View style={styles.locationInfo}>
@@ -306,36 +331,44 @@ export default function DealerDetailScreen() {
 
         {/* Inventory Summary */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Inventory</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Inventory
+          </Text>
           <View style={styles.inventoryRow}>
             <View style={styles.inventoryItem}>
               <Text style={[styles.inventoryNumber, { color: colors.primary }]}>
                 {dealer.inventory.totalCars}
               </Text>
-              <Text style={[styles.inventoryLabel, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.inventoryLabel, { color: colors.textSecondary }]}
+              >
                 Total Cars
               </Text>
             </View>
-            
+
             <View style={styles.inventoryItem}>
               <Text style={[styles.inventoryNumber, { color: colors.primary }]}>
                 {dealer.inventory.newCars}
               </Text>
-              <Text style={[styles.inventoryLabel, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.inventoryLabel, { color: colors.textSecondary }]}
+              >
                 New Cars
               </Text>
             </View>
-            
+
             <View style={styles.inventoryItem}>
               <Text style={[styles.inventoryNumber, { color: colors.primary }]}>
                 {dealer.inventory.usedCars}
               </Text>
-              <Text style={[styles.inventoryLabel, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.inventoryLabel, { color: colors.textSecondary }]}
+              >
                 Used Cars
               </Text>
             </View>
           </View>
-          
+
           <Button
             title="View Full Inventory"
             onPress={handleViewInventory}
@@ -347,7 +380,9 @@ export default function DealerDetailScreen() {
 
         {/* About */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>About</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            About
+          </Text>
           <Text style={[styles.description, { color: colors.textSecondary }]}>
             {dealer.description}
           </Text>
@@ -356,11 +391,18 @@ export default function DealerDetailScreen() {
         {/* Certifications */}
         {dealer.certifications.length > 0 && (
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Certifications</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Certifications
+            </Text>
             <View style={styles.certificationsRow}>
               {dealer.certifications.map((cert, index) => (
                 <View key={index} style={styles.certificationBadge}>
-                  <Text style={[styles.certificationText, { color: colors.primary }]}>
+                  <Text
+                    style={[
+                      styles.certificationText,
+                      { color: colors.primary },
+                    ]}
+                  >
                     {cert}
                   </Text>
                 </View>
@@ -378,7 +420,7 @@ export default function DealerDetailScreen() {
             icon={<Star size={20} color={colors.primary} />}
             style={styles.fullWidthButton}
           />
-          
+
           {dealer.website && (
             <Button
               title="Visit Website"

@@ -1,9 +1,5 @@
 import React, { memo, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { OnboardingFlow, OnboardingStep } from '@/components/ui/OnboardingFlow';
@@ -18,7 +14,7 @@ const PreferenceStepScreen = memo(() => {
     {
       id: 'budget',
       question: "What's your budget?",
-      description: "Help us find cars within your price range",
+      description: 'Help us find cars within your price range',
       type: 'slider',
       min: 5000,
       max: 150000,
@@ -28,8 +24,8 @@ const PreferenceStepScreen = memo(() => {
     },
     {
       id: 'bodyType',
-      question: "What type of car are you looking for?",
-      description: "Select all that interest you",
+      question: 'What type of car are you looking for?',
+      description: 'Select all that interest you',
       type: 'multiselect',
       options: [
         { id: 'sedan', label: 'Sedan', value: 'sedan' },
@@ -44,7 +40,8 @@ const PreferenceStepScreen = memo(() => {
     {
       id: 'fuelType',
       question: "What's your preferred fuel type?",
-      description: "Choose your preference for efficiency and environmental impact",
+      description:
+        'Choose your preference for efficiency and environmental impact',
       type: 'radio',
       options: [
         { id: 'gasoline', label: 'Gasoline', value: 'gasoline' },
@@ -57,7 +54,7 @@ const PreferenceStepScreen = memo(() => {
     },
     {
       id: 'features',
-      question: "Which features are important to you?",
+      question: 'Which features are important to you?',
       description: "Select all features you'd like in your next car",
       type: 'multiselect',
       options: [
@@ -71,17 +68,18 @@ const PreferenceStepScreen = memo(() => {
     },
     {
       id: 'mileage',
-      question: "Maximum acceptable mileage?",
+      question: 'Maximum acceptable mileage?',
       description: "For used cars, what's the highest mileage you'd consider?",
       type: 'slider',
       min: 0,
       max: 200000,
       step: 10000,
-      formatValue: (value: number) => value === 0 ? 'New only' : `${value.toLocaleString()} miles`,
+      formatValue: (value: number) =>
+        value === 0 ? 'New only' : `${value.toLocaleString()} miles`,
     },
     {
       id: 'notifications',
-      question: "Get notified about new matches?",
+      question: 'Get notified about new matches?',
       description: "We'll send you personalized car recommendations",
       type: 'toggle',
     },
@@ -93,10 +91,10 @@ const PreferenceStepScreen = memo(() => {
     // 1. Save preferences to user profile
     // 2. Generate initial recommendations
     // 3. Navigate to recommendations screen
-    
+
     // Mark onboarding as complete
     await markOnboardingComplete();
-    
+
     // Navigate to recommendations screen to show personalized results
     router.replace('/recommendations');
   };
@@ -104,13 +102,15 @@ const PreferenceStepScreen = memo(() => {
   const handleSkip = async () => {
     // Mark onboarding as complete even if skipped
     await markOnboardingComplete();
-    
+
     // Navigate to main app without saving preferences
     router.replace('/(tabs)');
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <OnboardingFlow
         steps={onboardingSteps}
         onComplete={handleComplete}

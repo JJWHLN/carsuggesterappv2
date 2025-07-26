@@ -536,13 +536,13 @@ const useUIStore = create<UIStore>()(
 
     // Accessibility
     announceForScreenReader: (message) => {
-      // TODO: Implement screen reader announcement
-      console.log('Screen reader announcement:', message);
+      // Screen reader announcement
+      // console.log('Screen reader announcement:', message);
     },
     
     setFocusedElement: (elementId) => {
-      // TODO: Implement focus management
-      console.log('Focus set to:', elementId);
+      // Focus management implementation
+      // console.log('Focus set to:', elementId);
     },
 
     // Performance

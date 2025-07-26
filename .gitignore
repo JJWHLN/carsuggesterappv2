@@ -33,3 +33,33 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# temporary files
+*.tmp
+*.temp
+*.old
+*.backup
+*-consolidated.*
+
+# logs
+logs/
+*.log
+
+# OS generated files
+Thumbs.db
+.DS_Store?
+ehthumbs.db
+Icon?
+
+# Editor backup files
+*~
+*.bak
+*.swp
+*.swo

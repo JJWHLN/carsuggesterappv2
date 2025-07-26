@@ -11,12 +11,16 @@ import { useMemoryOptimization } from '../../hooks/useMemoryOptimization';
 
 const { height } = Dimensions.get('window');
 
-interface OptimizedFlatListProps<T> extends Omit<FlatListProps<T>, 'renderItem'> {
+interface OptimizedFlatListProps<T>
+  extends Omit<FlatListProps<T>, 'renderItem'> {
   data: T[];
   renderItem: ListRenderItem<T>;
   estimatedItemSize?: number;
   enableOptimizations?: boolean;
-  onViewableItemsChanged?: (info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => void;
+  onViewableItemsChanged?: (info: {
+    viewableItems: ViewToken[];
+    changed: ViewToken[];
+  }) => void;
 }
 
 export function OptimizedFlatList<T>({
@@ -37,7 +41,7 @@ export function OptimizedFlatList<T>({
       offset: estimatedItemSize * index,
       index,
     }),
-    [estimatedItemSize]
+    [estimatedItemSize],
   );
 
   // Memoized viewability config
@@ -47,7 +51,7 @@ export function OptimizedFlatList<T>({
       minimumViewTime: 100,
       waitForInteraction: true,
     }),
-    []
+    [],
   );
 
   // Optimized keyExtractor

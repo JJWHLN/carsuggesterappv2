@@ -1,12 +1,19 @@
 /**
  * Analytics Dashboard Component
- * 
+ *
  * Phase 2 Week 7 - Advanced Analytics & AI Intelligence
  * Demo component showcasing the analytics integration
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import AnalyticsIntegrationService from '../services/analytics/AnalyticsIntegrationService';
 import SmartSearchService from '../services/analytics/SmartSearchService';
 import AIRecommendationEngine from '../services/analytics/AIRecommendationEngine';
@@ -23,8 +30,12 @@ interface DashboardData {
 
 const AnalyticsDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
-  const [selectedTimeframe, setSelectedTimeframe] = useState<'24h' | '7d' | '30d'>('7d');
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null,
+  );
+  const [selectedTimeframe, setSelectedTimeframe] = useState<
+    '24h' | '7d' | '30d'
+  >('7d');
 
   // Initialize analytics services
   useEffect(() => {
@@ -44,7 +55,7 @@ const AnalyticsDashboard: React.FC = () => {
         enableABTesting: true,
         dataRetentionDays: 90,
         privacyMode: 'balanced',
-        autoOptimization: true
+        autoOptimization: true,
       });
 
       await analyticsService.initialize();
@@ -60,17 +71,25 @@ const AnalyticsDashboard: React.FC = () => {
     }
   };
 
-  const loadDashboardData = async (analyticsService: AnalyticsIntegrationService) => {
+  const loadDashboardData = async (
+    analyticsService: AnalyticsIntegrationService,
+  ) => {
     try {
       const [insights, performanceMetrics, healthStatus] = await Promise.all([
         analyticsService.getInsights(selectedTimeframe),
         analyticsService.getPerformanceMetrics(),
-        analyticsService.getHealthStatus()
+        analyticsService.getHealthStatus(),
       ]);
 
       // Get search analytics
       const searchService = SmartSearchService.getInstance();
-      const searchAnalytics = await searchService.getSearchAnalytics(selectedTimeframe === '24h' ? 'day' : selectedTimeframe === '7d' ? 'week' : 'month');
+      const searchAnalytics = await searchService.getSearchAnalytics(
+        selectedTimeframe === '24h'
+          ? 'day'
+          : selectedTimeframe === '7d'
+            ? 'week'
+            : 'month',
+      );
 
       // Get active A/B tests
       const abTesting = ABTestingFramework.getInstance();
@@ -81,7 +100,7 @@ const AnalyticsDashboard: React.FC = () => {
         performanceMetrics,
         searchAnalytics,
         healthStatus,
-        activeTests
+        activeTests,
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
@@ -103,25 +122,25 @@ const AnalyticsDashboard: React.FC = () => {
         query: 'reliable family SUV under $30000',
         filters: {
           priceRange: { min: 0, max: 30000 },
-          bodyType: ['SUV']
+          bodyType: ['SUV'],
         },
         context: {
           timeOfDay: 'afternoon',
           sessionIntent: 'research',
           previousSearches: [],
-          currentPage: 'dashboard'
+          currentPage: 'dashboard',
         },
         intent: {
           type: 'category',
           confidence: 0.8,
           entities: [],
-          sentiment: 'neutral'
-        }
+          sentiment: 'neutral',
+        },
       });
 
       Alert.alert(
         'Smart Search Results',
-        `Found ${results.results.length} cars in ${results.searchTime}ms`
+        `Found ${results.results.length} cars in ${results.searchTime}ms`,
       );
     } catch (error) {
       console.error('Search error:', error);
@@ -132,11 +151,14 @@ const AnalyticsDashboard: React.FC = () => {
   const handleGenerateRecommendations = async () => {
     try {
       const recommendationEngine = AIRecommendationEngine.getInstance();
-      const recommendations = await recommendationEngine.getRecommendations('demo-user-123', 5);
+      const recommendations = await recommendationEngine.getRecommendations(
+        'demo-user-123',
+        5,
+      );
 
       Alert.alert(
         'AI Recommendations',
-        `Generated ${recommendations.length} personalized recommendations`
+        `Generated ${recommendations.length} personalized recommendations`,
       );
     } catch (error) {
       console.error('Recommendation error:', error);
@@ -149,7 +171,8 @@ const AnalyticsDashboard: React.FC = () => {
       const abTesting = ABTestingFramework.getInstance();
       const testId = await abTesting.createTest({
         name: 'Search Result Layout Test',
-        description: 'Testing different search result layouts for better conversion',
+        description:
+          'Testing different search result layouts for better conversion',
         hypothesis: 'Grid layout will increase click-through rate by 15%',
         targetMetric: 'conversion',
         variants: [
@@ -158,7 +181,7 @@ const AnalyticsDashboard: React.FC = () => {
             description: 'Current list-based search results',
             trafficPercentage: 50,
             isControl: true,
-            changes: []
+            changes: [],
           },
           {
             name: 'Grid Layout',
@@ -171,10 +194,10 @@ const AnalyticsDashboard: React.FC = () => {
                 property: 'layout',
                 originalValue: 'list',
                 testValue: 'grid',
-                changeType: 'replace'
-              }
-            ]
-          }
+                changeType: 'replace',
+              },
+            ],
+          },
         ],
         trafficAllocation: 50,
         successCriteria: {
@@ -183,8 +206,8 @@ const AnalyticsDashboard: React.FC = () => {
           confidenceLevel: 95,
           statisticalPower: 80,
           minimumSampleSize: 1000,
-          testDuration: 14
-        }
+          testDuration: 14,
+        },
       });
 
       Alert.alert('A/B Test Created', `Test ID: ${testId}`);
@@ -197,17 +220,26 @@ const AnalyticsDashboard: React.FC = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Initializing Advanced Analytics...</Text>
-        <Text style={styles.loadingSubtext}>Loading AI-powered insights and data intelligence</Text>
+        <Text style={styles.loadingText}>
+          Initializing Advanced Analytics...
+        </Text>
+        <Text style={styles.loadingSubtext}>
+          Loading AI-powered insights and data intelligence
+        </Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <View style={styles.header}>
         <Text style={styles.title}>Analytics Intelligence Dashboard</Text>
-        <Text style={styles.subtitle}>Phase 2 Week 7 - Advanced Analytics & AI</Text>
+        <Text style={styles.subtitle}>
+          Phase 2 Week 7 - Advanced Analytics & AI
+        </Text>
       </View>
 
       {/* Timeframe Selector */}
@@ -217,14 +249,16 @@ const AnalyticsDashboard: React.FC = () => {
             key={timeframe}
             style={[
               styles.timeframeButton,
-              selectedTimeframe === timeframe && styles.timeframeButtonActive
+              selectedTimeframe === timeframe && styles.timeframeButtonActive,
             ]}
             onPress={() => handleTimeframeChange(timeframe)}
           >
-            <Text style={[
-              styles.timeframeText,
-              selectedTimeframe === timeframe && styles.timeframeTextActive
-            ]}>
+            <Text
+              style={[
+                styles.timeframeText,
+                selectedTimeframe === timeframe && styles.timeframeTextActive,
+              ]}
+            >
               {timeframe}
             </Text>
           </TouchableOpacity>
@@ -236,10 +270,12 @@ const AnalyticsDashboard: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>System Health</Text>
           <View style={styles.healthCard}>
-            <Text style={[
-              styles.healthStatus,
-              { color: getHealthColor(dashboardData.healthStatus.overall) }
-            ]}>
+            <Text
+              style={[
+                styles.healthStatus,
+                { color: getHealthColor(dashboardData.healthStatus.overall) },
+              ]}
+            >
               {dashboardData.healthStatus.overall.toUpperCase()}
             </Text>
             <Text style={styles.healthDetails}>
@@ -268,7 +304,10 @@ const AnalyticsDashboard: React.FC = () => {
             </View>
             <View style={styles.metricCard}>
               <Text style={styles.metricValue}>
-                {dashboardData.performanceMetrics.recommendations.accuracyScore.toFixed(1)}%
+                {dashboardData.performanceMetrics.recommendations.accuracyScore.toFixed(
+                  1,
+                )}
+                %
               </Text>
               <Text style={styles.metricLabel}>AI Accuracy</Text>
             </View>
@@ -291,10 +330,12 @@ const AnalyticsDashboard: React.FC = () => {
               Total Searches: {dashboardData.searchAnalytics.queryCount}
             </Text>
             <Text style={styles.analyticsText}>
-              Click-Through Rate: {dashboardData.searchAnalytics.avgClickThroughRate.toFixed(1)}%
+              Click-Through Rate:{' '}
+              {dashboardData.searchAnalytics.avgClickThroughRate.toFixed(1)}%
             </Text>
             <Text style={styles.analyticsText}>
-              Success Rate: {dashboardData.searchAnalytics.searchSuccessRate.toFixed(1)}%
+              Success Rate:{' '}
+              {dashboardData.searchAnalytics.searchSuccessRate.toFixed(1)}%
             </Text>
           </View>
         </View>
@@ -307,9 +348,16 @@ const AnalyticsDashboard: React.FC = () => {
           {dashboardData.insights.slice(0, 3).map((insight, index) => (
             <View key={index} style={styles.insightCard}>
               <Text style={styles.insightTitle}>{insight.title}</Text>
-              <Text style={styles.insightDescription}>{insight.description}</Text>
+              <Text style={styles.insightDescription}>
+                {insight.description}
+              </Text>
               <View style={styles.insightMeta}>
-                <Text style={[styles.insightPriority, { color: getPriorityColor(insight.priority) }]}>
+                <Text
+                  style={[
+                    styles.insightPriority,
+                    { color: getPriorityColor(insight.priority) },
+                  ]}
+                >
                   {insight.priority.toUpperCase()}
                 </Text>
                 <Text style={styles.insightConfidence}>
@@ -339,13 +387,22 @@ const AnalyticsDashboard: React.FC = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Demo Actions</Text>
         <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.actionButton} onPress={handleRunSmartSearch}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleRunSmartSearch}
+          >
             <Text style={styles.actionButtonText}>Smart Search Demo</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={handleGenerateRecommendations}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleGenerateRecommendations}
+          >
             <Text style={styles.actionButtonText}>AI Recommendations</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={handleCreateABTest}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleCreateABTest}
+          >
             <Text style={styles.actionButtonText}>Create A/B Test</Text>
           </TouchableOpacity>
         </View>
@@ -355,12 +412,24 @@ const AnalyticsDashboard: React.FC = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Week 7 Implementation Summary</Text>
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryText}>✅ Advanced Analytics Engine with real-time tracking</Text>
-          <Text style={styles.summaryText}>✅ Smart Search with NLP and AI-powered suggestions</Text>
-          <Text style={styles.summaryText}>✅ AI Recommendation Engine with ML algorithms</Text>
-          <Text style={styles.summaryText}>✅ Business Intelligence Dashboard with insights</Text>
-          <Text style={styles.summaryText}>✅ A/B Testing Framework with statistical analysis</Text>
-          <Text style={styles.summaryText}>✅ Analytics Integration Service for orchestration</Text>
+          <Text style={styles.summaryText}>
+            ✅ Advanced Analytics Engine with real-time tracking
+          </Text>
+          <Text style={styles.summaryText}>
+            ✅ Smart Search with NLP and AI-powered suggestions
+          </Text>
+          <Text style={styles.summaryText}>
+            ✅ AI Recommendation Engine with ML algorithms
+          </Text>
+          <Text style={styles.summaryText}>
+            ✅ Business Intelligence Dashboard with insights
+          </Text>
+          <Text style={styles.summaryText}>
+            ✅ A/B Testing Framework with statistical analysis
+          </Text>
+          <Text style={styles.summaryText}>
+            ✅ Analytics Integration Service for orchestration
+          </Text>
         </View>
       </View>
     </ScrollView>
@@ -369,19 +438,27 @@ const AnalyticsDashboard: React.FC = () => {
 
 const getHealthColor = (status: string): string => {
   switch (status) {
-    case 'healthy': return '#28a745';
-    case 'warning': return '#ffc107';
-    case 'critical': return '#dc3545';
-    default: return '#6c757d';
+    case 'healthy':
+      return '#28a745';
+    case 'warning':
+      return '#ffc107';
+    case 'critical':
+      return '#dc3545';
+    default:
+      return '#6c757d';
   }
 };
 
 const getPriorityColor = (priority: string): string => {
   switch (priority) {
-    case 'high': return '#dc3545';
-    case 'medium': return '#ffc107';
-    case 'low': return '#28a745';
-    default: return '#6c757d';
+    case 'high':
+      return '#dc3545';
+    case 'medium':
+      return '#ffc107';
+    case 'low':
+      return '#28a745';
+    default:
+      return '#6c757d';
   }
 };
 

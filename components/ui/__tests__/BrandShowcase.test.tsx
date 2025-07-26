@@ -19,7 +19,9 @@ jest.mock('@/hooks/useTheme', () => ({
 jest.mock('@/components/ui/OptimizedImage', () => {
   const { View } = require('react-native');
   return {
-    OptimizedImage: ({ testID, ...props }: any) => <View testID={testID} {...props} />,
+    OptimizedImage: ({ testID, ...props }: any) => (
+      <View testID={testID} {...props} />
+    ),
   };
 });
 
@@ -146,8 +148,10 @@ describe('BrandShowcase', () => {
   });
 
   it('renders correctly with brands', () => {
-    const { getByText, getByTestId } = render(<BrandShowcase {...defaultProps} />);
-    
+    const { getByText, getByTestId } = render(
+      <BrandShowcase {...defaultProps} />,
+    );
+
     expect(getByText('Popular Brands')).toBeTruthy();
     expect(getByText('Explore top automotive manufacturers')).toBeTruthy();
     expect(getByText('View All')).toBeTruthy();
@@ -156,9 +160,9 @@ describe('BrandShowcase', () => {
 
   it('renders loading state correctly', () => {
     const { getByText, getAllByTestId } = render(
-      <BrandShowcase {...defaultProps} loading={true} />
+      <BrandShowcase {...defaultProps} loading={true} />,
     );
-    
+
     expect(getByText('Most Popular')).toBeTruthy();
     expect(getByText('All Brands')).toBeTruthy();
     expect(getAllByTestId('featured-skeleton')).toHaveLength(3);
@@ -167,35 +171,37 @@ describe('BrandShowcase', () => {
 
   it('renders empty state when no brands', () => {
     const { getByText } = render(
-      <BrandShowcase {...defaultProps} brands={[]} />
+      <BrandShowcase {...defaultProps} brands={[]} />,
     );
-    
+
     expect(getByText('No brands available')).toBeTruthy();
-    expect(getByText('We\'re working on adding more car brands for you')).toBeTruthy();
+    expect(
+      getByText("We're working on adding more car brands for you"),
+    ).toBeTruthy();
   });
 
   it('calls onViewAll when View All button is pressed', () => {
     const { getByText } = render(<BrandShowcase {...defaultProps} />);
-    
+
     fireEvent.press(getByText('View All'));
     expect(defaultProps.onViewAll).toHaveBeenCalledTimes(1);
   });
 
   it('calls onBrandPress when a brand is pressed', () => {
     const { getByText } = render(<BrandShowcase {...defaultProps} />);
-    
+
     fireEvent.press(getByText('BMW'));
     expect(defaultProps.onBrandPress).toHaveBeenCalledWith('1');
   });
 
   it('displays featured brands correctly', () => {
     const { getByText } = render(<BrandShowcase {...defaultProps} />);
-    
+
     // First 3 brands should be featured
     expect(getByText('BMW')).toBeTruthy();
     expect(getByText('Mercedes-Benz')).toBeTruthy();
     expect(getByText('Audi')).toBeTruthy();
-    
+
     // Should show model counts for featured brands
     expect(getByText('25 models')).toBeTruthy();
     expect(getByText('30 models')).toBeTruthy();
@@ -204,16 +210,16 @@ describe('BrandShowcase', () => {
 
   it('displays regular brands correctly', () => {
     const { getByText } = render(<BrandShowcase {...defaultProps} />);
-    
+
     // 4th brand should be in regular section
     expect(getByText('Toyota')).toBeTruthy();
   });
 
   it('renders with custom testID', () => {
     const { getByTestId } = render(
-      <BrandShowcase {...defaultProps} testID="custom-showcase" />
+      <BrandShowcase {...defaultProps} testID="custom-showcase" />,
     );
-    
+
     expect(getByTestId('custom-showcase')).toBeTruthy();
   });
 });

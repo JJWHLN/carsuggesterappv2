@@ -24,7 +24,27 @@ import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { Car, Search, Filter, MapPin, Clock, DollarSign, MessageCircle, Heart, Calendar, Gauge, Fuel, Settings, CheckCircle, AlertTriangle, TrendingUp, Star, Eye, List, SlidersHorizontal } from '@/utils/ultra-optimized-icons';
+import {
+  Car,
+  Search,
+  Filter,
+  MapPin,
+  Clock,
+  DollarSign,
+  MessageCircle,
+  Heart,
+  Calendar,
+  Gauge,
+  Fuel,
+  Settings,
+  CheckCircle,
+  AlertTriangle,
+  TrendingUp,
+  Star,
+  Eye,
+  List,
+  SlidersHorizontal,
+} from '@/utils/ultra-optimized-icons';
 
 interface MarketplaceListing {
   id: string;
@@ -92,7 +112,13 @@ interface MarketplaceFilters {
   radius: number;
   verified: boolean;
   hasPhotos: boolean;
-  sortBy: 'price_asc' | 'price_desc' | 'year_desc' | 'mileage_asc' | 'date_desc' | 'distance';
+  sortBy:
+    | 'price_asc'
+    | 'price_desc'
+    | 'year_desc'
+    | 'mileage_asc'
+    | 'date_desc'
+    | 'distance';
 }
 
 interface MarketplaceStatsProps {
@@ -139,14 +165,30 @@ const MarketplaceStats: React.FC<MarketplaceStatsProps> = ({
 
   return (
     <View style={styles.statsContainer}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statsContent}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.statsContent}
+      >
         {stats.map((stat, index) => (
-          <View key={index} style={[styles.statCard, { backgroundColor: colors.cardBackground }]}>
-            <View style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}>
+          <View
+            key={index}
+            style={[
+              styles.statCard,
+              { backgroundColor: colors.cardBackground },
+            ]}
+          >
+            <View
+              style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}
+            >
               <stat.icon size={20} color={stat.color} />
             </View>
-            <Text style={[styles.statValue, { color: colors.text }]}>{stat.value}</Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stat.label}</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>
+              {stat.value}
+            </Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              {stat.label}
+            </Text>
           </View>
         ))}
       </ScrollView>
@@ -184,8 +226,10 @@ const MarketplaceListingCard: React.FC<MarketplaceListingCardProps> = ({
   const getTimeAgo = (date: string) => {
     const now = new Date();
     const listingDate = new Date(date);
-    const diffInHours = Math.floor((now.getTime() - listingDate.getTime()) / (1000 * 60 * 60));
-    
+    const diffInHours = Math.floor(
+      (now.getTime() - listingDate.getTime()) / (1000 * 60 * 60),
+    );
+
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
@@ -194,17 +238,25 @@ const MarketplaceListingCard: React.FC<MarketplaceListingCardProps> = ({
 
   const getConditionColor = (condition: string) => {
     switch (condition.toLowerCase()) {
-      case 'excellent': return colors.success;
-      case 'good': return colors.accentGreen;
-      case 'fair': return colors.warning;
-      case 'poor': return colors.error;
-      default: return colors.textSecondary;
+      case 'excellent':
+        return colors.success;
+      case 'good':
+        return colors.accentGreen;
+      case 'fair':
+        return colors.warning;
+      case 'poor':
+        return colors.error;
+      default:
+        return colors.textSecondary;
     }
   };
 
   return (
     <TouchableOpacity
-      style={[styles.listingCard, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}
+      style={[
+        styles.listingCard,
+        { backgroundColor: colors.cardBackground, borderColor: colors.border },
+      ]}
       onPress={onPress}
       activeOpacity={0.7}
     >
@@ -213,19 +265,27 @@ const MarketplaceListingCard: React.FC<MarketplaceListingCardProps> = ({
           <Text style={[styles.listingTitle, { color: colors.text }]}>
             {listing.year} {listing.make} {listing.model}
           </Text>
-          <Text style={[styles.listingSubtitle, { color: colors.textSecondary }]}>
+          <Text
+            style={[styles.listingSubtitle, { color: colors.textSecondary }]}
+          >
             {listing.trim || listing.engine}
           </Text>
         </View>
         <View style={styles.cardActions}>
-          <TouchableOpacity onPress={onSavePress} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Bookmark 
-              size={20} 
+          <TouchableOpacity
+            onPress={onSavePress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Bookmark
+              size={20}
               color={isSaved ? colors.primary : colors.textSecondary}
               fill={isSaved ? colors.primary : 'transparent'}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={onSharePress} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <TouchableOpacity
+            onPress={onSharePress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
             <Share2 size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
@@ -237,11 +297,16 @@ const MarketplaceListingCard: React.FC<MarketplaceListingCardProps> = ({
             {formatPrice(listing.price)}
           </Text>
           {listing.original_price && listing.original_price > listing.price && (
-            <Text style={[styles.originalPrice, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.originalPrice, { color: colors.textSecondary }]}
+            >
               ${listing.original_price.toLocaleString()}
             </Text>
           )}
-          <TouchableOpacity onPress={onPriceHistoryPress} style={styles.priceHistoryButton}>
+          <TouchableOpacity
+            onPress={onPriceHistoryPress}
+            style={styles.priceHistoryButton}
+          >
             <TrendingUp size={14} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
@@ -268,18 +333,30 @@ const MarketplaceListingCard: React.FC<MarketplaceListingCardProps> = ({
         </View>
 
         <View style={styles.conditionLocation}>
-          <View style={[styles.conditionBadge, { backgroundColor: `${getConditionColor(listing.condition)}15` }]}>
-            <Text style={[styles.conditionText, { color: getConditionColor(listing.condition) }]}>
+          <View
+            style={[
+              styles.conditionBadge,
+              { backgroundColor: `${getConditionColor(listing.condition)}15` },
+            ]}
+          >
+            <Text
+              style={[
+                styles.conditionText,
+                { color: getConditionColor(listing.condition) },
+              ]}
+            >
               {listing.condition}
             </Text>
           </View>
-          
+
           {listing.dealer_info && (
             <View style={styles.dealerBadge}>
               {listing.dealer_info.verified && (
                 <CheckCircle size={12} color={colors.success} />
               )}
-              <Text style={[styles.dealerText, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.dealerText, { color: colors.textSecondary }]}
+              >
                 {listing.dealer_info.name}
               </Text>
             </View>
@@ -289,11 +366,15 @@ const MarketplaceListingCard: React.FC<MarketplaceListingCardProps> = ({
         <View style={styles.locationTime}>
           <View style={styles.locationInfo}>
             <MapPin size={12} color={colors.textSecondary} />
-            <Text style={[styles.locationText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.locationText, { color: colors.textSecondary }]}
+            >
               {listing.location}
             </Text>
             {listing.distance && (
-              <Text style={[styles.distanceText, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.distanceText, { color: colors.textSecondary }]}
+              >
                 • {listing.distance.toFixed(1)} mi
               </Text>
             )}
@@ -308,19 +389,25 @@ const MarketplaceListingCard: React.FC<MarketplaceListingCardProps> = ({
         <View style={styles.engagementStats}>
           <View style={styles.engagementItem}>
             <Eye size={14} color={colors.textSecondary} />
-            <Text style={[styles.engagementText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.engagementText, { color: colors.textSecondary }]}
+            >
               {listing.views || 0}
             </Text>
           </View>
           <View style={styles.engagementItem}>
             <Heart size={14} color={colors.textSecondary} />
-            <Text style={[styles.engagementText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.engagementText, { color: colors.textSecondary }]}
+            >
               {listing.favorites || 0}
             </Text>
           </View>
           <View style={styles.engagementItem}>
             <MessageCircle size={14} color={colors.textSecondary} />
-            <Text style={[styles.engagementText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.engagementText, { color: colors.textSecondary }]}
+            >
               {listing.inquiries || 0}
             </Text>
           </View>
@@ -338,16 +425,25 @@ const MarketplaceListingCard: React.FC<MarketplaceListingCardProps> = ({
       </View>
 
       {listing.featured && (
-        <View style={[styles.featuredBadge, { backgroundColor: colors.warning }]}>
+        <View
+          style={[styles.featuredBadge, { backgroundColor: colors.warning }]}
+        >
           <Star size={12} color={colors.white} fill={colors.white} />
-          <Text style={[styles.featuredText, { color: colors.white }]}>Featured</Text>
+          <Text style={[styles.featuredText, { color: colors.white }]}>
+            Featured
+          </Text>
         </View>
       )}
     </TouchableOpacity>
   );
 };
 
-const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onApply, currentFilters }) => {
+const FilterModal: React.FC<FilterModalProps> = ({
+  visible,
+  onClose,
+  onApply,
+  currentFilters,
+}) => {
   const { colors } = useThemeColors();
   const [filters, setFilters] = useState(currentFilters);
 
@@ -388,15 +484,30 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onApply, cu
   };
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <SafeAreaView style={[styles.filterModal, { backgroundColor: colors.background }]}>
-        <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+    >
+      <SafeAreaView
+        style={[styles.filterModal, { backgroundColor: colors.background }]}
+      >
+        <View
+          style={[styles.modalHeader, { borderBottomColor: colors.border }]}
+        >
           <TouchableOpacity onPress={onClose}>
-            <Text style={[styles.modalCancelButton, { color: colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.modalCancelButton,
+                { color: colors.textSecondary },
+              ]}
+            >
               Cancel
             </Text>
           </TouchableOpacity>
-          <Text style={[styles.modalTitle, { color: colors.text }]}>Filters</Text>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>
+            Filters
+          </Text>
           <TouchableOpacity onPress={handleReset}>
             <Text style={[styles.modalResetButton, { color: colors.primary }]}>
               Reset
@@ -404,9 +515,14 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onApply, cu
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.filterContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.filterContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.filterSection}>
-            <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Sort By</Text>
+            <Text style={[styles.filterSectionTitle, { color: colors.text }]}>
+              Sort By
+            </Text>
             <View style={styles.sortOptions}>
               {sortOptions.map((option) => (
                 <TouchableOpacity
@@ -414,16 +530,28 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onApply, cu
                   style={[
                     styles.sortOption,
                     {
-                      backgroundColor: filters.sortBy === option.value ? colors.primary : colors.surface,
+                      backgroundColor:
+                        filters.sortBy === option.value
+                          ? colors.primary
+                          : colors.surface,
                       borderColor: colors.border,
-                    }
+                    },
                   ]}
-                  onPress={() => setFilters({ ...filters, sortBy: option.value as any })}
+                  onPress={() =>
+                    setFilters({ ...filters, sortBy: option.value as any })
+                  }
                 >
-                  <Text style={[
-                    styles.sortOptionText,
-                    { color: filters.sortBy === option.value ? colors.white : colors.text }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.sortOptionText,
+                      {
+                        color:
+                          filters.sortBy === option.value
+                            ? colors.white
+                            : colors.text,
+                      },
+                    ]}
+                  >
                     {option.label}
                   </Text>
                 </TouchableOpacity>
@@ -432,54 +560,75 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onApply, cu
           </View>
 
           <View style={styles.filterSection}>
-            <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Condition</Text>
+            <Text style={[styles.filterSectionTitle, { color: colors.text }]}>
+              Condition
+            </Text>
             <View style={styles.checkboxGroup}>
               {conditionOptions.map((condition) => (
                 <TouchableOpacity
                   key={condition}
                   style={styles.checkboxItem}
                   onPress={() => {
-                    const updatedConditions = filters.condition.includes(condition)
-                      ? filters.condition.filter(c => c !== condition)
+                    const updatedConditions = filters.condition.includes(
+                      condition,
+                    )
+                      ? filters.condition.filter((c) => c !== condition)
                       : [...filters.condition, condition];
                     setFilters({ ...filters, condition: updatedConditions });
                   }}
                 >
-                  <View style={[
-                    styles.checkbox,
-                    {
-                      backgroundColor: filters.condition.includes(condition) ? colors.primary : 'transparent',
-                      borderColor: colors.border,
-                    }
-                  ]}>
+                  <View
+                    style={[
+                      styles.checkbox,
+                      {
+                        backgroundColor: filters.condition.includes(condition)
+                          ? colors.primary
+                          : 'transparent',
+                        borderColor: colors.border,
+                      },
+                    ]}
+                  >
                     {filters.condition.includes(condition) && (
                       <CheckCircle size={16} color={colors.white} />
                     )}
                   </View>
-                  <Text style={[styles.checkboxLabel, { color: colors.text }]}>{condition}</Text>
+                  <Text style={[styles.checkboxLabel, { color: colors.text }]}>
+                    {condition}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
 
           <View style={styles.filterSection}>
-            <Text style={[styles.filterSectionTitle, { color: colors.text }]}>Quick Filters</Text>
+            <Text style={[styles.filterSectionTitle, { color: colors.text }]}>
+              Quick Filters
+            </Text>
             <View style={styles.quickFilters}>
               <TouchableOpacity
                 style={[
                   styles.quickFilter,
                   {
-                    backgroundColor: filters.verified ? colors.primary : colors.surface,
+                    backgroundColor: filters.verified
+                      ? colors.primary
+                      : colors.surface,
                     borderColor: colors.border,
-                  }
+                  },
                 ]}
-                onPress={() => setFilters({ ...filters, verified: !filters.verified })}
+                onPress={() =>
+                  setFilters({ ...filters, verified: !filters.verified })
+                }
               >
-                <CheckCircle size={16} color={filters.verified ? colors.white : colors.textSecondary} />
-                <Text style={[
-                  styles.quickFilterText,
-                  { color: filters.verified ? colors.white : colors.text }
-                ]}>
+                <CheckCircle
+                  size={16}
+                  color={filters.verified ? colors.white : colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.quickFilterText,
+                    { color: filters.verified ? colors.white : colors.text },
+                  ]}
+                >
                   Verified Dealers
                 </Text>
               </TouchableOpacity>
@@ -488,17 +637,28 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onApply, cu
                 style={[
                   styles.quickFilter,
                   {
-                    backgroundColor: filters.hasPhotos ? colors.primary : colors.surface,
+                    backgroundColor: filters.hasPhotos
+                      ? colors.primary
+                      : colors.surface,
                     borderColor: colors.border,
-                  }
+                  },
                 ]}
-                onPress={() => setFilters({ ...filters, hasPhotos: !filters.hasPhotos })}
+                onPress={() =>
+                  setFilters({ ...filters, hasPhotos: !filters.hasPhotos })
+                }
               >
-                <Camera size={16} color={filters.hasPhotos ? colors.white : colors.textSecondary} />
-                <Text style={[
-                  styles.quickFilterText,
-                  { color: filters.hasPhotos ? colors.white : colors.text }
-                ]}>
+                <Camera
+                  size={16}
+                  color={
+                    filters.hasPhotos ? colors.white : colors.textSecondary
+                  }
+                />
+                <Text
+                  style={[
+                    styles.quickFilterText,
+                    { color: filters.hasPhotos ? colors.white : colors.text },
+                  ]}
+                >
                   Has Photos
                 </Text>
               </TouchableOpacity>
@@ -521,15 +681,12 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onApply, cu
   );
 };
 
-export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps> = ({
-  onCarPress,
-  onDealerPress,
-  onLocationPress,
-  onMessageDealer,
-}) => {
+export const EnhancedMarketplaceScreen: React.FC<
+  EnhancedMarketplaceScreenProps
+> = ({ onCarPress, onDealerPress, onLocationPress, onMessageDealer }) => {
   const { colors } = useThemeColors();
   const { user } = useAuth();
-  
+
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -537,7 +694,7 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [savedListings, setSavedListings] = useState<Set<string>>(new Set());
-  
+
   const [filters, setFilters] = useState<MarketplaceFilters>({
     priceRange: [0, 200000],
     yearRange: [1990, new Date().getFullYear()],
@@ -624,29 +781,37 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
     setRefreshing(false);
   }, [loadMarketplaceData]);
 
-  const handleListingPress = useCallback((listing: MarketplaceListing) => {
-    onCarPress?.(listing.id);
-  }, [onCarPress]);
+  const handleListingPress = useCallback(
+    (listing: MarketplaceListing) => {
+      onCarPress?.(listing.id);
+    },
+    [onCarPress],
+  );
 
-  const handleMessageDealer = useCallback(async (listing: MarketplaceListing) => {
-    try {
-      if (!listing.dealer_info) return;
+  const handleMessageDealer = useCallback(
+    async (listing: MarketplaceListing) => {
+      try {
+        if (!listing.dealer_info) return;
 
-      // Create a conversation with the dealer
-      const conversation = await realTimeChatService.createConversation({
-        type: 'dealer_inquiry',
-        title: `Inquiry about ${listing.year} ${listing.make} ${listing.model}`,
-        metadata: {
-          car_id: listing.id,
-          dealer_id: listing.dealer_info.id,
-          listing_price: listing.price,
-        },
-      });
+        // Create a conversation with the dealer
+        const conversation = await realTimeChatService.createConversation({
+          type: 'dealer_inquiry',
+          title: `Inquiry about ${listing.year} ${listing.make} ${listing.model}`,
+          metadata: {
+            car_id: listing.id,
+            dealer_id: listing.dealer_info.id,
+            listing_price: listing.price,
+          },
+        });
 
-      // Add dealer as participant
-      await realTimeChatService.addParticipant(conversation.id, listing.dealer_info.id, 'dealer');
+        // Add dealer as participant
+        await realTimeChatService.addParticipant(
+          conversation.id,
+          listing.dealer_info.id,
+          'dealer',
+        );
 
-      // Send initial message with car details
+        // Send initial message with car details
         await realTimeChatService.sendMessage(conversation.id, {
           content: `I'm interested in the ${listing.year} ${listing.make} ${listing.model}.`,
           metadata: {
@@ -654,50 +819,61 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
             price: listing.price,
             mileage: listing.mileage,
           },
-        });      onMessageDealer?.(listing.dealer_info.id, listing.id);
-    } catch (error) {
-      logger.error('Error starting dealer conversation:', error);
-      Alert.alert('Error', 'Failed to contact dealer');
-    }
-  }, [onMessageDealer]);
-
-  const handleSaveListing = useCallback(async (listingId: string) => {
-    try {
-      const newSavedListings = new Set(savedListings);
-      if (savedListings.has(listingId)) {
-        newSavedListings.delete(listingId);
-        // TODO: Remove from saved listings in backend
-      } else {
-        newSavedListings.add(listingId);
-        // TODO: Save listing in backend
+        });
+        onMessageDealer?.(listing.dealer_info.id, listing.id);
+      } catch (error) {
+        logger.error('Error starting dealer conversation:', error);
+        Alert.alert('Error', 'Failed to contact dealer');
       }
-      setSavedListings(newSavedListings);
-    } catch (error) {
-      logger.error('Error saving listing:', error);
-    }
-  }, [savedListings]);
+    },
+    [onMessageDealer],
+  );
 
-  const renderListingCard = useCallback(({ item }: { item: MarketplaceListing }) => (
-    <MarketplaceListingCard
-      listing={item}
-      onPress={() => handleListingPress(item)}
-      onMessagePress={() => handleMessageDealer(item)}
-      onSharePress={() => {
-        // TODO: Implement sharing
-        logger.debug('Share listing:', item.id);
-      }}
-      onSavePress={() => handleSaveListing(item.id)}
-      onPriceHistoryPress={() => {
-        // TODO: Show price history
-        logger.debug('Show price history:', item.id);
-      }}
-      isSaved={savedListings.has(item.id)}
-    />
-  ), [handleListingPress, handleMessageDealer, handleSaveListing, savedListings]);
+  const handleSaveListing = useCallback(
+    async (listingId: string) => {
+      try {
+        const newSavedListings = new Set(savedListings);
+        if (savedListings.has(listingId)) {
+          newSavedListings.delete(listingId);
+          // TODO: Remove from saved listings in backend
+        } else {
+          newSavedListings.add(listingId);
+          // TODO: Save listing in backend
+        }
+        setSavedListings(newSavedListings);
+      } catch (error) {
+        logger.error('Error saving listing:', error);
+      }
+    },
+    [savedListings],
+  );
+
+  const renderListingCard = useCallback(
+    ({ item }: { item: MarketplaceListing }) => (
+      <MarketplaceListingCard
+        listing={item}
+        onPress={() => handleListingPress(item)}
+        onMessagePress={() => handleMessageDealer(item)}
+        onSharePress={() => {
+          // TODO: Implement sharing
+          logger.debug('Share listing:', item.id);
+        }}
+        onSavePress={() => handleSaveListing(item.id)}
+        onPriceHistoryPress={() => {
+          // TODO: Show price history
+          logger.debug('Show price history:', item.id);
+        }}
+        isSaved={savedListings.has(item.id)}
+      />
+    ),
+    [handleListingPress, handleMessageDealer, handleSaveListing, savedListings],
+  );
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <Text style={[styles.screenTitle, { color: colors.text }]}>Marketplace</Text>
+      <Text style={[styles.screenTitle, { color: colors.text }]}>
+        Marketplace
+      </Text>
       <View style={styles.headerActions}>
         <TouchableOpacity
           style={[styles.viewModeButton, { backgroundColor: colors.surface }]}
@@ -721,16 +897,20 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <LoadingState message="Loading marketplace..." />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {renderHeader()}
-      
+
       <SearchBar
         placeholder="Search cars, makes, models..."
         value={searchQuery}
@@ -762,8 +942,12 @@ export const EnhancedMarketplaceScreen: React.FC<EnhancedMarketplaceScreenProps>
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Car size={48} color={colors.textSecondary} />
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>No listings found</Text>
-            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              No listings found
+            </Text>
+            <Text
+              style={[styles.emptySubtitle, { color: colors.textSecondary }]}
+            >
               Try adjusting your search or filters
             </Text>
             <TouchableOpacity

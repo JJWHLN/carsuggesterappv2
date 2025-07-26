@@ -5,7 +5,15 @@ import { Spacing, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCanPerformAction } from '@/components/ui/RoleProtection';
-import { Home, Sparkles, User, Settings, Edit3, MessageSquare, ShoppingBag } from '@/utils/ultra-optimized-icons';
+import {
+  Home,
+  Sparkles,
+  User,
+  Settings,
+  Edit3,
+  MessageSquare,
+  ShoppingBag,
+} from '@/utils/ultra-optimized-icons';
 
 export default function TabLayout() {
   const { colors } = useThemeColors();
@@ -31,12 +39,9 @@ export default function TabLayout() {
                 elevation: 12,
               },
             }),
-          }
+          },
         ],
-        tabBarLabelStyle: [
-          styles.tabBarLabel,
-          Typography.caption,
-        ],
+        tabBarLabelStyle: [styles.tabBarLabel, Typography.caption],
         tabBarIconStyle: styles.tabBarIcon,
         tabBarItemStyle: styles.tabBarItem,
         tabBarHideOnKeyboard: true,
@@ -47,10 +52,10 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Home 
-              color={focused ? colors.primary : color} 
-              size={focused ? 26 : 24} 
-              strokeWidth={focused ? 2.5 : 2} 
+            <Home
+              color={focused ? colors.primary : color}
+              size={focused ? 26 : 24}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -60,10 +65,10 @@ export default function TabLayout() {
         options={{
           title: 'Search',
           tabBarIcon: ({ color, focused }) => (
-            <Sparkles 
-              color={focused ? colors.primary : color} 
-              size={focused ? 26 : 24} 
-              strokeWidth={focused ? 2.5 : 2} 
+            <Sparkles
+              color={focused ? colors.primary : color}
+              size={focused ? 26 : 24}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -73,10 +78,10 @@ export default function TabLayout() {
         options={{
           title: 'Reviews',
           tabBarIcon: ({ color, focused }) => (
-            <MessageSquare 
-              color={focused ? colors.primary : color} 
-              size={focused ? 26 : 24} 
-              strokeWidth={focused ? 2.5 : 2} 
+            <MessageSquare
+              color={focused ? colors.primary : color}
+              size={focused ? 26 : 24}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -86,10 +91,10 @@ export default function TabLayout() {
         options={{
           title: 'Marketplace',
           tabBarIcon: ({ color, focused }) => (
-            <ShoppingBag 
-              color={focused ? colors.primary : color} 
-              size={focused ? 26 : 24} 
-              strokeWidth={focused ? 2.5 : 2} 
+            <ShoppingBag
+              color={focused ? colors.primary : color}
+              size={focused ? 26 : 24}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -99,10 +104,10 @@ export default function TabLayout() {
         options={{
           title: 'AI Search',
           tabBarIcon: ({ color, focused }) => (
-            <Sparkles 
-              color={focused ? colors.primary : color} 
-              size={focused ? 26 : 24} 
-              strokeWidth={focused ? 2.5 : 2} 
+            <Sparkles
+              color={focused ? colors.primary : color}
+              size={focused ? 26 : 24}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -112,10 +117,10 @@ export default function TabLayout() {
         options={{
           title: 'Admin',
           tabBarIcon: ({ color, focused }) => (
-            <Settings 
-              color={focused ? colors.primary : color} 
-              size={focused ? 26 : 24} 
-              strokeWidth={focused ? 2.5 : 2} 
+            <Settings
+              color={focused ? colors.primary : color}
+              size={focused ? 26 : 24}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -125,15 +130,15 @@ export default function TabLayout() {
         options={{
           title: 'Account',
           tabBarIcon: ({ color, focused }) => (
-            <User 
-              color={focused ? colors.primary : color} 
-              size={focused ? 26 : 24} 
-              strokeWidth={focused ? 2.5 : 2} 
+            <User
+              color={focused ? colors.primary : color}
+              size={focused ? 26 : 24}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
       />
-      
+
       {/* Hidden routes - accessible but not shown in tab bar */}
       <Tabs.Screen
         name="models"

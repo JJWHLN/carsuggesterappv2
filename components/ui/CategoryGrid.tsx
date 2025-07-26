@@ -1,9 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Zap, Crown, Truck, Car, ChevronRight, ArrowRight } from '@/utils/ultra-optimized-icons';
+import {
+  Zap,
+  Crown,
+  Truck,
+  Car,
+  ChevronRight,
+  ArrowRight,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -23,9 +36,9 @@ interface CategoryGridProps {
   onCategoryPress: (categoryName: string, categoryType: string) => void;
 }
 
-export const CategoryGrid: React.FC<CategoryGridProps> = ({ 
-  onViewAll, 
-  onCategoryPress 
+export const CategoryGrid: React.FC<CategoryGridProps> = ({
+  onViewAll,
+  onCategoryPress,
 }) => {
   const { colors } = useThemeColors();
 
@@ -104,7 +117,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
             Find exactly what you're looking for
           </Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onViewAll}
           style={styles.viewAllButton}
           activeOpacity={0.8}
@@ -124,17 +137,27 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
             style={[
               styles.categoryCard,
               { backgroundColor: colors.white, borderColor: colors.border },
-              index % 2 === 0 ? styles.leftCard : styles.rightCard
+              index % 2 === 0 ? styles.leftCard : styles.rightCard,
             ]}
             onPress={category.onPress}
             activeOpacity={0.9}
           >
             {/* Header with Icon and Count */}
             <View style={styles.cardHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: category.bgColor }]}>
+              <View
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: category.bgColor },
+                ]}
+              >
                 <category.icon color={category.color} size={24} />
               </View>
-              <View style={[styles.countBadge, { backgroundColor: category.bgColor }]}>
+              <View
+                style={[
+                  styles.countBadge,
+                  { backgroundColor: category.bgColor },
+                ]}
+              >
                 <Text style={[styles.countText, { color: category.color }]}>
                   {category.count}
                 </Text>
@@ -146,20 +169,32 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
               <Text style={[styles.categoryName, { color: colors.text }]}>
                 {category.name}
               </Text>
-              <Text style={[styles.categoryDescription, { color: colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.categoryDescription,
+                  { color: colors.textSecondary },
+                ]}
+              >
                 {category.description}
               </Text>
             </View>
 
             {/* Footer with Arrow */}
             <View style={styles.cardFooter}>
-              <View style={[styles.actionIndicator, { backgroundColor: category.bgColor }]}>
+              <View
+                style={[
+                  styles.actionIndicator,
+                  { backgroundColor: category.bgColor },
+                ]}
+              >
                 <ChevronRight color={category.color} size={16} />
               </View>
             </View>
 
             {/* Hover Effect Overlay */}
-            <View style={[styles.hoverOverlay, { backgroundColor: category.color }]} />
+            <View
+              style={[styles.hoverOverlay, { backgroundColor: category.color }]}
+            />
           </TouchableOpacity>
         ))}
       </View>

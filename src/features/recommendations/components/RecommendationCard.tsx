@@ -10,15 +10,21 @@ export const RecommendationCard: React.FC<Props> = ({ recommendation }) => {
   const { car, score, reasons, confidence } = recommendation;
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{car.make} {car.model} ({car.year})</Text>
+      <Text style={styles.title}>
+        {car.make} {car.model} ({car.year})
+      </Text>
       <Text style={styles.score}>Score: {score.toFixed(1)} / 100</Text>
-      <Text style={styles.confidence}>Confidence: {(confidence * 100).toFixed(0)}%</Text>
+      <Text style={styles.confidence}>
+        Confidence: {(confidence * 100).toFixed(0)}%
+      </Text>
       <Text style={styles.price}>Price: ${car.price.toLocaleString()}</Text>
       <Text style={styles.bodyStyle}>Body: {car.bodyStyle}</Text>
       <Text style={styles.safety}>Safety: {car.safetyRating}★</Text>
       <Text style={styles.section}>Reasons:</Text>
       {reasons.map((reason, i) => (
-        <Text key={i} style={styles.reason}>- {reason}</Text>
+        <Text key={i} style={styles.reason}>
+          - {reason}
+        </Text>
       ))}
     </View>
   );

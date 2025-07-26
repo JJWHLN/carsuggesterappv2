@@ -1,11 +1,10 @@
-import * as tf from '@tensorflow/tfjs';
 import { Car, UserPreferences, UserBehavior, Recommendation } from './types';
 
 // --- Scoring Algorithm ---
 export function scoreCar(
   car: Car,
   prefs: UserPreferences,
-  behavior: UserBehavior
+  behavior: UserBehavior,
 ): { score: number; reasons: string[]; confidence: number } {
   let score = 0;
   let reasons: string[] = [];
@@ -13,7 +12,10 @@ export function scoreCar(
 
   // Budget (25%)
   if (prefs.budget) {
-    const budgetScore = Math.max(0, 1 - Math.abs(car.price - prefs.budget) / prefs.budget);
+    const budgetScore = Math.max(
+      0,
+      1 - Math.abs(car.price - prefs.budget) / prefs.budget,
+    );
     score += budgetScore * 25;
     reasons.push(`Budget match: ${Math.round(budgetScore * 100)}%`);
   }
@@ -41,7 +43,9 @@ export function scoreCar(
 
   // Feature requirements (15%)
   if (prefs.requiredFeatures?.length) {
-    const matched = prefs.requiredFeatures.filter(f => car.features.includes(f));
+    const matched = prefs.requiredFeatures.filter((f) =>
+      car.features.includes(f),
+    );
     const featScore = matched.length / prefs.requiredFeatures.length;
     score += featScore * 15;
     if (matched.length) reasons.push(`Features matched: ${matched.join(', ')}`);
@@ -86,27 +90,57 @@ export function trackComparisonSelection(carIds: string[]) {
 export function getUserBehavior(): UserBehavior {
   return {
     carViews: JSON.parse(localStorage.getItem('carViews') || '[]'),
-    filterSelections: JSON.parse(localStorage.getItem('filterSelections') || '[]'),
-    comparisonSelections: JSON.parse(localStorage.getItem('comparisonSelections') || '[]'),
+    filterSelections: JSON.parse(
+      localStorage.getItem('filterSelections') || '[]',
+    ),
+    comparisonSelections: JSON.parse(
+      localStorage.getItem('comparisonSelections') || '[]',
+    ),
   };
 }
 
-// --- Machine Learning (TensorFlow.js) ---
-// Collaborative filtering (user-car matrix)
-export async function collaborativeFiltering(
-  userMatrix: tf.Tensor2D,
-  carMatrix: tf.Tensor2D
-): Promise<tf.Tensor> {
-  // Simple dot product for demonstration
-  return userMatrix.matMul(carMatrix.transpose());
+// --- Machine Learning (Simple Algorithms) ---
+// Collaborative filtering (user-car similarity)
+export function collaborativeFiltering(
+  userPreferences: number[][],
+  carFeatures: number[][],
+): number[] {
+  // Simple dot product similarity calculation
+  const scores: number[] = [];
+
+  for (let i = 0; i < carFeatures.length; i++) {
+    let score = 0;
+    for (let j = 0; j < userPreferences.length; j++) {
+      // Calculate cosine similarity between user preferences and car features
+      const userVec = userPreferences[j];
+      const carVec = carFeatures[i];
+
+      let dotProduct = 0;
+      let userMag = 0;
+      let carMag = 0;
+
+      for (let k = 0; k < Math.min(userVec.length, carVec.length); k++) {
+        dotProduct += userVec[k] * carVec[k];
+        userMag += userVec[k] * userVec[k];
+        carMag += carVec[k] * carVec[k];
+      }
+
+      const similarity =
+        dotProduct / (Math.sqrt(userMag) * Math.sqrt(carMag) || 1);
+      score += similarity;
+    }
+    scores.push(score / userPreferences.length);
+  }
+
+  return scores;
 }
 
 // Content-based filtering (car features)
 export function contentBasedFiltering(
   cars: Car[],
-  prefs: UserPreferences
+  prefs: UserPreferences,
 ): number[] {
-  return cars.map(car => {
+  return cars.map((car) => {
     let score = 0;
     if (prefs.preferredBodyStyles?.includes(car.bodyStyle)) score += 1;
     if (prefs.preferredBrands?.includes(car.brand)) score += 1;
@@ -120,10 +154,10 @@ export function contentBasedFiltering(
 export function getRecommendations(
   cars: Car[],
   prefs: UserPreferences,
-  behavior: UserBehavior
+  behavior: UserBehavior,
 ): Recommendation[] {
   // Score all cars
-  const recs = cars.map(car => {
+  const recs = cars.map((car) => {
     const { score, reasons, confidence } = scoreCar(car, prefs, behavior);
     return { car, score, reasons, confidence };
   });
@@ -136,10 +170,40 @@ export function getRecommendations(
 export function getColdStartQuiz() {
   return [
     { question: 'What is your budget?', type: 'number', key: 'budget' },
-    { question: 'Preferred body styles?', type: 'multi-select', key: 'preferredBodyStyles', options: ['SUV', 'Sedan', 'Hatchback', 'Coupe', 'Convertible', 'Truck'] },
-    { question: 'Minimum fuel efficiency (mpg)?', type: 'number', key: 'minFuelEfficiency' },
-    { question: 'Preferred brands?', type: 'multi-select', key: 'preferredBrands', options: ['Toyota', 'Honda', 'Ford', 'BMW', 'Tesla', 'Hyundai', 'Kia'] },
-    { question: 'Required features?', type: 'multi-select', key: 'requiredFeatures', options: ['Bluetooth', 'Backup Camera', 'AWD', 'Navigation', 'Heated Seats', 'Sunroof'] },
-    { question: 'Minimum safety rating?', type: 'number', key: 'minSafetyRating' },
+    {
+      question: 'Preferred body styles?',
+      type: 'multi-select',
+      key: 'preferredBodyStyles',
+      options: ['SUV', 'Sedan', 'Hatchback', 'Coupe', 'Convertible', 'Truck'],
+    },
+    {
+      question: 'Minimum fuel efficiency (mpg)?',
+      type: 'number',
+      key: 'minFuelEfficiency',
+    },
+    {
+      question: 'Preferred brands?',
+      type: 'multi-select',
+      key: 'preferredBrands',
+      options: ['Toyota', 'Honda', 'Ford', 'BMW', 'Tesla', 'Hyundai', 'Kia'],
+    },
+    {
+      question: 'Required features?',
+      type: 'multi-select',
+      key: 'requiredFeatures',
+      options: [
+        'Bluetooth',
+        'Backup Camera',
+        'AWD',
+        'Navigation',
+        'Heated Seats',
+        'Sunroof',
+      ],
+    },
+    {
+      question: 'Minimum safety rating?',
+      type: 'number',
+      key: 'minSafetyRating',
+    },
   ];
 }

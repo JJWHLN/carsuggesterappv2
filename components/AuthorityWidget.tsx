@@ -1,15 +1,17 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { useThemeColors } from '@/hooks/useTheme';
 import { QuickVerificationBadge } from '@/components/ExpertVerification';
 import { router } from 'expo-router';
-import { Star, Users, TrendingUp, ChevronRight, Award, CheckCircle } from '@/utils/ultra-optimized-icons';
+import {
+  Star,
+  Users,
+  TrendingUp,
+  ChevronRight,
+  Award,
+  CheckCircle,
+} from '@/utils/ultra-optimized-icons';
 
 interface AuthorityWidgetProps {
   variant?: 'compact' | 'featured' | 'inline';
@@ -45,9 +47,9 @@ export const AuthorityWidget: React.FC<AuthorityWidgetProps> = ({
       <View style={styles.compactHeader}>
         <Shield color={colors.success} size={16} fill={colors.success} />
         <Text style={styles.compactTitle}>Trusted Experts</Text>
-        <QuickVerificationBadge 
-          verificationLevel="master" 
-          size="small" 
+        <QuickVerificationBadge
+          verificationLevel="master"
+          size="small"
           showText={false}
         />
       </View>
@@ -56,7 +58,9 @@ export const AuthorityWidget: React.FC<AuthorityWidgetProps> = ({
       </Text>
       <View style={styles.compactFooter}>
         <Star color={colors.warning} size={12} fill={colors.warning} />
-        <Text style={styles.compactMetric}>{metrics.trustScore}% trust score</Text>
+        <Text style={styles.compactMetric}>
+          {metrics.trustScore}% trust score
+        </Text>
         <ChevronRight color={colors.textSecondary} size={14} />
       </View>
     </TouchableOpacity>
@@ -80,19 +84,25 @@ export const AuthorityWidget: React.FC<AuthorityWidgetProps> = ({
         <View style={styles.featuredMetrics}>
           <View style={styles.featuredMetric}>
             <Users color={colors.primary} size={16} />
-            <Text style={styles.featuredMetricValue}>{metrics.expertCount}</Text>
+            <Text style={styles.featuredMetricValue}>
+              {metrics.expertCount}
+            </Text>
             <Text style={styles.featuredMetricLabel}>Experts</Text>
           </View>
-          
+
           <View style={styles.featuredMetric}>
             <TrendingUp color={colors.success} size={16} />
-            <Text style={styles.featuredMetricValue}>{metrics.trustScore}%</Text>
+            <Text style={styles.featuredMetricValue}>
+              {metrics.trustScore}%
+            </Text>
             <Text style={styles.featuredMetricLabel}>Trust</Text>
           </View>
-          
+
           <View style={styles.featuredMetric}>
             <Award color={colors.warning} size={16} />
-            <Text style={styles.featuredMetricValue}>{metrics.reviewsCount.toLocaleString()}</Text>
+            <Text style={styles.featuredMetricValue}>
+              {metrics.reviewsCount.toLocaleString()}
+            </Text>
             <Text style={styles.featuredMetricLabel}>Reviews</Text>
           </View>
         </View>
@@ -147,21 +157,21 @@ export const TrustIndicator: React.FC<TrustIndicatorProps> = ({
   const styles = getStyles(colors);
 
   return (
-    <TouchableOpacity 
-      style={styles.trustIndicatorContainer} 
+    <TouchableOpacity
+      style={styles.trustIndicatorContainer}
       onPress={onPress}
       disabled={!onPress}
     >
       <View style={styles.trustIndicatorContent}>
-        <QuickVerificationBadge 
-          verificationLevel={verificationLevel} 
-          size="small" 
+        <QuickVerificationBadge
+          verificationLevel={verificationLevel}
+          size="small"
         />
         {expertName && (
           <Text style={styles.trustIndicatorExpert}>by {expertName}</Text>
         )}
       </View>
-      
+
       {qualityScore && (
         <View style={styles.qualityScoreContainer}>
           <Text style={styles.qualityScoreText}>{qualityScore}%</Text>
@@ -208,7 +218,7 @@ export const AuthorityQuickAccess: React.FC<AuthorityQuickAccessProps> = ({
   return (
     <View style={styles.quickAccessContainer}>
       {quickActions.map((action, index) => (
-        <TouchableOpacity 
+        <TouchableOpacity
           key={index}
           style={styles.quickAccessButton}
           onPress={action.onPress}
@@ -221,193 +231,194 @@ export const AuthorityQuickAccess: React.FC<AuthorityQuickAccessProps> = ({
   );
 };
 
-const getStyles = (colors: any) => StyleSheet.create({
-  // Compact variant
-  compactContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 6,
-  },
-  compactHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  compactTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-  },
-  compactDescription: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  compactFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 2,
-  },
-  compactMetric: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    flex: 1,
-  },
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    // Compact variant
+    compactContainer: {
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 6,
+    },
+    compactHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    compactTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+      flex: 1,
+    },
+    compactDescription: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
+    compactFooter: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginTop: 2,
+    },
+    compactMetric: {
+      fontSize: 11,
+      color: colors.textSecondary,
+      flex: 1,
+    },
 
-  // Featured variant
-  featuredContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 12,
-  },
-  featuredHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  featuredTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  featuredTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  featuredDescription: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-  featuredMetrics: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 8,
-  },
-  featuredMetric: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  featuredMetricValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  featuredMetricLabel: {
-    fontSize: 11,
-    color: colors.textSecondary,
-  },
-  featuredFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  featuredFooterText: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
+    // Featured variant
+    featuredContainer: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 12,
+    },
+    featuredHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    featuredTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    featuredTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    featuredDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 20,
+    },
+    featuredMetrics: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      paddingVertical: 8,
+    },
+    featuredMetric: {
+      alignItems: 'center',
+      gap: 4,
+    },
+    featuredMetricValue: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    featuredMetricLabel: {
+      fontSize: 11,
+      color: colors.textSecondary,
+    },
+    featuredFooter: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingTop: 8,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    featuredFooterText: {
+      fontSize: 14,
+      color: colors.primary,
+      fontWeight: '500',
+    },
 
-  // Inline variant
-  inlineContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primaryLight,
-    borderRadius: 8,
-    padding: 12,
-    gap: 12,
-  },
-  inlineContent: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  inlineText: {
-    fontSize: 13,
-    color: colors.primary,
-    fontWeight: '500',
-    flex: 1,
-  },
-  inlineButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: colors.primary,
-    borderRadius: 6,
-  },
-  inlineButtonText: {
-    fontSize: 12,
-    color: colors.white,
-    fontWeight: '600',
-  },
+    // Inline variant
+    inlineContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.primaryLight,
+      borderRadius: 8,
+      padding: 12,
+      gap: 12,
+    },
+    inlineContent: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    inlineText: {
+      fontSize: 13,
+      color: colors.primary,
+      fontWeight: '500',
+      flex: 1,
+    },
+    inlineButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      backgroundColor: colors.primary,
+      borderRadius: 6,
+    },
+    inlineButtonText: {
+      fontSize: 12,
+      color: colors.white,
+      fontWeight: '600',
+    },
 
-  // Trust Indicator
-  trustIndicatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  trustIndicatorContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-  },
-  trustIndicatorExpert: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  qualityScoreContainer: {
-    alignItems: 'center',
-    gap: 2,
-  },
-  qualityScoreText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: colors.success,
-  },
-  qualityScoreLabel: {
-    fontSize: 10,
-    color: colors.textSecondary,
-  },
+    // Trust Indicator
+    trustIndicatorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      padding: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    trustIndicatorContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      flex: 1,
+    },
+    trustIndicatorExpert: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
+    qualityScoreContainer: {
+      alignItems: 'center',
+      gap: 2,
+    },
+    qualityScoreText: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      color: colors.success,
+    },
+    qualityScoreLabel: {
+      fontSize: 10,
+      color: colors.textSecondary,
+    },
 
-  // Quick Access
-  quickAccessContainer: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  quickAccessButton: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 6,
-  },
-  quickAccessLabel: {
-    fontSize: 11,
-    color: colors.text,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-});
+    // Quick Access
+    quickAccessContainer: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    quickAccessButton: {
+      flex: 1,
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 6,
+    },
+    quickAccessLabel: {
+      fontSize: 11,
+      color: colors.text,
+      fontWeight: '500',
+      textAlign: 'center',
+    },
+  });
 
 export default AuthorityWidget;

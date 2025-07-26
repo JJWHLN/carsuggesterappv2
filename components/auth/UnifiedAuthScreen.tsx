@@ -39,7 +39,8 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
   onSuccess,
 }) => {
   const { theme } = useComprehensiveTheme();
-  const { signInWithPassword, signUpWithPassword, resetPasswordForEmail } = useAuth();
+  const { signInWithPassword, signUpWithPassword, resetPasswordForEmail } =
+    useAuth();
 
   // Configure form based on mode
   const getFormConfig = () => {
@@ -70,7 +71,11 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
 
   // Handle password confirmation validation for sign-up
   React.useEffect(() => {
-    if (mode === 'sign-up' && form.values.confirmPassword && form.values.password) {
+    if (
+      mode === 'sign-up' &&
+      form.values.confirmPassword &&
+      form.values.password
+    ) {
       const confirmPasswordValidator = (confirmPassword: string) => {
         if (confirmPassword !== form.values.password) {
           return 'Passwords do not match';
@@ -89,12 +94,12 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
           await signInWithPassword(values.email, values.password);
           notifications.auth.signInSuccess();
           break;
-          
+
         case 'sign-up':
           await signUpWithPassword(values.email, values.password, '', '');
           notifications.auth.signUpSuccess();
           break;
-          
+
         case 'forgot-password':
           await resetPasswordForEmail(values.email);
           notifications.auth.passwordResetSent();
@@ -112,8 +117,11 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
     } catch (error: any) {
       // Handle specific auth errors
       const errorCode = error.code || error.message;
-      
-      if (errorCode.includes('invalid-credential') || errorCode.includes('wrong-password')) {
+
+      if (
+        errorCode.includes('invalid-credential') ||
+        errorCode.includes('wrong-password')
+      ) {
         notifications.auth.invalidCredentials();
       } else if (errorCode.includes('email-already-in-use')) {
         notifications.auth.emailAlreadyInUse();
@@ -130,26 +138,35 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
   const getTitle = () => {
     if (title) return title;
     switch (mode) {
-      case 'sign-up': return 'Create Account';
-      case 'forgot-password': return 'Reset Password';
-      default: return 'Sign In';
+      case 'sign-up':
+        return 'Create Account';
+      case 'forgot-password':
+        return 'Reset Password';
+      default:
+        return 'Sign In';
     }
   };
 
   const getSubtitle = () => {
     if (subtitle) return subtitle;
     switch (mode) {
-      case 'sign-up': return 'Join CarSuggester to find your perfect car';
-      case 'forgot-password': return 'Enter your email to reset your password';
-      default: return 'Welcome back to CarSuggester';
+      case 'sign-up':
+        return 'Join CarSuggester to find your perfect car';
+      case 'forgot-password':
+        return 'Enter your email to reset your password';
+      default:
+        return 'Welcome back to CarSuggester';
     }
   };
 
   const getSubmitButtonText = () => {
     switch (mode) {
-      case 'sign-up': return 'Create Account';
-      case 'forgot-password': return 'Send Reset Email';
-      default: return 'Sign In';
+      case 'sign-up':
+        return 'Create Account';
+      case 'forgot-password':
+        return 'Send Reset Email';
+      default:
+        return 'Sign In';
     }
   };
 
@@ -219,11 +236,11 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -277,7 +294,9 @@ export const UnifiedAuthScreen: React.FC<UnifiedAuthScreenProps> = ({
           <View style={styles.links}>
             {mode === 'sign-in' && (
               <>
-                <TouchableOpacity onPress={() => router.push('/auth/forgot-password')}>
+                <TouchableOpacity
+                  onPress={() => router.push('/auth/forgot-password')}
+                >
                   <Text style={styles.linkText}>Forgot your password?</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => router.push('/auth/sign-up')}>

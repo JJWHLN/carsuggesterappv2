@@ -1,18 +1,21 @@
 import React, { memo, useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Animated,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PreferenceSelector, PreferenceOption } from './PreferenceSelector';
 import { Button } from './Button';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Spacing, Typography, BorderRadius, Shadows as ColorsShadows } from '@/constants/Colors';
-import { ChevronLeft, ChevronRight, Check } from '@/utils/ultra-optimized-icons';
+import {
+  Spacing,
+  Typography,
+  BorderRadius,
+  Shadows as ColorsShadows,
+} from '@/constants/Colors';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Check,
+} from '@/utils/ultra-optimized-icons';
 
 export interface OnboardingStep {
   id: string;
@@ -38,171 +41,202 @@ interface OnboardingFlowProps {
 
 const { width } = Dimensions.get('window');
 
-export const OnboardingFlow = memo<OnboardingFlowProps>(({
-  steps,
-  onComplete,
-  onSkip,
-  title = "Let's Find Your Perfect Car",
-  subtitle = "Answer a few questions to get personalized recommendations",
-  style,
-}) => {
-  const { colors } = useThemeColors();
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [preferences, setPreferences] = useState<Record<string, any>>({});
-  const [fadeAnim] = useState(new Animated.Value(1));
+export const OnboardingFlow = memo<OnboardingFlowProps>(
+  ({
+    steps,
+    onComplete,
+    onSkip,
+    title = "Let's Find Your Perfect Car",
+    subtitle = 'Answer a few questions to get personalized recommendations',
+    style,
+  }) => {
+    const { colors } = useThemeColors();
+    const [currentStepIndex, setCurrentStepIndex] = useState(0);
+    const [preferences, setPreferences] = useState<Record<string, any>>({});
+    const [fadeAnim] = useState(new Animated.Value(1));
 
-  const currentStep = steps[currentStepIndex];
-  const isLastStep = currentStepIndex === steps.length - 1;
-  const isFirstStep = currentStepIndex === 0;
+    const currentStep = steps[currentStepIndex];
+    const isLastStep = currentStepIndex === steps.length - 1;
+    const isFirstStep = currentStepIndex === 0;
 
-  const animateTransition = useCallback((callback: () => void) => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    
-    setTimeout(callback, 150);
-  }, [fadeAnim]);
+    const animateTransition = useCallback(
+      (callback: () => void) => {
+        Animated.sequence([
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 150,
+            useNativeDriver: true,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 150,
+            useNativeDriver: true,
+          }),
+        ]).start();
 
-  const handleNext = useCallback(() => {
-    if (!currentStep) return;
+        setTimeout(callback, 150);
+      },
+      [fadeAnim],
+    );
 
-    const currentValue = preferences[currentStep.id];
-    
-    // Check if required field is filled
-    if (currentStep.required && (currentValue === undefined || currentValue === null || currentValue === '')) {
-      // You could show an error message here
-      return;
-    }
+    const handleNext = useCallback(() => {
+      if (!currentStep) return;
 
-    if (isLastStep) {
-      onComplete(preferences);
-    } else {
+      const currentValue = preferences[currentStep.id];
+
+      // Check if required field is filled
+      if (
+        currentStep.required &&
+        (currentValue === undefined ||
+          currentValue === null ||
+          currentValue === '')
+      ) {
+        // You could show an error message here
+        return;
+      }
+
+      if (isLastStep) {
+        onComplete(preferences);
+      } else {
+        animateTransition(() => {
+          setCurrentStepIndex((prev) => prev + 1);
+        });
+      }
+    }, [currentStep, preferences, isLastStep, onComplete, animateTransition]);
+
+    const handleBack = useCallback(() => {
+      if (isFirstStep) return;
+
       animateTransition(() => {
-        setCurrentStepIndex(prev => prev + 1);
+        setCurrentStepIndex((prev) => prev - 1);
       });
-    }
-  }, [currentStep, preferences, isLastStep, onComplete, animateTransition]);
+    }, [isFirstStep, animateTransition]);
 
-  const handleBack = useCallback(() => {
-    if (isFirstStep) return;
-    
-    animateTransition(() => {
-      setCurrentStepIndex(prev => prev - 1);
-    });
-  }, [isFirstStep, animateTransition]);
+    const handlePreferenceChange = useCallback(
+      (value: any) => {
+        if (!currentStep) return;
 
-  const handlePreferenceChange = useCallback((value: any) => {
-    if (!currentStep) return;
-    
-    setPreferences(prev => ({
-      ...prev,
-      [currentStep.id]: value,
-    }));
-  }, [currentStep]);
+        setPreferences((prev) => ({
+          ...prev,
+          [currentStep.id]: value,
+        }));
+      },
+      [currentStep],
+    );
 
-  const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
+    const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
 
-  if (!currentStep) return null;
+    if (!currentStep) return null;
 
-  return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }, style]}>
-      {/* Header */}
-      <View style={styles.header}>
-        {/* Progress Bar */}
-        <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
-          <Animated.View
-            style={[
-              styles.progressBar,
-              {
-                backgroundColor: colors.primary,
-                width: `${progressPercentage}%`,
-              }
-            ]}
-          />
-        </View>
-        
-        {/* Step Counter */}
-        <Text style={[styles.stepCounter, { color: colors.textSecondary }]}>
-          {currentStepIndex + 1} of {steps.length}
-        </Text>
-        
-        {/* Title */}
-        {isFirstStep && (
-          <View style={styles.titleContainer}>
-            <Text style={[styles.title, { color: colors.text }]}>
-              {title}
-            </Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-              {subtitle}
-            </Text>
+    return (
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: colors.background },
+          style,
+        ]}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          {/* Progress Bar */}
+          <View
+            style={[styles.progressTrack, { backgroundColor: colors.border }]}
+          >
+            <Animated.View
+              style={[
+                styles.progressBar,
+                {
+                  backgroundColor: colors.primary,
+                  width: `${progressPercentage}%`,
+                },
+              ]}
+            />
           </View>
-        )}
-      </View>
 
-      {/* Content */}
-      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-        <PreferenceSelector
-          question={currentStep.question}
-          description={currentStep.description}
-          type={currentStep.type}
-          options={currentStep.options}
-          value={preferences[currentStep.id]}
-          onChange={handlePreferenceChange}
-          min={currentStep.min}
-          max={currentStep.max}
-          step={currentStep.step}
-          formatValue={currentStep.formatValue}
-        />
-      </Animated.View>
+          {/* Step Counter */}
+          <Text style={[styles.stepCounter, { color: colors.textSecondary }]}>
+            {currentStepIndex + 1} of {steps.length}
+          </Text>
 
-      {/* Actions */}
-      <View style={styles.actions}>
-        <View style={styles.navigationButtons}>
-          {/* Back Button */}
-          <Button
-            title="Back"
-            onPress={handleBack}
-            variant="outline"
-            disabled={isFirstStep}
-            style={StyleSheet.flatten([styles.backButton, isFirstStep && styles.disabledButton])}
-            icon={<ChevronLeft color={isFirstStep ? colors.textSecondary : colors.primary} size={20} />}
-          />
-
-          {/* Next/Complete Button */}
-          <Button
-            title={isLastStep ? "Complete" : "Next"}
-            onPress={handleNext}
-            style={styles.nextButton}
-            icon={
-              isLastStep ? 
-                <Check color={colors.white} size={20} /> : 
-                <ChevronRight color={colors.white} size={20} />
-            }
-          />
+          {/* Title */}
+          {isFirstStep && (
+            <View style={styles.titleContainer}>
+              <Text style={[styles.title, { color: colors.text }]}>
+                {title}
+              </Text>
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                {subtitle}
+              </Text>
+            </View>
+          )}
         </View>
 
-        {/* Skip Button */}
-        {onSkip && (
-          <Button
-            title="Skip for now"
-            onPress={onSkip}
-            variant="ghost"
-            style={styles.skipButton}
+        {/* Content */}
+        <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+          <PreferenceSelector
+            question={currentStep.question}
+            description={currentStep.description}
+            type={currentStep.type}
+            options={currentStep.options}
+            value={preferences[currentStep.id]}
+            onChange={handlePreferenceChange}
+            min={currentStep.min}
+            max={currentStep.max}
+            step={currentStep.step}
+            formatValue={currentStep.formatValue}
           />
-        )}
-      </View>
-    </SafeAreaView>
-  );
-});
+        </Animated.View>
+
+        {/* Actions */}
+        <View style={styles.actions}>
+          <View style={styles.navigationButtons}>
+            {/* Back Button */}
+            <Button
+              title="Back"
+              onPress={handleBack}
+              variant="outline"
+              disabled={isFirstStep}
+              style={StyleSheet.flatten([
+                styles.backButton,
+                isFirstStep && styles.disabledButton,
+              ])}
+              icon={
+                <ChevronLeft
+                  color={isFirstStep ? colors.textSecondary : colors.primary}
+                  size={20}
+                />
+              }
+            />
+
+            {/* Next/Complete Button */}
+            <Button
+              title={isLastStep ? 'Complete' : 'Next'}
+              onPress={handleNext}
+              style={styles.nextButton}
+              icon={
+                isLastStep ? (
+                  <Check color={colors.white} size={20} />
+                ) : (
+                  <ChevronRight color={colors.white} size={20} />
+                )
+              }
+            />
+          </View>
+
+          {/* Skip Button */}
+          {onSkip && (
+            <Button
+              title="Skip for now"
+              onPress={onSkip}
+              variant="ghost"
+              style={styles.skipButton}
+            />
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  },
+);
 
 OnboardingFlow.displayName = 'OnboardingFlow';
 

@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Building2, Users, Star, MapPin } from '@/utils/ultra-optimized-icons';
 
@@ -69,7 +75,9 @@ const DealerSection: React.FC<DealerSectionProps> = ({ onPressDealer }) => {
                 <MapPin size={12} color={colors.textSecondary} />
                 <Text style={styles.locationText}>{dealer.location}</Text>
               </View>
-              <Text style={styles.specializationText}>{dealer.specialization}</Text>
+              <Text style={styles.specializationText}>
+                {dealer.specialization}
+              </Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -78,94 +86,95 @@ const DealerSection: React.FC<DealerSectionProps> = ({ onPressDealer }) => {
   );
 };
 
-const getThemedStyles = (colors: any) => StyleSheet.create({
-  dealerSection: {
-    marginVertical: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    paddingHorizontal: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginLeft: 8,
-  },
-  dealerCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginLeft: 16,
-    width: 200,
-    borderWidth: 1,
-    borderColor: colors.border,
-    elevation: 2,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  dealerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  dealerIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: colors.surfaceVariant,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  dealerInfo: {
-    flex: 1,
-  },
-  dealerName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  dealerRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ratingText: {
-    fontSize: 12,
-    color: colors.text,
-    marginLeft: 2,
-    fontWeight: '500',
-  },
-  reviewText: {
-    fontSize: 10,
-    color: colors.textSecondary,
-    marginLeft: 2,
-  },
-  dealerDetails: {
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    paddingTop: 8,
-  },
-  dealerLocation: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  locationText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginLeft: 4,
-  },
-  specializationText: {
-    fontSize: 11,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-});
+const getThemedStyles = (colors: any) =>
+  StyleSheet.create({
+    dealerSection: {
+      marginVertical: 16,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+      paddingHorizontal: 16,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.text,
+      marginLeft: 8,
+    },
+    dealerCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      marginLeft: 16,
+      width: 200,
+      borderWidth: 1,
+      borderColor: colors.border,
+      elevation: 2,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    dealerHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    dealerIcon: {
+      width: 40,
+      height: 40,
+      backgroundColor: colors.surfaceVariant,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    dealerInfo: {
+      flex: 1,
+    },
+    dealerName: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 2,
+    },
+    dealerRating: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    ratingText: {
+      fontSize: 12,
+      color: colors.text,
+      marginLeft: 2,
+      fontWeight: '500',
+    },
+    reviewText: {
+      fontSize: 10,
+      color: colors.textSecondary,
+      marginLeft: 2,
+    },
+    dealerDetails: {
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+      paddingTop: 8,
+    },
+    dealerLocation: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 4,
+    },
+    locationText: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      marginLeft: 4,
+    },
+    specializationText: {
+      fontSize: 11,
+      color: colors.primary,
+      fontWeight: '500',
+    },
+  });
 
 export default DealerSection;

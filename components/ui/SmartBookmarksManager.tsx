@@ -12,26 +12,32 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/Colors';
+import {
+  Colors,
+  Typography,
+  Spacing,
+  BorderRadius,
+  Shadows,
+} from '@/constants/Colors';
 import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { AnimatedBadge } from '@/components/ui/AnimatedBadge';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
-import SmartBookmarksService, { 
-  SmartBookmark, 
-  BookmarkCollection, 
+import SmartBookmarksService, {
+  SmartBookmark,
+  BookmarkCollection,
   BookmarkAlert,
-  BookmarkAnalytics 
+  BookmarkAnalytics,
 } from '@/services/SmartBookmarksService';
 import { Car } from '@/types/database';
-import { 
-  Bookmark, 
-  User as Bell, 
-  Settings, 
-  Plus, 
-  Calendar as Tag, 
-  Calendar, 
-  TrendingUp, 
+import {
+  Bookmark,
+  User as Bell,
+  Settings,
+  Plus,
+  Calendar as Tag,
+  Calendar,
+  TrendingUp,
   Filter,
   Star,
   Heart,
@@ -64,29 +70,37 @@ type ViewMode = 'grid' | 'list';
 type FilterMode = 'all' | 'priority' | 'alerts' | 'collections' | 'tags';
 type SortMode = 'recent' | 'price' | 'views' | 'priority';
 
-export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksManagerProps) {
+export function SmartBookmarksManager({
+  onCarPress,
+  onClose,
+}: SmartBookmarksManagerProps) {
   const [bookmarks, setBookmarks] = useState<SmartBookmark[]>([]);
   const [collections, setCollections] = useState<BookmarkCollection[]>([]);
   const [alerts, setAlerts] = useState<BookmarkAlert[]>([]);
   const [analytics, setAnalytics] = useState<BookmarkAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   // UI State
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [sortMode, setSortMode] = useState<SortMode>('recent');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPriority, setSelectedPriority] = useState<'low' | 'medium' | 'high' | null>(null);
-  const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
+  const [selectedPriority, setSelectedPriority] = useState<
+    'low' | 'medium' | 'high' | null
+  >(null);
+  const [selectedCollection, setSelectedCollection] = useState<string | null>(
+    null,
+  );
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  
+
   // Modal States
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateCollection, setShowCreateCollection] = useState(false);
-  const [showBookmarkDetails, setShowBookmarkDetails] = useState<SmartBookmark | null>(null);
+  const [showBookmarkDetails, setShowBookmarkDetails] =
+    useState<SmartBookmark | null>(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
-  
+
   const [bookmarkService] = useState(() => SmartBookmarksService.getInstance());
 
   useEffect(() => {
@@ -96,12 +110,13 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
   const loadData = async () => {
     try {
       setLoading(true);
-      const [bookmarksData, collectionsData, alertsData, analyticsData] = await Promise.all([
-        bookmarkService.getAllBookmarks(),
-        bookmarkService.getAllCollections(),
-        bookmarkService.getAllAlerts(),
-        bookmarkService.getBookmarkAnalytics(),
-      ]);
+      const [bookmarksData, collectionsData, alertsData, analyticsData] =
+        await Promise.all([
+          bookmarkService.getAllBookmarks(),
+          bookmarkService.getAllCollections(),
+          bookmarkService.getAllAlerts(),
+          bookmarkService.getBookmarkAnalytics(),
+        ]);
 
       setBookmarks(bookmarksData);
       setCollections(collectionsData);
@@ -128,11 +143,12 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(bookmark => 
-        bookmark.car.make.toLowerCase().includes(query) ||
-        bookmark.car.model.toLowerCase().includes(query) ||
-        bookmark.tags.some(tag => tag.toLowerCase().includes(query)) ||
-        bookmark.notes.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (bookmark) =>
+          bookmark.car.make.toLowerCase().includes(query) ||
+          bookmark.car.model.toLowerCase().includes(query) ||
+          bookmark.tags.some((tag) => tag.toLowerCase().includes(query)) ||
+          bookmark.notes.toLowerCase().includes(query),
       );
     }
 
@@ -140,24 +156,28 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
     switch (filterMode) {
       case 'priority':
         if (selectedPriority) {
-          filtered = filtered.filter(b => b.priority === selectedPriority);
+          filtered = filtered.filter((b) => b.priority === selectedPriority);
         }
         break;
       case 'alerts':
-        const alertCarIds = alerts.filter(a => !a.isRead).map(a => a.carId);
-        filtered = filtered.filter(b => alertCarIds.includes(b.car.id));
+        const alertCarIds = alerts.filter((a) => !a.isRead).map((a) => a.carId);
+        filtered = filtered.filter((b) => alertCarIds.includes(b.car.id));
         break;
       case 'collections':
         if (selectedCollection) {
-          const collection = collections.find(c => c.id === selectedCollection);
+          const collection = collections.find(
+            (c) => c.id === selectedCollection,
+          );
           if (collection) {
-            filtered = filtered.filter(b => collection.bookmarkIds.includes(b.id));
+            filtered = filtered.filter((b) =>
+              collection.bookmarkIds.includes(b.id),
+            );
           }
         }
         break;
       case 'tags':
         if (selectedTag) {
-          filtered = filtered.filter(b => b.tags.includes(selectedTag));
+          filtered = filtered.filter((b) => b.tags.includes(selectedTag));
         }
         break;
     }
@@ -180,13 +200,23 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
     });
 
     return filtered;
-  }, [bookmarks, searchQuery, filterMode, selectedPriority, selectedCollection, selectedTag, sortMode, alerts, collections]);
+  }, [
+    bookmarks,
+    searchQuery,
+    filterMode,
+    selectedPriority,
+    selectedCollection,
+    selectedTag,
+    sortMode,
+    alerts,
+    collections,
+  ]);
 
   // Get unique tags
   const allTags = useMemo(() => {
     const tags = new Set<string>();
-    bookmarks.forEach(bookmark => {
-      bookmark.tags.forEach(tag => tags.add(tag));
+    bookmarks.forEach((bookmark) => {
+      bookmark.tags.forEach((tag) => tags.add(tag));
     });
     return Array.from(tags).sort();
   }, [bookmarks]);
@@ -194,7 +224,7 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
   const handleBookmarkPress = async (bookmark: SmartBookmark) => {
     await bookmarkService.recordBookmarkView(bookmark.id);
     await loadData(); // Refresh to update view count
-    
+
     if (onCarPress) {
       onCarPress(bookmark.car);
     }
@@ -218,7 +248,7 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -233,8 +263,10 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
   };
 
   const renderBookmarkCard = ({ item: bookmark }: { item: SmartBookmark }) => {
-    const hasAlerts = alerts.some(alert => alert.carId === bookmark.car.id && !alert.isRead);
-    
+    const hasAlerts = alerts.some(
+      (alert) => alert.carId === bookmark.car.id && !alert.isRead,
+    );
+
     return (
       <View style={styles.bookmarkCard}>
         <TouchableOpacity
@@ -244,17 +276,25 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
           <View style={styles.bookmarkHeader}>
             <View style={styles.bookmarkImageContainer}>
               <OptimizedImage
-                source={{ uri: bookmark.car.images?.[0] || 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=300' }}
+                source={{
+                  uri:
+                    bookmark.car.images?.[0] ||
+                    'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=300',
+                }}
                 style={styles.bookmarkImage}
                 cacheKey={`bookmark_${bookmark.car.id}`}
               />
               {hasAlerts && (
                 <View style={styles.alertBadge}>
-                  <Bell size={12} color={Colors.light.textInverse} strokeWidth={2} />
+                  <Bell
+                    size={12}
+                    color={Colors.light.textInverse}
+                    strokeWidth={2}
+                  />
                 </View>
               )}
             </View>
-            
+
             <View style={styles.bookmarkInfo}>
               <Text style={styles.bookmarkTitle} numberOfLines={1}>
                 {bookmark.car.make} {bookmark.car.model}
@@ -288,13 +328,19 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
               <View style={styles.stat}>
                 <Clock size={14} color={Colors.light.textMuted} />
                 <Text style={styles.statText}>
-                  {Math.floor((Date.now() - new Date(bookmark.addedAt).getTime()) / (1000 * 60 * 60 * 24))}d
+                  {Math.floor(
+                    (Date.now() - new Date(bookmark.addedAt).getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  )}
+                  d
                 </Text>
               </View>
               {bookmark.priceAlertEnabled && (
                 <View style={styles.stat}>
                   <Bell size={14} color={Colors.light.primary} />
-                  <Text style={[styles.statText, { color: Colors.light.primary }]}>
+                  <Text
+                    style={[styles.statText, { color: Colors.light.primary }]}
+                  >
                     {bookmark.priceAlertThreshold}%
                   </Text>
                 </View>
@@ -304,23 +350,27 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
             {bookmark.tags.length > 0 && (
               <View style={styles.bookmarkTags}>
                 {bookmark.tags.slice(0, 2).map((tag, index) => (
-                  <AnimatedBadge
-                    key={index}
-                    variant="outline"
-                    size="small"
-                  >
+                  <AnimatedBadge key={index} variant="outline" size="small">
                     {tag}
                   </AnimatedBadge>
                 ))}
                 {bookmark.tags.length > 2 && (
-                  <Text style={styles.moreTagsText}>+{bookmark.tags.length - 2}</Text>
+                  <Text style={styles.moreTagsText}>
+                    +{bookmark.tags.length - 2}
+                  </Text>
                 )}
               </View>
             )}
 
             <View style={styles.priorityIndicator}>
               <AnimatedBadge
-                variant={bookmark.priority === 'high' ? 'warning' : bookmark.priority === 'medium' ? 'info' : 'outline'}
+                variant={
+                  bookmark.priority === 'high'
+                    ? 'warning'
+                    : bookmark.priority === 'medium'
+                      ? 'info'
+                      : 'outline'
+                }
                 size="small"
               >
                 {bookmark.priority.toUpperCase()}
@@ -365,12 +415,15 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
 
     return (
       <View style={[styles.alertCard, !alert.isRead && styles.unreadAlert]}>
-        <View style={styles.alertIcon}>
-          {getAlertIcon()}
-        </View>
-        
+        <View style={styles.alertIcon}>{getAlertIcon()}</View>
+
         <View style={styles.alertContent}>
-          <Text style={[styles.alertMessage, !alert.isRead && styles.unreadAlertText]}>
+          <Text
+            style={[
+              styles.alertMessage,
+              !alert.isRead && styles.unreadAlertText,
+            ]}
+          >
             {alert.message}
           </Text>
           <Text style={styles.alertTime}>
@@ -407,7 +460,7 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
     );
   }
 
-  const unreadAlerts = alerts.filter(a => !a.isRead);
+  const unreadAlerts = alerts.filter((a) => !a.isRead);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -420,7 +473,7 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
               {bookmarks.length} cars • {unreadAlerts.length} alerts
             </Text>
           </View>
-          
+
           <View style={styles.headerActions}>
             <TouchableOpacity
               onPress={() => setShowAnalytics(true)}
@@ -428,7 +481,7 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
             >
               <TrendingUp size={20} color={Colors.light.primary} />
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               onPress={() => setShowFilters(true)}
               style={styles.headerActionButton}
@@ -436,9 +489,12 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
               <Filter size={20} color={Colors.light.primary} />
               {filterMode !== 'all' && <View style={styles.filterActiveDot} />}
             </TouchableOpacity>
-            
+
             {onClose && (
-              <TouchableOpacity onPress={onClose} style={styles.headerActionButton}>
+              <TouchableOpacity
+                onPress={onClose}
+                style={styles.headerActionButton}
+              >
                 <X size={20} color={Colors.light.textSecondary} />
               </TouchableOpacity>
             )}
@@ -466,8 +522,8 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
 
         {/* Quick Stats */}
         {analytics && (
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.quickStats}
           >
@@ -480,7 +536,9 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
               <Text style={styles.statLabel}>Alerts</Text>
             </View>
             <View style={styles.statCard}>
-              <Text style={styles.statValue}>€{analytics.priceDropsSaved.toLocaleString()}</Text>
+              <Text style={styles.statValue}>
+                €{analytics.priceDropsSaved.toLocaleString()}
+              </Text>
               <Text style={styles.statLabel}>Saved</Text>
             </View>
             <View style={styles.statCard}>
@@ -511,14 +569,13 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
       </View>
 
       {/* Content */}
-      <ScrollView 
-        style={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Unread Alerts */}
         {unreadAlerts.length > 0 && (
           <View style={styles.alertsSection}>
-            <Text style={styles.sectionTitle}>🔔 New Alerts ({unreadAlerts.length})</Text>
+            <Text style={styles.sectionTitle}>
+              🔔 New Alerts ({unreadAlerts.length})
+            </Text>
             <FlatList
               data={unreadAlerts.slice(0, 3)}
               renderItem={renderAlert}
@@ -527,7 +584,9 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
             />
             {unreadAlerts.length > 3 && (
               <TouchableOpacity style={styles.viewAllAlertsButton}>
-                <Text style={styles.viewAllAlertsText}>View all {unreadAlerts.length} alerts</Text>
+                <Text style={styles.viewAllAlertsText}>
+                  View all {unreadAlerts.length} alerts
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -539,19 +598,39 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
             <Text style={styles.sectionTitle}>
               📚 Your Bookmarks ({filteredAndSortedBookmarks.length})
             </Text>
-            
+
             <View style={styles.viewModeToggle}>
               <TouchableOpacity
                 onPress={() => setViewMode('grid')}
-                style={[styles.viewModeButton, viewMode === 'grid' && styles.activeViewMode]}
+                style={[
+                  styles.viewModeButton,
+                  viewMode === 'grid' && styles.activeViewMode,
+                ]}
               >
-                <Grid size={16} color={viewMode === 'grid' ? Colors.light.primary : Colors.light.textMuted} />
+                <Grid
+                  size={16}
+                  color={
+                    viewMode === 'grid'
+                      ? Colors.light.primary
+                      : Colors.light.textMuted
+                  }
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setViewMode('list')}
-                style={[styles.viewModeButton, viewMode === 'list' && styles.activeViewMode]}
+                style={[
+                  styles.viewModeButton,
+                  viewMode === 'list' && styles.activeViewMode,
+                ]}
               >
-                <List size={16} color={viewMode === 'list' ? Colors.light.primary : Colors.light.textMuted} />
+                <List
+                  size={16}
+                  color={
+                    viewMode === 'list'
+                      ? Colors.light.primary
+                      : Colors.light.textMuted
+                  }
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -564,15 +643,21 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
               numColumns={viewMode === 'grid' ? 2 : 1}
               key={viewMode} // Force re-render when view mode changes
               scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={{ height: Spacing.sm }} />}
-              columnWrapperStyle={viewMode === 'grid' ? styles.gridRow : undefined}
+              ItemSeparatorComponent={() => (
+                <View style={{ height: Spacing.sm }} />
+              )}
+              columnWrapperStyle={
+                viewMode === 'grid' ? styles.gridRow : undefined
+              }
             />
           ) : (
             <View style={styles.emptyState}>
               <Bookmark size={48} color={Colors.light.textMuted} />
               <Text style={styles.emptyStateTitle}>No bookmarks found</Text>
               <Text style={styles.emptyStateText}>
-                {searchQuery ? 'Try adjusting your search or filters' : 'Start bookmarking cars you\'re interested in'}
+                {searchQuery
+                  ? 'Try adjusting your search or filters'
+                  : "Start bookmarking cars you're interested in"}
               </Text>
             </View>
           )}
@@ -581,7 +666,11 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
 
       {/* Analytics Modal */}
       {showAnalytics && analytics && (
-        <Modal visible={showAnalytics} animationType="slide" presentationStyle="pageSheet">
+        <Modal
+          visible={showAnalytics}
+          animationType="slide"
+          presentationStyle="pageSheet"
+        >
           <SafeAreaView style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>📊 Bookmark Analytics</Text>
@@ -589,30 +678,44 @@ export function SmartBookmarksManager({ onCarPress, onClose }: SmartBookmarksMan
                 <X size={24} color={Colors.light.textSecondary} />
               </TouchableOpacity>
             </View>
-            
+
             <ScrollView style={styles.modalContent}>
               <View style={styles.analyticsGrid}>
                 <View style={styles.analyticsCard}>
-                  <Text style={styles.analyticsValue}>{analytics.totalBookmarks}</Text>
+                  <Text style={styles.analyticsValue}>
+                    {analytics.totalBookmarks}
+                  </Text>
                   <Text style={styles.analyticsLabel}>Total Bookmarks</Text>
                 </View>
                 <View style={styles.analyticsCard}>
-                  <Text style={styles.analyticsValue}>{analytics.activeAlerts}</Text>
+                  <Text style={styles.analyticsValue}>
+                    {analytics.activeAlerts}
+                  </Text>
                   <Text style={styles.analyticsLabel}>Active Alerts</Text>
                 </View>
                 <View style={styles.analyticsCard}>
-                  <Text style={styles.analyticsValue}>{analytics.averageTimeToContact}d</Text>
-                  <Text style={styles.analyticsLabel}>Avg. Time to Contact</Text>
+                  <Text style={styles.analyticsValue}>
+                    {analytics.averageTimeToContact}d
+                  </Text>
+                  <Text style={styles.analyticsLabel}>
+                    Avg. Time to Contact
+                  </Text>
                 </View>
                 <View style={styles.analyticsCard}>
-                  <Text style={styles.analyticsValue}>{analytics.conversionRate}%</Text>
+                  <Text style={styles.analyticsValue}>
+                    {analytics.conversionRate}%
+                  </Text>
                   <Text style={styles.analyticsLabel}>Conversion Rate</Text>
                 </View>
               </View>
 
               <View style={styles.savingsCard}>
-                <Text style={styles.savingsTitle}>💰 Money Saved from Price Drops</Text>
-                <Text style={styles.savingsAmount}>€{analytics.priceDropsSaved.toLocaleString()}</Text>
+                <Text style={styles.savingsTitle}>
+                  💰 Money Saved from Price Drops
+                </Text>
+                <Text style={styles.savingsAmount}>
+                  €{analytics.priceDropsSaved.toLocaleString()}
+                </Text>
               </View>
 
               <View style={styles.brandsSection}>

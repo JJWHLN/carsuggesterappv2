@@ -17,17 +17,26 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useDesignTokens } from '@/hooks/useDesignTokens';
-import { 
-  realTimeChatService, 
-  ChatMessage, 
-  ChatConversation, 
+import {
+  realTimeChatService,
+  ChatMessage,
+  ChatConversation,
   ChatParticipant,
   ChatTypingIndicator,
 } from '@/services/realTimeChatService';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { Car, DollarSign, MoreVertical, ArrowLeft, CheckCircle, Check, Clock, MapPin } from '@/utils/ultra-optimized-icons';
+import {
+  Car,
+  DollarSign,
+  MoreVertical,
+  ArrowLeft,
+  CheckCircle,
+  Check,
+  Clock,
+  MapPin,
+} from '@/utils/ultra-optimized-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -66,10 +75,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     switch (message.message_type) {
       case 'text':
         return (
-          <Text style={[
-            styles.messageText,
-            { color: isOwn ? colors.white : colors.text }
-          ]}>
+          <Text
+            style={[
+              styles.messageText,
+              { color: isOwn ? colors.white : colors.text },
+            ]}
+          >
             {message.content}
           </Text>
         );
@@ -77,7 +88,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       case 'image':
         return (
           <TouchableOpacity
-            onPress={() => message.metadata?.image_url && onImagePress?.(message.metadata.image_url)}
+            onPress={() =>
+              message.metadata?.image_url &&
+              onImagePress?.(message.metadata.image_url)
+            }
             style={styles.imageMessage}
           >
             <Image
@@ -86,10 +100,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
               resizeMode="cover"
             />
             {message.content && (
-              <Text style={[
-                styles.imageCaption,
-                { color: isOwn ? colors.white : colors.text }
-              ]}>
+              <Text
+                style={[
+                  styles.imageCaption,
+                  { color: isOwn ? colors.white : colors.text },
+                ]}
+              >
                 {message.content}
               </Text>
             )}
@@ -99,10 +115,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       case 'car_link':
         return (
           <TouchableOpacity
-            onPress={() => message.metadata?.car_id && onCarPress?.(message.metadata.car_id)}
+            onPress={() =>
+              message.metadata?.car_id && onCarPress?.(message.metadata.car_id)
+            }
             style={[
               styles.carLinkMessage,
-              { backgroundColor: isOwn ? colors.white : colors.surface }
+              { backgroundColor: isOwn ? colors.white : colors.surface },
             ]}
           >
             <View style={styles.carLinkHeader}>
@@ -111,14 +129,18 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 Car Details
               </Text>
             </View>
-            
+
             <Text style={[styles.carLinkText, { color: colors.text }]}>
-              {message.metadata?.car_details?.make} {message.metadata?.car_details?.model}
+              {message.metadata?.car_details?.make}{' '}
+              {message.metadata?.car_details?.model}
             </Text>
-            <Text style={[styles.carLinkSubtext, { color: colors.textSecondary }]}>
-              {message.metadata?.car_details?.year} • ${message.metadata?.car_details?.price?.toLocaleString()}
+            <Text
+              style={[styles.carLinkSubtext, { color: colors.textSecondary }]}
+            >
+              {message.metadata?.car_details?.year} • $
+              {message.metadata?.car_details?.price?.toLocaleString()}
             </Text>
-            
+
             {message.content && (
               <Text style={[styles.carLinkCaption, { color: colors.text }]}>
                 {message.content}
@@ -129,21 +151,23 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
       case 'price_quote':
         return (
-          <View style={[
-            styles.priceQuoteMessage,
-            { backgroundColor: isOwn ? colors.white : colors.surface }
-          ]}>
+          <View
+            style={[
+              styles.priceQuoteMessage,
+              { backgroundColor: isOwn ? colors.white : colors.surface },
+            ]}
+          >
             <View style={styles.priceQuoteHeader}>
               <DollarSign size={20} color={colors.success} />
               <Text style={[styles.priceQuoteTitle, { color: colors.text }]}>
                 Price Quote
               </Text>
             </View>
-            
+
             <Text style={[styles.priceAmount, { color: colors.success }]}>
               ${message.metadata?.price_amount?.toLocaleString()}
             </Text>
-            
+
             {message.content && (
               <Text style={[styles.priceQuoteText, { color: colors.text }]}>
                 {message.content}
@@ -154,20 +178,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
       case 'system':
         return (
-          <Text style={[
-            styles.systemMessage,
-            { color: colors.textSecondary }
-          ]}>
+          <Text style={[styles.systemMessage, { color: colors.textSecondary }]}>
             {message.content}
           </Text>
         );
 
       default:
         return (
-          <Text style={[
-            styles.messageText,
-            { color: isOwn ? colors.white : colors.text }
-          ]}>
+          <Text
+            style={[
+              styles.messageText,
+              { color: isOwn ? colors.white : colors.text },
+            ]}
+          >
             {message.content}
           </Text>
         );
@@ -182,9 +205,16 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   if (message.message_type === 'system') {
     return (
       <View style={styles.systemMessageContainer}>
-        <View style={[styles.systemMessageBubble, { backgroundColor: colors.surface }]}>
+        <View
+          style={[
+            styles.systemMessageBubble,
+            { backgroundColor: colors.surface },
+          ]}
+        >
           {renderMessageContent()}
-          <Text style={[styles.systemMessageTime, { color: colors.textSecondary }]}>
+          <Text
+            style={[styles.systemMessageTime, { color: colors.textSecondary }]}
+          >
             {formatTime(message.created_at)}
           </Text>
         </View>
@@ -193,16 +223,18 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   }
 
   return (
-    <View style={[
-      styles.messageContainer,
-      isOwn ? styles.ownMessage : styles.otherMessage
-    ]}>
+    <View
+      style={[
+        styles.messageContainer,
+        isOwn ? styles.ownMessage : styles.otherMessage,
+      ]}
+    >
       {!isOwn && showAvatar && (
         <View style={[styles.avatar, { backgroundColor: colors.surface }]}>
           {message.sender_profile?.avatar_url ? (
-            <Image 
-              source={{ uri: message.sender_profile.avatar_url }} 
-              style={styles.avatarImage} 
+            <Image
+              source={{ uri: message.sender_profile.avatar_url }}
+              style={styles.avatarImage}
             />
           ) : (
             <Text style={[styles.avatarText, { color: colors.text }]}>
@@ -211,27 +243,29 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
         </View>
       )}
-      
-      <View style={[
-        styles.messageBubble,
-        {
-          backgroundColor: isOwn ? colors.primary : colors.cardBackground,
-          marginLeft: !isOwn && !showAvatar ? 40 : 0,
-        }
-      ]}>
+
+      <View
+        style={[
+          styles.messageBubble,
+          {
+            backgroundColor: isOwn ? colors.primary : colors.cardBackground,
+            marginLeft: !isOwn && !showAvatar ? 40 : 0,
+          },
+        ]}
+      >
         {renderMessageContent()}
-        
+
         <View style={styles.messageFooter}>
-          <Text style={[
-            styles.messageTime,
-            { color: isOwn ? colors.white : colors.textSecondary }
-          ]}>
+          <Text
+            style={[
+              styles.messageTime,
+              { color: isOwn ? colors.white : colors.textSecondary },
+            ]}
+          >
             {formatTime(message.created_at)}
           </Text>
           {isOwn && (
-            <View style={styles.messageStatus}>
-              {getMessageStatusIcon()}
-            </View>
+            <View style={styles.messageStatus}>{getMessageStatusIcon()}</View>
           )}
         </View>
       </View>
@@ -239,7 +273,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   );
 };
 
-const TypingIndicator: React.FC<{ typingUsers: ChatTypingIndicator[] }> = ({ typingUsers }) => {
+const TypingIndicator: React.FC<{ typingUsers: ChatTypingIndicator[] }> = ({
+  typingUsers,
+}) => {
   const { colors } = useThemeColors();
   const animatedValue = useRef(new Animated.Value(0)).current;
 
@@ -247,18 +283,27 @@ const TypingIndicator: React.FC<{ typingUsers: ChatTypingIndicator[] }> = ({ typ
     if (typingUsers.length > 0) {
       Animated.loop(
         Animated.sequence([
-          Animated.timing(animatedValue, { toValue: 1, duration: 600, useNativeDriver: true }),
-          Animated.timing(animatedValue, { toValue: 0, duration: 600, useNativeDriver: true }),
-        ])
+          Animated.timing(animatedValue, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(animatedValue, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ]),
       ).start();
     }
   }, [typingUsers.length, animatedValue]);
 
   if (typingUsers.length === 0) return null;
 
-  const typingText = typingUsers.length === 1
-    ? `${typingUsers[0].display_name} is typing...`
-    : `${typingUsers.length} people are typing...`;
+  const typingText =
+    typingUsers.length === 1
+      ? `${typingUsers[0].display_name} is typing...`
+      : `${typingUsers.length} people are typing...`;
 
   return (
     <View style={styles.typingContainer}>
@@ -286,22 +331,25 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
   const { colors } = useThemeColors();
   const { spacing } = useDesignTokens();
   const { user } = useAuth();
-  
-  const [conversation, setConversation] = useState<ChatConversation | null>(null);
+
+  const [conversation, setConversation] = useState<ChatConversation | null>(
+    null,
+  );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState<ChatTypingIndicator[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
-  
+
   const scrollViewRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
   const loadConversation = useCallback(async () => {
     try {
-      const conversationData = await realTimeChatService.getConversation(conversationId);
+      const conversationData =
+        await realTimeChatService.getConversation(conversationId);
       setConversation(conversationData);
     } catch (error) {
       logger.error('Error loading conversation:', error);
@@ -312,7 +360,10 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
   const loadMessages = useCallback(async () => {
     try {
       setLoading(true);
-      const messagesData = await realTimeChatService.getMessages(conversationId, { limit: 50 });
+      const messagesData = await realTimeChatService.getMessages(
+        conversationId,
+        { limit: 50 },
+      );
       setMessages(messagesData);
     } catch (error) {
       logger.error('Error loading messages:', error);
@@ -326,27 +377,31 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
     try {
       await realTimeChatService.subscribeToConversation(conversationId, {
         onMessage: (message) => {
-          setMessages(prev => [...prev, message]);
+          setMessages((prev) => [...prev, message]);
           setTimeout(() => {
             scrollViewRef.current?.scrollToEnd({ animated: true });
           }, 100);
         },
         onTyping: (indicator) => {
-          setTypingUsers(prev => {
-            const filtered = prev.filter(t => t.user_id !== indicator.user_id);
+          setTypingUsers((prev) => {
+            const filtered = prev.filter(
+              (t) => t.user_id !== indicator.user_id,
+            );
             return [...filtered, indicator];
           });
-          
+
           // Remove typing indicator after 3 seconds
           setTimeout(() => {
-            setTypingUsers(prev => prev.filter(t => t.user_id !== indicator.user_id));
+            setTypingUsers((prev) =>
+              prev.filter((t) => t.user_id !== indicator.user_id),
+            );
           }, 3000);
         },
         onUserOnline: (userId) => {
-          setOnlineUsers(prev => new Set([...prev, userId]));
+          setOnlineUsers((prev) => new Set([...prev, userId]));
         },
         onUserOffline: (userId) => {
-          setOnlineUsers(prev => {
+          setOnlineUsers((prev) => {
             const newSet = new Set(prev);
             newSet.delete(userId);
             return newSet;
@@ -392,51 +447,60 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
     }
   }, [inputText, sending, conversationId]);
 
-  const handleInputChange = useCallback(async (text: string) => {
-    setInputText(text);
+  const handleInputChange = useCallback(
+    async (text: string) => {
+      setInputText(text);
 
-    // Start typing indicator
-    if (text.length > 0) {
-      await realTimeChatService.startTyping(conversationId);
-      
-      // Clear existing timeout
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
+      // Start typing indicator
+      if (text.length > 0) {
+        await realTimeChatService.startTyping(conversationId);
+
+        // Clear existing timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+
+        // Stop typing after 3 seconds of inactivity
+        typingTimeoutRef.current = setTimeout(() => {
+          realTimeChatService.stopTyping(conversationId);
+        }, 3000);
       }
-      
-      // Stop typing after 3 seconds of inactivity
-      typingTimeoutRef.current = setTimeout(() => {
-        realTimeChatService.stopTyping(conversationId);
-      }, 3000);
-    }
-  }, [conversationId]);
+    },
+    [conversationId],
+  );
 
-  const handleCarShare = useCallback(async (carId: string) => {
-    try {
-      await realTimeChatService.sendCarShareMessage(
-        conversationId,
-        carId,
-        'Check out this car!'
-      );
-    } catch (error) {
-      logger.error('Error sharing car:', error);
-      Alert.alert('Error', 'Failed to share car');
-    }
-  }, [conversationId]);
+  const handleCarShare = useCallback(
+    async (carId: string) => {
+      try {
+        await realTimeChatService.sendCarShareMessage(
+          conversationId,
+          carId,
+          'Check out this car!',
+        );
+      } catch (error) {
+        logger.error('Error sharing car:', error);
+        Alert.alert('Error', 'Failed to share car');
+      }
+    },
+    [conversationId],
+  );
 
-  const handlePriceQuote = useCallback(async (amount: number) => {
-    try {
-      await realTimeChatService.sendPriceQuoteMessage(
-        conversationId,
-        carId || '',
-        amount,
-        'Here\'s my price quote for this vehicle:'
-      );
-    } catch (error) {
-      logger.error('Error sending price quote:', error);
-      Alert.alert('Error', 'Failed to send price quote');
-    }
-  }, [conversationId, carId]);
+  const handlePriceQuote = useCallback(
+    async (amount: number) => {
+      try {
+        await realTimeChatService.sendPriceQuoteMessage(
+          conversationId,
+          carId || '',
+          amount,
+          "Here's my price quote for this vehicle:",
+        );
+      } catch (error) {
+        logger.error('Error sending price quote:', error);
+        Alert.alert('Error', 'Failed to send price quote');
+      }
+    },
+    [conversationId, carId],
+  );
 
   const getParticipantStatus = (participant: ChatParticipant) => {
     if (onlineUsers.has(participant.user_id)) {
@@ -453,7 +517,8 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
       return conversation.title;
     }
     // Get other participants (excluding current user)
-    const otherParticipants = conversation?.participants?.filter(p => p.user_id !== user?.id) || [];
+    const otherParticipants =
+      conversation?.participants?.filter((p) => p.user_id !== user?.id) || [];
     if (otherParticipants.length === 1) {
       return otherParticipants[0].display_name;
     }
@@ -464,9 +529,12 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
   };
 
   const getHeaderSubtitle = () => {
-    const otherParticipants = conversation?.participants?.filter(p => p.user_id !== user?.id) || [];
-    const onlineCount = otherParticipants.filter(p => onlineUsers.has(p.user_id)).length;
-    
+    const otherParticipants =
+      conversation?.participants?.filter((p) => p.user_id !== user?.id) || [];
+    const onlineCount = otherParticipants.filter((p) =>
+      onlineUsers.has(p.user_id),
+    ).length;
+
     if (onlineCount === 0) {
       return 'Offline';
     }
@@ -478,7 +546,9 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
 
   if (loading && messages.length === 0) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
@@ -490,24 +560,36 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.cardBackground, borderBottomColor: colors.border }]}>
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: colors.cardBackground,
+            borderBottomColor: colors.border,
+          },
+        ]}
+      >
         <View style={styles.headerLeft}>
           <TouchableOpacity onPress={onBack} style={styles.backButton}>
             <ArrowLeft size={24} color={colors.text} />
           </TouchableOpacity>
-          
+
           <View style={styles.headerInfo}>
             <Text style={[styles.headerTitle, { color: colors.text }]}>
               {getHeaderTitle()}
             </Text>
-            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.headerSubtitle, { color: colors.textSecondary }]}
+            >
               {getHeaderSubtitle()}
             </Text>
           </View>
         </View>
-        
+
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.headerAction}>
             <Phone size={20} color={colors.textSecondary} />
@@ -523,14 +605,29 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
 
       {/* Car Info Banner (if applicable) */}
       {conversation?.car_id && conversation.metadata?.car_details && (
-        <View style={[styles.carBanner, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <View
+          style={[
+            styles.carBanner,
+            {
+              backgroundColor: colors.surface,
+              borderBottomColor: colors.border,
+            },
+          ]}
+        >
           <Car size={20} color={colors.primary} />
           <View style={styles.carBannerText}>
             <Text style={[styles.carBannerTitle, { color: colors.text }]}>
-              {conversation.metadata.car_details.make} {conversation.metadata.car_details.model}
+              {conversation.metadata.car_details.make}{' '}
+              {conversation.metadata.car_details.model}
             </Text>
-            <Text style={[styles.carBannerSubtitle, { color: colors.textSecondary }]}>
-              {conversation.metadata.car_details.year} • ${conversation.metadata.car_details.price?.toLocaleString()}
+            <Text
+              style={[
+                styles.carBannerSubtitle,
+                { color: colors.textSecondary },
+              ]}
+            >
+              {conversation.metadata.car_details.year} • $
+              {conversation.metadata.car_details.price?.toLocaleString()}
             </Text>
           </View>
           <TouchableOpacity
@@ -545,8 +642,8 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
       )}
 
       {/* Messages */}
-      <KeyboardAvoidingView 
-        style={styles.messagesContainer} 
+      <KeyboardAvoidingView
+        style={styles.messagesContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
@@ -561,7 +658,8 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
           {messages.map((message, index) => {
             const isOwn = message.sender_id === user?.id;
             const prevMessage = index > 0 ? messages[index - 1] : null;
-            const showAvatar = !prevMessage || prevMessage.sender_id !== message.sender_id;
+            const showAvatar =
+              !prevMessage || prevMessage.sender_id !== message.sender_id;
 
             return (
               <MessageBubble
@@ -570,16 +668,26 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
                 isOwn={isOwn}
                 showAvatar={showAvatar}
                 onCarPress={(carId) => logger.debug('View car:', carId)}
-                onImagePress={(imageUrl) => logger.debug('View image:', imageUrl)}
+                onImagePress={(imageUrl) =>
+                  logger.debug('View image:', imageUrl)
+                }
               />
             );
           })}
-          
+
           <TypingIndicator typingUsers={typingUsers} />
         </ScrollView>
 
         {/* Input */}
-        <View style={[styles.inputContainer, { backgroundColor: colors.cardBackground, borderTopColor: colors.border }]}>
+        <View
+          style={[
+            styles.inputContainer,
+            {
+              backgroundColor: colors.cardBackground,
+              borderTopColor: colors.border,
+            },
+          ]}
+        >
           <View style={styles.inputActions}>
             <TouchableOpacity style={styles.inputAction}>
               <Camera size={20} color={colors.textSecondary} />
@@ -596,7 +704,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
               </TouchableOpacity>
             )}
           </View>
-          
+
           <View style={styles.inputWrapper}>
             <TextInput
               ref={inputRef}
@@ -606,7 +714,7 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
                   backgroundColor: colors.surface,
                   color: colors.text,
                   borderColor: colors.border,
-                }
+                },
               ]}
               placeholder="Type a message..."
               placeholderTextColor={colors.textSecondary}
@@ -617,13 +725,15 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
               returnKeyType="send"
               onSubmitEditing={handleSendMessage}
             />
-            
+
             <TouchableOpacity
               style={[
                 styles.sendButton,
                 {
-                  backgroundColor: inputText.trim() ? colors.primary : colors.border,
-                }
+                  backgroundColor: inputText.trim()
+                    ? colors.primary
+                    : colors.border,
+                },
               ]}
               onPress={handleSendMessage}
               disabled={!inputText.trim() || sending}
@@ -631,9 +741,9 @@ export const CarMarketplaceChat: React.FC<CarMarketplaceChatProps> = ({
               {sending ? (
                 <ActivityIndicator size="small" color={colors.white} />
               ) : (
-                <Send 
-                  size={18} 
-                  color={inputText.trim() ? colors.white : colors.textSecondary} 
+                <Send
+                  size={18}
+                  color={inputText.trim() ? colors.white : colors.textSecondary}
                 />
               )}
             </TouchableOpacity>

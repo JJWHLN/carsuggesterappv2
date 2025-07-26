@@ -3,7 +3,13 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
-import { Car, Users, Award, TrendingUp, Star } from '@/utils/ultra-optimized-icons';
+import {
+  Car,
+  Users,
+  Award,
+  TrendingUp,
+  Star,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -54,7 +60,9 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ style }) => {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }, style]}>
+    <View
+      style={[styles.container, { backgroundColor: colors.background }, style]}
+    >
       {/* Section Header */}
       <View style={styles.header}>
         <View style={styles.headerBadge}>
@@ -67,19 +75,25 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ style }) => {
           Why Choose CarSuggester?
         </Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Join thousands of satisfied customers who found their perfect car with us
+          Join thousands of satisfied customers who found their perfect car with
+          us
         </Text>
       </View>
 
       {/* Stats Grid */}
       <View style={styles.statsGrid}>
         {stats.map((stat, index) => (
-          <View key={index} style={[styles.statCard, { backgroundColor: colors.white }]}>
+          <View
+            key={index}
+            style={[styles.statCard, { backgroundColor: colors.white }]}
+          >
             {/* Icon Container */}
-            <View style={[styles.iconContainer, { backgroundColor: stat.bgColor }]}>
+            <View
+              style={[styles.iconContainer, { backgroundColor: stat.bgColor }]}
+            >
               {stat.icon}
             </View>
-            
+
             {/* Content */}
             <View style={styles.statContent}>
               <Text style={[styles.statValue, { color: stat.color }]}>

@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  ViewStyle, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ViewStyle,
   TextStyle,
   TextInputProps,
   Platform,
@@ -41,14 +41,19 @@ export const BaseFormInput: React.FC<BaseFormInputProps> = ({
   variant = 'primary',
   ...props
 }) => {
-  const { colors, spacing, typography, borderRadius, inputs } = useDesignTokens();
+  const { colors, spacing, typography, borderRadius, inputs } =
+    useDesignTokens();
   const [isFocused, setIsFocused] = useState(false);
 
   const getInputStyle = () => {
     const baseStyle = variant === 'search' ? inputs.search : inputs.primary;
     return {
       ...baseStyle,
-      borderColor: error ? colors.error : isFocused ? colors.primary : colors.border,
+      borderColor: error
+        ? colors.error
+        : isFocused
+          ? colors.primary
+          : colors.border,
       borderWidth: variant === 'outlined' ? 1 : 0,
       ...(variant === 'outlined' && { backgroundColor: 'transparent' }),
     };
@@ -62,14 +67,14 @@ export const BaseFormInput: React.FC<BaseFormInputProps> = ({
           {required && <Text style={{ color: colors.error }}> *</Text>}
         </Text>
       )}
-      
+
       <View style={[getInputStyle(), styles.inputContainer]}>
         {leftIcon && (
           <View style={[styles.iconContainer, styles.leftIcon]}>
             {leftIcon}
           </View>
         )}
-        
+
         <TextInput
           style={[
             styles.input,
@@ -83,19 +88,21 @@ export const BaseFormInput: React.FC<BaseFormInputProps> = ({
           onBlur={() => setIsFocused(false)}
           {...props}
         />
-        
+
         {rightIcon && (
           <View style={[styles.iconContainer, styles.rightIcon]}>
             {rightIcon}
           </View>
         )}
       </View>
-      
+
       {(error || helperText) && (
-        <Text style={[
-          styles.helperText,
-          { color: error ? colors.error : colors.textSecondary }
-        ]}>
+        <Text
+          style={[
+            styles.helperText,
+            { color: error ? colors.error : colors.textSecondary },
+          ]}
+        >
           {error || helperText}
         </Text>
       )}
@@ -104,7 +111,8 @@ export const BaseFormInput: React.FC<BaseFormInputProps> = ({
 };
 
 // Password Input Component
-interface PasswordInputProps extends Omit<BaseFormInputProps, 'rightIcon' | 'secureTextEntry'> {
+interface PasswordInputProps
+  extends Omit<BaseFormInputProps, 'rightIcon' | 'secureTextEntry'> {
   showPasswordToggle?: boolean;
 }
 
@@ -139,7 +147,8 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
 };
 
 // Search Input Component
-interface SearchInputProps extends Omit<BaseFormInputProps, 'leftIcon' | 'variant'> {
+interface SearchInputProps
+  extends Omit<BaseFormInputProps, 'leftIcon' | 'variant'> {
   onClear?: () => void;
   showClearButton?: boolean;
 }
@@ -187,7 +196,7 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
 
   useEffect(() => {
     Animated.timing(labelAnimation, {
-      toValue: (isFocused || value) ? 1 : 0,
+      toValue: isFocused || value ? 1 : 0,
       duration: animationDuration,
       easing: Easing.ease,
       useNativeDriver: false,
@@ -216,9 +225,7 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
 
   return (
     <View style={styles.floatingContainer}>
-      <Animated.Text style={labelStyle}>
-        {label}
-      </Animated.Text>
+      <Animated.Text style={labelStyle}>{label}</Animated.Text>
       <BaseFormInput
         {...props}
         value={value}
@@ -248,9 +255,7 @@ export const FormFieldGroup: React.FC<FormFieldGroupProps> = ({
   return (
     <View style={[styles.fieldGroup, style]}>
       {title && (
-        <Text style={[styles.groupTitle, { color: colors.text }]}>
-          {title}
-        </Text>
+        <Text style={[styles.groupTitle, { color: colors.text }]}>{title}</Text>
       )}
       {children}
     </View>
@@ -260,23 +265,25 @@ export const FormFieldGroup: React.FC<FormFieldGroupProps> = ({
 // Form Validation Hook
 export const useFormValidation = <T extends Record<string, any>>(
   initialValues: T,
-  validationRules: Partial<Record<keyof T, (value: any) => string | null>>
+  validationRules: Partial<Record<keyof T, (value: any) => string | null>>,
 ) => {
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
-  const [touched, setTouchedFields] = useState<Partial<Record<keyof T, boolean>>>({});
+  const [touched, setTouchedFields] = useState<
+    Partial<Record<keyof T, boolean>>
+  >({});
 
   const setValue = (field: keyof T, value: any) => {
-    setValues(prev => ({ ...prev, [field]: value }));
-    
+    setValues((prev) => ({ ...prev, [field]: value }));
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const setTouched = (field: keyof T) => {
-    setTouchedFields(prev => ({ ...prev, [field]: true }));
+    setTouchedFields((prev) => ({ ...prev, [field]: true }));
   };
 
   const validate = (field?: keyof T) => {
@@ -284,7 +291,7 @@ export const useFormValidation = <T extends Record<string, any>>(
       const rule = validationRules[field];
       if (rule) {
         const error = rule(values[field]);
-        setErrors(prev => ({ ...prev, [field]: error || undefined }));
+        setErrors((prev) => ({ ...prev, [field]: error || undefined }));
         return !error;
       }
       return true;
@@ -294,7 +301,7 @@ export const useFormValidation = <T extends Record<string, any>>(
     const newErrors: Partial<Record<keyof T, string>> = {};
     let isValid = true;
 
-    Object.keys(validationRules).forEach(key => {
+    Object.keys(validationRules).forEach((key) => {
       const rule = validationRules[key as keyof T];
       if (rule) {
         const error = rule(values[key as keyof T]);
@@ -395,12 +402,16 @@ export const validationRules = {
   required: (value: any) => (!value ? 'This field is required' : null),
   email: (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return value && !emailRegex.test(value) ? 'Please enter a valid email' : null;
+    return value && !emailRegex.test(value)
+      ? 'Please enter a valid email'
+      : null;
   },
-  minLength: (min: number) => (value: string) => 
+  minLength: (min: number) => (value: string) =>
     value && value.length < min ? `Must be at least ${min} characters` : null,
   maxLength: (max: number) => (value: string) =>
-    value && value.length > max ? `Must be no more than ${max} characters` : null,
+    value && value.length > max
+      ? `Must be no more than ${max} characters`
+      : null,
   password: (value: string) => {
     if (!value) return 'Password is required';
     if (value.length < 8) return 'Password must be at least 8 characters';

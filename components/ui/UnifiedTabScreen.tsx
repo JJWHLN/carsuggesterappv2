@@ -39,18 +39,10 @@ export const UnifiedTabScreen: React.FC<UnifiedTabScreenProps> = ({
   }
 
   // Render content with optional error boundary
-  const content = (
-    <React.Fragment>
-      {children}
-    </React.Fragment>
-  );
+  const content = <React.Fragment>{children}</React.Fragment>;
 
   if (enableErrorBoundary) {
-    return (
-      <ErrorBoundary>
-        {content}
-      </ErrorBoundary>
-    );
+    return <ErrorBoundary>{content}</ErrorBoundary>;
   }
 
   return content;
@@ -59,7 +51,7 @@ export const UnifiedTabScreen: React.FC<UnifiedTabScreenProps> = ({
 // Higher-order component for creating tab screens
 export function withUnifiedTabScreen<P extends object>(
   Component: React.ComponentType<P>,
-  options: Omit<UnifiedTabScreenProps, 'children'> = {}
+  options: Omit<UnifiedTabScreenProps, 'children'> = {},
 ) {
   return function UnifiedTabScreenWrapper(props: P) {
     return (
@@ -74,29 +66,29 @@ export function withUnifiedTabScreen<P extends object>(
 export const screenDimensions = {
   width: screenWidth,
   height: screenHeight,
-  
+
   // Common responsive breakpoints
   isSmallScreen: screenWidth < 375,
   isMediumScreen: screenWidth >= 375 && screenWidth < 768,
   isLargeScreen: screenWidth >= 768,
-  
+
   // Common grid calculations
   twoColumnWidth: (screenWidth - 48) / 2,
   threeColumnWidth: (screenWidth - 64) / 3,
-  
+
   // Common padding calculations
   screenPadding: 16,
   sectionPadding: 24,
   itemSpacing: 12,
-  
+
   // Common card sizes
   cardHeight: 200,
   listItemHeight: 80,
-  
+
   // Common header heights
   headerHeight: 60,
   tabBarHeight: 84,
-  
+
   // Safe area calculations
   contentHeight: screenHeight - 60 - 84, // screen - header - tabBar
 };
@@ -111,7 +103,7 @@ export const commonStyleUtils = {
     shadowRadius: 2,
     elevation: 2,
   },
-  
+
   mediumShadow: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -119,7 +111,7 @@ export const commonStyleUtils = {
     shadowRadius: 4,
     elevation: 3,
   },
-  
+
   largeShadow: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -127,7 +119,7 @@ export const commonStyleUtils = {
     shadowRadius: 8,
     elevation: 4,
   },
-  
+
   // Common border radius
   borderRadius: {
     sm: 8,
@@ -136,7 +128,7 @@ export const commonStyleUtils = {
     xl: 24,
     full: 999,
   },
-  
+
   // Common spacing
   spacing: {
     xs: 4,
@@ -151,7 +143,7 @@ export const commonStyleUtils = {
 // Export screen-specific hooks
 export function useTabScreenStyles() {
   const { colors } = useThemeColors();
-  
+
   return useMemo(() => {
     const styles = StyleSheet.create({
       // Container styles
@@ -159,7 +151,7 @@ export function useTabScreenStyles() {
         flex: 1,
         backgroundColor: colors.background,
       },
-      
+
       // Header styles
       header: {
         padding: 16,
@@ -167,17 +159,17 @@ export function useTabScreenStyles() {
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
       },
-      
+
       // Content styles
       content: {
         flex: 1,
       },
-      
+
       // List styles
       listContainer: {
         paddingVertical: 8,
       },
-      
+
       // Card styles
       card: {
         backgroundColor: colors.surface,
@@ -187,7 +179,7 @@ export function useTabScreenStyles() {
         marginBottom: 16,
         ...commonStyleUtils.mediumShadow,
       },
-      
+
       // Loading styles
       loadingContainer: {
         flex: 1,
@@ -195,7 +187,7 @@ export function useTabScreenStyles() {
         alignItems: 'center',
         padding: 32,
       },
-      
+
       // Error styles
       errorContainer: {
         flex: 1,
@@ -203,7 +195,7 @@ export function useTabScreenStyles() {
         alignItems: 'center',
         padding: 32,
       },
-      
+
       // Empty state styles
       emptyContainer: {
         flex: 1,
@@ -211,7 +203,7 @@ export function useTabScreenStyles() {
         alignItems: 'center',
         padding: 32,
       },
-      
+
       // Common text styles
       title: {
         fontSize: 24,
@@ -219,53 +211,53 @@ export function useTabScreenStyles() {
         color: colors.text,
         marginBottom: 8,
       },
-      
+
       subtitle: {
         fontSize: 16,
         color: colors.textSecondary,
         marginBottom: 16,
       },
-      
+
       bodyText: {
         fontSize: 14,
         color: colors.text,
         lineHeight: 20,
       },
-      
+
       caption: {
         fontSize: 12,
         color: colors.textSecondary,
         lineHeight: 16,
       },
-      
+
       // Common layout styles
       row: {
         flexDirection: 'row',
         alignItems: 'center',
       },
-      
+
       spaceBetween: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
       },
-      
+
       center: {
         justifyContent: 'center',
         alignItems: 'center',
       },
-      
+
       // Common grid styles
       gridItem: {
         width: screenDimensions.twoColumnWidth,
         marginBottom: 16,
       },
-      
+
       listItem: {
         marginHorizontal: 16,
         marginBottom: 16,
       },
-      
+
       // Common button styles
       primaryButton: {
         backgroundColor: colors.primary,
@@ -274,13 +266,13 @@ export function useTabScreenStyles() {
         borderRadius: 8,
         alignItems: 'center',
       },
-      
+
       primaryButtonText: {
         color: colors.white,
         fontSize: 16,
         fontWeight: '600',
       },
-      
+
       secondaryButton: {
         backgroundColor: 'transparent',
         borderWidth: 1,
@@ -290,14 +282,14 @@ export function useTabScreenStyles() {
         borderRadius: 8,
         alignItems: 'center',
       },
-      
+
       secondaryButtonText: {
         color: colors.primary,
         fontSize: 16,
         fontWeight: '600',
       },
     });
-    
+
     return {
       styles,
       colors,
@@ -312,19 +304,19 @@ export const tabScreenUtils = {
   getColumnCount: (minItemWidth: number = 150) => {
     return Math.floor(screenWidth / minItemWidth);
   },
-  
+
   // Get responsive item width
   getItemWidth: (columns: number, padding: number = 16) => {
-    return (screenWidth - (padding * (columns + 1))) / columns;
+    return (screenWidth - padding * (columns + 1)) / columns;
   },
-  
+
   // Get responsive font size
   getResponsiveFontSize: (baseSize: number) => {
     if (screenDimensions.isSmallScreen) return baseSize * 0.9;
     if (screenDimensions.isLargeScreen) return baseSize * 1.1;
     return baseSize;
   },
-  
+
   // Get responsive spacing
   getResponsiveSpacing: (baseSpacing: number) => {
     if (screenDimensions.isSmallScreen) return baseSpacing * 0.8;

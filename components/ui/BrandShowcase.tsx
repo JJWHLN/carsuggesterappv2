@@ -1,20 +1,32 @@
 import React, { useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withSpring, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
   withTiming,
   interpolate,
   Extrapolate,
-  runOnJS
+  runOnJS,
 } from 'react-native-reanimated';
 
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { BrandSkeletonLoader } from '@/components/ui/SkeletonLoader';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
-import { ArrowRight, Building2, TrendingUp, Star } from '@/utils/ultra-optimized-icons';
+import {
+  ArrowRight,
+  Building2,
+  TrendingUp,
+  Star,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 const BRAND_CARD_WIDTH = 140;
@@ -44,33 +56,39 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
   loading,
   onViewAll,
   onBrandPress,
-  testID = 'brand-showcase'
+  testID = 'brand-showcase',
 }) => {
   const { colors } = useThemeColors();
-  
+
   // Animation values
   const fadeAnim = useSharedValue(0);
   const slideAnim = useSharedValue(20);
-  
+
   // Memoize expensive computations
-  const { featuredBrands, regularBrands } = useMemo(() => ({
-    featuredBrands: brands.slice(0, 3),
-    regularBrands: brands.slice(3),
-  }), [brands]);
-  
+  const { featuredBrands, regularBrands } = useMemo(
+    () => ({
+      featuredBrands: brands.slice(0, 3),
+      regularBrands: brands.slice(3),
+    }),
+    [brands],
+  );
+
   // Animate on mount
   React.useEffect(() => {
     fadeAnim.value = withTiming(1, { duration: ANIMATION_DURATION });
-    slideAnim.value = withSpring(0, { 
+    slideAnim.value = withSpring(0, {
       damping: 15,
       stiffness: 100,
     });
   }, []);
 
   // Optimized press handler
-  const handleBrandPress = useCallback((brandId: string) => {
-    onBrandPress(brandId);
-  }, [onBrandPress]);
+  const handleBrandPress = useCallback(
+    (brandId: string) => {
+      onBrandPress(brandId);
+    },
+    [onBrandPress],
+  );
 
   // Optimized view all handler
   const handleViewAll = useCallback(() => {
@@ -79,19 +97,24 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
 
   // Popular brand logos (fallback for well-known brands)
   const brandLogos: Record<string, string> = {
-    'BMW': 'https://images.vexels.com/media/users/3/166421/isolated/preview/a4cffed4b7c50ddbbe76a23cf9f10e5d-bmw-car-logo.png',
-    'Mercedes-Benz': 'https://images.vexels.com/media/users/3/166405/isolated/preview/c938d26c8a2095bea4de5e8ffbc1e62a-mercedes-benz-car-logo.png',
-    'Audi': 'https://images.vexels.com/media/users/3/166406/isolated/preview/5ad0d4d5b1d36b6de7a55c92acee5d7b-audi-car-logo.png',
-    'Toyota': 'https://images.vexels.com/media/users/3/166427/isolated/preview/ded2c42f7f2a41b4e0cdafdc0bea491b-toyota-car-logo.png',
-    'Honda': 'https://images.vexels.com/media/users/3/166414/isolated/preview/39e84ca66c40eb9ba5b6f542b70f2a71-honda-car-logo.png',
-    'Ford': 'https://images.vexels.com/media/users/3/166411/isolated/preview/5936b0eef3ebcfeba9aec4eaa8dd3b49-ford-car-logo.png',
-    'Chevrolet': 'https://images.vexels.com/media/users/3/166408/isolated/preview/d8b05a4797c63c1f0f4e3be0ea1afcb3-chevrolet-car-logo.png',
-    'Volkswagen': 'https://images.vexels.com/media/users/3/166430/isolated/preview/b1de45ccfb80b89e4d5b23b5bf7b3db1-volkswagen-car-logo.png',
+    BMW: 'https://images.vexels.com/media/users/3/166421/isolated/preview/a4cffed4b7c50ddbbe76a23cf9f10e5d-bmw-car-logo.png',
+    'Mercedes-Benz':
+      'https://images.vexels.com/media/users/3/166405/isolated/preview/c938d26c8a2095bea4de5e8ffbc1e62a-mercedes-benz-car-logo.png',
+    Audi: 'https://images.vexels.com/media/users/3/166406/isolated/preview/5ad0d4d5b1d36b6de7a55c92acee5d7b-audi-car-logo.png',
+    Toyota:
+      'https://images.vexels.com/media/users/3/166427/isolated/preview/ded2c42f7f2a41b4e0cdafdc0bea491b-toyota-car-logo.png',
+    Honda:
+      'https://images.vexels.com/media/users/3/166414/isolated/preview/39e84ca66c40eb9ba5b6f542b70f2a71-honda-car-logo.png',
+    Ford: 'https://images.vexels.com/media/users/3/166411/isolated/preview/5936b0eef3ebcfeba9aec4eaa8dd3b49-ford-car-logo.png',
+    Chevrolet:
+      'https://images.vexels.com/media/users/3/166408/isolated/preview/d8b05a4797c63c1f0f4e3be0ea1afcb3-chevrolet-car-logo.png',
+    Volkswagen:
+      'https://images.vexels.com/media/users/3/166430/isolated/preview/b1de45ccfb80b89e4d5b23b5bf7b3db1-volkswagen-car-logo.png',
   };
 
-  const BrandCard: React.FC<{ 
-    brand: Brand; 
-    featured?: boolean; 
+  const BrandCard: React.FC<{
+    brand: Brand;
+    featured?: boolean;
     index?: number;
     onPress?: (brandId: string) => void;
   }> = ({ brand, featured = false, index = 0, onPress }) => {
@@ -123,13 +146,18 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
         <TouchableOpacity
           style={[
             featured ? styles.featuredBrandCard : styles.brandCard,
-            { backgroundColor: colors.white, borderColor: colors.border }
+            { backgroundColor: colors.white, borderColor: colors.border },
           ]}
           onPress={handlePress}
           activeOpacity={0.9}
         >
           {/* Logo Container */}
-          <View style={[styles.logoContainer, featured && styles.featuredLogoContainer]}>
+          <View
+            style={[
+              styles.logoContainer,
+              featured && styles.featuredLogoContainer,
+            ]}
+          >
             {brand.logo_url || brandLogos[brand.name] ? (
               <OptimizedImage
                 source={{ uri: brand.logo_url || brandLogos[brand.name] }}
@@ -138,11 +166,16 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
                 fallbackSource={require('@/assets/images/icon.png')}
               />
             ) : (
-              <View style={[styles.logoPlaceholder, { backgroundColor: colors.primaryLight }]}>
+              <View
+                style={[
+                  styles.logoPlaceholder,
+                  { backgroundColor: colors.primaryLight },
+                ]}
+              >
                 <Building2 color={colors.primary} size={featured ? 32 : 24} />
               </View>
             )}
-            
+
             {brand.popular ? (
               <View style={styles.popularBadge}>
                 <TrendingUp color="#F59E0B" size={12} />
@@ -160,15 +193,20 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
 
           {/* Brand Info */}
           <View style={styles.brandInfo}>
-            <Text style={[
-              featured ? styles.featuredBrandName : styles.brandName,
-              { color: colors.text }
-            ]} numberOfLines={1}>
+            <Text
+              style={[
+                featured ? styles.featuredBrandName : styles.brandName,
+                { color: colors.text },
+              ]}
+              numberOfLines={1}
+            >
               {brand.name}
             </Text>
-            
+
             {featured && brand.model_count ? (
-              <Text style={[styles.modelCount, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.modelCount, { color: colors.textSecondary }]}
+              >
                 {brand.model_count} models
               </Text>
             ) : null}
@@ -208,7 +246,7 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
             Explore top automotive manufacturers
           </Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={handleViewAll}
           style={styles.viewAllButton}
           activeOpacity={0.8}
@@ -260,7 +298,9 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
           <Text style={[styles.emptyStateTitle, { color: colors.text }]}>
             No brands available
           </Text>
-          <Text style={[styles.emptyStateSubtitle, { color: colors.textSecondary }]}>
+          <Text
+            style={[styles.emptyStateSubtitle, { color: colors.textSecondary }]}
+          >
             We're working on adding more car brands for you
           </Text>
         </View>
@@ -281,9 +321,9 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
                 snapToAlignment="start"
               >
                 {featuredBrands.map((brand, index) => (
-                  <BrandCard 
-                    key={brand.id} 
-                    brand={brand} 
+                  <BrandCard
+                    key={brand.id}
+                    brand={brand}
                     featured={true}
                     index={index}
                     onPress={handleBrandPress}
@@ -306,26 +346,39 @@ export const BrandShowcase: React.FC<BrandShowcaseProps> = ({
                 decelerationRate="fast"
               >
                 {regularBrands.map((brand, index) => (
-                  <BrandCard 
-                    key={brand.id} 
-                    brand={brand} 
+                  <BrandCard
+                    key={brand.id}
+                    brand={brand}
                     featured={false}
                     index={index}
                     onPress={handleBrandPress}
                   />
                 ))}
-                
+
                 {/* View All Card */}
                 <TouchableOpacity
-                  style={[styles.viewMoreCard, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
+                  style={[
+                    styles.viewMoreCard,
+                    {
+                      backgroundColor: colors.primaryLight,
+                      borderColor: colors.primary,
+                    },
+                  ]}
                   onPress={handleViewAll}
                   activeOpacity={0.8}
                 >
                   <View style={styles.viewMoreContent}>
-                    <View style={[styles.viewMoreIcon, { backgroundColor: colors.primary }]}>
+                    <View
+                      style={[
+                        styles.viewMoreIcon,
+                        { backgroundColor: colors.primary },
+                      ]}
+                    >
                       <ArrowRight color="#FFFFFF" size={20} />
                     </View>
-                    <Text style={[styles.viewMoreText, { color: colors.primary }]}>
+                    <Text
+                      style={[styles.viewMoreText, { color: colors.primary }]}
+                    >
                       View All{'\n'}Brands
                     </Text>
                   </View>

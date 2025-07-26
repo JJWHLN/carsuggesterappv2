@@ -21,7 +21,13 @@ import Animated, {
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 
-import { Search, Sparkles, ArrowRight, Star, Crown } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  Sparkles,
+  ArrowRight,
+  Star,
+  Crown,
+} from '@/utils/ultra-optimized-icons';
 import { useThemeColors } from '@/hooks/useTheme';
 import { BorderRadius, Spacing, Typography, Shadows } from '@/constants/Colors';
 
@@ -47,7 +53,8 @@ const HERO_CARS: HeroCarouselItem[] = [
     id: '1',
     title: 'Find Your Dream Car',
     subtitle: 'AI-powered recommendations just for you',
-    image: 'https://images.unsplash.com/photo-1627568262094-3d8407473117?w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1627568262094-3d8407473117?w=800&q=80',
     gradient: ['#667eea', '#764ba2'],
     featured: true,
   },
@@ -55,14 +62,16 @@ const HERO_CARS: HeroCarouselItem[] = [
     id: '2',
     title: 'Luxury Redefined',
     subtitle: 'Explore premium vehicles with virtual showrooms',
-    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80',
     gradient: ['#f093fb', '#f5576c'],
   },
   {
     id: '3',
     title: 'Electric Future',
     subtitle: 'Discover the latest in electric vehicle technology',
-    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80',
+    image:
+      'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80',
     gradient: ['#4facfe', '#00f2fe'],
   },
 ];
@@ -109,17 +118,23 @@ export const PremiumHeroSection: React.FC<PremiumHeroSectionProps> = ({
     };
   });
 
-  const renderCarouselItem = ({ item, index }: { item: HeroCarouselItem; index: number }) => {
+  const renderCarouselItem = ({
+    item,
+    index,
+  }: {
+    item: HeroCarouselItem;
+    index: number;
+  }) => {
     const animatedStyle = useAnimatedStyle(() => {
       const opacity = interpolate(
         scrollX.value,
         [(index - 1) * width, index * width, (index + 1) * width],
-        [0.5, 1, 0.5]
+        [0.5, 1, 0.5],
       );
       const scale = interpolate(
         scrollX.value,
         [(index - 1) * width, index * width, (index + 1) * width],
-        [0.8, 1, 0.8]
+        [0.8, 1, 0.8],
       );
       return {
         opacity,
@@ -129,40 +144,62 @@ export const PremiumHeroSection: React.FC<PremiumHeroSectionProps> = ({
 
     return (
       <Animated.View style={[styles.carouselItem, animatedStyle]}>
-        <ImageBackground source={{ uri: item.image }} style={styles.backgroundImage}>
-          <LinearGradient 
-            colors={[item.gradient[0], item.gradient[1], 'rgba(0,0,0,0.3)']} 
+        <ImageBackground
+          source={{ uri: item.image }}
+          style={styles.backgroundImage}
+        >
+          <LinearGradient
+            colors={[item.gradient[0], item.gradient[1], 'rgba(0,0,0,0.3)']}
             style={styles.overlay}
           >
             <View style={styles.heroContent}>
               {item.featured && (
                 <View style={styles.featuredBadge}>
                   <Crown size={16} color={colors.white} />
-                  <Text style={[styles.featuredText, { color: colors.white }]}>Featured</Text>
+                  <Text style={[styles.featuredText, { color: colors.white }]}>
+                    Featured
+                  </Text>
                 </View>
               )}
-              
-              <Text style={[styles.heroTitle, { color: colors.white }]}>{item.title}</Text>
-              <Text style={[styles.heroSubtitle, { color: colors.white }]}>{item.subtitle}</Text>
-              
+
+              <Text style={[styles.heroTitle, { color: colors.white }]}>
+                {item.title}
+              </Text>
+              <Text style={[styles.heroSubtitle, { color: colors.white }]}>
+                {item.subtitle}
+              </Text>
+
               <View style={styles.heroButtons}>
                 <TouchableOpacity
-                  style={[styles.primaryButton, { backgroundColor: colors.primary }]}
+                  style={[
+                    styles.primaryButton,
+                    { backgroundColor: colors.primary },
+                  ]}
                   onPress={() => handlePress(onGetRecommendations)}
                   activeOpacity={0.8}
                 >
                   <Sparkles size={20} color={colors.white} />
-                  <Text style={[styles.primaryButtonText, { color: colors.white }]}>
+                  <Text
+                    style={[styles.primaryButtonText, { color: colors.white }]}
+                  >
                     Get AI Recommendations
                   </Text>
                 </TouchableOpacity>
-                
+
                 <TouchableOpacity
-                  style={[styles.secondaryButton, { borderColor: colors.white }]}
+                  style={[
+                    styles.secondaryButton,
+                    { borderColor: colors.white },
+                  ]}
                   onPress={() => handlePress(onExplorePress)}
                   activeOpacity={0.8}
                 >
-                  <Text style={[styles.secondaryButtonText, { color: colors.white }]}>
+                  <Text
+                    style={[
+                      styles.secondaryButtonText,
+                      { color: colors.white },
+                    ]}
+                  >
                     Explore Cars
                   </Text>
                   <ArrowRight size={18} color={colors.white} />
@@ -180,12 +217,12 @@ export const PremiumHeroSection: React.FC<PremiumHeroSectionProps> = ({
       const opacity = interpolate(
         scrollX.value,
         [(index - 1) * width, index * width, (index + 1) * width],
-        [0.3, 1, 0.3]
+        [0.3, 1, 0.3],
       );
       const scale = interpolate(
         scrollX.value,
         [(index - 1) * width, index * width, (index + 1) * width],
-        [0.8, 1.2, 0.8]
+        [0.8, 1.2, 0.8],
       );
       return {
         opacity,
@@ -222,7 +259,7 @@ export const PremiumHeroSection: React.FC<PremiumHeroSectionProps> = ({
         }}
         scrollEventThrottle={16}
       />
-      
+
       {/* Enhanced Search Bar */}
       <View style={styles.searchContainer}>
         <TouchableOpacity
@@ -231,15 +268,19 @@ export const PremiumHeroSection: React.FC<PremiumHeroSectionProps> = ({
           activeOpacity={0.9}
         >
           <Search size={24} color={colors.textSecondary} />
-          <Text style={[styles.searchPlaceholder, { color: colors.textSecondary }]}>
+          <Text
+            style={[styles.searchPlaceholder, { color: colors.textSecondary }]}
+          >
             Search by make, model, or keyword...
           </Text>
-          <View style={[styles.searchButton, { backgroundColor: colors.primary }]}>
+          <View
+            style={[styles.searchButton, { backgroundColor: colors.primary }]}
+          >
             <ArrowRight size={18} color={colors.white} />
           </View>
         </TouchableOpacity>
       </View>
-      
+
       {/* Page Indicators */}
       <View style={styles.dotContainer}>
         {HERO_CARS.map((_, index) => renderDot(index))}

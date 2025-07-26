@@ -54,17 +54,15 @@ export const CTASection: React.FC<CTASectionProps> = ({
 
           {/* Main Content */}
           <Text style={styles.title}>
-            {canAccessAI 
-              ? 'Ready to Find Your Dream Car?' 
-              : 'Join Thousands of Happy Car Buyers'
-            }
+            {canAccessAI
+              ? 'Ready to Find Your Dream Car?'
+              : 'Join Thousands of Happy Car Buyers'}
           </Text>
-          
+
           <Text style={styles.subtitle}>
             {canAccessAI
               ? 'Get personalized recommendations powered by advanced AI technology. Find the perfect car that matches your needs, budget, and lifestyle.'
-              : 'Sign up now and get access to exclusive AI-powered car recommendations, verified listings, and expert reviews.'
-            }
+              : 'Sign up now and get access to exclusive AI-powered car recommendations, verified listings, and expert reviews.'}
           </Text>
 
           {/* Features List */}
@@ -73,9 +71,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
               <View style={styles.featureIcon}>
                 <Sparkles color="#FFFFFF" size={16} />
               </View>
-              <Text style={styles.featureText}>
-                AI-powered recommendations
-              </Text>
+              <Text style={styles.featureText}>AI-powered recommendations</Text>
             </View>
             <View style={styles.feature}>
               <View style={styles.featureIcon}>
@@ -89,16 +85,14 @@ export const CTASection: React.FC<CTASectionProps> = ({
               <View style={styles.featureIcon}>
                 <Zap color="#FFFFFF" size={16} />
               </View>
-              <Text style={styles.featureText}>
-                Instant price comparisons
-              </Text>
+              <Text style={styles.featureText}>Instant price comparisons</Text>
             </View>
           </View>
 
           {/* Action Buttons */}
           <View style={styles.actions}>
             <Button
-              title={canAccessAI ? "Get My Recommendations" : "Sign Up Free"}
+              title={canAccessAI ? 'Get My Recommendations' : 'Sign Up Free'}
               onPress={onGetRecommendations}
               variant="secondary"
               style={styles.primaryButton}

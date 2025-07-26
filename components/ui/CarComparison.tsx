@@ -17,17 +17,23 @@ import Animated, {
   interpolate,
   runOnJS,
 } from 'react-native-reanimated';
-import { Colors, Typography, Spacing, BorderRadius, Shadows } from '@/constants/Colors';
+import {
+  Colors,
+  Typography,
+  Spacing,
+  BorderRadius,
+  Shadows,
+} from '@/constants/Colors';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { AnimatedBadge } from '@/components/ui/AnimatedBadge';
 import { Car } from '@/types/database';
-import { 
-  X, 
-  ArrowLeft, 
-  Share, 
-  Star, 
-  Fuel, 
-  Gauge, 
+import {
+  X,
+  ArrowLeft,
+  Share,
+  Star,
+  Fuel,
+  Gauge,
   Calendar,
   MapPin,
   DollarSign,
@@ -58,7 +64,8 @@ const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = Math.min(width - 40, 320);
 const MAX_CARS = 3;
 
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
 
 export const CarComparison: React.FC<CarComparisonProps> = ({
   cars,
@@ -136,7 +143,7 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
       id: 'engine_size',
       label: 'Engine Size',
       getValue: (car) => (car as any).engine_size || 'N/A',
-      format: (value) => value !== 'N/A' ? `${value}L` : 'N/A',
+      format: (value) => (value !== 'N/A' ? `${value}L` : 'N/A'),
       type: 'text',
       category: 'performance',
     },
@@ -144,7 +151,7 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
       id: 'power',
       label: 'Power',
       getValue: (car) => (car as any).power || 'N/A',
-      format: (value) => value !== 'N/A' ? `${value} HP` : 'N/A',
+      format: (value) => (value !== 'N/A' ? `${value} HP` : 'N/A'),
       icon: <Zap size={16} color={Colors.light.warning} />,
       type: 'text',
       category: 'performance',
@@ -154,7 +161,7 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
       id: 'fuel_economy',
       label: 'Fuel Economy',
       getValue: (car) => (car as any).fuel_economy || 'N/A',
-      format: (value) => value !== 'N/A' ? `${value}L/100km` : 'N/A',
+      format: (value) => (value !== 'N/A' ? `${value}L/100km` : 'N/A'),
       icon: <Fuel size={16} color={Colors.light.success} />,
       type: 'text',
       category: 'economy',
@@ -163,7 +170,7 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
       id: 'co2_emissions',
       label: 'CO₂ Emissions',
       getValue: (car) => (car as any).co2_emissions || 'N/A',
-      format: (value) => value !== 'N/A' ? `${value}g/km` : 'N/A',
+      format: (value) => (value !== 'N/A' ? `${value}g/km` : 'N/A'),
       type: 'text',
       category: 'economy',
     },
@@ -194,35 +201,36 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
   ];
 
   const filteredFeatures = useMemo(() => {
-    return comparisonFeatures.filter(feature => feature.category === selectedCategory);
+    return comparisonFeatures.filter(
+      (feature) => feature.category === selectedCategory,
+    );
   }, [selectedCategory]);
 
   const handleShare = useCallback(() => {
-    const carNames = cars.map(car => `${car.make} ${car.model}`).join(' vs ');
-    Alert.alert(
-      'Share Comparison',
-      `Share "${carNames}" comparison?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Share', onPress: () => console.log('Sharing comparison...') },
-      ]
-    );
+    const carNames = cars.map((car) => `${car.make} ${car.model}`).join(' vs ');
+    Alert.alert('Share Comparison', `Share "${carNames}" comparison?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Share', onPress: () => console.log('Sharing comparison...') },
+    ]);
   }, [cars]);
 
-  const handleRemove = useCallback((carId: string) => {
-    Alert.alert(
-      'Remove Car',
-      'Remove this car from comparison?',
-      [
+  const handleRemove = useCallback(
+    (carId: string) => {
+      Alert.alert('Remove Car', 'Remove this car from comparison?', [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Remove', style: 'destructive', onPress: () => onRemoveCar(carId) },
-      ]
-    );
-  }, [onRemoveCar]);
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () => onRemoveCar(carId),
+        },
+      ]);
+    },
+    [onRemoveCar],
+  );
 
   const renderValue = (feature: ComparisonFeature, car: Car) => {
     const value = feature.getValue(car);
-    
+
     switch (feature.type) {
       case 'currency':
         return (
@@ -237,7 +245,11 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
               <Star
                 key={star}
                 size={14}
-                color={star <= (value as number) ? Colors.light.warning : Colors.light.neutral300}
+                color={
+                  star <= (value as number)
+                    ? Colors.light.warning
+                    : Colors.light.neutral300
+                }
                 fill={star <= (value as number) ? Colors.light.warning : 'none'}
               />
             ))}
@@ -264,26 +276,32 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
 
   const getBestValue = (feature: ComparisonFeature): string | null => {
     if (cars.length < 2) return null;
-    
-    const values = cars.map(car => feature.getValue(car));
-    
+
+    const values = cars.map((car) => feature.getValue(car));
+
     if (feature.type === 'currency' || feature.id === 'mileage') {
       // Lower is better for price and mileage
       const minValue = Math.min(...(values as number[]));
-      const carIndex = values.findIndex(v => v === minValue);
+      const carIndex = values.findIndex((v) => v === minValue);
       return cars[carIndex]?.id || null;
-    } else if (feature.type === 'rating' || feature.id === 'power' || feature.id === 'year') {
+    } else if (
+      feature.type === 'rating' ||
+      feature.id === 'power' ||
+      feature.id === 'year'
+    ) {
       // Higher is better for ratings, power, year
       const maxValue = Math.max(...(values as number[]));
-      const carIndex = values.findIndex(v => v === maxValue);
+      const carIndex = values.findIndex((v) => v === maxValue);
       return cars[carIndex]?.id || null;
     }
-    
+
     return null;
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: interpolate(slideInValue.value, [0, 1], [50, 0]) }],
+    transform: [
+      { translateY: interpolate(slideInValue.value, [0, 1], [50, 0]) },
+    ],
     opacity: fadeInValue.value,
   }));
 
@@ -322,7 +340,10 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
         </ScrollView>
 
         {/* Comparison Grid */}
-        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Car Headers */}
           <ScrollView
             horizontal
@@ -342,13 +363,16 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
                 >
                   <X size={16} color={Colors.light.textInverse} />
                 </TouchableOpacity>
-                
+
                 <OptimizedImage
-                  source={{ uri: car.images?.[0] || 'https://via.placeholder.com/200x120' }}
+                  source={{
+                    uri:
+                      car.images?.[0] || 'https://via.placeholder.com/200x120',
+                  }}
                   style={styles.carImage}
                   placeholder="🚗"
                 />
-                
+
                 <View style={styles.carInfo}>
                   <Text style={styles.carTitle} numberOfLines={1}>
                     {car.make} {car.model}
@@ -362,7 +386,7 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
                 </View>
               </TouchableOpacity>
             ))}
-            
+
             {/* Add Car Button */}
             {cars.length < MAX_CARS && (
               <TouchableOpacity style={styles.addCarButton} onPress={onAddCar}>
@@ -378,14 +402,14 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
           <View style={styles.featuresContainer}>
             {filteredFeatures.map((feature) => {
               const bestCarId = getBestValue(feature);
-              
+
               return (
                 <View key={feature.id} style={styles.featureRow}>
                   <View style={styles.featureLabel}>
                     {feature.icon}
                     <Text style={styles.featureLabelText}>{feature.label}</Text>
                   </View>
-                  
+
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -407,9 +431,11 @@ export const CarComparison: React.FC<CarComparisonProps> = ({
                         )}
                       </View>
                     ))}
-                    
+
                     {/* Spacer for add car button */}
-                    {cars.length < MAX_CARS && <View style={styles.featureValueSpacer} />}
+                    {cars.length < MAX_CARS && (
+                      <View style={styles.featureValueSpacer} />
+                    )}
                   </ScrollView>
                 </View>
               );

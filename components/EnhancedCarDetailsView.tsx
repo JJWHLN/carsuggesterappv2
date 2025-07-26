@@ -3,7 +3,13 @@
  * Advanced car viewing experience with ML-powered insights and optimized performance
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   View,
   ScrollView,
@@ -15,9 +21,13 @@ import {
   Animated,
   FlatList,
   ActivityIndicator,
-  Alert
+  Alert,
 } from 'react-native';
-import { PanGestureHandler, PinchGestureHandler, State as GestureState } from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  PinchGestureHandler,
+  State as GestureState,
+} from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -43,7 +53,13 @@ interface EnhancedCarDetailsProps {
 }
 
 interface CarInsight {
-  type: 'price' | 'market' | 'maintenance' | 'depreciation' | 'features' | 'reviews';
+  type:
+    | 'price'
+    | 'market'
+    | 'maintenance'
+    | 'depreciation'
+    | 'features'
+    | 'reviews';
   title: string;
   content: string;
   confidence: number;
@@ -83,10 +99,13 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
   onSave,
   onContactDealer,
   onScheduleTestDrive,
-  userId
+  userId,
 }) => {
   const colorScheme = useColorScheme();
-  const colors = colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light;
+  const colors =
+    colorScheme === 'dark'
+      ? DesignSystem.Colors.dark
+      : DesignSystem.Colors.light;
   const theme = colorScheme === 'dark' ? 'dark' : 'light';
   const [insights, setInsights] = useState<CarInsight[]>([]);
   const [similarCars, setSimilarCars] = useState<SimilarCar[]>([]);
@@ -95,7 +114,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
     autoplayVideos: true,
     showInsights: true,
     compactMode: false,
-    accessibilityMode: false
+    accessibilityMode: false,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -151,7 +170,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
           // Use default preferences since viewingPreferences doesn't exist
           showInsights: true,
           imageQuality: 'high',
-          autoplayVideos: false
+          autoplayVideos: false,
         });
       }
 
@@ -159,7 +178,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
       const [carInsights, similar] = await Promise.all([
         generateCarInsights(),
         findSimilarCars(),
-        trackViewingEvent()
+        trackViewingEvent(),
       ]);
 
       setInsights(carInsights);
@@ -167,9 +186,10 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
 
       // Animate insights appearance
       animateInsights(carInsights);
-
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load car details');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load car details',
+      );
     } finally {
       setLoading(false);
     }
@@ -180,9 +200,11 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
 
     try {
       // Use available ML service methods
-      const userBehavior = await mlService.analyzeUserBehavior(userId || 'anonymous');
+      const userBehavior = await mlService.analyzeUserBehavior(
+        userId || 'anonymous',
+      );
       const nlpAnalysis = await mlService.processNaturalLanguageSearch(
-        `${car.make} ${car.model} ${car.year} analysis`
+        `${car.make} ${car.model} ${car.year} analysis`,
       );
 
       // Price insight - using mock data since method doesn't exist
@@ -192,7 +214,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         content: 'Competitive pricing based on market analysis',
         confidence: 0.85,
         icon: 'trending-up',
-        color: colors.success
+        color: colors.success,
       });
 
       // Market insight
@@ -200,9 +222,9 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         type: 'market',
         title: 'Market Position',
         content: 'Strong market position with good demand',
-        confidence: 0.80,
+        confidence: 0.8,
         icon: 'bar-chart',
-        color: colors.primary
+        color: colors.primary,
       });
 
       // Depreciation insight
@@ -212,7 +234,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         content: `Estimated to retain 65% value in 3 years`,
         confidence: 0.75,
         icon: 'trending-down',
-        color: colors.success
+        color: colors.success,
       });
 
       // Features insight
@@ -220,9 +242,9 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         type: 'features',
         title: 'Feature Analysis',
         content: 'Well-equipped with desirable features',
-        confidence: 0.90,
+        confidence: 0.9,
         icon: 'star',
-        color: colors.accent
+        color: colors.accent,
       });
 
       return insights;
@@ -239,20 +261,20 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         filters: {
           priceRange: [car.price * 0.8, car.price * 1.2] as [number, number],
           yearRange: [car.year - 2, car.year + 2] as [number, number],
-          brands: [car.make]
+          brands: [car.make],
         },
         sortBy: { field: 'relevance' as const, direction: 'desc' as const },
         page: 0,
         pageSize: 6,
-        userId
+        userId,
       };
 
       const results = await searchService.search(searchRequest);
-      
+
       return results.cars
-        .filter(c => c.id !== car.id)
+        .filter((c) => c.id !== car.id)
         .slice(0, 5)
-        .map(c => ({
+        .map((c) => ({
           id: c.id,
           make: c.make,
           model: c.model,
@@ -260,7 +282,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
           price: c.price,
           image: c.images[0] || '',
           similarityScore: c.relevanceScore,
-          matchReasons: c.matchReasons
+          matchReasons: c.matchReasons,
         }));
     } catch (error) {
       logger.error('Error finding similar cars:', error);
@@ -273,14 +295,14 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
       if (!insightAnimations.has(insight.type)) {
         insightAnimations.set(insight.type, new Animated.Value(0));
       }
-      
+
       const animation = insightAnimations.get(insight.type)!;
-      
+
       Animated.timing(animation, {
         toValue: 1,
         duration: 500,
         delay: index * 100,
-        useNativeDriver: true
+        useNativeDriver: true,
       }).start();
     });
   };
@@ -291,7 +313,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
     } else if (event.nativeEvent.state === GestureState.END) {
       Animated.spring(imageScale, {
         toValue: 1,
-        useNativeDriver: true
+        useNativeDriver: true,
       }).start();
     }
   }, []);
@@ -303,11 +325,11 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
     } else if (event.nativeEvent.state === GestureState.END) {
       Animated.spring(imageTranslateX, {
         toValue: 0,
-        useNativeDriver: true
+        useNativeDriver: true,
       }).start();
       Animated.spring(imageTranslateY, {
         toValue: 0,
-        useNativeDriver: true
+        useNativeDriver: true,
       }).start();
     }
   }, []);
@@ -323,8 +345,8 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
           make: car.make,
           model: car.model,
           price: car.price,
-          year: car.year
-        }
+          year: car.year,
+        },
       });
     } catch (error) {
       logger.error('Error tracking viewing event:', error);
@@ -339,7 +361,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         carId: car.id,
         action,
         value,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     } catch (error) {
       logger.error('Error tracking viewing behavior:', error);
@@ -355,7 +377,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         newSavedCars.add(car.id);
       }
       setSavedCars(newSavedCars);
-      
+
       await trackViewingBehavior('save_toggle');
       onSave();
     } catch (error) {
@@ -417,7 +439,9 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
               pagingEnabled
               showsHorizontalScrollIndicator={false}
               onMomentumScrollEnd={(event) => {
-                const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+                const index = Math.round(
+                  event.nativeEvent.contentOffset.x / screenWidth,
+                );
                 setCurrentImageIndex(index);
               }}
               renderItem={({ item, index }) => (
@@ -443,9 +467,12 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
                   style={[
                     styles.indicator,
                     {
-                      backgroundColor: index === currentImageIndex ? colors.accent : colors.card,
-                      opacity: index === currentImageIndex ? 1 : 0.5
-                    }
+                      backgroundColor:
+                        index === currentImageIndex
+                          ? colors.accent
+                          : colors.card,
+                      opacity: index === currentImageIndex ? 1 : 0.5,
+                    },
                   ]}
                 />
               ))}
@@ -455,7 +482,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
               style={[styles.saveButton, { backgroundColor: colors.card }]}
             >
               <Ionicons
-                name={savedCars.has(car.id) ? "heart" : "heart-outline"}
+                name={savedCars.has(car.id) ? 'heart' : 'heart-outline'}
                 size={24}
                 color={savedCars.has(car.id) ? colors.error : colors.text}
               />
@@ -475,54 +502,76 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
           AI Insights
         </Text>
         {insights.map((insight, index) => {
-          const animation = insightAnimations.get(insight.type) || new Animated.Value(1);
-          
+          const animation =
+            insightAnimations.get(insight.type) || new Animated.Value(1);
+
           return (
             <Animated.View
               key={insight.type}
               style={[
                 styles.insightCard,
-                { 
+                {
                   backgroundColor: colors.card,
                   opacity: animation,
                   transform: [
                     {
                       translateY: animation.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [20, 0]
-                      })
-                    }
-                  ]
-                }
+                        outputRange: [20, 0],
+                      }),
+                    },
+                  ],
+                },
               ]}
             >
               <View style={styles.insightHeader}>
-                <View style={[styles.insightIcon, { backgroundColor: insight.color }]}>
-                  <MaterialIcons name={insight.icon as any} size={20} color="white" />
+                <View
+                  style={[
+                    styles.insightIcon,
+                    { backgroundColor: insight.color },
+                  ]}
+                >
+                  <MaterialIcons
+                    name={insight.icon as any}
+                    size={20}
+                    color="white"
+                  />
                 </View>
                 <View style={styles.insightTitleContainer}>
                   <Text style={[styles.insightTitle, { color: colors.text }]}>
                     {insight.title}
                   </Text>
                   <View style={styles.confidenceContainer}>
-                    <View style={[styles.confidenceBar, { backgroundColor: colors.border }]}>
+                    <View
+                      style={[
+                        styles.confidenceBar,
+                        { backgroundColor: colors.border },
+                      ]}
+                    >
                       <View
                         style={[
                           styles.confidenceFill,
-                          { 
+                          {
                             backgroundColor: insight.color,
-                            width: `${insight.confidence * 100}%`
-                          }
+                            width: `${insight.confidence * 100}%`,
+                          },
                         ]}
                       />
                     </View>
-                    <Text style={[styles.confidenceText, { color: colors.textSecondary }]}>
+                    <Text
+                      style={[
+                        styles.confidenceText,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
                       {Math.round(insight.confidence * 100)}%
                     </Text>
                   </View>
                 </View>
               </View>
-              <Text style={[styles.insightContent, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.insightContent, { color: colors.textSecondary }]}
+              >
                 {insight.content}
               </Text>
               {insight.action && (
@@ -530,7 +579,9 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
                   onPress={insight.action.onPress}
                   style={[styles.insightAction, { borderColor: insight.color }]}
                 >
-                  <Text style={[styles.insightActionText, { color: insight.color }]}>
+                  <Text
+                    style={[styles.insightActionText, { color: insight.color }]}
+                  >
                     {insight.action.label}
                   </Text>
                 </TouchableOpacity>
@@ -550,26 +601,40 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
       <View style={styles.specsGrid}>
         <View style={[styles.specItem, { backgroundColor: colors.card }]}>
           <Ionicons name="calendar-outline" size={20} color={colors.accent} />
-          <Text style={[styles.specLabel, { color: colors.textSecondary }]}>Year</Text>
-          <Text style={[styles.specValue, { color: colors.text }]}>{car.year}</Text>
+          <Text style={[styles.specLabel, { color: colors.textSecondary }]}>
+            Year
+          </Text>
+          <Text style={[styles.specValue, { color: colors.text }]}>
+            {car.year}
+          </Text>
         </View>
         <View style={[styles.specItem, { backgroundColor: colors.card }]}>
-          <Ionicons name="speedometer-outline" size={20} color={colors.accent} />
-          <Text style={[styles.specLabel, { color: colors.textSecondary }]}>Mileage</Text>
+          <Ionicons
+            name="speedometer-outline"
+            size={20}
+            color={colors.accent}
+          />
+          <Text style={[styles.specLabel, { color: colors.textSecondary }]}>
+            Mileage
+          </Text>
           <Text style={[styles.specValue, { color: colors.text }]}>
             {car.mileage?.toLocaleString()} mi
           </Text>
         </View>
         <View style={[styles.specItem, { backgroundColor: colors.card }]}>
           <Ionicons name="car-outline" size={20} color={colors.accent} />
-          <Text style={[styles.specLabel, { color: colors.textSecondary }]}>Fuel Type</Text>
+          <Text style={[styles.specLabel, { color: colors.textSecondary }]}>
+            Fuel Type
+          </Text>
           <Text style={[styles.specValue, { color: colors.text }]}>
             {car.fuel_type || 'Gasoline'}
           </Text>
         </View>
         <View style={[styles.specItem, { backgroundColor: colors.card }]}>
           <Ionicons name="settings-outline" size={20} color={colors.accent} />
-          <Text style={[styles.specLabel, { color: colors.textSecondary }]}>Transmission</Text>
+          <Text style={[styles.specLabel, { color: colors.textSecondary }]}>
+            Transmission
+          </Text>
           <Text style={[styles.specValue, { color: colors.text }]}>
             {car.transmission || 'Automatic'}
           </Text>
@@ -592,7 +657,9 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.similarCarsList}
           renderItem={({ item }) => (
-            <TouchableOpacity style={[styles.similarCarCard, { backgroundColor: colors.card }]}>
+            <TouchableOpacity
+              style={[styles.similarCarCard, { backgroundColor: colors.card }]}
+            >
               <OptimizedImage
                 source={{ uri: item.image }}
                 style={styles.similarCarImage}
@@ -603,14 +670,23 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
                 <Text style={[styles.similarCarTitle, { color: colors.text }]}>
                   {item.make} {item.model}
                 </Text>
-                <Text style={[styles.similarCarYear, { color: colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.similarCarYear,
+                    { color: colors.textSecondary },
+                  ]}
+                >
                   {item.year}
                 </Text>
-                <Text style={[styles.similarCarPrice, { color: colors.accent }]}>
+                <Text
+                  style={[styles.similarCarPrice, { color: colors.accent }]}
+                >
                   ${item.price.toLocaleString()}
                 </Text>
                 <View style={styles.similarityBadge}>
-                  <Text style={[styles.similarityText, { color: colors.success }]}>
+                  <Text
+                    style={[styles.similarityText, { color: colors.success }]}
+                  >
                     {Math.round(item.similarityScore * 100)}% match
                   </Text>
                 </View>
@@ -674,12 +750,12 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
         showsVerticalScrollIndicator={false}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
+          { useNativeDriver: false },
         )}
         scrollEventThrottle={16}
       >
         {renderImageGallery()}
-        
+
         <View style={styles.contentContainer}>
           <View style={styles.titleContainer}>
             <Text style={[styles.carTitle, { color: colors.text }]}>
@@ -698,7 +774,9 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
               <Text style={[styles.sectionTitle, { color: colors.text }]}>
                 Description
               </Text>
-              <Text style={[styles.description, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.description, { color: colors.textSecondary }]}
+              >
                 {car.description}
               </Text>
             </View>
@@ -709,7 +787,7 @@ const EnhancedCarDetailsView: React.FC<EnhancedCarDetailsProps> = ({
           {renderSimilarCars()}
         </View>
       </Animated.ScrollView>
-      
+
       {renderActionButtons()}
     </View>
   );

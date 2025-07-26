@@ -1,15 +1,21 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { useQuery } from 'react-query';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import { LineChart } from 'react-native-chart-kit';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Calendar, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Calendar,
   DollarSign,
   BarChart3,
   Info,
-  Clock
+  Clock,
 } from 'lucide-react-native';
 import { fetchPriceHistory, fetchDepreciationData } from './api';
 import { PriceHistory as PriceHistoryType, DepreciationData } from './types';
@@ -26,23 +32,25 @@ type TimeRange = '1M' | '3M' | '6M' | '1Y' | 'ALL';
 
 const { width } = Dimensions.get('window');
 
-export const PriceHistory: React.FC<PriceHistoryProps> = ({ 
-  carId, 
-  make, 
-  model, 
-  year 
+export const PriceHistory: React.FC<PriceHistoryProps> = ({
+  carId,
+  make,
+  model,
+  year,
 }) => {
-  const [activeTab, setActiveTab] = useState<'history' | 'depreciation'>('history');
+  const [activeTab, setActiveTab] = useState<'history' | 'depreciation'>(
+    'history',
+  );
   const [timeRange, setTimeRange] = useState<TimeRange>('6M');
 
-  const { data: priceData, isLoading: isPriceLoading, error: priceError } = useQuery(
-    ['priceHistory', carId],
-    () => fetchPriceHistory(carId),
-    {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 30 * 60 * 1000, // 30 minutes
-    }
-  );
+  const {
+    data: priceData,
+    isLoading: isPriceLoading,
+    error: priceError,
+  } = useQuery(['priceHistory', carId], () => fetchPriceHistory(carId), {
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
 
   const { data: depreciationData, isLoading: isDepreciationLoading } = useQuery(
     ['depreciation', make, model, year],
@@ -50,15 +58,15 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
     {
       staleTime: 60 * 60 * 1000, // 1 hour
       cacheTime: 24 * 60 * 60 * 1000, // 24 hours
-    }
+    },
   );
 
   const filteredPriceData = useMemo(() => {
     if (!priceData?.data.pricePoints) return [];
-    
+
     const now = new Date();
     let startDate = new Date();
-    
+
     switch (timeRange) {
       case '1M':
         startDate.setMonth(now.getMonth() - 1);
@@ -73,33 +81,35 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
         startDate.setFullYear(now.getFullYear() - 1);
         break;
       case 'ALL':
-        return priceData.data.pricePoints.map(point => ({
+        return priceData.data.pricePoints.map((point) => ({
           ...point,
-          formattedDate: new Date(point.date).toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric' 
-          })
+          formattedDate: new Date(point.date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          }),
         }));
     }
-    
+
     return priceData.data.pricePoints
-      .filter(point => new Date(point.date) >= startDate)
-      .map(point => ({
+      .filter((point) => new Date(point.date) >= startDate)
+      .map((point) => ({
         ...point,
-        formattedDate: new Date(point.date).toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric' 
-        })
+        formattedDate: new Date(point.date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        }),
       }));
   }, [priceData, timeRange]);
 
   const priceStats = useMemo(() => {
     if (!priceData?.data) return null;
-    
+
     const data = priceData.data;
-    const changeColor30d = data.priceChange30d >= 0 ? 'text-green-600' : 'text-red-600';
-    const changeColor90d = data.priceChange90d >= 0 ? 'text-green-600' : 'text-red-600';
-    
+    const changeColor30d =
+      data.priceChange30d >= 0 ? 'text-green-600' : 'text-red-600';
+    const changeColor90d =
+      data.priceChange90d >= 0 ? 'text-green-600' : 'text-red-600';
+
     return {
       current: data.currentPrice,
       marketAverage: data.marketAverage,
@@ -110,35 +120,46 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
       changeColor30d,
       changeColor90d,
       vsMarket: data.currentPrice - data.marketAverage,
-      vsMarketPercent: ((data.currentPrice - data.marketAverage) / data.marketAverage) * 100
+      vsMarketPercent:
+        ((data.currentPrice - data.marketAverage) / data.marketAverage) * 100,
     };
   }, [priceData]);
 
-  const TimeRangeButton: React.FC<{ range: TimeRange; label: string }> = ({ range, label }) => (
+  const TimeRangeButton: React.FC<{ range: TimeRange; label: string }> = ({
+    range,
+    label,
+  }) => (
     <TouchableOpacity
       onPress={() => setTimeRange(range)}
       className={`px-3 py-2 rounded-lg ${
         timeRange === range ? 'bg-blue-500' : 'bg-gray-200'
       }`}
     >
-      <Text className={`text-sm font-medium ${
-        timeRange === range ? 'text-white' : 'text-gray-700'
-      }`}>
+      <Text
+        className={`text-sm font-medium ${
+          timeRange === range ? 'text-white' : 'text-gray-700'
+        }`}
+      >
         {label}
       </Text>
     </TouchableOpacity>
   );
 
-  const TabButton: React.FC<{ tab: 'history' | 'depreciation'; label: string }> = ({ tab, label }) => (
+  const TabButton: React.FC<{
+    tab: 'history' | 'depreciation';
+    label: string;
+  }> = ({ tab, label }) => (
     <TouchableOpacity
       onPress={() => setActiveTab(tab)}
       className={`flex-1 py-3 border-b-2 ${
         activeTab === tab ? 'border-blue-500' : 'border-gray-200'
       }`}
     >
-      <Text className={`text-center font-medium ${
-        activeTab === tab ? 'text-blue-600' : 'text-gray-600'
-      }`}>
+      <Text
+        className={`text-center font-medium ${
+          activeTab === tab ? 'text-blue-600' : 'text-gray-600'
+        }`}
+      >
         {label}
       </Text>
     </TouchableOpacity>
@@ -197,10 +218,16 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
                   </Text>
                 </View>
                 <View className="items-end">
-                  <Text className="text-sm text-gray-600">vs Market Average</Text>
-                  <Text className={`text-lg font-semibold ${
-                    priceStats.vsMarket < 0 ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <Text className="text-sm text-gray-600">
+                    vs Market Average
+                  </Text>
+                  <Text
+                    className={`text-lg font-semibold ${
+                      priceStats.vsMarket < 0
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}
+                  >
                     {priceStats.vsMarket < 0 ? '-' : '+'}
                     {formatCurrency(Math.abs(priceStats.vsMarket))}
                   </Text>
@@ -209,31 +236,39 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
 
               <View className="flex-row justify-between">
                 <View className="flex-1 mr-4">
-                  <Text className="text-sm text-gray-600 mb-1">30 Day Change</Text>
+                  <Text className="text-sm text-gray-600 mb-1">
+                    30 Day Change
+                  </Text>
                   <View className="flex-row items-center">
                     {priceStats.change30d >= 0 ? (
                       <TrendingUp size={16} className="text-green-600 mr-1" />
                     ) : (
                       <TrendingDown size={16} className="text-red-600 mr-1" />
                     )}
-                    <Text className={`font-semibold ${priceStats.changeColor30d}`}>
-                      {formatCurrency(Math.abs(priceStats.change30d))} 
-                      ({priceStats.changePercent30d.toFixed(1)}%)
+                    <Text
+                      className={`font-semibold ${priceStats.changeColor30d}`}
+                    >
+                      {formatCurrency(Math.abs(priceStats.change30d))}(
+                      {priceStats.changePercent30d.toFixed(1)}%)
                     </Text>
                   </View>
                 </View>
 
                 <View className="flex-1">
-                  <Text className="text-sm text-gray-600 mb-1">90 Day Change</Text>
+                  <Text className="text-sm text-gray-600 mb-1">
+                    90 Day Change
+                  </Text>
                   <View className="flex-row items-center">
                     {priceStats.change90d >= 0 ? (
                       <TrendingUp size={16} className="text-green-600 mr-1" />
                     ) : (
                       <TrendingDown size={16} className="text-red-600 mr-1" />
                     )}
-                    <Text className={`font-semibold ${priceStats.changeColor90d}`}>
-                      {formatCurrency(Math.abs(priceStats.change90d))} 
-                      ({priceStats.changePercent90d.toFixed(1)}%)
+                    <Text
+                      className={`font-semibold ${priceStats.changeColor90d}`}
+                    >
+                      {formatCurrency(Math.abs(priceStats.change90d))}(
+                      {priceStats.changePercent90d.toFixed(1)}%)
                     </Text>
                   </View>
                 </View>
@@ -257,24 +292,35 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
             <Text className="text-lg font-semibold text-gray-900 mb-4">
               Price Trend
             </Text>
-            
+
             <View style={{ height: 250 }}>
               <LineChart
                 data={{
-                  labels: filteredPriceData.map(point => point.formattedDate).slice(-6), // Last 6 points
+                  labels: filteredPriceData
+                    .map((point) => point.formattedDate)
+                    .slice(-6), // Last 6 points
                   datasets: [
                     {
-                      data: filteredPriceData.map(point => point.price).slice(-6),
+                      data: filteredPriceData
+                        .map((point) => point.price)
+                        .slice(-6),
                       color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`, // Blue
-                      strokeWidth: 2
+                      strokeWidth: 2,
                     },
-                    ...(priceStats ? [{
-                      data: Array(Math.min(6, filteredPriceData.length)).fill(priceStats.marketAverage),
-                      color: (opacity = 1) => `rgba(239, 68, 68, ${opacity})`, // Red
-                      strokeWidth: 1,
-                      withDots: false
-                    }] : [])
-                  ]
+                    ...(priceStats
+                      ? [
+                          {
+                            data: Array(
+                              Math.min(6, filteredPriceData.length),
+                            ).fill(priceStats.marketAverage),
+                            color: (opacity = 1) =>
+                              `rgba(239, 68, 68, ${opacity})`, // Red
+                            strokeWidth: 1,
+                            withDots: false,
+                          },
+                        ]
+                      : []),
+                  ],
                 }}
                 width={width - 32} // Screen width minus padding
                 height={220}
@@ -284,21 +330,23 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
                   backgroundGradientTo: '#ffffff',
                   decimalPlaces: 0,
                   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  labelColor: (opacity = 1) => `rgba(102, 102, 102, ${opacity})`,
+                  labelColor: (opacity = 1) =>
+                    `rgba(102, 102, 102, ${opacity})`,
                   style: {
-                    borderRadius: 16
+                    borderRadius: 16,
                   },
                   propsForDots: {
                     r: '4',
                     strokeWidth: '2',
-                    stroke: '#3B82F6'
+                    stroke: '#3B82F6',
                   },
-                  formatYLabel: (value) => `$${(Number(value) / 1000).toFixed(0)}k`
+                  formatYLabel: (value) =>
+                    `$${(Number(value) / 1000).toFixed(0)}k`,
                 }}
                 bezier
                 style={{
                   marginVertical: 8,
-                  borderRadius: 16
+                  borderRadius: 16,
                 }}
               />
             </View>
@@ -309,7 +357,10 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
                 <Text className="text-sm text-gray-600">Actual Price</Text>
               </View>
               <View className="flex-row items-center">
-                <View className="w-4 h-0.5 bg-red-500 mr-2" style={{ borderStyle: 'dashed' }} />
+                <View
+                  className="w-4 h-0.5 bg-red-500 mr-2"
+                  style={{ borderStyle: 'dashed' }}
+                />
                 <Text className="text-sm text-gray-600">Market Average</Text>
               </View>
             </View>
@@ -321,7 +372,7 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
               <Text className="text-lg font-semibold text-gray-900 mb-4">
                 Market Context
               </Text>
-              
+
               <View className="space-y-3">
                 <View className="flex-row justify-between items-center">
                   <Text className="text-gray-600">Total Listings</Text>
@@ -329,26 +380,34 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
                     {priceData.insights.supply.totalListings}
                   </Text>
                 </View>
-                
+
                 <View className="flex-row justify-between items-center">
                   <Text className="text-gray-600">Avg. Days on Market</Text>
                   <Text className="font-semibold text-gray-900">
                     {priceData.insights.supply.averageDaysOnMarket} days
                   </Text>
                 </View>
-                
+
                 <View className="flex-row justify-between items-center">
                   <Text className="text-gray-600">Demand Level</Text>
-                  <View className={`px-3 py-1 rounded-full ${
-                    priceData.insights.demand.demandTrend === 'high' ? 'bg-red-100' :
-                    priceData.insights.demand.demandTrend === 'medium' ? 'bg-yellow-100' :
-                    'bg-green-100'
-                  }`}>
-                    <Text className={`text-sm font-medium ${
-                      priceData.insights.demand.demandTrend === 'high' ? 'text-red-700' :
-                      priceData.insights.demand.demandTrend === 'medium' ? 'text-yellow-700' :
-                      'text-green-700'
-                    }`}>
+                  <View
+                    className={`px-3 py-1 rounded-full ${
+                      priceData.insights.demand.demandTrend === 'high'
+                        ? 'bg-red-100'
+                        : priceData.insights.demand.demandTrend === 'medium'
+                          ? 'bg-yellow-100'
+                          : 'bg-green-100'
+                    }`}
+                  >
+                    <Text
+                      className={`text-sm font-medium ${
+                        priceData.insights.demand.demandTrend === 'high'
+                          ? 'text-red-700'
+                          : priceData.insights.demand.demandTrend === 'medium'
+                            ? 'text-yellow-700'
+                            : 'text-green-700'
+                      }`}
+                    >
                       {priceData.insights.demand.demandTrend.toUpperCase()}
                     </Text>
                   </View>
@@ -364,16 +423,18 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
           <Text className="text-lg font-semibold text-gray-900 mb-4">
             Depreciation Calculator
           </Text>
-          
+
           <View style={{ height: 250 }}>
             <LineChart
               data={{
-                labels: depreciationData.map(d => d.year.toString()),
-                datasets: [{
-                  data: depreciationData.map(d => d.estimatedValue),
-                  color: (opacity = 1) => `rgba(139, 92, 246, ${opacity})`, // Purple
-                  strokeWidth: 2
-                }]
+                labels: depreciationData.map((d) => d.year.toString()),
+                datasets: [
+                  {
+                    data: depreciationData.map((d) => d.estimatedValue),
+                    color: (opacity = 1) => `rgba(139, 92, 246, ${opacity})`, // Purple
+                    strokeWidth: 2,
+                  },
+                ],
               }}
               width={width - 32}
               height={220}
@@ -385,19 +446,20 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 labelColor: (opacity = 1) => `rgba(102, 102, 102, ${opacity})`,
                 style: {
-                  borderRadius: 16
+                  borderRadius: 16,
                 },
                 propsForDots: {
                   r: '4',
                   strokeWidth: '2',
-                  stroke: '#8B5CF6'
+                  stroke: '#8B5CF6',
                 },
-                formatYLabel: (value) => `$${(Number(value) / 1000).toFixed(0)}k`
+                formatYLabel: (value) =>
+                  `$${(Number(value) / 1000).toFixed(0)}k`,
               }}
               bezier
               style={{
                 marginVertical: 8,
-                borderRadius: 16
+                borderRadius: 16,
               }}
             />
           </View>
@@ -405,9 +467,14 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
           {/* Depreciation Stats */}
           <View className="mt-6 space-y-4">
             {depreciationData.slice(-3).map((data, index) => (
-              <View key={data.year} className="flex-row justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <View
+                key={data.year}
+                className="flex-row justify-between items-center p-3 bg-gray-50 rounded-lg"
+              >
                 <View>
-                  <Text className="font-semibold text-gray-900">{data.year}</Text>
+                  <Text className="font-semibold text-gray-900">
+                    {data.year}
+                  </Text>
                   <Text className="text-sm text-gray-600">
                     {data.depreciationRate.toFixed(1)}% depreciation
                   </Text>
@@ -423,11 +490,14 @@ export const PriceHistory: React.FC<PriceHistoryProps> = ({
           <View className="mt-6 p-4 bg-blue-50 rounded-lg">
             <View className="flex-row items-center mb-2">
               <Info size={20} className="text-blue-600 mr-2" />
-              <Text className="font-semibold text-blue-900">Depreciation Insights</Text>
+              <Text className="font-semibold text-blue-900">
+                Depreciation Insights
+              </Text>
             </View>
             <Text className="text-blue-800 text-sm leading-5">
-              This {make} {model} has experienced typical depreciation patterns. 
-              The steepest decline occurs in the first 3 years, after which the rate slows significantly.
+              This {make} {model} has experienced typical depreciation patterns.
+              The steepest decline occurs in the first 3 years, after which the
+              rate slows significantly.
             </Text>
           </View>
         </View>

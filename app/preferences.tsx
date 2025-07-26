@@ -23,11 +23,11 @@ import UserPreferencesService from '@/services/core/UserPreferencesService';
 import CarDataService from '@/services/core/CarDataService';
 import { UserPreferences } from '@/services/core/SimpleRecommendationEngine';
 import { formatPrice } from '@/utils/dataTransformers';
-import { 
-  ArrowLeft, 
-  Settings, 
-  DollarSign, 
-  Car, 
+import {
+  ArrowLeft,
+  Settings,
+  DollarSign,
+  Car,
   TrendingUp,
   Eye,
   Heart,
@@ -48,7 +48,7 @@ export default function UserPreferencesScreen() {
   const [popularMakes, setPopularMakes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  
+
   // Form state
   const [budgetMin, setBudgetMin] = useState('0');
   const [budgetMax, setBudgetMax] = useState('100000');
@@ -69,7 +69,7 @@ export default function UserPreferencesScreen() {
 
       // Load popular makes for selection
       const makesData = await carDataService.getPopularMakes();
-      const makesList = makesData.map(item => item.make);
+      const makesList = makesData.map((item) => item.make);
       setPopularMakes(makesList);
 
       // Set form values
@@ -93,7 +93,10 @@ export default function UserPreferencesScreen() {
       const maxBudget = parseInt(budgetMax) || 100000;
 
       if (minBudget >= maxBudget) {
-        Alert.alert('Invalid Budget', 'Maximum budget must be greater than minimum budget');
+        Alert.alert(
+          'Invalid Budget',
+          'Maximum budget must be greater than minimum budget',
+        );
         return;
       }
 
@@ -104,7 +107,7 @@ export default function UserPreferencesScreen() {
       };
 
       await preferencesService.updatePreferences(updatedPreferences);
-      
+
       Alert.alert('Saved', 'Your preferences have been updated successfully!');
       router.back();
     } catch (error) {
@@ -116,10 +119,8 @@ export default function UserPreferencesScreen() {
   };
 
   const handleMakeToggle = (make: string) => {
-    setPreferredMakes(prev => 
-      prev.includes(make) 
-        ? prev.filter(m => m !== make)
-        : [...prev, make]
+    setPreferredMakes((prev) =>
+      prev.includes(make) ? prev.filter((m) => m !== make) : [...prev, make],
     );
   };
 
@@ -142,13 +143,15 @@ export default function UserPreferencesScreen() {
             }
           },
         },
-      ]
+      ],
     );
   };
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
           <LoadingSpinner />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
@@ -160,7 +163,9 @@ export default function UserPreferencesScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => router.back()}>
@@ -181,8 +186,10 @@ export default function UserPreferencesScreen() {
               Budget Range
             </Text>
           </View>
-          
-          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+
+          <Text
+            style={[styles.sectionSubtitle, { color: colors.textSecondary }]}
+          >
             Set your preferred price range to get better recommendations
           </Text>
 
@@ -193,11 +200,14 @@ export default function UserPreferencesScreen() {
                   Minimum Budget
                 </Text>
                 <TextInput
-                  style={[styles.textInput, { 
-                    backgroundColor: colors.surface,
-                    color: colors.text,
-                    borderColor: colors.border 
-                  }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
                   value={budgetMin}
                   onChangeText={setBudgetMin}
                   placeholder="0"
@@ -214,11 +224,14 @@ export default function UserPreferencesScreen() {
                   Maximum Budget
                 </Text>
                 <TextInput
-                  style={[styles.textInput, { 
-                    backgroundColor: colors.surface,
-                    color: colors.text,
-                    borderColor: colors.border 
-                  }]}
+                  style={[
+                    styles.textInput,
+                    {
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
                   value={budgetMax}
                   onChangeText={setBudgetMax}
                   placeholder="100000"
@@ -241,36 +254,40 @@ export default function UserPreferencesScreen() {
               Preferred Car Brands
             </Text>
           </View>
-          
-          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+
+          <Text
+            style={[styles.sectionSubtitle, { color: colors.textSecondary }]}
+          >
             Select brands you're interested in for personalized recommendations
           </Text>
 
           <View style={styles.makesGrid}>
-            {popularMakes.map(make => (
+            {popularMakes.map((make) => (
               <TouchableOpacity
                 key={make}
                 style={[
                   styles.makeChip,
-                  { 
-                    backgroundColor: preferredMakes.includes(make) 
-                      ? colors.primary 
+                  {
+                    backgroundColor: preferredMakes.includes(make)
+                      ? colors.primary
                       : colors.surface,
-                    borderColor: preferredMakes.includes(make) 
-                      ? colors.primary 
+                    borderColor: preferredMakes.includes(make)
+                      ? colors.primary
                       : colors.border,
-                  }
+                  },
                 ]}
                 onPress={() => handleMakeToggle(make)}
               >
-                <Text style={[
-                  styles.makeChipText,
-                  { 
-                    color: preferredMakes.includes(make) 
-                      ? 'white' 
-                      : colors.text 
-                  }
-                ]}>
+                <Text
+                  style={[
+                    styles.makeChipText,
+                    {
+                      color: preferredMakes.includes(make)
+                        ? 'white'
+                        : colors.text,
+                    },
+                  ]}
+                >
                   {make}
                 </Text>
               </TouchableOpacity>
@@ -292,7 +309,12 @@ export default function UserPreferencesScreen() {
               <Text style={[styles.settingTitle, { color: colors.text }]}>
                 Enable Personalized Recommendations
               </Text>
-              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.settingDescription,
+                  { color: colors.textSecondary },
+                ]}
+              >
                 Get car suggestions based on your preferences and activity
               </Text>
             </View>
@@ -300,7 +322,9 @@ export default function UserPreferencesScreen() {
               value={enableRecommendations}
               onValueChange={setEnableRecommendations}
               trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={enableRecommendations ? 'white' : colors.textSecondary}
+              thumbColor={
+                enableRecommendations ? 'white' : colors.textSecondary
+              }
             />
           </View>
         </Card>
@@ -314,7 +338,9 @@ export default function UserPreferencesScreen() {
             </Text>
           </View>
 
-          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+          <Text
+            style={[styles.sectionSubtitle, { color: colors.textSecondary }]}
+          >
             Manage your stored preferences and activity data
           </Text>
 
@@ -328,7 +354,7 @@ export default function UserPreferencesScreen() {
 
         {/* Save Button */}
         <Button
-          title={saving ? "Saving..." : "Save Preferences"}
+          title={saving ? 'Saving...' : 'Save Preferences'}
           onPress={handleSavePreferences}
           variant="primary"
           disabled={saving}
@@ -339,121 +365,122 @@ export default function UserPreferencesScreen() {
   );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  sectionCard: {
-    marginBottom: 20,
-    padding: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginLeft: 8,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    marginBottom: 16,
-    lineHeight: 20,
-  },
-  budgetContainer: {
-    gap: 16,
-  },
-  budgetInputRow: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  budgetInput: {
-    flex: 1,
-    gap: 8,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  textInput: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-  },
-  budgetDisplay: {
-    fontSize: 16,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  makesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  makeChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  makeChipText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  settingInfo: {
-    flex: 1,
-    marginRight: 16,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  settingDescription: {
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  clearButton: {
-    marginTop: 8,
-  },
-  saveButton: {
-    marginTop: 8,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      marginTop: 16,
+      fontSize: 16,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+    },
+    headerTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    scrollContent: {
+      padding: 16,
+      paddingBottom: 32,
+    },
+    sectionCard: {
+      marginBottom: 20,
+      padding: 16,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      marginLeft: 8,
+    },
+    sectionSubtitle: {
+      fontSize: 14,
+      marginBottom: 16,
+      lineHeight: 20,
+    },
+    budgetContainer: {
+      gap: 16,
+    },
+    budgetInputRow: {
+      flexDirection: 'row',
+      gap: 16,
+    },
+    budgetInput: {
+      flex: 1,
+      gap: 8,
+    },
+    inputLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    textInput: {
+      borderWidth: 1,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      fontSize: 16,
+    },
+    budgetDisplay: {
+      fontSize: 16,
+      fontWeight: '700',
+      textAlign: 'center',
+    },
+    makesGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    makeChip: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+    },
+    makeChipText: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    settingRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    settingInfo: {
+      flex: 1,
+      marginRight: 16,
+    },
+    settingTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      marginBottom: 4,
+    },
+    settingDescription: {
+      fontSize: 14,
+      lineHeight: 18,
+    },
+    clearButton: {
+      marginTop: 8,
+    },
+    saveButton: {
+      marginTop: 8,
+    },
+  });

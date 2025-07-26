@@ -14,7 +14,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { Search, Sparkles, Filter, Clock, Star, TrendingUp } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  Sparkles,
+  Filter,
+  Clock,
+  Star,
+  TrendingUp,
+} from '@/utils/ultra-optimized-icons';
 
 import { UnifiedSearchComponent as SearchBar } from '@/components/ui/unified';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -81,12 +88,14 @@ export default function AISearchScreen() {
 
       // Load popular searches
       const popular = await aiSearchService.getPopularSearches(5);
-      const popularSuggestions: SearchSuggestion[] = popular.map((query, index) => ({
-        id: `popular-${index}`,
-        text: query,
-        type: 'popular' as const,
-        icon: 'trending-up'
-      }));
+      const popularSuggestions: SearchSuggestion[] = popular.map(
+        (query, index) => ({
+          id: `popular-${index}`,
+          text: query,
+          type: 'popular' as const,
+          icon: 'trending-up',
+        }),
+      );
 
       setSuggestions(popularSuggestions);
     } catch (error) {
@@ -96,26 +105,27 @@ export default function AISearchScreen() {
 
   const loadSuggestions = async (query: string) => {
     try {
-      const aiSuggestions = await openaiService.generateSearchSuggestions(query);
-      
+      const aiSuggestions =
+        await openaiService.generateSearchSuggestions(query);
+
       const suggestions: SearchSuggestion[] = [
         // Recent searches
         ...searchHistory
-          .filter(h => h.toLowerCase().includes(query.toLowerCase()))
+          .filter((h) => h.toLowerCase().includes(query.toLowerCase()))
           .slice(0, 2)
           .map((text, index) => ({
             id: `recent-${index}`,
             text,
             type: 'recent' as const,
-            icon: 'history'
+            icon: 'history',
           })),
         // AI generated suggestions
         ...aiSuggestions.slice(0, 3).map((text: string, index: number) => ({
           id: `ai-${index}`,
           text,
           type: 'ai_generated' as const,
-          icon: 'sparkles'
-        }))
+          icon: 'sparkles',
+        })),
       ];
 
       setSuggestions(suggestions);
@@ -124,72 +134,78 @@ export default function AISearchScreen() {
     }
   };
 
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) return;
+  const handleSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) return;
 
-    setLoading(true);
-    setError(null);
-    setShowSuggestions(false);
-    Keyboard.dismiss();
+      setLoading(true);
+      setError(null);
+      setShowSuggestions(false);
+      Keyboard.dismiss();
 
-    try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      
-      const result = await aiSearchService.search(
-        query,
-        user?.id,
-        undefined, // sessionId could be added
-        0, // page
-        20 // limit
-      );
+      try {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-      setSearchResult(result);
-      
-      // Update search history
-      if (user && !searchHistory.includes(query)) {
-        const newHistory = [query, ...searchHistory.slice(0, 4)];
-        setSearchHistory(newHistory);
+        const result = await aiSearchService.search(
+          query,
+          user?.id,
+          undefined, // sessionId could be added
+          0, // page
+          20, // limit
+        );
+
+        setSearchResult(result);
+
+        // Update search history
+        if (user && !searchHistory.includes(query)) {
+          const newHistory = [query, ...searchHistory.slice(0, 4)];
+          setSearchHistory(newHistory);
+        }
+      } catch (error) {
+        logger.error('Search failed:', error);
+        setError('Search failed. Please try again.');
+
+        Alert.alert(
+          'Search Error',
+          'There was a problem with your search. Please try again.',
+          [{ text: 'OK' }],
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user, searchHistory],
+  );
+
+  const handleSuggestionPress = useCallback(
+    (suggestion: SearchSuggestion) => {
+      setSearchQuery(suggestion.text);
+      handleSearch(suggestion.text);
+    },
+    [handleSearch],
+  );
+
+  const handleCarPress = useCallback(
+    async (carId: string) => {
+      if (searchResult) {
+        await aiSearchService.trackSearchClick(
+          searchResult.query,
+          carId,
+          user?.id,
+          undefined,
+        );
       }
 
-    } catch (error) {
-      logger.error('Search failed:', error);
-      setError('Search failed. Please try again.');
-      
-      Alert.alert(
-        'Search Error',
-        'There was a problem with your search. Please try again.',
-        [{ text: 'OK' }]
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [user, searchHistory]);
-
-  const handleSuggestionPress = useCallback((suggestion: SearchSuggestion) => {
-    setSearchQuery(suggestion.text);
-    handleSearch(suggestion.text);
-  }, [handleSearch]);
-
-  const handleCarPress = useCallback(async (carId: string) => {
-    if (searchResult) {
-      await aiSearchService.trackSearchClick(
-        searchResult.query,
-        carId,
-        user?.id,
-        undefined
-      );
-    }
-    
-    router.push(`/car/${carId}`);
-  }, [searchResult, user]);
+      router.push(`/car/${carId}`);
+    },
+    [searchResult, user],
+  );
 
   const handleSaveSearch = useCallback(async () => {
     if (!user || !searchResult) {
-      Alert.alert(
-        'Sign In Required',
-        'Please sign in to save searches.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Sign In Required', 'Please sign in to save searches.', [
+        { text: 'OK' },
+      ]);
       return;
     }
 
@@ -207,19 +223,22 @@ export default function AISearchScreen() {
                   user.id,
                   searchName.trim(),
                   searchResult.query,
-                  searchResult.filters
+                  searchResult.filters,
                 );
-                
+
                 Alert.alert('Success', 'Search saved successfully!');
               } catch (error) {
-                Alert.alert('Error', 'Failed to save search. Please try again.');
+                Alert.alert(
+                  'Error',
+                  'Failed to save search. Please try again.',
+                );
               }
             }
-          }
-        }
+          },
+        },
       ],
       'plain-text',
-      searchResult.query
+      searchResult.query,
     );
   }, [user, searchResult]);
 
@@ -231,9 +250,15 @@ export default function AISearchScreen() {
     >
       <View style={styles.suggestionContent}>
         <View style={styles.suggestionIcon}>
-          {item.type === 'recent' && <Clock size={16} color={colors.textSecondary} />}
-          {item.type === 'popular' && <TrendingUp size={16} color={colors.textSecondary} />}
-          {item.type === 'ai_generated' && <Sparkles size={16} color={colors.primary} />}
+          {item.type === 'recent' && (
+            <Clock size={16} color={colors.textSecondary} />
+          )}
+          {item.type === 'popular' && (
+            <TrendingUp size={16} color={colors.textSecondary} />
+          )}
+          {item.type === 'ai_generated' && (
+            <Sparkles size={16} color={colors.primary} />
+          )}
         </View>
         <Text style={styles.suggestionText}>{item.text}</Text>
       </View>
@@ -241,10 +266,7 @@ export default function AISearchScreen() {
   );
 
   const renderCarItem = ({ item }: { item: any }) => (
-    <CarCard
-      car={item}
-      onPress={() => handleCarPress(item.id)}
-    />
+    <CarCard car={item} onPress={() => handleCarPress(item.id)} />
   );
 
   const renderEmptySearch = () => (
@@ -257,7 +279,7 @@ export default function AISearchScreen() {
         <View style={styles.searchIcon}>
           <Search size={48} color={colors.textSecondary} />
         </View>
-        
+
         <Text style={styles.emptyTitle}>AI-Powered Car Search</Text>
         <Text style={styles.emptySubtitle}>
           Tell us what you're looking for in natural language
@@ -269,7 +291,7 @@ export default function AISearchScreen() {
             '• "Reliable SUV under $30k"',
             '• "Best electric cars for families"',
             '• "Fuel efficient sedans from 2020-2023"',
-            '• "Luxury cars in Los Angeles"'
+            '• "Luxury cars in Los Angeles"',
           ].map((example, index) => (
             <TouchableOpacity
               key={index}
@@ -334,9 +356,7 @@ export default function AISearchScreen() {
       {loading && (
         <View style={styles.loadingContainer}>
           <LoadingSpinner size="large" />
-          <Text style={styles.loadingText}>
-            AI is analyzing your search...
-          </Text>
+          <Text style={styles.loadingText}>AI is analyzing your search...</Text>
         </View>
       )}
 
@@ -381,9 +401,13 @@ export default function AISearchScreen() {
             </Text>
             {searchResult.intent && (
               <Text style={styles.intentText}>
-                Intent: {searchResult.intent.intent.charAt(0).toUpperCase() + searchResult.intent.intent.slice(1)}
-                {searchResult.intent.budget_max && ` • Budget: $${searchResult.intent.budget_max.toLocaleString()}`}
-                {searchResult.intent.brand && ` • Brand: ${searchResult.intent.brand}`}
+                Intent:{' '}
+                {searchResult.intent.intent.charAt(0).toUpperCase() +
+                  searchResult.intent.intent.slice(1)}
+                {searchResult.intent.budget_max &&
+                  ` • Budget: $${searchResult.intent.budget_max.toLocaleString()}`}
+                {searchResult.intent.brand &&
+                  ` • Brand: ${searchResult.intent.brand}`}
               </Text>
             )}
           </View>

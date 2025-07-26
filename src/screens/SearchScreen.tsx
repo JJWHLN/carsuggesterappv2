@@ -16,7 +16,10 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   };
 
   const renderCarCard = (car: Car) => (
-    <View key={car.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-3 mx-4">
+    <View
+      key={car.id}
+      className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-3 mx-4"
+    >
       <View className="flex-row justify-between items-start mb-2">
         <View className="flex-1">
           <Text className="text-lg font-bold text-gray-900">
@@ -30,30 +33,38 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           ${car.price.toLocaleString()}
         </Text>
       </View>
-      
+
       <View className="flex-row justify-between items-center mb-3">
-        <Text className="text-sm text-gray-600">
-          {car.fuelEfficiency} MPG
-        </Text>
+        <Text className="text-sm text-gray-600">{car.fuelEfficiency} MPG</Text>
         <View className="flex-row">
           {[...Array(5)].map((_, i) => (
-            <Text key={i} className={i < car.safetyRating ? 'text-yellow-400' : 'text-gray-300'}>
+            <Text
+              key={i}
+              className={
+                i < car.safetyRating ? 'text-yellow-400' : 'text-gray-300'
+              }
+            >
               ⭐
             </Text>
           ))}
         </View>
       </View>
-      
+
       {car.features.length > 0 && (
         <View className="flex-row flex-wrap">
           {car.features.slice(0, 3).map((feature, index) => (
-            <View key={index} className="bg-blue-100 rounded-full px-2 py-1 mr-2 mb-1">
+            <View
+              key={index}
+              className="bg-blue-100 rounded-full px-2 py-1 mr-2 mb-1"
+            >
               <Text className="text-xs text-blue-700">{feature}</Text>
             </View>
           ))}
           {car.features.length > 3 && (
             <View className="bg-gray-100 rounded-full px-2 py-1">
-              <Text className="text-xs text-gray-600">+{car.features.length - 3} more</Text>
+              <Text className="text-xs text-gray-600">
+                +{car.features.length - 3} more
+              </Text>
             </View>
           )}
         </View>
@@ -70,7 +81,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
         showQuickFilters={true}
         className="bg-white shadow-sm"
       />
-      
+
       {/* Results */}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {searchResults.length > 0 && (
@@ -81,7 +92,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
             {searchResults.map(renderCarCard)}
           </View>
         )}
-        
+
         {searchResults.length === 0 && !isLoading && (
           <View className="flex-1 justify-center items-center py-20">
             <Text className="text-6xl mb-4">🔍</Text>

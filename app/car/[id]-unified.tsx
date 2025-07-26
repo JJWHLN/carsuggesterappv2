@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
+} from 'react-native';
 import { UnifiedDetailScreen } from '@/components/ui/UnifiedDetailScreen';
 import DesignSystem from '@/constants/DesignSystem';
 import { notifications } from '@/services/notifications';
@@ -10,8 +16,8 @@ import { CarImage } from '@/components/ui/CarImage';
 // Mock API call
 const fetchCarDetails = async (id: string) => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   // Mock car data
   return {
     id,
@@ -38,19 +44,23 @@ const fetchCarDetails = async (id: string) => {
 
 export default function CarDetailScreen() {
   const colorScheme = useColorScheme();
-  const theme = { colors: colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light };
+  const theme = {
+    colors:
+      colorScheme === 'dark'
+        ? DesignSystem.Colors.dark
+        : DesignSystem.Colors.light,
+  };
 
   const renderCarHeader = (car: any) => (
     <View style={styles.headerContainer}>
-      <CarImage 
-        uri={car.images?.[0]} 
-        style={styles.carImage}
-      />
+      <CarImage uri={car.images?.[0]} style={styles.carImage} />
       <View style={styles.headerInfo}>
         <Text style={[styles.carName, { color: theme.colors.onSurface }]}>
           {car.name}
         </Text>
-        <Text style={[styles.carBrand, { color: theme.colors.onSurfaceVariant }]}>
+        <Text
+          style={[styles.carBrand, { color: theme.colors.onSurfaceVariant }]}
+        >
           {car.brand} • {car.year}
         </Text>
         <Text style={[styles.carPrice, { color: theme.colors.primary }]}>
@@ -66,20 +76,20 @@ export default function CarDetailScreen() {
         style={styles.iconButton}
         onPress={() => notifications.car.savedSuccess()}
       >
-        <Ionicons 
-          name={car.isSaved ? 'heart' : 'heart-outline'} 
-          size={24} 
-          color={theme.colors.primary} 
+        <Ionicons
+          name={car.isSaved ? 'heart' : 'heart-outline'}
+          size={24}
+          color={theme.colors.primary}
         />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.iconButton}
         onPress={() => notifications.comingSoon('Share')}
       >
-        <Ionicons 
-          name="share-outline" 
-          size={24} 
-          color={theme.colors.onSurface} 
+        <Ionicons
+          name="share-outline"
+          size={24}
+          color={theme.colors.onSurface}
         />
       </TouchableOpacity>
     </View>
@@ -91,7 +101,9 @@ export default function CarDetailScreen() {
         <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
           Description
         </Text>
-        <Text style={[styles.description, { color: theme.colors.onSurfaceVariant }]}>
+        <Text
+          style={[styles.description, { color: theme.colors.onSurfaceVariant }]}
+        >
           {car.description}
         </Text>
       </View>
@@ -102,7 +114,12 @@ export default function CarDetailScreen() {
         </Text>
         {Object.entries(car.specifications).map(([key, value]) => (
           <View key={key} style={styles.specRow}>
-            <Text style={[styles.specLabel, { color: theme.colors.onSurfaceVariant }]}>
+            <Text
+              style={[
+                styles.specLabel,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
+            >
               {key.charAt(0).toUpperCase() + key.slice(1)}:
             </Text>
             <Text style={[styles.specValue, { color: theme.colors.onSurface }]}>
@@ -119,10 +136,14 @@ export default function CarDetailScreen() {
         <Text style={[styles.dealerName, { color: theme.colors.onSurface }]}>
           {car.dealer.name}
         </Text>
-        <Text style={[styles.dealerInfo, { color: theme.colors.onSurfaceVariant }]}>
+        <Text
+          style={[styles.dealerInfo, { color: theme.colors.onSurfaceVariant }]}
+        >
           {car.dealer.location}
         </Text>
-        <Text style={[styles.dealerInfo, { color: theme.colors.onSurfaceVariant }]}>
+        <Text
+          style={[styles.dealerInfo, { color: theme.colors.onSurfaceVariant }]}
+        >
           {car.dealer.phone}
         </Text>
       </View>
@@ -130,9 +151,11 @@ export default function CarDetailScreen() {
       <View style={styles.actionButtons}>
         <Button
           title="Contact Dealer"
-          onPress={() => notifications.car.contactDealer(car.dealer.name, () => {
-            notifications.comingSoon('Contact Dealer');
-          })}
+          onPress={() =>
+            notifications.car.contactDealer(car.dealer.name, () => {
+              notifications.comingSoon('Contact Dealer');
+            })
+          }
           style={styles.contactButton}
         />
         <Button

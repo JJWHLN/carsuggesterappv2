@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { Car } from '@/src/features/recommendations/types';
+import { Car } from '@/src/types/models';
 
 export interface CarData extends Car {
   images?: string[];
@@ -333,11 +333,11 @@ const useCarStore = create<CarStore>()(
         if (filters.price) {
           if (car.price < filters.price.min || car.price > filters.price.max) return false;
         }
-        if (filters.bodyStyle && filters.bodyStyle.length > 0 && !filters.bodyStyle.includes(car.bodyStyle)) return false;
-        if (filters.fuelEfficiency && car.fuelEfficiency < filters.fuelEfficiency.min) return false;
-        if (filters.safetyRating && car.safetyRating < filters.safetyRating.min) return false;
-        if (filters.features && filters.features.length > 0) {
-          const hasAllFeatures = filters.features.every(feature => car.features.includes(feature));
+        if (filters.bodyStyle && filters.bodyStyle.length > 0 && car.bodyStyle && !filters.bodyStyle.includes(car.bodyStyle)) return false;
+        if (filters.fuelEfficiency && car.fuelEfficiency != null && car.fuelEfficiency < filters.fuelEfficiency.min) return false;
+        if (filters.safetyRating && car.safetyRating != null && car.safetyRating < filters.safetyRating.min) return false;
+        if (filters.features && filters.features.length > 0 && car.features) {
+          const hasAllFeatures = filters.features.every(feature => car.features!.includes(feature));
           if (!hasAllFeatures) return false;
         }
         return true;

@@ -22,7 +22,7 @@ export const EnhancedCarCard: React.FC<EnhancedCarCardProps> = ({
   onPress,
   showDetailedSpecs = true,
   showPricing = true,
-  showSafetyRating = true
+  showSafetyRating = true,
 }) => {
   // Format price range from your schema
   const formatPriceRange = () => {
@@ -55,11 +55,15 @@ export const EnhancedCarCard: React.FC<EnhancedCarCardProps> = ({
       {/* Car Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: car.image_url || 'https://via.placeholder.com/300x200?text=Car+Image' }}
+          source={{
+            uri:
+              car.image_url ||
+              'https://via.placeholder.com/300x200?text=Car+Image',
+          }}
           style={styles.carImage}
           resizeMode="cover"
         />
-        
+
         {/* Brand Logo Overlay */}
         {car.brands?.logo_url && (
           <View style={styles.brandLogoContainer}>
@@ -113,7 +117,11 @@ export const EnhancedCarCard: React.FC<EnhancedCarCardProps> = ({
                     <Star
                       key={index}
                       size={12}
-                      color={index < car.safety_rating! ? Colors.light.primary : Colors.light.border}
+                      color={
+                        index < car.safety_rating!
+                          ? Colors.light.primary
+                          : Colors.light.border
+                      }
                     />
                   ))}
                   <Text style={styles.ratingText}>Safety</Text>

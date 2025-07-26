@@ -10,52 +10,58 @@ interface CarImageProps extends Omit<ImageProps, 'source'> {
   placeholderSize?: 'small' | 'medium' | 'large';
 }
 
-export const CarImage: React.FC<CarImageProps> = ({ 
-  uri, 
-  style, 
+export const CarImage: React.FC<CarImageProps> = ({
+  uri,
+  style,
   showLabel = true,
   placeholderSize = 'medium',
-  ...imageProps 
+  ...imageProps
 }) => {
   const [imageError, setImageError] = useState(false);
   const { colors } = useThemeColors();
 
   const getIconSize = () => {
     switch (placeholderSize) {
-      case 'small': return 24;
-      case 'large': return 64;
-      default: return 48;
+      case 'small':
+        return 24;
+      case 'large':
+        return 64;
+      default:
+        return 48;
     }
   };
 
   const getFontSize = () => {
     switch (placeholderSize) {
-      case 'small': return 10;
-      case 'large': return 14;
-      default: return 12;
+      case 'small':
+        return 10;
+      case 'large':
+        return 14;
+      default:
+        return 12;
     }
   };
 
   if (!uri || imageError) {
     return (
-      <View style={[
-        style, 
-        styles.placeholder,
-        { backgroundColor: colors.surface }
-      ]}>
-        <Ionicons 
-          name="car-outline" 
-          size={getIconSize()} 
-          color={colors.textSecondary} 
+      <View
+        style={[style, styles.placeholder, { backgroundColor: colors.surface }]}
+      >
+        <Ionicons
+          name="car-outline"
+          size={getIconSize()}
+          color={colors.textSecondary}
         />
         {showLabel && (
-          <Text style={[
-            styles.placeholderText,
-            { 
-              color: colors.textSecondary,
-              fontSize: getFontSize()
-            }
-          ]}>
+          <Text
+            style={[
+              styles.placeholderText,
+              {
+                color: colors.textSecondary,
+                fontSize: getFontSize(),
+              },
+            ]}
+          >
             No Image
           </Text>
         )}
@@ -64,8 +70,8 @@ export const CarImage: React.FC<CarImageProps> = ({
   }
 
   return (
-    <Image 
-      source={{ uri }} 
+    <Image
+      source={{ uri }}
       style={style}
       onError={() => setImageError(true)}
       {...imageProps}

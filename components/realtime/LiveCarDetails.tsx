@@ -1,8 +1,8 @@
 /**
  * Live Car Details Component - Real-time Features Demo
- * 
+ *
  * Phase 2 Week 6 - Real-time Features & Live Communication
- * 
+ *
  * Demonstrates:
  * - Live price updates
  * - Real-time chat with dealers
@@ -68,10 +68,14 @@ export default function LiveCarDetails({
   } = useLiveChat(chatId || '');
 
   // Connection status
-  const { isConnected, isReconnecting, pendingUpdates } = useRealTimeConnection();
+  const { isConnected, isReconnecting, pendingUpdates } =
+    useRealTimeConnection();
 
   // Market data
-  const { trends, insights, averagePrice, demandLevel } = useLiveMarketData(make, model);
+  const { trends, insights, averagePrice, demandLevel } = useLiveMarketData(
+    make,
+    model,
+  );
 
   // Inventory status
   const [inventoryStatus, setInventoryStatus] = useRealTimeState<{
@@ -118,7 +122,7 @@ export default function LiveCarDetails({
                 await priceService.createPriceAlert(
                   carId,
                   targetPrice,
-                  targetPrice < price ? 'below' : 'above'
+                  targetPrice < price ? 'below' : 'above',
                 );
                 Alert.alert('Success', 'Price alert created!');
               } catch (error) {
@@ -129,7 +133,7 @@ export default function LiveCarDetails({
         },
       ],
       'plain-text',
-      price?.toString()
+      price?.toString(),
     );
   };
 
@@ -155,7 +159,7 @@ export default function LiveCarDetails({
   };
 
   const formatPrice = (price: number) => `$${price.toLocaleString()}`;
-  
+
   const getPriceChangeColor = (change: number) => {
     if (change > 0) return '#e74c3c';
     if (change < 0) return '#27ae60';
@@ -164,10 +168,14 @@ export default function LiveCarDetails({
 
   const getDemandColor = (level: string) => {
     switch (level) {
-      case 'high': return '#e74c3c';
-      case 'medium': return '#f39c12';
-      case 'low': return '#27ae60';
-      default: return '#7f8c8d';
+      case 'high':
+        return '#e74c3c';
+      case 'medium':
+        return '#f39c12';
+      case 'low':
+        return '#27ae60';
+      default:
+        return '#7f8c8d';
     }
   };
 
@@ -175,12 +183,18 @@ export default function LiveCarDetails({
     <ScrollView style={styles.container}>
       {/* Connection Status */}
       <View style={styles.connectionStatus}>
-        <View style={[
-          styles.connectionDot,
-          { backgroundColor: isConnected ? '#27ae60' : '#e74c3c' }
-        ]} />
+        <View
+          style={[
+            styles.connectionDot,
+            { backgroundColor: isConnected ? '#27ae60' : '#e74c3c' },
+          ]}
+        />
         <Text style={styles.connectionText}>
-          {isConnected ? 'Live' : isReconnecting ? 'Reconnecting...' : 'Offline'}
+          {isConnected
+            ? 'Live'
+            : isReconnecting
+              ? 'Reconnecting...'
+              : 'Offline'}
         </Text>
         {pendingUpdates > 0 && (
           <Text style={styles.pendingText}>({pendingUpdates} pending)</Text>
@@ -195,7 +209,12 @@ export default function LiveCarDetails({
             style={[styles.trackButton, isTracking && styles.trackButtonActive]}
             onPress={isTracking ? stopTracking : startTracking}
           >
-            <Text style={[styles.trackButtonText, isTracking && styles.trackButtonTextActive]}>
+            <Text
+              style={[
+                styles.trackButtonText,
+                isTracking && styles.trackButtonTextActive,
+              ]}
+            >
               {isTracking ? '📊 Tracking' : '🔔 Track Price'}
             </Text>
           </TouchableOpacity>
@@ -205,8 +224,14 @@ export default function LiveCarDetails({
           <View style={styles.priceContainer}>
             <Text style={styles.currentPrice}>{formatPrice(price)}</Text>
             {change24h !== 0 && (
-              <Text style={[styles.priceChange, { color: getPriceChangeColor(change24h) }]}>
-                {change24h > 0 ? '+' : ''}{formatPrice(change24h)} (24h)
+              <Text
+                style={[
+                  styles.priceChange,
+                  { color: getPriceChangeColor(change24h) },
+                ]}
+              >
+                {change24h > 0 ? '+' : ''}
+                {formatPrice(change24h)} (24h)
               </Text>
             )}
           </View>
@@ -214,7 +239,10 @@ export default function LiveCarDetails({
           <ActivityIndicator size="small" color="#3498db" />
         )}
 
-        <TouchableOpacity style={styles.alertButton} onPress={handleCreatePriceAlert}>
+        <TouchableOpacity
+          style={styles.alertButton}
+          onPress={handleCreatePriceAlert}
+        >
           <Text style={styles.alertButtonText}>🎯 Set Price Alert</Text>
         </TouchableOpacity>
       </View>
@@ -222,7 +250,7 @@ export default function LiveCarDetails({
       {/* Market Insights */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Market Insights</Text>
-        
+
         {averagePrice && (
           <View style={styles.marketRow}>
             <Text style={styles.marketLabel}>Average Price:</Text>
@@ -233,7 +261,12 @@ export default function LiveCarDetails({
         {demandLevel && (
           <View style={styles.marketRow}>
             <Text style={styles.marketLabel}>Demand Level:</Text>
-            <Text style={[styles.demandLevel, { color: getDemandColor(demandLevel) }]}>
+            <Text
+              style={[
+                styles.demandLevel,
+                { color: getDemandColor(demandLevel) },
+              ]}
+            >
               {demandLevel.toUpperCase()}
             </Text>
           </View>
@@ -254,28 +287,34 @@ export default function LiveCarDetails({
       {/* Live Inventory */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Live Inventory</Text>
-        
+
         {inventoryStatus ? (
           <View style={styles.inventoryContainer}>
             <View style={styles.inventoryRow}>
               <Text style={styles.inventoryLabel}>Availability:</Text>
-              <Text style={[
-                styles.inventoryStatus,
-                { color: inventoryStatus.available ? '#27ae60' : '#e74c3c' }
-              ]}>
+              <Text
+                style={[
+                  styles.inventoryStatus,
+                  { color: inventoryStatus.available ? '#27ae60' : '#e74c3c' },
+                ]}
+              >
                 {inventoryStatus.available ? '✅ Available' : '❌ Out of Stock'}
               </Text>
             </View>
-            
+
             {inventoryStatus.available && (
               <View style={styles.inventoryRow}>
                 <Text style={styles.inventoryLabel}>Units Available:</Text>
-                <Text style={styles.inventoryCount}>{inventoryStatus.count}</Text>
+                <Text style={styles.inventoryCount}>
+                  {inventoryStatus.count}
+                </Text>
               </View>
             )}
           </View>
         ) : (
-          <Text style={styles.inventoryLoading}>Loading inventory status...</Text>
+          <Text style={styles.inventoryLoading}>
+            Loading inventory status...
+          </Text>
         )}
       </View>
 
@@ -292,7 +331,10 @@ export default function LiveCarDetails({
         </View>
 
         {!chatId ? (
-          <TouchableOpacity style={styles.startChatButton} onPress={handleStartChat}>
+          <TouchableOpacity
+            style={styles.startChatButton}
+            onPress={handleStartChat}
+          >
             <Text style={styles.startChatButtonText}>💬 Start Chat</Text>
           </TouchableOpacity>
         ) : (
@@ -303,7 +345,7 @@ export default function LiveCarDetails({
                   key={index}
                   style={[
                     styles.messageItem,
-                    message.sender === 'user' && styles.userMessage
+                    message.sender === 'user' && styles.userMessage,
                   ]}
                 >
                   <Text style={styles.messageText}>{message.text}</Text>
@@ -312,10 +354,11 @@ export default function LiveCarDetails({
                   </Text>
                 </View>
               ))}
-              
+
               {typingUsers.length > 0 && (
                 <Text style={styles.typingIndicator}>
-                  {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+                  {typingUsers.join(', ')}{' '}
+                  {typingUsers.length === 1 ? 'is' : 'are'} typing...
                 </Text>
               )}
             </View>
@@ -323,21 +366,17 @@ export default function LiveCarDetails({
             <TouchableOpacity
               style={styles.sendMessageButton}
               onPress={() => {
-                Alert.prompt(
-                  'Send Message',
-                  'Type your message:',
-                  [
-                    { text: 'Cancel', style: 'cancel' },
-                    {
-                      text: 'Send',
-                      onPress: (message) => {
-                        if (message) {
-                          handleSendMessage(message);
-                        }
-                      },
+                Alert.prompt('Send Message', 'Type your message:', [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Send',
+                    onPress: (message) => {
+                      if (message) {
+                        handleSendMessage(message);
+                      }
                     },
-                  ]
-                );
+                  },
+                ]);
               }}
             >
               <Text style={styles.sendMessageButtonText}>Send Message</Text>

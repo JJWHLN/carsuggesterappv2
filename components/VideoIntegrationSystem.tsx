@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
   View,
   Text,
@@ -23,15 +29,39 @@ import Animated, {
   useAnimatedGestureHandler,
   runOnJS,
 } from 'react-native-reanimated';
-import { PanGestureHandler, TapGestureHandler } from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 
 // Mock video component for now (can be replaced with expo-av later)
-const Video = ({ ref, style, source, shouldPlay, isLooping, isMuted, resizeMode, onPlaybackStatusUpdate, ...props }: any) => (
-  <View style={[style, { backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' }]}>
+const Video = ({
+  ref,
+  style,
+  source,
+  shouldPlay,
+  isLooping,
+  isMuted,
+  resizeMode,
+  onPlaybackStatusUpdate,
+  ...props
+}: any) => (
+  <View
+    style={[
+      style,
+      {
+        backgroundColor: '#000',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+    ]}
+  >
     <Text style={{ color: 'white', fontSize: 16 }}>Video Player</Text>
-    <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 8 }}>
+    <Text
+      style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 8 }}
+    >
       {source?.uri || 'No video source'}
     </Text>
   </View>
@@ -41,10 +71,25 @@ const ResizeMode = {
   CONTAIN: 'contain' as const,
 };
 
-import { 
-  Plus as Play, Minus as Pause, MessageCircle as Volume2, MessageCircle as VolumeX, 
-  ArrowRight as Maximize, ArrowLeft as Minimize, RefreshCw as RotateCw,
-  Share, Heart, Camera, Zap, Award, X, ChevronLeft, ChevronRight, Eye, Clock, MessageCircle
+import {
+  Plus as Play,
+  Minus as Pause,
+  MessageCircle as Volume2,
+  MessageCircle as VolumeX,
+  ArrowRight as Maximize,
+  ArrowLeft as Minimize,
+  RefreshCw as RotateCw,
+  Share,
+  Heart,
+  Camera,
+  Zap,
+  Award,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Clock,
+  MessageCircle,
 } from '@/utils/ultra-optimized-icons';
 import { useThemeColors } from '@/hooks/useTheme';
 import { OptimizedImage } from './ui/OptimizedImage';
@@ -61,7 +106,13 @@ interface CarVideo {
   duration: number; // in seconds
   views: number;
   likes: number;
-  type: 'exterior' | 'interior' | 'driving' | 'review' | 'comparison' | '360_tour';
+  type:
+    | 'exterior'
+    | 'interior'
+    | 'driving'
+    | 'review'
+    | 'comparison'
+    | '360_tour';
   quality: '720p' | '1080p' | '4K';
   thumbnailUrl: string;
   videoUrl: string;
@@ -106,14 +157,17 @@ const generateMockVideos = (carId: string): CarVideo[] => [
     id: 'vid-1',
     carId,
     title: 'Complete Exterior Walkthrough',
-    description: 'Detailed 4K tour of the exterior design, paint quality, and unique features',
+    description:
+      'Detailed 4K tour of the exterior design, paint quality, and unique features',
     duration: 180,
     views: 15420,
     likes: 892,
     type: 'exterior',
     quality: '4K',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop',
+    videoUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
     isExclusive: true,
     dealer: {
@@ -127,14 +181,17 @@ const generateMockVideos = (carId: string): CarVideo[] => [
     id: 'vid-2',
     carId,
     title: 'Luxury Interior Features',
-    description: 'Experience the premium interior design, technology, and comfort features',
+    description:
+      'Experience the premium interior design, technology, and comfort features',
     duration: 240,
     views: 12350,
     likes: 721,
     type: 'interior',
     quality: '1080p',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop',
+    videoUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
     timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
     isPremium: true,
   },
@@ -142,14 +199,17 @@ const generateMockVideos = (carId: string): CarVideo[] => [
     id: 'vid-3',
     carId,
     title: 'Dynamic Driving Experience',
-    description: 'Feel the power and performance on the road with this driving showcase',
+    description:
+      'Feel the power and performance on the road with this driving showcase',
     duration: 320,
     views: 23540,
     likes: 1245,
     type: 'driving',
     quality: '1080p',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop',
+    videoUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
     timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
   },
   {
@@ -162,8 +222,10 @@ const generateMockVideos = (carId: string): CarVideo[] => [
     likes: 456,
     type: '360_tour',
     quality: '4K',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=400&h=300&fit=crop',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=400&h=300&fit=crop',
+    videoUrl:
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
     timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
     isExclusive: true,
   },
@@ -180,7 +242,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 }) => {
   const { colors } = useThemeColors();
   const styles = getThemedStyles(colors);
-  
+
   const videoRef = useRef<any>(null);
   const [status, setStatus] = useState<any>({});
   const [isPlaying, setIsPlaying] = useState(false);
@@ -286,11 +348,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       statusBarTranslucent
       onRequestClose={onClose}
     >
-      <View style={[styles.playerContainer, isFullscreen && styles.fullscreenContainer]}>
+      <View
+        style={[
+          styles.playerContainer,
+          isFullscreen && styles.fullscreenContainer,
+        ]}
+      >
         <StatusBar hidden={isFullscreen} backgroundColor="black" />
-        
+
         {/* Video */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.videoWrapper}
           activeOpacity={1}
           onPress={handleVideoPress}
@@ -317,7 +384,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <X size={24} color="white" />
             </TouchableOpacity>
-            
+
             <View style={styles.videoInfo}>
               <Text style={styles.videoTitle} numberOfLines={1}>
                 {video.title}
@@ -334,7 +401,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </View>
             </View>
 
-            <TouchableOpacity onPress={onToggleFullscreen} style={styles.fullscreenButton}>
+            <TouchableOpacity
+              onPress={onToggleFullscreen}
+              style={styles.fullscreenButton}
+            >
               {isFullscreen ? (
                 <Minimize size={20} color="white" />
               ) : (
@@ -344,7 +414,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </LinearGradient>
 
           {/* Center Play/Pause Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.centerPlayButton}
             onPress={togglePlayPause}
             activeOpacity={0.8}
@@ -365,10 +435,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           >
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
-                <View 
+                <View
                   style={[
                     styles.progressFill,
-                    { width: `${(currentTime / video.duration) * 100}%` }
+                    { width: `${(currentTime / video.duration) * 100}%` },
                   ]}
                 />
               </View>
@@ -376,7 +446,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 {formatTime(currentTime)} / {formatTime(video.duration)}
               </Text>
             </View>
-            
+
             <View style={styles.bottomButtonsRow}>
               <TouchableOpacity onPress={toggleMute} style={styles.muteButton}>
                 {isMuted ? (
@@ -391,7 +461,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               <TouchableOpacity style={styles.actionButton}>
                 <Heart size={20} color="white" />
               </TouchableOpacity>
-              
+
               <TouchableOpacity style={styles.actionButton}>
                 <Share size={20} color="white" />
               </TouchableOpacity>
@@ -408,7 +478,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         )}
 
         {video.isExclusive && (
-          <View style={[styles.specialBadge, { backgroundColor: colors.primary }]}>
+          <View
+            style={[styles.specialBadge, { backgroundColor: colors.primary }]}
+          >
             <Award size={16} color="white" />
             <Text style={styles.specialBadgeText}>Exclusive</Text>
           </View>
@@ -429,23 +501,35 @@ const VideoGallery: React.FC<VideoGalleryProps> = ({
 
   const getVideoTypeIcon = (type: CarVideo['type']) => {
     switch (type) {
-      case 'exterior': return Camera;
-      case 'interior': return Eye;
-      case 'driving': return Zap;
-      case '360_tour': return RotateCw;
-      case 'review': return MessageCircle;
-      default: return Play;
+      case 'exterior':
+        return Camera;
+      case 'interior':
+        return Eye;
+      case 'driving':
+        return Zap;
+      case '360_tour':
+        return RotateCw;
+      case 'review':
+        return MessageCircle;
+      default:
+        return Play;
     }
   };
 
   const getVideoTypeColor = (type: CarVideo['type']) => {
     switch (type) {
-      case 'exterior': return '#10B981';
-      case 'interior': return '#8B5CF6';
-      case 'driving': return '#F59E0B';
-      case '360_tour': return '#EF4444';
-      case 'review': return '#3B82F6';
-      default: return colors.primary;
+      case 'exterior':
+        return '#10B981';
+      case 'interior':
+        return '#8B5CF6';
+      case 'driving':
+        return '#F59E0B';
+      case '360_tour':
+        return '#EF4444';
+      case 'review':
+        return '#3B82F6';
+      default:
+        return colors.primary;
     }
   };
 
@@ -457,15 +541,15 @@ const VideoGallery: React.FC<VideoGalleryProps> = ({
 
   return (
     <View style={styles.galleryContainer}>
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.galleryContent}
       >
         {videos.map((video, index) => {
           const Icon = getVideoTypeIcon(video.type);
           const typeColor = getVideoTypeColor(video.type);
-          
+
           return (
             <Animated.View
               key={video.id}
@@ -483,7 +567,7 @@ const VideoGallery: React.FC<VideoGalleryProps> = ({
                     style={styles.thumbnail}
                     resizeMode="cover"
                   />
-                  
+
                   {/* Play overlay */}
                   <View style={styles.playOverlay}>
                     <View style={styles.playButton}>
@@ -494,12 +578,18 @@ const VideoGallery: React.FC<VideoGalleryProps> = ({
                   {/* Duration badge */}
                   <View style={styles.durationBadge}>
                     <Text style={styles.durationText}>
-                      {Math.floor(video.duration / 60)}:{(video.duration % 60).toString().padStart(2, '0')}
+                      {Math.floor(video.duration / 60)}:
+                      {(video.duration % 60).toString().padStart(2, '0')}
                     </Text>
                   </View>
 
                   {/* Quality badge */}
-                  <View style={[styles.qualityBadge, { backgroundColor: typeColor }]}>
+                  <View
+                    style={[
+                      styles.qualityBadge,
+                      { backgroundColor: typeColor },
+                    ]}
+                  >
                     <Text style={styles.qualityText}>{video.quality}</Text>
                   </View>
 
@@ -519,22 +609,35 @@ const VideoGallery: React.FC<VideoGalleryProps> = ({
                       {video.type.replace('_', ' ').toUpperCase()}
                     </Text>
                   </View>
-                  
-                  <Text style={[styles.videoCardTitle, { color: colors.text }]} numberOfLines={2}>
+
+                  <Text
+                    style={[styles.videoCardTitle, { color: colors.text }]}
+                    numberOfLines={2}
+                  >
                     {video.title}
                   </Text>
-                  
+
                   <View style={styles.videoStats}>
                     <View style={styles.statItem}>
                       <Eye size={12} color={colors.textSecondary} />
-                      <Text style={[styles.statText, { color: colors.textSecondary }]}>
+                      <Text
+                        style={[
+                          styles.statText,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
                         {formatViews(video.views)}
                       </Text>
                     </View>
-                    
+
                     <View style={styles.statItem}>
                       <Heart size={12} color={colors.textSecondary} />
-                      <Text style={[styles.statText, { color: colors.textSecondary }]}>
+                      <Text
+                        style={[
+                          styles.statText,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
                         {formatViews(video.likes)}
                       </Text>
                     </View>
@@ -579,16 +682,19 @@ export const VideoIntegrationSystem: React.FC<VideoIntegrationSystemProps> = ({
   const [isPlayerVisible, setIsPlayerVisible] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const handleVideoSelect = useCallback(async (video: CarVideo) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
-    setSelectedVideo(video);
-    setIsPlayerVisible(true);
-    
-    if (onVideoInteraction) {
-      onVideoInteraction('play', video.id);
-    }
-  }, [onVideoInteraction]);
+  const handleVideoSelect = useCallback(
+    async (video: CarVideo) => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+      setSelectedVideo(video);
+      setIsPlayerVisible(true);
+
+      if (onVideoInteraction) {
+        onVideoInteraction('play', video.id);
+      }
+    },
+    [onVideoInteraction],
+  );
 
   const handlePlayerClose = useCallback(() => {
     setIsPlayerVisible(false);
@@ -619,12 +725,14 @@ export const VideoIntegrationSystem: React.FC<VideoIntegrationSystemProps> = ({
             <Text style={[styles.headerTitle, { color: colors.text }]}>
               Video Showcase
             </Text>
-            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.headerSubtitle, { color: colors.textSecondary }]}
+            >
               {car.make} {car.model} • {videos.length} videos
             </Text>
           </View>
         </View>
-        
+
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <X size={24} color={colors.textSecondary} />
         </TouchableOpacity>
@@ -689,7 +797,7 @@ const getThemedStyles = (colors: any) => {
     closeButton: {
       padding: Spacing.sm,
     },
-    
+
     // Gallery Styles
     galleryContainer: {
       flex: 1,
@@ -821,7 +929,7 @@ const getThemedStyles = (colors: any) => {
       ...Typography.bodyText,
       fontWeight: '600',
     },
-    
+
     // Player Styles
     playerContainer: {
       flex: 1,

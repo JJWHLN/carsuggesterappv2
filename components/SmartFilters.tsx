@@ -1,6 +1,6 @@
 /**
  * AI-Powered Advanced Search Filters
- * 
+ *
  * Intelligent filtering with smart suggestions and
  * context-aware filter recommendations.
  */
@@ -42,7 +42,14 @@ export interface FilterState {
   features: string[];
   location: string;
   radius: number;
-  sortBy: 'price_asc' | 'price_desc' | 'year_asc' | 'year_desc' | 'mileage_asc' | 'mileage_desc' | 'relevance';
+  sortBy:
+    | 'price_asc'
+    | 'price_desc'
+    | 'year_asc'
+    | 'year_desc'
+    | 'mileage_asc'
+    | 'mileage_desc'
+    | 'relevance';
 }
 
 interface SmartFiltersProps {
@@ -71,24 +78,57 @@ const DEFAULT_FILTERS: FilterState = {
 };
 
 const POPULAR_MAKES = [
-  'Toyota', 'Honda', 'Ford', 'Chevrolet', 'Nissan', 'BMW', 'Mercedes-Benz',
-  'Audi', 'Lexus', 'Hyundai', 'Kia', 'Mazda', 'Subaru', 'Volkswagen',
+  'Toyota',
+  'Honda',
+  'Ford',
+  'Chevrolet',
+  'Nissan',
+  'BMW',
+  'Mercedes-Benz',
+  'Audi',
+  'Lexus',
+  'Hyundai',
+  'Kia',
+  'Mazda',
+  'Subaru',
+  'Volkswagen',
 ];
 
 const BODY_TYPES = [
-  'Sedan', 'SUV', 'Hatchback', 'Coupe', 'Convertible', 'Wagon',
-  'Pickup Truck', 'Minivan', 'Crossover',
+  'Sedan',
+  'SUV',
+  'Hatchback',
+  'Coupe',
+  'Convertible',
+  'Wagon',
+  'Pickup Truck',
+  'Minivan',
+  'Crossover',
 ];
 
 const FUEL_TYPES = [
-  'Gasoline', 'Hybrid', 'Electric', 'Diesel', 'Plug-in Hybrid',
+  'Gasoline',
+  'Hybrid',
+  'Electric',
+  'Diesel',
+  'Plug-in Hybrid',
 ];
 
 const POPULAR_FEATURES = [
-  'Bluetooth', 'Backup Camera', 'Navigation System', 'Leather Seats',
-  'Sunroof', 'Heated Seats', 'Remote Start', 'Apple CarPlay',
-  'Android Auto', 'Lane Departure Warning', 'Blind Spot Monitor',
-  'Adaptive Cruise Control', 'Premium Audio', 'Third Row Seating',
+  'Bluetooth',
+  'Backup Camera',
+  'Navigation System',
+  'Leather Seats',
+  'Sunroof',
+  'Heated Seats',
+  'Remote Start',
+  'Apple CarPlay',
+  'Android Auto',
+  'Lane Departure Warning',
+  'Blind Spot Monitor',
+  'Adaptive Cruise Control',
+  'Premium Audio',
+  'Third Row Seating',
 ];
 
 const CONDITION_OPTIONS = [
@@ -121,7 +161,7 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
     ...DEFAULT_FILTERS,
     ...initialFilters,
   }));
-  
+
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [smartSuggestions, setSmartSuggestions] = useState<any[]>([]);
 
@@ -147,39 +187,60 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
       // - User behavior patterns
       // - Market trends
       // - Similar user preferences
-      
+
       const suggestions = [
-        { type: 'make', value: 'Toyota', reason: 'Popular in your area', confidence: 0.8 },
-        { type: 'feature', value: 'Backup Camera', reason: 'Most searched feature', confidence: 0.7 },
-        { type: 'price', value: { min: 15000, max: 35000 }, reason: 'Based on your searches', confidence: 0.9 },
+        {
+          type: 'make',
+          value: 'Toyota',
+          reason: 'Popular in your area',
+          confidence: 0.8,
+        },
+        {
+          type: 'feature',
+          value: 'Backup Camera',
+          reason: 'Most searched feature',
+          confidence: 0.7,
+        },
+        {
+          type: 'price',
+          value: { min: 15000, max: 35000 },
+          reason: 'Based on your searches',
+          confidence: 0.9,
+        },
       ];
-      
+
       setSmartSuggestions(suggestions);
     } catch (error) {
       console.warn('Failed to load smart suggestions:', error);
     }
   }, [currentQuery, userId]);
 
-  const handleFilterChange = useCallback((key: keyof FilterState, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value,
-    }));
-  }, []);
-
-  const toggleArrayFilter = useCallback((key: keyof FilterState, value: string) => {
-    setFilters(prev => {
-      const currentArray = prev[key] as string[];
-      const newArray = currentArray.includes(value)
-        ? currentArray.filter(item => item !== value)
-        : [...currentArray, value];
-      
-      return {
+  const handleFilterChange = useCallback(
+    (key: keyof FilterState, value: any) => {
+      setFilters((prev) => ({
         ...prev,
-        [key]: newArray,
-      };
-    });
-  }, []);
+        [key]: value,
+      }));
+    },
+    [],
+  );
+
+  const toggleArrayFilter = useCallback(
+    (key: keyof FilterState, value: string) => {
+      setFilters((prev) => {
+        const currentArray = prev[key] as string[];
+        const newArray = currentArray.includes(value)
+          ? currentArray.filter((item) => item !== value)
+          : [...currentArray, value];
+
+        return {
+          ...prev,
+          [key]: newArray,
+        };
+      });
+    },
+    [],
+  );
 
   const handleApplyFilters = useCallback(() => {
     onApplyFilters(filters);
@@ -193,21 +254,30 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
 
   const getActiveFiltersCount = useCallback(() => {
     let count = 0;
-    
+
     if (filters.makes.length > 0) count++;
     if (filters.models.length > 0) count++;
     if (filters.bodyTypes.length > 0) count++;
     if (filters.fuelTypes.length > 0) count++;
     if (filters.condition.length > 0) count++;
     if (filters.features.length > 0) count++;
-    if (filters.priceRange.min > DEFAULT_FILTERS.priceRange.min || 
-        filters.priceRange.max < DEFAULT_FILTERS.priceRange.max) count++;
-    if (filters.yearRange.min > DEFAULT_FILTERS.yearRange.min || 
-        filters.yearRange.max < DEFAULT_FILTERS.yearRange.max) count++;
-    if (filters.mileageRange.min > DEFAULT_FILTERS.mileageRange.min || 
-        filters.mileageRange.max < DEFAULT_FILTERS.mileageRange.max) count++;
+    if (
+      filters.priceRange.min > DEFAULT_FILTERS.priceRange.min ||
+      filters.priceRange.max < DEFAULT_FILTERS.priceRange.max
+    )
+      count++;
+    if (
+      filters.yearRange.min > DEFAULT_FILTERS.yearRange.min ||
+      filters.yearRange.max < DEFAULT_FILTERS.yearRange.max
+    )
+      count++;
+    if (
+      filters.mileageRange.min > DEFAULT_FILTERS.mileageRange.min ||
+      filters.mileageRange.max < DEFAULT_FILTERS.mileageRange.max
+    )
+      count++;
     if (filters.sortBy !== 'relevance') count++;
-    
+
     return count;
   }, [filters]);
 
@@ -219,11 +289,7 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
   const modalStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX: interpolate(
-          slideAnim.value,
-          [0, 1],
-          [screenWidth, 0]
-        ),
+        translateX: interpolate(slideAnim.value, [0, 1], [screenWidth, 0]),
       },
     ],
   }));
@@ -232,16 +298,20 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
     title: string,
     icon: keyof typeof Ionicons.glyphMap,
     content: React.ReactNode,
-    sectionKey: string
+    sectionKey: string,
   ) => (
     <View style={styles.filterSection}>
       <TouchableOpacity
         style={[styles.filterHeader, { borderBottomColor: colors.border }]}
-        onPress={() => setActiveSection(activeSection === sectionKey ? null : sectionKey)}
+        onPress={() =>
+          setActiveSection(activeSection === sectionKey ? null : sectionKey)
+        }
       >
         <View style={styles.filterHeaderLeft}>
           <Ionicons name={icon} size={20} color={colors.primary} />
-          <Text style={[styles.filterTitle, { color: colors.text }]}>{title}</Text>
+          <Text style={[styles.filterTitle, { color: colors.text }]}>
+            {title}
+          </Text>
         </View>
         <Ionicons
           name={activeSection === sectionKey ? 'chevron-up' : 'chevron-down'}
@@ -249,11 +319,9 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
           color={colors.textSecondary}
         />
       </TouchableOpacity>
-      
+
       {activeSection === sectionKey && (
-        <Animated.View style={styles.filterContent}>
-          {content}
-        </Animated.View>
+        <Animated.View style={styles.filterContent}>{content}</Animated.View>
       )}
     </View>
   );
@@ -262,17 +330,21 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
     options: string[],
     selected: string[],
     onToggle: (value: string) => void,
-    maxItems: number = 20
+    maxItems: number = 20,
   ) => (
     <View style={styles.chipContainer}>
-      {options.slice(0, maxItems).map(option => (
+      {options.slice(0, maxItems).map((option) => (
         <AnimatedPressable
           key={option}
           style={[
             styles.chip,
             {
-              backgroundColor: selected.includes(option) ? colors.primary : colors.surface,
-              borderColor: selected.includes(option) ? colors.primary : colors.border,
+              backgroundColor: selected.includes(option)
+                ? colors.primary
+                : colors.surface,
+              borderColor: selected.includes(option)
+                ? colors.primary
+                : colors.border,
             },
           ]}
           onPress={() => onToggle(option)}
@@ -300,7 +372,7 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
     step: number,
     onChangeMin: (value: number) => void,
     onChangeMax: (value: number) => void,
-    formatValue?: (value: number) => string
+    formatValue?: (value: number) => string,
   ) => (
     <View style={styles.rangeSliderContainer}>
       <Text style={[styles.rangeTitle, { color: colors.text }]}>{title}</Text>
@@ -312,13 +384,22 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
           {formatValue ? formatValue(range.max) : range.max.toLocaleString()}
         </Text>
       </View>
-      
+
       {/* Simple range inputs instead of sliders */}
       <View style={styles.rangeInputsContainer}>
         <View style={styles.rangeInputGroup}>
-          <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Min</Text>
+          <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
+            Min
+          </Text>
           <TextInput
-            style={[styles.rangeInput, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
+            style={[
+              styles.rangeInput,
+              {
+                backgroundColor: colors.surface,
+                color: colors.text,
+                borderColor: colors.border,
+              },
+            ]}
             value={range.min.toString()}
             onChangeText={(text) => {
               const value = parseInt(text) || minValue;
@@ -331,11 +412,20 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
             placeholderTextColor={colors.textSecondary}
           />
         </View>
-        
+
         <View style={styles.rangeInputGroup}>
-          <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Max</Text>
+          <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
+            Max
+          </Text>
           <TextInput
-            style={[styles.rangeInput, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
+            style={[
+              styles.rangeInput,
+              {
+                backgroundColor: colors.surface,
+                color: colors.text,
+                borderColor: colors.border,
+              },
+            ]}
             value={range.max.toString()}
             onChangeText={(text) => {
               const value = parseInt(text) || maxValue;
@@ -355,12 +445,16 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
   const renderSmartSuggestions = () => (
     <View style={styles.smartSuggestionsContainer}>
       <Text style={[styles.sectionTitle, { color: colors.text }]}>
-        <Ionicons name="bulb-outline" size={18} color={colors.primary} /> Smart Suggestions
+        <Ionicons name="bulb-outline" size={18} color={colors.primary} /> Smart
+        Suggestions
       </Text>
       {smartSuggestions.map((suggestion, index) => (
         <TouchableOpacity
           key={index}
-          style={[styles.suggestionItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          style={[
+            styles.suggestionItem,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
           onPress={() => {
             // Apply suggestion based on type
             if (suggestion.type === 'make') {
@@ -374,12 +468,13 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
         >
           <View style={styles.suggestionContent}>
             <Text style={[styles.suggestionValue, { color: colors.text }]}>
-              {typeof suggestion.value === 'object' 
+              {typeof suggestion.value === 'object'
                 ? `$${suggestion.value.min.toLocaleString()} - $${suggestion.value.max.toLocaleString()}`
-                : suggestion.value
-              }
+                : suggestion.value}
             </Text>
-            <Text style={[styles.suggestionReason, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.suggestionReason, { color: colors.textSecondary }]}
+            >
               {suggestion.reason}
             </Text>
           </View>
@@ -410,15 +505,30 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
             activeOpacity={1}
           />
         </Animated.View>
-        
-        <Animated.View style={[styles.modal, { backgroundColor: colors.background }, modalStyle]}>
+
+        <Animated.View
+          style={[
+            styles.modal,
+            { backgroundColor: colors.background },
+            modalStyle,
+          ]}
+        >
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
             <View style={styles.headerLeft}>
-              <Text style={[styles.headerTitle, { color: colors.text }]}>Filters</Text>
+              <Text style={[styles.headerTitle, { color: colors.text }]}>
+                Filters
+              </Text>
               {getActiveFiltersCount() > 0 && (
-                <View style={[styles.filtersBadge, { backgroundColor: colors.primary }]}>
-                  <Text style={styles.filtersBadgeText}>{getActiveFiltersCount()}</Text>
+                <View
+                  style={[
+                    styles.filtersBadge,
+                    { backgroundColor: colors.primary },
+                  ]}
+                >
+                  <Text style={styles.filtersBadgeText}>
+                    {getActiveFiltersCount()}
+                  </Text>
                 </View>
               )}
             </View>
@@ -427,7 +537,10 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={styles.content}
+            showsVerticalScrollIndicator={false}
+          >
             {/* Smart Suggestions */}
             {smartSuggestions.length > 0 && renderSmartSuggestions()}
 
@@ -436,29 +549,42 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
               'Sort By',
               'swap-vertical',
               <View>
-                {SORT_OPTIONS.map(option => (
+                {SORT_OPTIONS.map((option) => (
                   <TouchableOpacity
                     key={option.value}
                     style={[
                       styles.sortOption,
                       {
-                        backgroundColor: filters.sortBy === option.value ? colors.primary + '20' : 'transparent',
+                        backgroundColor:
+                          filters.sortBy === option.value
+                            ? colors.primary + '20'
+                            : 'transparent',
                       },
                     ]}
                     onPress={() => handleFilterChange('sortBy', option.value)}
                   >
                     <Ionicons
-                      name={filters.sortBy === option.value ? 'radio-button-on' : 'radio-button-off'}
+                      name={
+                        filters.sortBy === option.value
+                          ? 'radio-button-on'
+                          : 'radio-button-off'
+                      }
                       size={20}
-                      color={filters.sortBy === option.value ? colors.primary : colors.textSecondary}
+                      color={
+                        filters.sortBy === option.value
+                          ? colors.primary
+                          : colors.textSecondary
+                      }
                     />
-                    <Text style={[styles.sortOptionText, { color: colors.text }]}>
+                    <Text
+                      style={[styles.sortOptionText, { color: colors.text }]}
+                    >
                       {option.label}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>,
-              'sort'
+              'sort',
             )}
 
             {/* Make & Model */}
@@ -466,14 +592,14 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
               'Make & Model',
               'car-outline',
               <View>
-                <Text style={[styles.subSectionTitle, { color: colors.text }]}>Make</Text>
-                {renderChipSelector(
-                  POPULAR_MAKES,
-                  filters.makes,
-                  (make) => toggleArrayFilter('makes', make)
+                <Text style={[styles.subSectionTitle, { color: colors.text }]}>
+                  Make
+                </Text>
+                {renderChipSelector(POPULAR_MAKES, filters.makes, (make) =>
+                  toggleArrayFilter('makes', make),
                 )}
               </View>,
-              'make'
+              'make',
             )}
 
             {/* Price Range */}
@@ -486,11 +612,19 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
                 0,
                 100000,
                 1000,
-                (min) => handleFilterChange('priceRange', { ...filters.priceRange, min }),
-                (max) => handleFilterChange('priceRange', { ...filters.priceRange, max }),
-                (value) => `$${value.toLocaleString()}`
+                (min) =>
+                  handleFilterChange('priceRange', {
+                    ...filters.priceRange,
+                    min,
+                  }),
+                (max) =>
+                  handleFilterChange('priceRange', {
+                    ...filters.priceRange,
+                    max,
+                  }),
+                (value) => `$${value.toLocaleString()}`,
               ),
-              'price'
+              'price',
             )}
 
             {/* Year Range */}
@@ -503,10 +637,18 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
                 1990,
                 new Date().getFullYear(),
                 1,
-                (min) => handleFilterChange('yearRange', { ...filters.yearRange, min }),
-                (max) => handleFilterChange('yearRange', { ...filters.yearRange, max })
+                (min) =>
+                  handleFilterChange('yearRange', {
+                    ...filters.yearRange,
+                    min,
+                  }),
+                (max) =>
+                  handleFilterChange('yearRange', {
+                    ...filters.yearRange,
+                    max,
+                  }),
               ),
-              'year'
+              'year',
             )}
 
             {/* Mileage Range */}
@@ -519,35 +661,39 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
                 0,
                 200000,
                 5000,
-                (min) => handleFilterChange('mileageRange', { ...filters.mileageRange, min }),
-                (max) => handleFilterChange('mileageRange', { ...filters.mileageRange, max }),
-                (value) => `${value.toLocaleString()} mi`
+                (min) =>
+                  handleFilterChange('mileageRange', {
+                    ...filters.mileageRange,
+                    min,
+                  }),
+                (max) =>
+                  handleFilterChange('mileageRange', {
+                    ...filters.mileageRange,
+                    max,
+                  }),
+                (value) => `${value.toLocaleString()} mi`,
               ),
-              'mileage'
+              'mileage',
             )}
 
             {/* Body Type */}
             {renderFilterSection(
               'Body Type',
               'car-sport-outline',
-              renderChipSelector(
-                BODY_TYPES,
-                filters.bodyTypes,
-                (type) => toggleArrayFilter('bodyTypes', type)
+              renderChipSelector(BODY_TYPES, filters.bodyTypes, (type) =>
+                toggleArrayFilter('bodyTypes', type),
               ),
-              'bodyType'
+              'bodyType',
             )}
 
             {/* Fuel Type */}
             {renderFilterSection(
               'Fuel Type',
               'leaf-outline',
-              renderChipSelector(
-                FUEL_TYPES,
-                filters.fuelTypes,
-                (type) => toggleArrayFilter('fuelTypes', type)
+              renderChipSelector(FUEL_TYPES, filters.fuelTypes, (type) =>
+                toggleArrayFilter('fuelTypes', type),
               ),
-              'fuelType'
+              'fuelType',
             )}
 
             {/* Condition */}
@@ -555,29 +701,43 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
               'Condition',
               'checkmark-circle-outline',
               <View>
-                {CONDITION_OPTIONS.map(option => (
+                {CONDITION_OPTIONS.map((option) => (
                   <TouchableOpacity
                     key={option.value}
                     style={[
                       styles.conditionOption,
                       {
-                        backgroundColor: filters.condition.includes(option.value) ? colors.primary + '20' : 'transparent',
+                        backgroundColor: filters.condition.includes(
+                          option.value,
+                        )
+                          ? colors.primary + '20'
+                          : 'transparent',
                       },
                     ]}
                     onPress={() => toggleArrayFilter('condition', option.value)}
                   >
                     <Ionicons
-                      name={filters.condition.includes(option.value) ? 'checkbox' : 'checkbox-outline'}
+                      name={
+                        filters.condition.includes(option.value)
+                          ? 'checkbox'
+                          : 'checkbox-outline'
+                      }
                       size={20}
-                      color={filters.condition.includes(option.value) ? colors.primary : colors.textSecondary}
+                      color={
+                        filters.condition.includes(option.value)
+                          ? colors.primary
+                          : colors.textSecondary
+                      }
                     />
-                    <Text style={[styles.conditionText, { color: colors.text }]}>
+                    <Text
+                      style={[styles.conditionText, { color: colors.text }]}
+                    >
                       {option.label}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>,
-              'condition'
+              'condition',
             )}
 
             {/* Features */}
@@ -588,9 +748,9 @@ export const SmartFilters: React.FC<SmartFiltersProps> = ({
                 POPULAR_FEATURES,
                 filters.features,
                 (feature) => toggleArrayFilter('features', feature),
-                12
+                12,
               ),
-              'features'
+              'features',
             )}
           </ScrollView>
 
@@ -619,18 +779,18 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  
+
   overlayBackground: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  
+
   modal: {
     width: screenWidth * 0.85,
     maxWidth: 400,
     height: '100%',
   },
-  
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -638,18 +798,18 @@ const styles = StyleSheet.create({
     padding: 20,
     borderBottomWidth: 1,
   },
-  
+
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
     marginRight: 12,
   },
-  
+
   filtersBadge: {
     backgroundColor: '#007AFF',
     borderRadius: 12,
@@ -658,26 +818,26 @@ const styles = StyleSheet.create({
     minWidth: 24,
     alignItems: 'center',
   },
-  
+
   filtersBadgeText: {
     color: 'white',
     fontSize: 12,
     fontWeight: '600',
   },
-  
+
   closeButton: {
     padding: 4,
   },
-  
+
   content: {
     flex: 1,
     padding: 20,
   },
-  
+
   smartSuggestionsContainer: {
     marginBottom: 24,
   },
-  
+
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
@@ -685,7 +845,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+
   suggestionItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -694,38 +854,38 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 8,
   },
-  
+
   suggestionContent: {
     flex: 1,
   },
-  
+
   suggestionValue: {
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 2,
   },
-  
+
   suggestionReason: {
     fontSize: 12,
   },
-  
+
   confidenceBadge: {
     backgroundColor: 'rgba(0, 122, 255, 0.1)',
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
-  
+
   confidenceText: {
     color: '#007AFF',
     fontSize: 10,
     fontWeight: '600',
   },
-  
+
   filterSection: {
     marginBottom: 16,
   },
-  
+
   filterHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -733,34 +893,34 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
   },
-  
+
   filterHeaderLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  
+
   filterTitle: {
     fontSize: 16,
     fontWeight: '500',
     marginLeft: 12,
   },
-  
+
   filterContent: {
     paddingVertical: 16,
   },
-  
+
   subSectionTitle: {
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 8,
   },
-  
+
   chipContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginTop: 8,
   },
-  
+
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -768,58 +928,58 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 4,
   },
-  
+
   chipText: {
     fontSize: 12,
     fontWeight: '500',
   },
-  
+
   rangeSliderContainer: {
     marginVertical: 8,
   },
-  
+
   rangeTitle: {
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 8,
   },
-  
+
   rangeLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  
+
   rangeLabel: {
     fontSize: 14,
     fontWeight: '500',
   },
-  
+
   sliderContainer: {
     marginVertical: 8,
   },
-  
+
   slider: {
     width: '100%',
     height: 40,
   },
-  
+
   rangeInputsContainer: {
     flexDirection: 'row',
     marginVertical: 8,
     gap: 12,
   },
-  
+
   rangeInputGroup: {
     flex: 1,
   },
-  
+
   inputLabel: {
     fontSize: 12,
     fontWeight: '500',
     marginBottom: 4,
   },
-  
+
   rangeInput: {
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -828,7 +988,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
   },
-  
+
   sortOption: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -837,12 +997,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 4,
   },
-  
+
   sortOptionText: {
     fontSize: 14,
     marginLeft: 12,
   },
-  
+
   conditionOption: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -851,23 +1011,23 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 4,
   },
-  
+
   conditionText: {
     fontSize: 14,
     marginLeft: 12,
   },
-  
+
   footer: {
     flexDirection: 'row',
     padding: 20,
     borderTopWidth: 1,
     gap: 12,
   },
-  
+
   footerButton: {
     flex: 1,
   },
-  
+
   applyButton: {
     flex: 2,
   },

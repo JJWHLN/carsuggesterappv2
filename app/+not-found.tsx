@@ -12,9 +12,12 @@ import { Home, AlertTriangle } from '@/utils/ultra-optimized-icons';
 
 export default function NotFoundScreen() {
   const colorScheme = useColorScheme();
-  const colors = colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light;
+  const colors =
+    colorScheme === 'dark'
+      ? DesignSystem.Colors.dark
+      : DesignSystem.Colors.light;
   const commonStyles = useCommonThemedStyles();
-  
+
   return (
     <ErrorBoundary>
       <Stack.Screen options={{ title: 'Page Not Found' }} />
@@ -38,4 +41,3 @@ export default function NotFoundScreen() {
     </ErrorBoundary>
   );
 }
-

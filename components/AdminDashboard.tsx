@@ -5,8 +5,20 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Alert, TextInput, Switch } from 'react-native';
-import ContentManagementService, { CarReview, CarListingForReview, ReviewAnalytics } from '@/services/ContentManagementService';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  TextInput,
+  Switch,
+} from 'react-native';
+import ContentManagementService, {
+  CarReview,
+  CarListingForReview,
+  ReviewAnalytics,
+} from '@/services/ContentManagementService';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { LoadingState } from '@/components/ui/LoadingState';
@@ -18,7 +30,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   const [analytics, setAnalytics] = useState<ReviewAnalytics | null>(null);
   const [recentReviews, setRecentReviews] = useState<CarReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'create-review' | 'manage-cars' | 'analytics'>('dashboard');
+  const [activeTab, setActiveTab] = useState<
+    'dashboard' | 'create-review' | 'manage-cars' | 'analytics'
+  >('dashboard');
 
   // Content creation state
   const [newReview, setNewReview] = useState<{
@@ -50,7 +64,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
     final_verdict: '',
     is_featured: false,
     is_published: true,
-    tags: ''
+    tags: '',
   });
 
   const contentService = ContentManagementService.getInstance();
@@ -64,7 +78,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
     try {
       const [analyticsData, reviews] = await Promise.all([
         contentService.getContentAnalytics(),
-        contentService.getRecentReviews(10)
+        contentService.getRecentReviews(10),
       ]);
 
       setAnalytics(analyticsData);
@@ -78,7 +92,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   };
 
   const handleCreateReview = async () => {
-    if (!newReview.car_make || !newReview.car_model || !newReview.title || !newReview.content) {
+    if (
+      !newReview.car_make ||
+      !newReview.car_model ||
+      !newReview.title ||
+      !newReview.content
+    ) {
       Alert.alert('Validation Error', 'Please fill in all required fields');
       return;
     }
@@ -88,16 +107,25 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
 
       const reviewData = {
         ...newReview,
-        pros: newReview.pros.split(',').map(p => p.trim()).filter(p => p),
-        cons: newReview.cons.split(',').map(c => c.trim()).filter(c => c),
-        tags: newReview.tags.split(',').map(t => t.trim()).filter(t => t),
-        publish_date: new Date().toISOString()
+        pros: newReview.pros
+          .split(',')
+          .map((p) => p.trim())
+          .filter((p) => p),
+        cons: newReview.cons
+          .split(',')
+          .map((c) => c.trim())
+          .filter((c) => c),
+        tags: newReview.tags
+          .split(',')
+          .map((t) => t.trim())
+          .filter((t) => t),
+        publish_date: new Date().toISOString(),
       };
 
       await contentService.createReview(reviewData);
 
       Alert.alert('Success', 'Review created successfully!');
-      
+
       // Reset form
       setNewReview({
         car_make: '',
@@ -113,13 +141,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
         final_verdict: '',
         is_featured: false,
         is_published: true,
-        tags: ''
+        tags: '',
       });
 
       // Refresh dashboard
       await loadDashboardData();
       setActiveTab('dashboard');
-
     } catch (error) {
       console.error('Error creating review:', error);
       Alert.alert('Error', 'Failed to create review');
@@ -131,7 +158,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   const renderDashboard = () => (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Content Management Dashboard</Text>
-      <Text style={styles.subtitle}>Drive traffic with reviews → Convert dealers → Scale to $99-499/month subscriptions</Text>
+      <Text style={styles.subtitle}>
+        Drive traffic with reviews → Convert dealers → Scale to $99-499/month
+        subscriptions
+      </Text>
 
       {analytics && (
         <View style={styles.analyticsGrid}>
@@ -139,19 +169,23 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
             <Text style={styles.statNumber}>{analytics.totalReviews}</Text>
             <Text style={styles.statLabel}>Total Reviews</Text>
           </Card>
-          
+
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>{analytics.totalViews.toLocaleString()}</Text>
+            <Text style={styles.statNumber}>
+              {analytics.totalViews.toLocaleString()}
+            </Text>
             <Text style={styles.statLabel}>Total Views</Text>
           </Card>
-          
+
           <Card style={styles.statCard}>
             <Text style={styles.statNumber}>{analytics.totalLikes}</Text>
             <Text style={styles.statLabel}>Total Likes</Text>
           </Card>
-          
+
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>{analytics.averageRating.toFixed(1)}★</Text>
+            <Text style={styles.statNumber}>
+              {analytics.averageRating.toFixed(1)}★
+            </Text>
             <Text style={styles.statLabel}>Avg Rating</Text>
           </Card>
         </View>
@@ -166,7 +200,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
             </Text>
           ))
         ) : (
-          <Text style={styles.emptyState}>No popular cars yet. Create more reviews!</Text>
+          <Text style={styles.emptyState}>
+            No popular cars yet. Create more reviews!
+          </Text>
         )}
       </Card>
 
@@ -176,14 +212,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
           recentReviews.slice(0, 5).map((review) => (
             <View key={review.id} style={styles.reviewItem}>
               <Text style={styles.reviewTitle}>{review.title}</Text>
-              <Text style={styles.reviewCar}>{review.car_make} {review.car_model} {review.car_year}</Text>
+              <Text style={styles.reviewCar}>
+                {review.car_make} {review.car_model} {review.car_year}
+              </Text>
               <Text style={styles.reviewStats}>
-                {review.rating}★ • {review.view_count} views • {review.like_count} likes
+                {review.rating}★ • {review.view_count} views •{' '}
+                {review.like_count} likes
               </Text>
             </View>
           ))
         ) : (
-          <Text style={styles.emptyState}>No reviews yet. Create your first review!</Text>
+          <Text style={styles.emptyState}>
+            No reviews yet. Create your first review!
+          </Text>
         )}
       </Card>
 
@@ -205,28 +246,34 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   const renderCreateReview = () => (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Create New Review</Text>
-      <Text style={styles.subtitle}>Build content that drives traffic and dealer interest</Text>
+      <Text style={styles.subtitle}>
+        Build content that drives traffic and dealer interest
+      </Text>
 
       <Card style={styles.formCard}>
         <Text style={styles.formSection}>Car Information</Text>
-        
+
         <View style={styles.inputRow}>
           <View style={styles.inputHalf}>
             <Text style={styles.inputLabel}>Make *</Text>
             <TextInput
               style={styles.input}
               value={newReview.car_make}
-              onChangeText={(text) => setNewReview({...newReview, car_make: text})}
+              onChangeText={(text) =>
+                setNewReview({ ...newReview, car_make: text })
+              }
               placeholder="e.g., Toyota"
             />
           </View>
-          
+
           <View style={styles.inputHalf}>
             <Text style={styles.inputLabel}>Model *</Text>
             <TextInput
               style={styles.input}
               value={newReview.car_model}
-              onChangeText={(text) => setNewReview({...newReview, car_model: text})}
+              onChangeText={(text) =>
+                setNewReview({ ...newReview, car_model: text })
+              }
               placeholder="e.g., Camry"
             />
           </View>
@@ -238,18 +285,28 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
             <TextInput
               style={styles.input}
               value={newReview.car_year.toString()}
-              onChangeText={(text) => setNewReview({...newReview, car_year: parseInt(text) || new Date().getFullYear()})}
+              onChangeText={(text) =>
+                setNewReview({
+                  ...newReview,
+                  car_year: parseInt(text) || new Date().getFullYear(),
+                })
+              }
               keyboardType="numeric"
               placeholder="2024"
             />
           </View>
-          
+
           <View style={styles.inputHalf}>
             <Text style={styles.inputLabel}>Rating (1-5)</Text>
             <TextInput
               style={styles.input}
               value={newReview.rating.toString()}
-              onChangeText={(text) => setNewReview({...newReview, rating: Math.min(5, Math.max(1, parseInt(text) || 5))})}
+              onChangeText={(text) =>
+                setNewReview({
+                  ...newReview,
+                  rating: Math.min(5, Math.max(1, parseInt(text) || 5)),
+                })
+              }
               keyboardType="numeric"
               placeholder="5"
             />
@@ -257,12 +314,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
         </View>
 
         <Text style={styles.formSection}>Review Content</Text>
-        
+
         <Text style={styles.inputLabel}>Review Title *</Text>
         <TextInput
           style={styles.input}
           value={newReview.title}
-          onChangeText={(text) => setNewReview({...newReview, title: text})}
+          onChangeText={(text) => setNewReview({ ...newReview, title: text })}
           placeholder="e.g., 2024 Toyota Camry: A Reliable Family Sedan That Delivers"
         />
 
@@ -270,7 +327,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
         <TextInput
           style={[styles.input, styles.textArea]}
           value={newReview.content}
-          onChangeText={(text) => setNewReview({...newReview, content: text})}
+          onChangeText={(text) => setNewReview({ ...newReview, content: text })}
           placeholder="Write your detailed review here..."
           multiline
           numberOfLines={6}
@@ -280,7 +337,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
         <TextInput
           style={styles.input}
           value={newReview.pros}
-          onChangeText={(text) => setNewReview({...newReview, pros: text})}
+          onChangeText={(text) => setNewReview({ ...newReview, pros: text })}
           placeholder="Reliable, Good fuel economy, Spacious interior"
         />
 
@@ -288,7 +345,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
         <TextInput
           style={styles.input}
           value={newReview.cons}
-          onChangeText={(text) => setNewReview({...newReview, cons: text})}
+          onChangeText={(text) => setNewReview({ ...newReview, cons: text })}
           placeholder="Road noise, Basic infotainment, CVT transmission"
         />
 
@@ -296,31 +353,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
         <TextInput
           style={[styles.input, styles.textArea]}
           value={newReview.final_verdict}
-          onChangeText={(text) => setNewReview({...newReview, final_verdict: text})}
+          onChangeText={(text) =>
+            setNewReview({ ...newReview, final_verdict: text })
+          }
           placeholder="Summarize your overall opinion and recommendation..."
           multiline
           numberOfLines={3}
         />
 
         <Text style={styles.formSection}>Review Settings</Text>
-        
+
         <View style={styles.inputRow}>
           <View style={styles.inputHalf}>
             <Text style={styles.inputLabel}>Reviewer Name</Text>
             <TextInput
               style={styles.input}
               value={newReview.reviewer_name}
-              onChangeText={(text) => setNewReview({...newReview, reviewer_name: text})}
+              onChangeText={(text) =>
+                setNewReview({ ...newReview, reviewer_name: text })
+              }
               placeholder="Your name"
             />
           </View>
-          
+
           <View style={styles.inputHalf}>
             <Text style={styles.inputLabel}>Reviewer Title</Text>
             <TextInput
               style={styles.input}
               value={newReview.reviewer_title}
-              onChangeText={(text) => setNewReview({...newReview, reviewer_title: text})}
+              onChangeText={(text) =>
+                setNewReview({ ...newReview, reviewer_title: text })
+              }
               placeholder="Car Enthusiast"
             />
           </View>
@@ -330,7 +393,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
         <TextInput
           style={styles.input}
           value={newReview.tags}
-          onChangeText={(text) => setNewReview({...newReview, tags: text})}
+          onChangeText={(text) => setNewReview({ ...newReview, tags: text })}
           placeholder="sedan, family-car, reliable, fuel-efficient"
         />
 
@@ -338,7 +401,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
           <Text style={styles.switchLabel}>Featured Review</Text>
           <Switch
             value={newReview.is_featured}
-            onValueChange={(value) => setNewReview({...newReview, is_featured: value})}
+            onValueChange={(value) =>
+              setNewReview({ ...newReview, is_featured: value })
+            }
           />
         </View>
 
@@ -346,7 +411,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
           <Text style={styles.switchLabel}>Publish Immediately</Text>
           <Switch
             value={newReview.is_published}
-            onValueChange={(value) => setNewReview({...newReview, is_published: value})}
+            onValueChange={(value) =>
+              setNewReview({ ...newReview, is_published: value })
+            }
           />
         </View>
 
@@ -369,16 +436,26 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   const renderAnalytics = () => (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Content Analytics</Text>
-      <Text style={styles.subtitle}>Track your content performance and traffic growth</Text>
+      <Text style={styles.subtitle}>
+        Track your content performance and traffic growth
+      </Text>
 
       {analytics && (
         <>
           <Card style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>Performance Overview</Text>
-            <Text style={styles.analyticsText}>• {analytics.totalReviews} reviews published</Text>
-            <Text style={styles.analyticsText}>• {analytics.totalViews.toLocaleString()} total page views</Text>
-            <Text style={styles.analyticsText}>• {analytics.totalLikes} likes received</Text>
-            <Text style={styles.analyticsText}>• {analytics.averageRating.toFixed(1)}/5 average rating</Text>
+            <Text style={styles.analyticsText}>
+              • {analytics.totalReviews} reviews published
+            </Text>
+            <Text style={styles.analyticsText}>
+              • {analytics.totalViews.toLocaleString()} total page views
+            </Text>
+            <Text style={styles.analyticsText}>
+              • {analytics.totalLikes} likes received
+            </Text>
+            <Text style={styles.analyticsText}>
+              • {analytics.averageRating.toFixed(1)}/5 average rating
+            </Text>
           </Card>
 
           <Card style={styles.sectionCard}>
@@ -390,7 +467,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
                   <View style={styles.topReviewContent}>
                     <Text style={styles.topReviewTitle}>{review.title}</Text>
                     <Text style={styles.topReviewStats}>
-                      {review.view_count} views • {review.like_count} likes • {review.rating}★
+                      {review.view_count} views • {review.like_count} likes •{' '}
+                      {review.rating}★
                     </Text>
                   </View>
                 </View>
@@ -402,15 +480,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
 
           <Card style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>Business Impact Indicators</Text>
-            <Text style={styles.analyticsText}>📈 Content Strategy Progress:</Text>
             <Text style={styles.analyticsText}>
-              • Phase 1: Create Reviews ({analytics.totalReviews > 0 ? '✅' : '⏳'} {analytics.totalReviews}/10 target)
+              📈 Content Strategy Progress:
             </Text>
             <Text style={styles.analyticsText}>
-              • Phase 2: Drive Traffic ({analytics.totalViews > 100 ? '✅' : '⏳'} {analytics.totalViews}/1000 target)
+              • Phase 1: Create Reviews (
+              {analytics.totalReviews > 0 ? '✅' : '⏳'}{' '}
+              {analytics.totalReviews}/10 target)
             </Text>
             <Text style={styles.analyticsText}>
-              • Phase 3: Dealer Interest ({analytics.totalViews > 1000 ? '🎯' : '⏳'} Ready for outreach)
+              • Phase 2: Drive Traffic (
+              {analytics.totalViews > 100 ? '✅' : '⏳'} {analytics.totalViews}
+              /1000 target)
+            </Text>
+            <Text style={styles.analyticsText}>
+              • Phase 3: Dealer Interest (
+              {analytics.totalViews > 1000 ? '🎯' : '⏳'} Ready for outreach)
             </Text>
             <Text style={styles.analyticsText}>
               • Phase 4: Subscriptions (⏳ Pending dealer conversions)

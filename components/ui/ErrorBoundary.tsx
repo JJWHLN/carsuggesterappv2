@@ -46,9 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
             We encountered an unexpected error. Please try again.
           </Text>
           {__DEV__ && this.state.error && (
-            <Text style={styles.errorDetails}>
-              {this.state.error.message}
-            </Text>
+            <Text style={styles.errorDetails}>{this.state.error.message}</Text>
           )}
           <Button
             title="Try Again"

@@ -17,7 +17,13 @@ import Animated, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/Colors';
 import { AnimatedBadge } from './AnimatedBadge';
-import { Clock, Search, Bookmark, X, TrendingUp } from '@/utils/ultra-optimized-icons';
+import {
+  Clock,
+  Search,
+  Bookmark,
+  X,
+  TrendingUp,
+} from '@/utils/ultra-optimized-icons';
 
 interface SearchHistoryItem {
   id: string;
@@ -73,7 +79,9 @@ export const SearchHistoryManager: React.FC<SearchHistoryManagerProps> = ({
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
   const [popularSearches, setPopularSearches] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'recent' | 'saved' | 'popular'>('recent');
+  const [activeTab, setActiveTab] = useState<'recent' | 'saved' | 'popular'>(
+    'recent',
+  );
 
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(20);
@@ -122,7 +130,11 @@ export const SearchHistoryManager: React.FC<SearchHistoryManagerProps> = ({
     }
   };
 
-  const saveToHistory = async (query: string, filters?: any, resultCount?: number) => {
+  const saveToHistory = async (
+    query: string,
+    filters?: any,
+    resultCount?: number,
+  ) => {
     if (!query.trim()) return;
 
     const newItem: SearchHistoryItem = {
@@ -133,15 +145,17 @@ export const SearchHistoryManager: React.FC<SearchHistoryManagerProps> = ({
       resultCount,
     };
 
-    const updatedHistory = [newItem, ...searchHistory.filter(item => item.query !== query.trim())]
-      .slice(0, 10);
+    const updatedHistory = [
+      newItem,
+      ...searchHistory.filter((item) => item.query !== query.trim()),
+    ].slice(0, 10);
 
     setSearchHistory(updatedHistory);
 
     try {
       await AsyncStorage.setItem(
-        STORAGE_KEYS.SEARCH_HISTORY, 
-        JSON.stringify(updatedHistory)
+        STORAGE_KEYS.SEARCH_HISTORY,
+        JSON.stringify(updatedHistory),
       );
     } catch (error) {
       console.error('Error saving search history:', error);
@@ -179,7 +193,7 @@ export const SearchHistoryManager: React.FC<SearchHistoryManagerProps> = ({
             try {
               await AsyncStorage.setItem(
                 STORAGE_KEYS.SAVED_SEARCHES,
-                JSON.stringify(updatedSaved)
+                JSON.stringify(updatedSaved),
               );
               onSaveSearch(newSavedSearch);
               Alert.alert('Success', 'Search saved successfully!');
@@ -191,18 +205,18 @@ export const SearchHistoryManager: React.FC<SearchHistoryManagerProps> = ({
         },
       ],
       'plain-text',
-      currentQuery
+      currentQuery,
     );
   };
 
   const deleteSavedSearch = async (id: string) => {
-    const updatedSaved = savedSearches.filter(search => search.id !== id);
+    const updatedSaved = savedSearches.filter((search) => search.id !== id);
     setSavedSearches(updatedSaved);
 
     try {
       await AsyncStorage.setItem(
         STORAGE_KEYS.SAVED_SEARCHES,
-        JSON.stringify(updatedSaved)
+        JSON.stringify(updatedSaved),
       );
     } catch (error) {
       console.error('Error deleting saved search:', error);
@@ -227,7 +241,7 @@ export const SearchHistoryManager: React.FC<SearchHistoryManagerProps> = ({
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -256,7 +270,7 @@ export const SearchHistoryManager: React.FC<SearchHistoryManagerProps> = ({
           </View>
           <TouchableOpacity
             onPress={() => {
-              const updated = searchHistory.filter(h => h.id !== item.id);
+              const updated = searchHistory.filter((h) => h.id !== item.id);
               setSearchHistory(updated);
             }}
             style={styles.removeButton}
@@ -487,7 +501,11 @@ export const useSearchHistory = () => {
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
 
-  const addToHistory = async (query: string, filters?: any, resultCount?: number) => {
+  const addToHistory = async (
+    query: string,
+    filters?: any,
+    resultCount?: number,
+  ) => {
     if (!query.trim()) return;
 
     const newItem: SearchHistoryItem = {
@@ -498,15 +516,17 @@ export const useSearchHistory = () => {
       resultCount,
     };
 
-    const updatedHistory = [newItem, ...searchHistory.filter(item => item.query !== query.trim())]
-      .slice(0, 10);
+    const updatedHistory = [
+      newItem,
+      ...searchHistory.filter((item) => item.query !== query.trim()),
+    ].slice(0, 10);
 
     setSearchHistory(updatedHistory);
 
     try {
       await AsyncStorage.setItem(
         STORAGE_KEYS.SEARCH_HISTORY,
-        JSON.stringify(updatedHistory)
+        JSON.stringify(updatedHistory),
       );
     } catch (error) {
       console.error('Error saving search history:', error);
@@ -517,7 +537,7 @@ export const useSearchHistory = () => {
     const suggestions: SearchSuggestion[] = [];
 
     // Add recent searches
-    searchHistory.slice(0, 5).forEach(item => {
+    searchHistory.slice(0, 5).forEach((item) => {
       suggestions.push({
         id: `recent-${item.id}`,
         text: item.query,
@@ -528,7 +548,7 @@ export const useSearchHistory = () => {
     });
 
     // Add saved searches
-    savedSearches.slice(0, 3).forEach(item => {
+    savedSearches.slice(0, 3).forEach((item) => {
       suggestions.push({
         id: `saved-${item.id}`,
         text: item.name,

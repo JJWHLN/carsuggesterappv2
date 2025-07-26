@@ -38,73 +38,85 @@ function SavedCarsScreen() {
   const [selectedCars, setSelectedCars] = useState<Set<string>>(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
 
-  const loadSavedCars = useCallback(async (isRefresh = false) => {
-    if (!user) {
-      setError('Please sign in to view saved cars');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
+  const loadSavedCars = useCallback(
+    async (isRefresh = false) => {
+      if (!user) {
+        setError('Please sign in to view saved cars');
+        setLoading(false);
+        return;
       }
-      setError(null);
 
-      const data = await fetchSavedCars(user.id);
-      if (data) {
-        const transformedCars = data.map((item: any) => transformDatabaseVehicleListingToCar(item.vehicle_listing));
-        setSavedCars(transformedCars);
+      try {
+        if (isRefresh) {
+          setRefreshing(true);
+        } else {
+          setLoading(true);
+        }
+        setError(null);
+
+        const data = await fetchSavedCars(user.id);
+        if (data) {
+          const transformedCars = data.map((item: any) =>
+            transformDatabaseVehicleListingToCar(item.vehicle_listing),
+          );
+          setSavedCars(transformedCars);
+        }
+      } catch (err) {
+        logger.error('Error loading saved cars:', err);
+        setError('Failed to load saved cars');
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-    } catch (err) {
-      logger.error('Error loading saved cars:', err);
-      setError('Failed to load saved cars');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [user]);
+    },
+    [user],
+  );
 
   useEffect(() => {
     loadSavedCars();
   }, [loadSavedCars]);
 
-  const handleRemoveCar = useCallback(async (carId: string) => {
-    if (!user) return;
+  const handleRemoveCar = useCallback(
+    async (carId: string) => {
+      if (!user) return;
 
-    try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      
-      Alert.alert(
-        'Remove Car',
-        'Are you sure you want to remove this car from your saved list?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Remove',
-            style: 'destructive',
-            onPress: async () => {
-              try {
-                await removeSavedCar(user.id, carId);
-                setSavedCars(prev => prev.filter(car => car.id !== carId));
-                await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              } catch (error) {
-                logger.error('Error removing saved car:', error);
-                Alert.alert('Error', 'Failed to remove car');
-              }
+      try {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+        Alert.alert(
+          'Remove Car',
+          'Are you sure you want to remove this car from your saved list?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Remove',
+              style: 'destructive',
+              onPress: async () => {
+                try {
+                  await removeSavedCar(user.id, carId);
+                  setSavedCars((prev) =>
+                    prev.filter((car) => car.id !== carId),
+                  );
+                  await Haptics.notificationAsync(
+                    Haptics.NotificationFeedbackType.Success,
+                  );
+                } catch (error) {
+                  logger.error('Error removing saved car:', error);
+                  Alert.alert('Error', 'Failed to remove car');
+                }
+              },
             },
-          },
-        ]
-      );
-    } catch (error) {
-      logger.error('Error removing car:', error);
-    }
-  }, [user]);
+          ],
+        );
+      } catch (error) {
+        logger.error('Error removing car:', error);
+      }
+    },
+    [user],
+  );
 
   const handleSelectCar = useCallback((carId: string) => {
-    setSelectedCars(prev => {
+    setSelectedCars((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(carId)) {
         newSet.delete(carId);
@@ -128,87 +140,98 @@ function SavedCarsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const promises = Array.from(selectedCars).map(carId => 
-                removeSavedCar(user.id, carId)
+              const promises = Array.from(selectedCars).map((carId) =>
+                removeSavedCar(user.id, carId),
               );
               await Promise.all(promises);
-              
-              setSavedCars(prev => prev.filter(car => !selectedCars.has(car.id)));
+
+              setSavedCars((prev) =>
+                prev.filter((car) => !selectedCars.has(car.id)),
+              );
               setSelectedCars(new Set());
               setSelectionMode(false);
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              await Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success,
+              );
             } catch (error) {
               logger.error('Error removing cars:', error);
               Alert.alert('Error', 'Failed to remove some cars');
             }
           },
         },
-      ]
+      ],
     );
   }, [user, selectedCars]);
 
-  const handleCarPress = useCallback((car: CarType) => {
-    if (selectionMode) {
-      handleSelectCar(car.id);
-    } else {
-      router.push(`/car/${car.id}`);
-    }
-  }, [selectionMode, handleSelectCar]);
+  const handleCarPress = useCallback(
+    (car: CarType) => {
+      if (selectionMode) {
+        handleSelectCar(car.id);
+      } else {
+        router.push(`/car/${car.id}`);
+      }
+    },
+    [selectionMode, handleSelectCar],
+  );
 
-  const renderCarItem = useCallback(({ item }: { item: CarType }) => (
-    <View style={styles.carItemContainer}>
-      <TouchableOpacity
-        style={[
-          styles.carItem,
-          selectionMode && selectedCars.has(item.id) && styles.selectedCarItem
-        ]}
-        onPress={() => handleCarPress(item)}
-        onLongPress={() => {
-          setSelectionMode(true);
-          handleSelectCar(item.id);
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        }}
-      >
-        <CarCard 
-          car={item} 
-          onPress={() => handleCarPress(item)}
-          showSaveButton={false}
-        />
-        {selectionMode && (
-          <View style={[
-            styles.selectionIndicator,
-            selectedCars.has(item.id) && styles.selectedIndicator
-          ]} />
-        )}
-      </TouchableOpacity>
-      {!selectionMode && (
+  const renderCarItem = useCallback(
+    ({ item }: { item: CarType }) => (
+      <View style={styles.carItemContainer}>
         <TouchableOpacity
-          style={styles.removeButton}
-          onPress={() => handleRemoveCar(item.id)}
+          style={[
+            styles.carItem,
+            selectionMode &&
+              selectedCars.has(item.id) &&
+              styles.selectedCarItem,
+          ]}
+          onPress={() => handleCarPress(item)}
+          onLongPress={() => {
+            setSelectionMode(true);
+            handleSelectCar(item.id);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          }}
         >
-          <Trash2 color={colors.error} size={20} />
+          <CarCard
+            car={item}
+            onPress={() => handleCarPress(item)}
+            showSaveButton={false}
+          />
+          {selectionMode && (
+            <View
+              style={[
+                styles.selectionIndicator,
+                selectedCars.has(item.id) && styles.selectedIndicator,
+              ]}
+            />
+          )}
         </TouchableOpacity>
-      )}
-    </View>
-  ), [
-    styles, 
-    selectionMode, 
-    selectedCars, 
-    handleCarPress, 
-    handleSelectCar, 
-    handleRemoveCar, 
-    colors.error
-  ]);
+        {!selectionMode && (
+          <TouchableOpacity
+            style={styles.removeButton}
+            onPress={() => handleRemoveCar(item.id)}
+          >
+            <Trash2 color={colors.error} size={20} />
+          </TouchableOpacity>
+        )}
+      </View>
+    ),
+    [
+      styles,
+      selectionMode,
+      selectedCars,
+      handleCarPress,
+      handleSelectCar,
+      handleRemoveCar,
+      colors.error,
+    ],
+  );
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <TouchableOpacity 
-        style={styles.backButton}
-        onPress={() => router.back()}
-      >
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <ArrowLeft color={colors.text} size={24} />
       </TouchableOpacity>
-      
+
       <View style={styles.headerContent}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>
           Saved Cars
@@ -233,7 +256,9 @@ function SavedCarsScreen() {
 
   if (!user) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         {renderHeader()}
         <EmptyState
           title="Sign In Required"
@@ -251,7 +276,9 @@ function SavedCarsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         {renderHeader()}
         <LoadingState message="Loading your saved cars..." />
       </SafeAreaView>
@@ -260,7 +287,9 @@ function SavedCarsScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         {renderHeader()}
         <ErrorState
           title="Failed to Load Cars"
@@ -273,7 +302,9 @@ function SavedCarsScreen() {
 
   if (savedCars.length === 0) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         {renderHeader()}
         <EmptyState
           title="No Saved Cars"
@@ -291,11 +322,18 @@ function SavedCarsScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {renderHeader()}
-      
+
       {selectionMode && (
-        <View style={[styles.selectionBar, { backgroundColor: colors.cardBackground }]}>
+        <View
+          style={[
+            styles.selectionBar,
+            { backgroundColor: colors.cardBackground },
+          ]}
+        >
           <Text style={[styles.selectionText, { color: colors.text }]}>
             {selectedCars.size} selected
           </Text>
@@ -327,108 +365,109 @@ function SavedCarsScreen() {
   );
 }
 
-const getThemedStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.cardBackground,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerContent: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    marginTop: 2,
-  },
-  actionButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    backgroundColor: colors.primaryLight,
-  },
-  actionButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  selectionBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  selectionText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  listContent: {
-    padding: 20,
-  },
-  carItemContainer: {
-    marginBottom: 16,
-    position: 'relative',
-  },
-  carItem: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  selectedCarItem: {
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  selectionIndicator: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  selectedIndicator: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  removeButton: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-});
+const getThemedStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.cardBackground,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    headerContent: {
+      flex: 1,
+      marginLeft: 16,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: '700',
+    },
+    headerSubtitle: {
+      fontSize: 14,
+      marginTop: 2,
+    },
+    actionButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      backgroundColor: colors.primaryLight,
+    },
+    actionButtonText: {
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    selectionBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    selectionText: {
+      fontSize: 16,
+      fontWeight: '500',
+    },
+    listContent: {
+      padding: 20,
+    },
+    carItemContainer: {
+      marginBottom: 16,
+      position: 'relative',
+    },
+    carItem: {
+      borderRadius: 12,
+      overflow: 'hidden',
+    },
+    selectedCarItem: {
+      borderWidth: 2,
+      borderColor: colors.primary,
+    },
+    selectionIndicator: {
+      position: 'absolute',
+      top: 12,
+      right: 12,
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.border,
+      backgroundColor: colors.background,
+    },
+    selectedIndicator: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+    },
+    removeButton: {
+      position: 'absolute',
+      top: 12,
+      right: 12,
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.background,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+  });
 
 export default function WrappedSavedCarsScreen() {
   return (

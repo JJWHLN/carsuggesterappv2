@@ -1,17 +1,22 @@
 import React, { memo, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
   withSpring,
   withDelay,
   withSequence,
   withTiming,
   interpolate,
-  Extrapolate
+  Extrapolate,
 } from 'react-native-reanimated';
-import { Search, Sparkles, TrendingUp, Award } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  Sparkles,
+  TrendingUp,
+  Award,
+} from '@/utils/ultra-optimized-icons';
 import { ModernButton } from './ui/ModernButton';
 import { Colors, Spacing, BorderRadius, Typography } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
@@ -24,157 +29,172 @@ interface ModernHeroSectionProps {
   userName?: string;
 }
 
-export const ModernHeroSection = memo<ModernHeroSectionProps>(({
-  onSearchPress,
-  onGetRecommendations,
-  userName
-}) => {
-  const { colors } = useThemeColors();
-  
-  // Animation values
-  const titleOpacity = useSharedValue(0);
-  const titleTranslateY = useSharedValue(30);
-  const subtitleOpacity = useSharedValue(0);
-  const subtitleTranslateY = useSharedValue(30);
-  const buttonsOpacity = useSharedValue(0);
-  const buttonsTranslateY = useSharedValue(30);
-  const sparkleRotation = useSharedValue(0);
-  const statsScale = useSharedValue(0.8);
+export const ModernHeroSection = memo<ModernHeroSectionProps>(
+  ({ onSearchPress, onGetRecommendations, userName }) => {
+    const { colors } = useThemeColors();
 
-  // Animated styles
-  const titleAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: titleOpacity.value,
-    transform: [{ translateY: titleTranslateY.value }],
-  }));
+    // Animation values
+    const titleOpacity = useSharedValue(0);
+    const titleTranslateY = useSharedValue(30);
+    const subtitleOpacity = useSharedValue(0);
+    const subtitleTranslateY = useSharedValue(30);
+    const buttonsOpacity = useSharedValue(0);
+    const buttonsTranslateY = useSharedValue(30);
+    const sparkleRotation = useSharedValue(0);
+    const statsScale = useSharedValue(0.8);
 
-  const subtitleAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: subtitleOpacity.value,
-    transform: [{ translateY: subtitleTranslateY.value }],
-  }));
+    // Animated styles
+    const titleAnimatedStyle = useAnimatedStyle(() => ({
+      opacity: titleOpacity.value,
+      transform: [{ translateY: titleTranslateY.value }],
+    }));
 
-  const buttonsAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: buttonsOpacity.value,
-    transform: [{ translateY: buttonsTranslateY.value }],
-  }));
+    const subtitleAnimatedStyle = useAnimatedStyle(() => ({
+      opacity: subtitleOpacity.value,
+      transform: [{ translateY: subtitleTranslateY.value }],
+    }));
 
-  const sparkleAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${sparkleRotation.value}deg` }],
-  }));
+    const buttonsAnimatedStyle = useAnimatedStyle(() => ({
+      opacity: buttonsOpacity.value,
+      transform: [{ translateY: buttonsTranslateY.value }],
+    }));
 
-  const statsAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: statsScale.value }],
-  }));
+    const sparkleAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [{ rotate: `${sparkleRotation.value}deg` }],
+    }));
 
-  // Start animations on mount
-  useEffect(() => {
-    // Sequence animations for entrance
-    titleOpacity.value = withDelay(200, withTiming(1, { duration: 800 }));
-    titleTranslateY.value = withDelay(200, withSpring(0, { damping: 20, stiffness: 100 }));
+    const statsAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: statsScale.value }],
+    }));
 
-    subtitleOpacity.value = withDelay(400, withTiming(1, { duration: 800 }));
-    subtitleTranslateY.value = withDelay(400, withSpring(0, { damping: 20, stiffness: 100 }));
+    // Start animations on mount
+    useEffect(() => {
+      // Sequence animations for entrance
+      titleOpacity.value = withDelay(200, withTiming(1, { duration: 800 }));
+      titleTranslateY.value = withDelay(
+        200,
+        withSpring(0, { damping: 20, stiffness: 100 }),
+      );
 
-    buttonsOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
-    buttonsTranslateY.value = withDelay(600, withSpring(0, { damping: 20, stiffness: 100 }));
+      subtitleOpacity.value = withDelay(400, withTiming(1, { duration: 800 }));
+      subtitleTranslateY.value = withDelay(
+        400,
+        withSpring(0, { damping: 20, stiffness: 100 }),
+      );
 
-    statsScale.value = withDelay(800, withSpring(1, { damping: 15, stiffness: 150 }));
+      buttonsOpacity.value = withDelay(600, withTiming(1, { duration: 800 }));
+      buttonsTranslateY.value = withDelay(
+        600,
+        withSpring(0, { damping: 20, stiffness: 100 }),
+      );
 
-    // Continuous sparkle rotation
-    sparkleRotation.value = withSequence(
-      withTiming(360, { duration: 3000 }),
-      withTiming(0, { duration: 0 })
+      statsScale.value = withDelay(
+        800,
+        withSpring(1, { damping: 15, stiffness: 150 }),
+      );
+
+      // Continuous sparkle rotation
+      sparkleRotation.value = withSequence(
+        withTiming(360, { duration: 3000 }),
+        withTiming(0, { duration: 0 }),
+      );
+    }, []);
+
+    const greeting = userName
+      ? `Welcome back, ${userName}!`
+      : 'Find Your Perfect Car';
+
+    return (
+      <View style={styles.container}>
+        {/* Background Gradient */}
+        <LinearGradient
+          colors={['#48cc6c', '#56d478', '#6be085']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          {/* Decorative Elements */}
+          <View style={styles.decorativeContainer}>
+            <Animated.View
+              style={[styles.sparkleContainer, sparkleAnimatedStyle]}
+            >
+              <Sparkles size={24} color={Colors.light.white} />
+            </Animated.View>
+
+            <View style={styles.trendingContainer}>
+              <TrendingUp size={20} color={Colors.light.white} />
+            </View>
+
+            <View style={styles.awardContainer}>
+              <Award size={18} color={Colors.light.white} />
+            </View>
+          </View>
+
+          {/* Main Content */}
+          <View style={styles.content}>
+            {/* Title */}
+            <Animated.Text style={[styles.title, titleAnimatedStyle]}>
+              {greeting}
+            </Animated.Text>
+
+            {/* Subtitle */}
+            <Animated.Text style={[styles.subtitle, subtitleAnimatedStyle]}>
+              Discover thousands of verified cars with AI-powered
+              recommendations tailored just for you
+            </Animated.Text>
+
+            {/* Stats Row */}
+            <Animated.View style={[styles.statsContainer, statsAnimatedStyle]}>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>50K+</Text>
+                <Text style={styles.statLabel}>Cars Available</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>98%</Text>
+                <Text style={styles.statLabel}>Happy Customers</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>24/7</Text>
+                <Text style={styles.statLabel}>Support</Text>
+              </View>
+            </Animated.View>
+
+            {/* Action Buttons */}
+            <Animated.View
+              style={[styles.buttonsContainer, buttonsAnimatedStyle]}
+            >
+              <View style={styles.primaryButtonContainer}>
+                <ModernButton
+                  title="Search Cars"
+                  onPress={onSearchPress}
+                  variant="secondary"
+                  size="large"
+                  icon={<Search size={20} color={Colors.light.primary} />}
+                  style={styles.searchButton}
+                  textStyle={styles.searchButtonText}
+                />
+              </View>
+
+              <View style={styles.secondaryButtonContainer}>
+                <ModernButton
+                  title="Get AI Recommendations"
+                  onPress={onGetRecommendations}
+                  variant="ghost"
+                  size="large"
+                  icon={<Sparkles size={20} color={Colors.light.white} />}
+                  style={styles.recommendButton}
+                  textStyle={styles.recommendButtonText}
+                />
+              </View>
+            </Animated.View>
+          </View>
+        </LinearGradient>
+      </View>
     );
-  }, []);
-
-  const greeting = userName ? `Welcome back, ${userName}!` : 'Find Your Perfect Car';
-
-  return (
-    <View style={styles.container}>
-      {/* Background Gradient */}
-      <LinearGradient
-        colors={['#48cc6c', '#56d478', '#6be085']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradient}
-      >
-        {/* Decorative Elements */}
-        <View style={styles.decorativeContainer}>
-          <Animated.View style={[styles.sparkleContainer, sparkleAnimatedStyle]}>
-            <Sparkles size={24} color={Colors.light.white} />
-          </Animated.View>
-          
-          <View style={styles.trendingContainer}>
-            <TrendingUp size={20} color={Colors.light.white} />
-          </View>
-          
-          <View style={styles.awardContainer}>
-            <Award size={18} color={Colors.light.white} />
-          </View>
-        </View>
-
-        {/* Main Content */}
-        <View style={styles.content}>
-          
-          {/* Title */}
-          <Animated.Text style={[styles.title, titleAnimatedStyle]}>
-            {greeting}
-          </Animated.Text>
-
-          {/* Subtitle */}
-          <Animated.Text style={[styles.subtitle, subtitleAnimatedStyle]}>
-            Discover thousands of verified cars with AI-powered recommendations tailored just for you
-          </Animated.Text>
-
-          {/* Stats Row */}
-          <Animated.View style={[styles.statsContainer, statsAnimatedStyle]}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>50K+</Text>
-              <Text style={styles.statLabel}>Cars Available</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>98%</Text>
-              <Text style={styles.statLabel}>Happy Customers</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>24/7</Text>
-              <Text style={styles.statLabel}>Support</Text>
-            </View>
-          </Animated.View>
-
-          {/* Action Buttons */}
-          <Animated.View style={[styles.buttonsContainer, buttonsAnimatedStyle]}>
-            <View style={styles.primaryButtonContainer}>
-              <ModernButton
-                title="Search Cars"
-                onPress={onSearchPress}
-                variant="secondary"
-                size="large"
-                icon={<Search size={20} color={Colors.light.primary} />}
-                style={styles.searchButton}
-                textStyle={styles.searchButtonText}
-              />
-            </View>
-            
-            <View style={styles.secondaryButtonContainer}>
-              <ModernButton
-                title="Get AI Recommendations"
-                onPress={onGetRecommendations}
-                variant="ghost"
-                size="large"
-                icon={<Sparkles size={20} color={Colors.light.white} />}
-                style={styles.recommendButton}
-                textStyle={styles.recommendButtonText}
-              />
-            </View>
-          </Animated.View>
-
-        </View>
-      </LinearGradient>
-    </View>
-  );
-});
+  },
+);
 
 const styles = StyleSheet.create({
   container: {

@@ -1,24 +1,33 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  ReactNode,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { 
-  User, 
-  AuthState, 
-  AuthActions, 
-  LoginCredentials, 
-  SignupData, 
+import {
+  User,
+  AuthState,
+  AuthActions,
+  LoginCredentials,
+  SignupData,
   UserPreferences,
   SavedSearch,
   FavoriteCar,
   RecentlyViewed,
   ComparisonHistory,
-  SocialLoginProvider
+  SocialLoginProvider,
 } from './types';
 import { Car } from '../recommendations/types';
 
-type AuthAction = 
+type AuthAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_USER'; payload: User | null }
-  | { type: 'SET_TOKENS'; payload: { accessToken: string | null; refreshToken: string | null } }
+  | {
+      type: 'SET_TOKENS';
+      payload: { accessToken: string | null; refreshToken: string | null };
+    }
   | { type: 'LOGOUT' }
   | { type: 'UPDATE_USER'; payload: Partial<User> }
   | { type: 'UPDATE_PREFERENCES'; payload: Partial<UserPreferences> };
@@ -37,7 +46,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
-    
+
     case 'SET_USER':
       return {
         ...state,
@@ -45,34 +54,36 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         isAuthenticated: !!action.payload,
         isLoading: false,
       };
-    
+
     case 'SET_TOKENS':
       return {
         ...state,
         tokens: action.payload,
       };
-    
+
     case 'LOGOUT':
       return {
         ...initialState,
         isLoading: false,
       };
-    
+
     case 'UPDATE_USER':
       return {
         ...state,
         user: state.user ? { ...state.user, ...action.payload } : null,
       };
-    
+
     case 'UPDATE_PREFERENCES':
       return {
         ...state,
-        user: state.user ? {
-          ...state.user,
-          preferences: { ...state.user.preferences, ...action.payload }
-        } : null,
+        user: state.user
+          ? {
+              ...state.user,
+              preferences: { ...state.user.preferences, ...action.payload },
+            }
+          : null,
       };
-    
+
     default:
       return state;
   }
@@ -87,7 +98,10 @@ const STORAGE_KEYS = {
 };
 
 // Rate limiting store
-const rateLimitStore = new Map<string, { attempts: number; lastAttempt: Date; blockUntil?: Date }>();
+const rateLimitStore = new Map<
+  string,
+  { attempts: number; lastAttempt: Date; blockUntil?: Date }
+>();
 
 const AuthContext = createContext<{
   state: AuthState;
@@ -105,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const initializeAuth = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      
+
       const [accessToken, refreshToken, userData] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN),
         AsyncStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN),
@@ -114,9 +128,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (accessToken && refreshToken && userData) {
         const user = JSON.parse(userData);
-        dispatch({ type: 'SET_TOKENS', payload: { accessToken, refreshToken } });
+        dispatch({
+          type: 'SET_TOKENS',
+          payload: { accessToken, refreshToken },
+        });
         dispatch({ type: 'SET_USER', payload: user });
-        
+
         // Validate token and refresh if needed
         await validateAndRefreshToken();
       } else {
@@ -133,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // In a real app, this would make an API call to validate the token
       // For now, we'll simulate token validation
       const isValid = await simulateTokenValidation(state.tokens.accessToken);
-      
+
       if (!isValid) {
         await refreshAuth();
       }
@@ -144,7 +161,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // Rate limiting helper
-  const checkRateLimit = (key: string, maxAttempts: number = 5, windowMs: number = 15 * 60 * 1000): boolean => {
+  const checkRateLimit = (
+    key: string,
+    maxAttempts: number = 5,
+    windowMs: number = 15 * 60 * 1000,
+  ): boolean => {
     const now = new Date();
     const limit = rateLimitStore.get(key);
 
@@ -154,14 +175,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const timeSinceLastAttempt = now.getTime() - limit.lastAttempt.getTime();
-      
+
       if (timeSinceLastAttempt < windowMs) {
         if (limit.attempts >= maxAttempts) {
           const blockUntil = new Date(now.getTime() + windowMs);
           rateLimitStore.set(key, { ...limit, blockUntil });
           throw new Error('Too many attempts. Please try again later.');
         }
-        
+
         rateLimitStore.set(key, {
           attempts: limit.attempts + 1,
           lastAttempt: now,
@@ -181,7 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Rate limiting
       checkRateLimit(`login_${credentials.email}`);
-      
+
       dispatch({ type: 'SET_LOADING', payload: true });
 
       // Simulate API call
@@ -197,7 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         AsyncStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken),
         AsyncStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken),
         AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user)),
-        credentials.rememberMe 
+        credentials.rememberMe
           ? AsyncStorage.setItem(STORAGE_KEYS.REMEMBER_ME, 'true')
           : AsyncStorage.removeItem(STORAGE_KEYS.REMEMBER_ME),
       ]);
@@ -207,7 +228,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Clear rate limit on successful login
       rateLimitStore.delete(`login_${credentials.email}`);
-
     } catch (error) {
       dispatch({ type: 'SET_LOADING', payload: false });
       throw error;
@@ -218,7 +238,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Rate limiting
       checkRateLimit(`signup_${data.email}`);
-      
+
       dispatch({ type: 'SET_LOADING', payload: true });
 
       // Simulate API call
@@ -238,14 +258,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       dispatch({ type: 'SET_TOKENS', payload: tokens });
       dispatch({ type: 'SET_USER', payload: user });
-
     } catch (error) {
       dispatch({ type: 'SET_LOADING', payload: false });
       throw error;
     }
   };
 
-  const socialLogin = async (provider: SocialLoginProvider['id'], token: string): Promise<void> => {
+  const socialLogin = async (
+    provider: SocialLoginProvider['id'],
+    token: string,
+  ): Promise<void> => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
 
@@ -265,7 +287,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       dispatch({ type: 'SET_TOKENS', payload: tokens });
       dispatch({ type: 'SET_USER', payload: user });
-
     } catch (error) {
       dispatch({ type: 'SET_LOADING', payload: false });
       throw error;
@@ -317,7 +338,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ]);
 
       dispatch({ type: 'SET_TOKENS', payload: tokens });
-
     } catch (error) {
       console.error('Token refresh failed:', error);
       await logout();
@@ -329,7 +349,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Rate limiting
       checkRateLimit(`reset_${email}`, 3, 5 * 60 * 1000); // 3 attempts per 5 minutes
-      
+
       await simulateApiCall('/auth/reset-password', {
         method: 'POST',
         body: { email },
@@ -354,8 +374,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Update stored user data
       if (state.user) {
         await AsyncStorage.setItem(
-          STORAGE_KEYS.USER_DATA, 
-          JSON.stringify({ ...state.user, ...response.user })
+          STORAGE_KEYS.USER_DATA,
+          JSON.stringify({ ...state.user, ...response.user }),
         );
       }
     } catch (error) {
@@ -363,7 +383,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updatePreferences = async (preferences: Partial<UserPreferences>): Promise<void> => {
+  const updatePreferences = async (
+    preferences: Partial<UserPreferences>,
+  ): Promise<void> => {
     try {
       const response = await simulateApiCall('/user/preferences', {
         method: 'PUT',
@@ -379,9 +401,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (state.user) {
         const updatedUser = {
           ...state.user,
-          preferences: { ...state.user.preferences, ...response.preferences }
+          preferences: { ...state.user.preferences, ...response.preferences },
         };
-        await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(updatedUser));
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.USER_DATA,
+          JSON.stringify(updatedUser),
+        );
       }
     } catch (error) {
       throw error;
@@ -415,7 +440,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const saveSearch = async (search: Omit<SavedSearch, 'id' | 'userId' | 'createdAt' | 'updatedAt'>): Promise<void> => {
+  const saveSearch = async (
+    search: Omit<SavedSearch, 'id' | 'userId' | 'createdAt' | 'updatedAt'>,
+  ): Promise<void> => {
     try {
       await simulateApiCall('/user/saved-searches', {
         method: 'POST',
@@ -442,7 +469,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addToRecentlyViewed = async (car: Car, duration: number): Promise<void> => {
+  const addToRecentlyViewed = async (
+    car: Car,
+    duration: number,
+  ): Promise<void> => {
     try {
       await simulateApiCall('/user/recently-viewed', {
         method: 'POST',
@@ -457,7 +487,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const saveComparison = async (carIds: string[], name?: string): Promise<void> => {
+  const saveComparison = async (
+    carIds: string[],
+    name?: string,
+  ): Promise<void> => {
     try {
       await simulateApiCall('/user/comparisons', {
         method: 'POST',
@@ -508,13 +541,21 @@ export const useUser = () => useAuth().state.user;
 export const useIsAuthenticated = () => useAuth().state.isAuthenticated;
 
 // Simulate API calls (replace with actual API calls)
-async function simulateApiCall(endpoint: string, options: any = {}): Promise<any> {
+async function simulateApiCall(
+  endpoint: string,
+  options: any = {},
+): Promise<any> {
   // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+  await new Promise((resolve) =>
+    setTimeout(resolve, 1000 + Math.random() * 1000),
+  );
 
   // Simulate different responses based on endpoint
   if (endpoint === '/auth/login') {
-    if (options.body.email === 'test@example.com' && options.body.password === 'password') {
+    if (
+      options.body.email === 'test@example.com' &&
+      options.body.password === 'password'
+    ) {
       return {
         user: createMockUser(options.body.email),
         tokens: {
@@ -529,7 +570,11 @@ async function simulateApiCall(endpoint: string, options: any = {}): Promise<any
 
   if (endpoint === '/auth/signup') {
     return {
-      user: createMockUser(options.body.email, options.body.firstName, options.body.lastName),
+      user: createMockUser(
+        options.body.email,
+        options.body.firstName,
+        options.body.lastName,
+      ),
       tokens: {
         accessToken: 'mock_access_token_' + Date.now(),
         refreshToken: 'mock_refresh_token_' + Date.now(),
@@ -552,21 +597,25 @@ async function simulateApiCall(endpoint: string, options: any = {}): Promise<any
 
 async function simulateTokenValidation(token: string | null): Promise<boolean> {
   if (!token) return false;
-  
+
   // Simulate token expiration (tokens expire after 1 hour for demo)
   const tokenTimestamp = token.split('_').pop();
   if (tokenTimestamp) {
     const tokenTime = parseInt(tokenTimestamp);
     const now = Date.now();
     const hourInMs = 60 * 60 * 1000;
-    
-    return (now - tokenTime) < hourInMs;
+
+    return now - tokenTime < hourInMs;
   }
-  
+
   return false;
 }
 
-function createMockUser(email: string, firstName?: string, lastName?: string): User {
+function createMockUser(
+  email: string,
+  firstName?: string,
+  lastName?: string,
+): User {
   return {
     id: 'user_' + Date.now(),
     email,

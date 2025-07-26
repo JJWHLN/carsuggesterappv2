@@ -10,12 +10,12 @@ import {
   TextInput,
 } from 'react-native';
 import { useThemeColors } from '@/hooks/useTheme';
-import { 
-  Filter, 
-  X, 
-  ChevronRight, 
-  Star, 
-  DollarSign, 
+import {
+  Filter,
+  X,
+  ChevronRight,
+  Star,
+  DollarSign,
   Calendar,
   Fuel,
   Gauge,
@@ -25,7 +25,7 @@ import {
   Sparkles,
   Shield,
   Award,
-  Leaf
+  Leaf,
 } from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
@@ -122,11 +122,22 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
       icon: <Star size={20} color={colors.primary} />,
       options: [
         { id: 'bmw', label: 'BMW', value: 'bmw', count: 156, popular: true },
-        { id: 'mercedes', label: 'Mercedes-Benz', value: 'mercedes', count: 142, popular: true },
+        {
+          id: 'mercedes',
+          label: 'Mercedes-Benz',
+          value: 'mercedes',
+          count: 142,
+          popular: true,
+        },
         { id: 'audi', label: 'Audi', value: 'audi', count: 128, popular: true },
         { id: 'toyota', label: 'Toyota', value: 'toyota', count: 186 },
         { id: 'honda', label: 'Honda', value: 'honda', count: 94 },
-        { id: 'volkswagen', label: 'Volkswagen', value: 'volkswagen', count: 112 },
+        {
+          id: 'volkswagen',
+          label: 'Volkswagen',
+          value: 'volkswagen',
+          count: 112,
+        },
       ],
       predictive: true,
     },
@@ -138,8 +149,20 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
       options: [
         { id: 'petrol', label: 'Petrol', value: 'petrol', count: 245 },
         { id: 'diesel', label: 'Diesel', value: 'diesel', count: 189 },
-        { id: 'electric', label: 'Electric', value: 'electric', count: 67, suggested: true },
-        { id: 'hybrid', label: 'Hybrid', value: 'hybrid', count: 89, suggested: true },
+        {
+          id: 'electric',
+          label: 'Electric',
+          value: 'electric',
+          count: 67,
+          suggested: true,
+        },
+        {
+          id: 'hybrid',
+          label: 'Hybrid',
+          value: 'hybrid',
+          count: 89,
+          suggested: true,
+        },
       ],
       predictive: true,
     },
@@ -168,7 +191,7 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
         price: { min: 0, max: 15000 },
         year: { min: 2018, max: 2024 },
         fuel: ['petrol'],
-      }
+      },
     },
     {
       id: 'family',
@@ -178,7 +201,7 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
       filters: {
         price: { min: 20000, max: 45000 },
         fuel: ['petrol', 'hybrid'],
-      }
+      },
     },
     {
       id: 'luxury',
@@ -188,7 +211,7 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
       filters: {
         price: { min: 40000, max: 100000 },
         brand: ['bmw', 'mercedes', 'audi'],
-      }
+      },
     },
     {
       id: 'eco-friendly',
@@ -197,7 +220,7 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
       icon: <Leaf size={16} color={colors.success} />,
       filters: {
         fuel: ['electric', 'hybrid'],
-      }
+      },
     },
   ];
 
@@ -249,7 +272,7 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
           label: 'Trending: Electric & Hybrid',
           value: { fuel: ['electric', 'hybrid'] },
           popular: true,
-        }
+        },
       );
     }
 
@@ -275,30 +298,42 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
   }, [suggestions.length, suggestionAnimation]);
 
   // Handlers
-  const handleFilterChange = useCallback((categoryId: string, value: any) => {
-    const updatedFilters = { ...activeFilters, [categoryId]: value };
-    setActiveFilters(updatedFilters);
-    onFiltersChange(updatedFilters);
-  }, [activeFilters, onFiltersChange]);
+  const handleFilterChange = useCallback(
+    (categoryId: string, value: any) => {
+      const updatedFilters = { ...activeFilters, [categoryId]: value };
+      setActiveFilters(updatedFilters);
+      onFiltersChange(updatedFilters);
+    },
+    [activeFilters, onFiltersChange],
+  );
 
-  const handleFilterRemove = useCallback((categoryId: string) => {
-    const { [categoryId]: removed, ...remainingFilters } = activeFilters;
-    setActiveFilters(remainingFilters);
-    onFiltersChange(remainingFilters);
-  }, [activeFilters, onFiltersChange]);
+  const handleFilterRemove = useCallback(
+    (categoryId: string) => {
+      const { [categoryId]: removed, ...remainingFilters } = activeFilters;
+      setActiveFilters(remainingFilters);
+      onFiltersChange(remainingFilters);
+    },
+    [activeFilters, onFiltersChange],
+  );
 
-  const handleSuggestionApply = useCallback((suggestion: FilterOption) => {
-    const updatedFilters = { ...activeFilters, ...suggestion.value };
-    setActiveFilters(updatedFilters);
-    onFiltersChange(updatedFilters);
-  }, [activeFilters, onFiltersChange]);
+  const handleSuggestionApply = useCallback(
+    (suggestion: FilterOption) => {
+      const updatedFilters = { ...activeFilters, ...suggestion.value };
+      setActiveFilters(updatedFilters);
+      onFiltersChange(updatedFilters);
+    },
+    [activeFilters, onFiltersChange],
+  );
 
-  const handlePresetSelect = useCallback((preset: any) => {
-    setActiveFilters(preset.filters);
-    onFiltersChange(preset.filters);
-    onFilterPresetSelect(preset.id);
-    setShowPresets(false);
-  }, [onFiltersChange, onFilterPresetSelect]);
+  const handlePresetSelect = useCallback(
+    (preset: any) => {
+      setActiveFilters(preset.filters);
+      onFiltersChange(preset.filters);
+      onFilterPresetSelect(preset.id);
+      setShowPresets(false);
+    },
+    [onFiltersChange, onFilterPresetSelect],
+  );
 
   const clearAllFilters = useCallback(() => {
     setActiveFilters({});
@@ -310,20 +345,24 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
     if (activeFilterKeys.length === 0) return null;
 
     return (
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.activeFiltersContainer}
         contentContainerStyle={styles.activeFiltersContent}
       >
-        {activeFilterKeys.map(key => {
-          const category = filterCategories.find(c => c.id === key);
+        {activeFilterKeys.map((key) => {
+          const category = filterCategories.find((c) => c.id === key);
           if (!category) return null;
 
           const value = activeFilters[key];
           let displayText = '';
 
-          if (category.type === 'range' && value.min !== undefined && value.max !== undefined) {
+          if (
+            category.type === 'range' &&
+            value.min !== undefined &&
+            value.max !== undefined
+          ) {
             displayText = `${value.min}${category.unit || ''} - ${value.max}${category.unit || ''}`;
           } else if (Array.isArray(value)) {
             displayText = value.join(', ');
@@ -347,7 +386,7 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
             </View>
           );
         })}
-        
+
         <TouchableOpacity
           style={styles.clearAllButton}
           onPress={clearAllFilters}
@@ -363,23 +402,20 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
     if (suggestions.length === 0) return null;
 
     return (
-      <Animated.View 
-        style={[
-          styles.suggestionsContainer,
-          { opacity: suggestionAnimation }
-        ]}
+      <Animated.View
+        style={[styles.suggestionsContainer, { opacity: suggestionAnimation }]}
       >
         <View style={styles.suggestionsHeader}>
           <Sparkles size={16} color={colors.primary} />
           <Text style={styles.suggestionsTitle}>Smart Suggestions</Text>
         </View>
-        
-        <ScrollView 
-          horizontal 
+
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.suggestionsContent}
         >
-          {suggestions.map(suggestion => (
+          {suggestions.map((suggestion) => (
             <TouchableOpacity
               key={suggestion.id}
               style={[
@@ -396,11 +432,13 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
               {suggestion.suggested && (
                 <Sparkles size={12} color={colors.success} />
               )}
-              <Text style={[
-                styles.suggestionText,
-                suggestion.popular && styles.popularSuggestionText,
-                suggestion.suggested && styles.smartSuggestionText,
-              ]}>
+              <Text
+                style={[
+                  styles.suggestionText,
+                  suggestion.popular && styles.popularSuggestionText,
+                  suggestion.suggested && styles.smartSuggestionText,
+                ]}
+              >
                 {suggestion.label}
               </Text>
             </TouchableOpacity>
@@ -417,16 +455,14 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
       <View style={styles.presetsContainer}>
         <Text style={styles.presetsTitle}>Quick Filters</Text>
         <View style={styles.presetsGrid}>
-          {filterPresets.map(preset => (
+          {filterPresets.map((preset) => (
             <TouchableOpacity
               key={preset.id}
               style={styles.presetCard}
               onPress={() => handlePresetSelect(preset)}
               activeOpacity={0.7}
             >
-              <View style={styles.presetIcon}>
-                {preset.icon}
-              </View>
+              <View style={styles.presetIcon}>{preset.icon}</View>
               <Text style={styles.presetTitle}>{preset.title}</Text>
               <Text style={styles.presetDescription}>{preset.description}</Text>
             </TouchableOpacity>
@@ -444,7 +480,7 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
           <Filter size={20} color={colors.primary} />
           <Text style={styles.headerTitle}>Smart Filters</Text>
         </View>
-        
+
         {enablePresets && (
           <TouchableOpacity
             style={styles.presetsButton}
@@ -468,7 +504,7 @@ export const SmartFilterSystem: React.FC<SmartFilterSystemProps> = ({
 
       {/* Filter Categories */}
       <ScrollView style={styles.categoriesContainer}>
-        {filterCategories.map(category => (
+        {filterCategories.map((category) => (
           <FilterCategoryComponent
             key={category.id}
             category={category}
@@ -528,12 +564,12 @@ const FilterCategoryComponent: React.FC<{
 
   const renderMultiSelectFilter = () => {
     const selectedValues = value || [];
-    
+
     return (
       <View style={styles.optionsContainer}>
-        {category.options?.map(option => {
+        {category.options?.map((option) => {
           const isSelected = selectedValues.includes(option.value);
-          
+
           return (
             <TouchableOpacity
               key={option.id}
@@ -550,10 +586,12 @@ const FilterCategoryComponent: React.FC<{
               }}
               activeOpacity={0.7}
             >
-              <Text style={[
-                styles.optionText,
-                isSelected && styles.selectedOptionText,
-              ]}>
+              <Text
+                style={[
+                  styles.optionText,
+                  isSelected && styles.selectedOptionText,
+                ]}
+              >
                 {option.label}
               </Text>
               {option.count && (
@@ -587,7 +625,7 @@ const FilterCategoryComponent: React.FC<{
         )}
         <Animated.View
           style={{
-            transform: [{ rotate: expanded ? '90deg' : '0deg' }]
+            transform: [{ rotate: expanded ? '90deg' : '0deg' }],
           }}
         >
           <ChevronRight size={16} color={colors.textSecondary} />
@@ -604,263 +642,264 @@ const FilterCategoryComponent: React.FC<{
   );
 };
 
-const getThemedStyles = (colors: any) => StyleSheet.create({
-  container: {
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  presetsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  presetsButtonText: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  activeFiltersContainer: {
-    maxHeight: 50,
-  },
-  activeFiltersContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    gap: 8,
-  },
-  activeFilterChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    gap: 6,
-  },
-  activeFilterText: {
-    fontSize: 12,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  removeFilterButton: {
-    padding: 2,
-  },
-  clearAllButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: colors.error,
-    borderRadius: 16,
-  },
-  clearAllText: {
-    fontSize: 12,
-    color: colors.background,
-    fontWeight: '500',
-  },
-  suggestionsContainer: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  suggestionsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    gap: 6,
-  },
-  suggestionsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  suggestionsContent: {
-    paddingHorizontal: 16,
-    gap: 8,
-  },
-  suggestionChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surfaceVariant,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 16,
-    gap: 4,
-  },
-  popularSuggestion: {
-    backgroundColor: colors.primaryLight,
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  smartSuggestion: {
-    backgroundColor: colors.successLight,
-    borderWidth: 1,
-    borderColor: colors.success,
-  },
-  suggestionText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  popularSuggestionText: {
-    color: colors.primary,
-  },
-  smartSuggestionText: {
-    color: colors.success,
-  },
-  presetsContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  presetsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 12,
-  },
-  presetsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  presetCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    width: (width - 48) / 2,
-    alignItems: 'center',
-  },
-  presetIcon: {
-    marginBottom: 6,
-  },
-  presetTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  presetDescription: {
-    fontSize: 10,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  categoriesContainer: {
-    flex: 1,
-  },
-  categoryContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  categoryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  categoryTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.text,
-    flex: 1,
-  },
-  predictiveBadge: {
-    backgroundColor: colors.primaryLight,
-    borderRadius: 8,
-    padding: 2,
-  },
-  categoryContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  rangeContainer: {
-    gap: 12,
-  },
-  rangeInputs: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  rangeInput: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 14,
-    color: colors.text,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  rangeSeparator: {
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-  optionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  optionChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 4,
-    position: 'relative',
-  },
-  selectedOption: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  popularOption: {
-    borderColor: colors.primary,
-    borderWidth: 1,
-  },
-  optionText: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  selectedOptionText: {
-    color: colors.background,
-    fontWeight: '500',
-  },
-  optionCount: {
-    fontSize: 10,
-    color: colors.textSecondary,
-  },
-  popularBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: colors.primaryLight,
-    borderRadius: 6,
-    padding: 1,
-  },
-});
+const getThemedStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    headerTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    presetsButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    presetsButtonText: {
+      fontSize: 14,
+      color: colors.primary,
+      fontWeight: '500',
+    },
+    activeFiltersContainer: {
+      maxHeight: 50,
+    },
+    activeFiltersContent: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      gap: 8,
+    },
+    activeFilterChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.primaryLight,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+      gap: 6,
+    },
+    activeFilterText: {
+      fontSize: 12,
+      color: colors.primary,
+      fontWeight: '500',
+    },
+    removeFilterButton: {
+      padding: 2,
+    },
+    clearAllButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      backgroundColor: colors.error,
+      borderRadius: 16,
+    },
+    clearAllText: {
+      fontSize: 12,
+      color: colors.background,
+      fontWeight: '500',
+    },
+    suggestionsContainer: {
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    suggestionsHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      marginBottom: 8,
+      gap: 6,
+    },
+    suggestionsTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    suggestionsContent: {
+      paddingHorizontal: 16,
+      gap: 8,
+    },
+    suggestionChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surfaceVariant,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 16,
+      gap: 4,
+    },
+    popularSuggestion: {
+      backgroundColor: colors.primaryLight,
+      borderWidth: 1,
+      borderColor: colors.primary,
+    },
+    smartSuggestion: {
+      backgroundColor: colors.successLight,
+      borderWidth: 1,
+      borderColor: colors.success,
+    },
+    suggestionText: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      fontWeight: '500',
+    },
+    popularSuggestionText: {
+      color: colors.primary,
+    },
+    smartSuggestionText: {
+      color: colors.success,
+    },
+    presetsContainer: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    presetsTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 12,
+    },
+    presetsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    presetCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      width: (width - 48) / 2,
+      alignItems: 'center',
+    },
+    presetIcon: {
+      marginBottom: 6,
+    },
+    presetTitle: {
+      fontSize: 12,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 2,
+    },
+    presetDescription: {
+      fontSize: 10,
+      color: colors.textSecondary,
+      textAlign: 'center',
+    },
+    categoriesContainer: {
+      flex: 1,
+    },
+    categoryContainer: {
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    categoryHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      gap: 12,
+    },
+    categoryTitle: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: colors.text,
+      flex: 1,
+    },
+    predictiveBadge: {
+      backgroundColor: colors.primaryLight,
+      borderRadius: 8,
+      padding: 2,
+    },
+    categoryContent: {
+      paddingHorizontal: 16,
+      paddingBottom: 16,
+    },
+    rangeContainer: {
+      gap: 12,
+    },
+    rangeInputs: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    rangeInput: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      fontSize: 14,
+      color: colors.text,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    rangeSeparator: {
+      fontSize: 16,
+      color: colors.textSecondary,
+    },
+    optionsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    optionChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 4,
+      position: 'relative',
+    },
+    selectedOption: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+    },
+    popularOption: {
+      borderColor: colors.primary,
+      borderWidth: 1,
+    },
+    optionText: {
+      fontSize: 14,
+      color: colors.text,
+    },
+    selectedOptionText: {
+      color: colors.background,
+      fontWeight: '500',
+    },
+    optionCount: {
+      fontSize: 10,
+      color: colors.textSecondary,
+    },
+    popularBadge: {
+      position: 'absolute',
+      top: -4,
+      right: -4,
+      backgroundColor: colors.primaryLight,
+      borderRadius: 6,
+      padding: 1,
+    },
+  });
 
 export default SmartFilterSystem;

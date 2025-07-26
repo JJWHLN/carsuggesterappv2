@@ -125,7 +125,10 @@ export interface ComparisonHistory {
 export interface AuthActions {
   login: (credentials: LoginCredentials) => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
-  socialLogin: (provider: SocialLoginProvider['id'], token: string) => Promise<void>;
+  socialLogin: (
+    provider: SocialLoginProvider['id'],
+    token: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   refreshAuth: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -133,7 +136,9 @@ export interface AuthActions {
   updatePreferences: (preferences: Partial<UserPreferences>) => Promise<void>;
   addToFavorites: (car: Car) => Promise<void>;
   removeFromFavorites: (carId: string) => Promise<void>;
-  saveSearch: (search: Omit<SavedSearch, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  saveSearch: (
+    search: Omit<SavedSearch, 'id' | 'userId' | 'createdAt' | 'updatedAt'>,
+  ) => Promise<void>;
   deleteSearch: (searchId: string) => Promise<void>;
   addToRecentlyViewed: (car: Car, duration: number) => Promise<void>;
   saveComparison: (carIds: string[], name?: string) => Promise<void>;

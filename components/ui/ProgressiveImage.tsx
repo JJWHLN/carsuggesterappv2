@@ -151,11 +151,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
       />
 
       {/* Overlay content */}
-      {children && (
-        <View style={styles.overlay}>
-          {children}
-        </View>
-      )}
+      {children && <View style={styles.overlay}>{children}</View>}
     </View>
   );
 };

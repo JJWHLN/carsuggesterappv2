@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { 
-  Heart, 
-  Trash2, 
-  Eye, 
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import {
+  Heart,
+  Trash2,
+  Eye,
   TrendingUp,
   TrendingDown,
   Calendar,
   DollarSign,
   Car,
   Clock,
-  Share
+  Share,
 } from 'lucide-react-native';
 import { useAuth } from '../auth/AuthContext';
 import { FavoriteCar } from '../auth/types';
@@ -33,9 +40,9 @@ const TabButton: React.FC<TabButtonProps> = ({ title, isActive, onPress }) => (
       isActive ? 'bg-green-500' : 'bg-gray-200'
     }`}
   >
-    <Text className={`font-medium ${
-      isActive ? 'text-white' : 'text-gray-700'
-    }`}>
+    <Text
+      className={`font-medium ${isActive ? 'text-white' : 'text-gray-700'}`}
+    >
       {title}
     </Text>
   </TouchableOpacity>
@@ -45,7 +52,9 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
   const { actions, state } = useAuth();
   const [favorites, setFavorites] = useState<FavoriteCar[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<FavoriteCar[]>([]);
-  const [activeTab, setActiveTab] = useState<'favorites' | 'recent'>('favorites');
+  const [activeTab, setActiveTab] = useState<'favorites' | 'recent'>(
+    'favorites',
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -58,7 +67,7 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
       setIsLoading(true);
       const [favoritesData, recentData] = await Promise.all([
         mockGetFavorites(),
-        mockGetRecentlyViewed()
+        mockGetRecentlyViewed(),
       ]);
       setFavorites(favoritesData);
       setRecentlyViewed(recentData);
@@ -86,15 +95,15 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              setFavorites(prev => prev.filter(f => f.id !== favoriteId));
+              setFavorites((prev) => prev.filter((f) => f.id !== favoriteId));
               await mockRemoveFavorite(favoriteId);
             } catch (error) {
               console.error('Failed to remove favorite:', error);
               Alert.alert('Error', 'Failed to remove favorite');
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
 
@@ -108,8 +117,18 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
   };
 
   const renderFavoriteCard = ({ item: favorite }: { item: FavoriteCar }) => {
-    const priceChangeColor = favorite.priceChange > 0 ? 'text-red-500' : favorite.priceChange < 0 ? 'text-green-500' : 'text-gray-500';
-    const priceChangeIcon = favorite.priceChange > 0 ? TrendingUp : favorite.priceChange < 0 ? TrendingDown : null;
+    const priceChangeColor =
+      favorite.priceChange > 0
+        ? 'text-red-500'
+        : favorite.priceChange < 0
+          ? 'text-green-500'
+          : 'text-gray-500';
+    const priceChangeIcon =
+      favorite.priceChange > 0
+        ? TrendingUp
+        : favorite.priceChange < 0
+          ? TrendingDown
+          : null;
 
     return (
       <View className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4 mx-4">
@@ -121,7 +140,10 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
         {/* Car Info */}
         <View className="p-4">
           <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-lg font-bold text-gray-900 flex-1" numberOfLines={1}>
+            <Text
+              className="text-lg font-bold text-gray-900 flex-1"
+              numberOfLines={1}
+            >
               {favorite.car.year} {favorite.car.make} {favorite.car.model}
             </Text>
             <TouchableOpacity
@@ -140,17 +162,18 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
               </Text>
               {favorite.priceChange !== 0 && (
                 <View className="flex-row items-center">
-                  {priceChangeIcon && React.createElement(priceChangeIcon, { 
-                    size: 16, 
-                    className: priceChangeColor.replace('text-', '') 
-                  })}
+                  {priceChangeIcon &&
+                    React.createElement(priceChangeIcon, {
+                      size: 16,
+                      className: priceChangeColor.replace('text-', ''),
+                    })}
                   <Text className={`font-medium ml-1 ${priceChangeColor}`}>
                     {formatCurrency(Math.abs(favorite.priceChange))}
                   </Text>
                 </View>
               )}
             </View>
-            
+
             {favorite.priceWhenAdded !== favorite.currentPrice && (
               <Text className="text-sm text-gray-600">
                 Originally {formatCurrency(favorite.priceWhenAdded)}
@@ -162,7 +185,8 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
           <View className="flex-row flex-wrap gap-2 mb-4">
             <View className="bg-blue-100 px-3 py-1 rounded-full">
               <Text className="text-blue-700 text-xs font-medium">
-                {(favorite.car as any).mileage?.toLocaleString() || 'Unknown'} miles
+                {(favorite.car as any).mileage?.toLocaleString() || 'Unknown'}{' '}
+                miles
               </Text>
             </View>
             <View className="bg-purple-100 px-3 py-1 rounded-full">
@@ -201,7 +225,7 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
               <Eye size={16} className="text-white mr-2" />
               <Text className="text-white font-semibold">View Details</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               onPress={() => shareCar(favorite.car)}
               className="px-4 py-3 border border-gray-300 rounded-lg flex-row items-center justify-center"
@@ -223,7 +247,10 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
 
       {/* Car Info */}
       <View className="p-4">
-        <Text className="text-lg font-bold text-gray-900 mb-1" numberOfLines={1}>
+        <Text
+          className="text-lg font-bold text-gray-900 mb-1"
+          numberOfLines={1}
+        >
           {recent.car.year} {recent.car.make} {recent.car.model}
         </Text>
 
@@ -262,7 +289,7 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
             <Eye size={14} className="text-white mr-1" />
             <Text className="text-white font-medium text-sm">View</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             onPress={() => actions.addToFavorites(recent.car)}
             className="px-3 py-2 border border-gray-300 rounded flex-row items-center justify-center"
@@ -275,7 +302,8 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
   );
 
   const renderEmptyState = () => {
-    const isEmptyFavorites = activeTab === 'favorites' && favorites.length === 0;
+    const isEmptyFavorites =
+      activeTab === 'favorites' && favorites.length === 0;
     const isEmptyRecent = activeTab === 'recent' && recentlyViewed.length === 0;
 
     return (
@@ -287,18 +315,19 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
             <Clock size={32} className="text-gray-400" />
           )}
         </View>
-        
+
         <Text className="text-xl font-semibold text-gray-900 mb-2 text-center">
-          {activeTab === 'favorites' ? 'No Favorites Yet' : 'No Recently Viewed Cars'}
+          {activeTab === 'favorites'
+            ? 'No Favorites Yet'
+            : 'No Recently Viewed Cars'}
         </Text>
-        
+
         <Text className="text-gray-600 text-center mb-8 leading-6">
-          {activeTab === 'favorites' 
+          {activeTab === 'favorites'
             ? 'Save cars you love to keep track of price changes and updates.'
-            : 'Cars you view will appear here for quick access.'
-          }
+            : 'Cars you view will appear here for quick access.'}
         </Text>
-        
+
         <TouchableOpacity
           onPress={() => navigation?.navigate('Search')}
           className="bg-green-500 px-6 py-3 rounded-lg"
@@ -319,14 +348,15 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
   }
 
   const currentData = activeTab === 'favorites' ? favorites : recentlyViewed;
-  const renderItem = activeTab === 'favorites' ? renderFavoriteCard : renderRecentCard;
+  const renderItem =
+    activeTab === 'favorites' ? renderFavoriteCard : renderRecentCard;
 
   return (
     <View className="flex-1 bg-gray-50">
       {/* Header */}
       <View className="bg-white border-b border-gray-200 px-4 py-4">
         <Text className="text-2xl font-bold text-gray-900 mb-4">My Cars</Text>
-        
+
         {/* Tabs */}
         <View className="flex-row space-x-3">
           <TabButton
@@ -361,8 +391,8 @@ export const Favorites: React.FC<FavoritesProps> = ({ navigation }) => {
 
 // Mock API functions - replace with actual implementation
 const mockGetFavorites = async (): Promise<FavoriteCar[]> => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   return [
     {
       id: '1',
@@ -377,13 +407,13 @@ const mockGetFavorites = async (): Promise<FavoriteCar[]> => {
         fuelEfficiency: 32,
         brand: 'Toyota',
         features: ['Backup Camera', 'Bluetooth', 'Keyless Entry'],
-        safetyRating: 5
+        safetyRating: 5,
       } as any, // Extended with mileage, transmission etc for display
       notes: 'Perfect for daily commuting. Love the fuel efficiency!',
       addedAt: '2024-01-16T00:00:00Z',
       priceWhenAdded: 29000,
       currentPrice: 28500,
-      priceChange: -500
+      priceChange: -500,
     },
     {
       id: '2',
@@ -398,20 +428,20 @@ const mockGetFavorites = async (): Promise<FavoriteCar[]> => {
         fuelEfficiency: 30,
         brand: 'Honda',
         features: ['AWD', 'Heated Seats', 'Apple CarPlay'],
-        safetyRating: 5
+        safetyRating: 5,
       } as any, // Extended with additional properties for display
       notes: 'Great for weekend trips. Need to test drive soon.',
       addedAt: '2024-01-12T00:00:00Z',
       priceWhenAdded: 31500,
       currentPrice: 32000,
-      priceChange: 500
-    }
+      priceChange: 500,
+    },
   ];
 };
 
 const mockGetRecentlyViewed = async (): Promise<FavoriteCar[]> => {
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
   return [
     {
       id: '3',
@@ -426,17 +456,17 @@ const mockGetRecentlyViewed = async (): Promise<FavoriteCar[]> => {
         fuelEfficiency: 28,
         brand: 'Mazda',
         features: ['Backup Camera', 'Blind Spot Monitoring'],
-        safetyRating: 4
+        safetyRating: 4,
       } as any, // Extended with additional properties for display
       addedAt: '2024-01-19T14:30:00Z',
       priceWhenAdded: 26500,
       currentPrice: 26500,
-      priceChange: 0
-    }
+      priceChange: 0,
+    },
   ];
 };
 
 const mockRemoveFavorite = async (favoriteId: string): Promise<void> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   console.log(`Removed favorite ${favoriteId}`);
 };

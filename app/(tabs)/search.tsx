@@ -40,7 +40,7 @@ export default function SearchScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({});
-  
+
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // Simple search implementation
@@ -53,11 +53,11 @@ export default function SearchScreen() {
     try {
       setLoading(true);
       const data = await fetchVehicleListings(0, 20, query);
-      
-      const transformedCars = Array.isArray(data) 
+
+      const transformedCars = Array.isArray(data)
         ? data.map(transformDatabaseVehicleListingToCar)
         : [];
-      
+
       setCars(transformedCars);
     } catch (error) {
       console.error('Search error:', error);
@@ -83,7 +83,9 @@ export default function SearchScreen() {
   }, []);
 
   const hasActiveFilters = useMemo(() => {
-    return Object.values(filters).some(value => value !== undefined && value !== '');
+    return Object.values(filters).some(
+      (value) => value !== undefined && value !== '',
+    );
   }, [filters]);
 
   const clearFilters = useCallback(() => {
@@ -99,9 +101,13 @@ export default function SearchScreen() {
       onRequestClose={() => setShowFilters(false)}
     >
       <View style={styles.modalOverlay}>
-        <View style={[styles.filterModal, { backgroundColor: colors.background }]}>
+        <View
+          style={[styles.filterModal, { backgroundColor: colors.background }]}
+        >
           <View style={styles.filterHeader}>
-            <Text style={[styles.filterTitle, { color: colors.text }]}>Search Filters</Text>
+            <Text style={[styles.filterTitle, { color: colors.text }]}>
+              Search Filters
+            </Text>
             <TouchableOpacity onPress={() => setShowFilters(false)}>
               <X color={colors.textSecondary} size={24} />
             </TouchableOpacity>
@@ -111,8 +117,11 @@ export default function SearchScreen() {
             <Text style={[styles.comingSoon, { color: colors.textSecondary }]}>
               🚧 Advanced filters coming soon!
             </Text>
-            <Text style={[styles.comingSoonDesc, { color: colors.textSecondary }]}>
-              Price range, year, make, fuel type, and location filters will be available in the next update.
+            <Text
+              style={[styles.comingSoonDesc, { color: colors.textSecondary }]}
+            >
+              Price range, year, make, fuel type, and location filters will be
+              available in the next update.
             </Text>
           </View>
 
@@ -136,17 +145,19 @@ export default function SearchScreen() {
     </Modal>
   );
 
-  const renderCar = useCallback(({ item }: { item: CarType }) => (
-    <CarCard
-      car={item}
-      onPress={() => handleCarPress(item.id)}
-    />
-  ), [handleCarPress]);
+  const renderCar = useCallback(
+    ({ item }: { item: CarType }) => (
+      <CarCard car={item} onPress={() => handleCarPress(item.id)} />
+    ),
+    [handleCarPress],
+  );
 
   const styles = useMemo(() => getStyles(colors), [colors]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Search Header */}
       <View style={styles.header}>
         <View style={styles.searchContainer}>
@@ -160,11 +171,17 @@ export default function SearchScreen() {
             style={[styles.filterButton, { borderColor: colors.border }]}
             onPress={() => setShowFilters(true)}
           >
-            <Filter color={hasActiveFilters ? colors.primary : colors.textSecondary} size={20} />
+            <Filter
+              color={hasActiveFilters ? colors.primary : colors.textSecondary}
+              size={20}
+            />
           </TouchableOpacity>
         </View>
         {hasActiveFilters && (
-          <TouchableOpacity onPress={clearFilters} style={styles.clearFiltersButton}>
+          <TouchableOpacity
+            onPress={clearFilters}
+            style={styles.clearFiltersButton}
+          >
             <Text style={[styles.clearFiltersText, { color: colors.primary }]}>
               Clear filters
             </Text>
@@ -213,96 +230,97 @@ export default function SearchScreen() {
   );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  searchBar: {
-    flex: 1,
-    marginHorizontal: 0,
-  },
-  filterButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
-  clearFiltersButton: {
-    paddingTop: 8,
-    alignSelf: 'flex-start',
-  },
-  clearFiltersText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  content: {
-    flex: 1,
-  },
-  resultsList: {
-    padding: 16,
-    gap: 12,
-  },
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  filterModal: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '80%',
-  },
-  filterHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  filterTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  filterContent: {
-    padding: 20,
-    alignItems: 'center',
-    minHeight: 150,
-    justifyContent: 'center',
-  },
-  comingSoon: {
-    fontSize: 24,
-    marginBottom: 12,
-  },
-  comingSoonDesc: {
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  filterActions: {
-    flexDirection: 'row',
-    padding: 20,
-    gap: 12,
-  },
-  clearButton: {
-    flex: 1,
-  },
-  applyButton: {
-    flex: 1,
-  },
-});
+const getStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    header: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    searchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    searchBar: {
+      flex: 1,
+      marginHorizontal: 0,
+    },
+    filterButton: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      borderWidth: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.background,
+    },
+    clearFiltersButton: {
+      paddingTop: 8,
+      alignSelf: 'flex-start',
+    },
+    clearFiltersText: {
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    content: {
+      flex: 1,
+    },
+    resultsList: {
+      padding: 16,
+      gap: 12,
+    },
+    // Modal styles
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'flex-end',
+    },
+    filterModal: {
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '80%',
+    },
+    filterHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    filterTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+    },
+    filterContent: {
+      padding: 20,
+      alignItems: 'center',
+      minHeight: 150,
+      justifyContent: 'center',
+    },
+    comingSoon: {
+      fontSize: 24,
+      marginBottom: 12,
+    },
+    comingSoonDesc: {
+      fontSize: 16,
+      textAlign: 'center',
+      lineHeight: 22,
+    },
+    filterActions: {
+      flexDirection: 'row',
+      padding: 20,
+      gap: 12,
+    },
+    clearButton: {
+      flex: 1,
+    },
+    applyButton: {
+      flex: 1,
+    },
+  });

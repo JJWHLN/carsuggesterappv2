@@ -1,11 +1,25 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
 
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Button } from '@/components/ui/Button';
 import { Spacing, Typography, BorderRadius, Shadows } from '@/constants/Colors';
 import { useThemeColors } from '@/hooks/useTheme';
-import { ArrowRight, MapPin, Fuel, Clock, Star, Heart } from '@/utils/ultra-optimized-icons';
+import {
+  ArrowRight,
+  MapPin,
+  Fuel,
+  Clock,
+  Star,
+  Heart,
+} from '@/utils/ultra-optimized-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -52,25 +66,32 @@ export const FeaturedCars: React.FC<FeaturedCarsProps> = ({
 
   const CarCard: React.FC<{ car: Car }> = ({ car }) => (
     <TouchableOpacity
-      style={[styles.carCard, { backgroundColor: colors.white, borderColor: colors.border }]}
+      style={[
+        styles.carCard,
+        { backgroundColor: colors.white, borderColor: colors.border },
+      ]}
       onPress={() => onCarPress(car.id)}
       activeOpacity={0.9}
     >
       {/* Image Container */}
       <View style={styles.imageContainer}>
         <OptimizedImage
-          source={{ uri: car.images[0] || 'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400' }}
+          source={{
+            uri:
+              car.images[0] ||
+              'https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg?auto=compress&cs=tinysrgb&w=400',
+          }}
           style={styles.carImage}
           resizeMode="cover"
         />
-        
+
         {/* Overlay Elements */}
         <View style={styles.imageOverlay}>
           {/* Heart Icon */}
           <TouchableOpacity style={styles.heartButton}>
             <Heart color="#FFFFFF" size={18} />
           </TouchableOpacity>
-          
+
           {/* Price Badge */}
           <View style={styles.priceBadge}>
             <Text style={styles.priceText}>{formatPrice(car.price)}</Text>
@@ -88,7 +109,10 @@ export const FeaturedCars: React.FC<FeaturedCarsProps> = ({
       {/* Content */}
       <View style={styles.cardContent}>
         {/* Title */}
-        <Text style={[styles.carTitle, { color: colors.text }]} numberOfLines={1}>
+        <Text
+          style={[styles.carTitle, { color: colors.text }]}
+          numberOfLines={1}
+        >
           {car.year} {car.make} {car.model}
         </Text>
 
@@ -102,7 +126,10 @@ export const FeaturedCars: React.FC<FeaturedCarsProps> = ({
           </View>
           <View style={styles.detailItem}>
             <MapPin color={colors.textSecondary} size={14} />
-            <Text style={[styles.detailText, { color: colors.textSecondary }]} numberOfLines={1}>
+            <Text
+              style={[styles.detailText, { color: colors.textSecondary }]}
+              numberOfLines={1}
+            >
               {car.location}
             </Text>
           </View>
@@ -112,14 +139,22 @@ export const FeaturedCars: React.FC<FeaturedCarsProps> = ({
         {car.features && car.features.length > 0 && (
           <View style={styles.featuresRow}>
             {car.features.slice(0, 2).map((feature, index) => (
-              <View key={index} style={[styles.featureChip, { backgroundColor: colors.primaryLight }]}>
+              <View
+                key={index}
+                style={[
+                  styles.featureChip,
+                  { backgroundColor: colors.primaryLight },
+                ]}
+              >
                 <Text style={[styles.featureText, { color: colors.primary }]}>
                   {feature}
                 </Text>
               </View>
             ))}
             {car.features.length > 2 && (
-              <Text style={[styles.moreFeatures, { color: colors.textSecondary }]}>
+              <Text
+                style={[styles.moreFeatures, { color: colors.textSecondary }]}
+              >
                 +{car.features.length - 2} more
               </Text>
             )}
@@ -164,7 +199,7 @@ export const FeaturedCars: React.FC<FeaturedCarsProps> = ({
             Hand-picked recommendations just for you
           </Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onViewAll}
           style={styles.viewAllButton}
           activeOpacity={0.8}
@@ -193,25 +228,41 @@ export const FeaturedCars: React.FC<FeaturedCarsProps> = ({
           snapToAlignment="start"
         >
           {cars.map((car, index) => (
-            <View key={car.id} style={[styles.carCardWrapper, index === 0 && styles.firstCard]}>
+            <View
+              key={car.id}
+              style={[styles.carCardWrapper, index === 0 && styles.firstCard]}
+            >
               <CarCard car={car} />
             </View>
           ))}
-          
+
           {/* View All Card */}
           <TouchableOpacity
-            style={[styles.viewAllCard, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
+            style={[
+              styles.viewAllCard,
+              {
+                backgroundColor: colors.primaryLight,
+                borderColor: colors.primary,
+              },
+            ]}
             onPress={onViewAll}
             activeOpacity={0.8}
           >
             <View style={styles.viewAllContent}>
-              <Text style={[styles.viewAllCardTitle, { color: colors.primary }]}>
+              <Text
+                style={[styles.viewAllCardTitle, { color: colors.primary }]}
+              >
                 View All Cars
               </Text>
               <Text style={[styles.viewAllCardText, { color: colors.primary }]}>
                 Explore our complete collection of {cars.length * 10}+ vehicles
               </Text>
-              <View style={[styles.viewAllCardIcon, { backgroundColor: colors.primary }]}>
+              <View
+                style={[
+                  styles.viewAllCardIcon,
+                  { backgroundColor: colors.primary },
+                ]}
+              >
                 <ArrowRight color="#FFFFFF" size={24} />
               </View>
             </View>

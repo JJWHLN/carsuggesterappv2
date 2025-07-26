@@ -13,7 +13,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Search, SlidersHorizontal, Star, MapPin, DollarSign } from '@/utils/ultra-optimized-icons';
+import {
+  Search,
+  SlidersHorizontal,
+  Star,
+  MapPin,
+  DollarSign,
+} from '@/utils/ultra-optimized-icons';
 
 import { UnifiedCarCard as CarCard } from '@/components/ui/unified';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -21,7 +27,10 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { useThemeColors } from '@/hooks/useTheme';
 import { useDebounce } from '@/hooks/useDebounce';
 
-import CarDataService, { CarSearchOptions, CarSearchFilters } from '@/services/core/CarDataService';
+import CarDataService, {
+  CarSearchOptions,
+  CarSearchFilters,
+} from '@/services/core/CarDataService';
 import SimpleRecommendationEngine from '@/services/core/SimpleRecommendationEngine';
 import UserPreferencesService from '@/services/core/UserPreferencesService';
 import { Car } from '@/types/database';
@@ -37,7 +46,7 @@ interface SearchSuggestion {
 export default function SearchScreen() {
   const router = useRouter();
   const { colors } = useThemeColors();
-  
+
   // Services
   const carDataService = CarDataService.getInstance();
   const recommendationEngine = SimpleRecommendationEngine.getInstance();
@@ -51,11 +60,15 @@ export default function SearchScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
-  const [popularMakes, setPopularMakes] = useState<Array<{ make: string; count: number }>>([]);
-  
+  const [popularMakes, setPopularMakes] = useState<
+    Array<{ make: string; count: number }>
+  >([]);
+
   // Filters
   const [filters, setFilters] = useState<CarSearchFilters>({});
-  const [sortBy, setSortBy] = useState<'price' | 'year' | 'mileage' | 'created_at'>('created_at');
+  const [sortBy, setSortBy] = useState<
+    'price' | 'year' | 'mileage' | 'created_at'
+  >('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -86,9 +99,9 @@ export default function SearchScreen() {
       setLoading(true);
       const [makes, recommendations] = await Promise.all([
         carDataService.getPopularMakes(),
-        recommendationEngine.getNewUserRecommendations(10)
+        recommendationEngine.getNewUserRecommendations(10),
       ]);
-      
+
       setPopularMakes(makes);
       setCars(recommendations);
     } catch (error) {
@@ -102,7 +115,8 @@ export default function SearchScreen() {
   const loadRecommendations = async () => {
     try {
       setLoading(true);
-      const recommendations = await recommendationEngine.getNewUserRecommendations(20);
+      const recommendations =
+        await recommendationEngine.getNewUserRecommendations(20);
       setCars(recommendations);
     } catch (error) {
       console.error('Error loading recommendations:', error);
@@ -114,30 +128,30 @@ export default function SearchScreen() {
   const handleSearch = async () => {
     try {
       setLoading(true);
-      
+
       // Track search behavior
       if (debouncedSearchTerm) {
         preferencesService.trackBehaviorEvent({
           type: 'search',
           searchTerm: debouncedSearchTerm,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
 
       const searchOptions: CarSearchOptions = {
         filters: {
           ...filters,
-          ...(debouncedSearchTerm && extractFiltersFromSearchTerm(debouncedSearchTerm))
+          ...(debouncedSearchTerm &&
+            extractFiltersFromSearchTerm(debouncedSearchTerm)),
         },
         searchTerm: debouncedSearchTerm,
         sortBy,
         sortOrder,
-        limit: 50
+        limit: 50,
       };
 
       const result = await carDataService.searchCars(searchOptions);
       setCars(result.cars);
-      
     } catch (error) {
       console.error('Error searching cars:', error);
       Alert.alert('Search Error', 'Failed to search cars. Please try again.');
@@ -150,35 +164,35 @@ export default function SearchScreen() {
     try {
       const [recentSuggestions, makesList] = await Promise.all([
         preferencesService.getSearchSuggestions(),
-        carDataService.getPopularMakes()
+        carDataService.getPopularMakes(),
       ]);
 
       const suggestions: SearchSuggestion[] = [
         ...recentSuggestions.map((text, index) => ({
           id: `recent-${index}`,
           text,
-          type: 'recent' as const
+          type: 'recent' as const,
         })),
         ...makesList.slice(0, 5).map((make, index) => ({
           id: `make-${index}`,
           text: make.make,
-          type: 'make' as const
+          type: 'make' as const,
         })),
         {
           id: 'suggestion-1',
           text: 'Cars under $20,000',
-          type: 'suggestion'
+          type: 'suggestion',
         },
         {
           id: 'suggestion-2',
           text: 'Low mileage cars',
-          type: 'suggestion'
+          type: 'suggestion',
         },
         {
           id: 'suggestion-3',
           text: 'Recent listings',
-          type: 'suggestion'
-        }
+          type: 'suggestion',
+        },
       ];
 
       setSuggestions(suggestions);
@@ -187,7 +201,9 @@ export default function SearchScreen() {
     }
   };
 
-  const extractFiltersFromSearchTerm = (term: string): Partial<CarSearchFilters> => {
+  const extractFiltersFromSearchTerm = (
+    term: string,
+  ): Partial<CarSearchFilters> => {
     const extractedFilters: Partial<CarSearchFilters> = {};
     const lowerTerm = term.toLowerCase();
 
@@ -199,8 +215,8 @@ export default function SearchScreen() {
     }
 
     // Extract make from popular makes
-    const makeMatch = popularMakes.find(make => 
-      lowerTerm.includes(make.make.toLowerCase())
+    const makeMatch = popularMakes.find((make) =>
+      lowerTerm.includes(make.make.toLowerCase()),
     );
     if (makeMatch) {
       extractedFilters.make = makeMatch.make;
@@ -221,7 +237,7 @@ export default function SearchScreen() {
       carId: car.id,
       make: car.make,
       priceRange: { min: car.price * 0.9, max: car.price * 1.1 },
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     router.push(`/car/${car.id}`);
@@ -280,15 +296,22 @@ export default function SearchScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.surface }]}>
         <Text style={[styles.title, { color: colors.text }]}>
           Find Your Perfect Car
         </Text>
-        
+
         {/* Search Bar */}
-        <View style={[styles.searchContainer, { backgroundColor: colors.background }]}>
+        <View
+          style={[
+            styles.searchContainer,
+            { backgroundColor: colors.background },
+          ]}
+        >
           <Search size={20} color={colors.textSecondary} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}

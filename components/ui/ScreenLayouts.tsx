@@ -1,5 +1,13 @@
 import React from 'react';
-import { View, Text, FlatList, ScrollView, ViewStyle, RefreshControl, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  ViewStyle,
+  RefreshControl,
+  StyleSheet,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -15,7 +23,13 @@ interface BaseScreenLayoutProps {
 
 interface ListScreenLayoutProps<T> {
   data: T[];
-  renderItem: ({ item, index }: { item: T; index: number }) => React.ReactElement;
+  renderItem: ({
+    item,
+    index,
+  }: {
+    item: T;
+    index: number;
+  }) => React.ReactElement;
   loading: boolean;
   error: string | null;
   refreshing?: boolean;
@@ -56,17 +70,21 @@ interface ScrollScreenLayoutProps {
 }
 
 // Base layout component
-export const BaseScreenLayout: React.FC<BaseScreenLayoutProps> = ({ 
-  children, 
-  style 
+export const BaseScreenLayout: React.FC<BaseScreenLayoutProps> = ({
+  children,
+  style,
 }) => {
   const { colors } = useThemeColors();
-  const commonStyles = useMemo(() => StyleSheet.create({
-    safeContainer: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-  }), [colors]);
+  const commonStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        safeContainer: {
+          flex: 1,
+          backgroundColor: colors.background,
+        },
+      }),
+    [colors],
+  );
 
   return (
     <SafeAreaView style={[commonStyles.safeContainer, style]}>
@@ -87,12 +105,12 @@ export function ListScreenLayout<T>({
   onEndReachedThreshold = 0.5,
   ListHeaderComponent,
   ListFooterComponent,
-  emptyTitle = "No items found",
+  emptyTitle = 'No items found',
   emptySubtitle,
   emptyIcon,
   emptyAction,
-  errorTitle = "Something went wrong",
-  loadingText = "Loading...",
+  errorTitle = 'Something went wrong',
+  loadingText = 'Loading...',
   onRetry,
   numColumns = 1,
   keyExtractor,
@@ -100,18 +118,22 @@ export function ListScreenLayout<T>({
   contentContainerStyle,
 }: ListScreenLayoutProps<T>) {
   const { colors } = useThemeColors();
-  const commonStyles = useMemo(() => StyleSheet.create({
-    safeContainer: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    centeredContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-    },
-  }), [colors]);
+  const commonStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        safeContainer: {
+          flex: 1,
+          backgroundColor: colors.background,
+        },
+        centeredContainer: {
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20,
+        },
+      }),
+    [colors],
+  );
 
   // Loading state
   if (loading && data.length === 0) {
@@ -128,11 +150,7 @@ export function ListScreenLayout<T>({
   if (error && data.length === 0) {
     return (
       <BaseScreenLayout style={style}>
-        <ErrorState
-          title={errorTitle}
-          message={error}
-          onRetry={onRetry}
-        />
+        <ErrorState title={errorTitle} message={error} onRetry={onRetry} />
       </BaseScreenLayout>
     );
   }
@@ -145,7 +163,7 @@ export function ListScreenLayout<T>({
         <View style={commonStyles.centeredContainer}>
           <EmptyState
             title={emptyTitle}
-            subtitle={emptySubtitle || ""}
+            subtitle={emptySubtitle || ''}
             icon={emptyIcon}
             action={emptyAction}
           />
@@ -188,37 +206,41 @@ export function ListScreenLayout<T>({
   );
 }
 
-// Scroll-based screen layout  
+// Scroll-based screen layout
 export const ScrollScreenLayout: React.FC<ScrollScreenLayoutProps> = ({
   children,
   loading,
   error,
   refreshing = false,
   onRefresh,
-  emptyTitle = "No content available",
+  emptyTitle = 'No content available',
   emptySubtitle,
   emptyIcon,
   emptyAction,
-  errorTitle = "Something went wrong",
-  loadingText = "Loading...",
+  errorTitle = 'Something went wrong',
+  loadingText = 'Loading...',
   onRetry,
   style,
   contentContainerStyle,
   showEmptyWhenNoChildren = false,
 }) => {
   const { colors } = useThemeColors();
-  const commonStyles = useMemo(() => StyleSheet.create({
-    safeContainer: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    centeredContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-    },
-  }), [colors]);
+  const commonStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        safeContainer: {
+          flex: 1,
+          backgroundColor: colors.background,
+        },
+        centeredContainer: {
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20,
+        },
+      }),
+    [colors],
+  );
 
   // Loading state
   if (loading) {
@@ -235,11 +257,7 @@ export const ScrollScreenLayout: React.FC<ScrollScreenLayoutProps> = ({
   if (error) {
     return (
       <BaseScreenLayout style={style}>
-        <ErrorState
-          title={errorTitle}
-          message={error}
-          onRetry={onRetry}
-        />
+        <ErrorState title={errorTitle} message={error} onRetry={onRetry} />
       </BaseScreenLayout>
     );
   }
@@ -251,7 +269,7 @@ export const ScrollScreenLayout: React.FC<ScrollScreenLayoutProps> = ({
         <View style={commonStyles.centeredContainer}>
           <EmptyState
             title={emptyTitle}
-            subtitle={emptySubtitle || ""}
+            subtitle={emptySubtitle || ''}
             icon={emptyIcon}
             action={emptyAction}
           />

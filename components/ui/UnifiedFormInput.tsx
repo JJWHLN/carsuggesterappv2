@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
-  TextInput, 
-  Text, 
-  View, 
-  StyleSheet, 
+import {
+  TextInput,
+  Text,
+  View,
+  StyleSheet,
   TextInputProps,
   KeyboardTypeOptions,
   useColorScheme,
@@ -45,7 +45,12 @@ export const UnifiedFormInput: React.FC<UnifiedFormInputProps> = ({
   ...textInputProps
 }) => {
   const colorScheme = useColorScheme();
-  const theme = { colors: colorScheme === 'dark' ? DesignSystem.Colors.dark : DesignSystem.Colors.light };
+  const theme = {
+    colors:
+      colorScheme === 'dark'
+        ? DesignSystem.Colors.dark
+        : DesignSystem.Colors.light,
+  };
 
   // Determine keyboard type based on input type
   const getKeyboardType = (): KeyboardTypeOptions => {
@@ -103,8 +108,8 @@ export const UnifiedFormInput: React.FC<UnifiedFormInputProps> = ({
       },
       filled: {
         borderWidth: 0,
-        backgroundColor: error 
-          ? `${theme.colors.error}15` 
+        backgroundColor: error
+          ? `${theme.colors.error}15`
           : theme.colors.surfaceVariant,
         borderRadius: 12,
       },
@@ -125,25 +130,24 @@ export const UnifiedFormInput: React.FC<UnifiedFormInputProps> = ({
   return (
     <View style={[styles.container, containerStyle]}>
       {label && (
-        <Text style={[
-          styles.label,
-          { 
-            color: theme.colors.onSurface,
-            fontSize: 12,
-            fontWeight: '600',
-          },
-          labelStyle,
-        ]}>
+        <Text
+          style={[
+            styles.label,
+            {
+              color: theme.colors.onSurface,
+              fontSize: 12,
+              fontWeight: '600',
+            },
+            labelStyle,
+          ]}
+        >
           {label}
           {required && <Text style={{ color: theme.colors.error }}> *</Text>}
         </Text>
       )}
-      
+
       <TextInput
-        style={[
-          baseInputStyles,
-          inputStyle,
-        ]}
+        style={[baseInputStyles, inputStyle]}
         keyboardType={getKeyboardType()}
         secureTextEntry={type === 'password'}
         autoCapitalize={type === 'email' ? 'none' : 'sentences'}
@@ -152,29 +156,33 @@ export const UnifiedFormInput: React.FC<UnifiedFormInputProps> = ({
         placeholderTextColor={theme.colors.onSurfaceVariant}
         {...textInputProps}
       />
-      
+
       {error && (
-        <Text style={[
-          styles.errorText,
-          { 
-            color: theme.colors.error,
-            fontSize: 12,
-          },
-          errorStyle,
-        ]}>
+        <Text
+          style={[
+            styles.errorText,
+            {
+              color: theme.colors.error,
+              fontSize: 12,
+            },
+            errorStyle,
+          ]}
+        >
           {error}
         </Text>
       )}
-      
+
       {hint && !error && (
-        <Text style={[
-          styles.hintText,
-          { 
-            color: theme.colors.onSurfaceVariant,
-            fontSize: 12,
-          },
-          hintStyle,
-        ]}>
+        <Text
+          style={[
+            styles.hintText,
+            {
+              color: theme.colors.onSurfaceVariant,
+              fontSize: 12,
+            },
+            hintStyle,
+          ]}
+        >
           {hint}
         </Text>
       )}
